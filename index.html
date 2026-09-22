@@ -2130,10 +2130,10 @@ const DoctorAICore = {
           if(responseFormat)body.response_format=responseFormat;
           if(searchSettings){
             body.search_settings=searchSettings;
-            // Compound já decide quando usar suas ferramentas nativas. Para o
-            // Radar, limitamos explicitamente as ferramentas a web_search e
-            // deixamos o próprio sistema Compound executar a busca.
-            body.compound_custom={tools:{enabled_tools:['web_search']}};
+            // Groq desativou Compound em 21/09/2026. O Radar usa o
+            // Browser Search nativo do GPT-OSS, que permanece suportado.
+            body.tools=[{type:'browser_search'}];
+            body.tool_choice='required';
           }
           const headers={'Content-Type':'application/json','Authorization':`Bearer ${key}`};
           if(searchSettings) headers['Groq-Model-Version']='latest';
@@ -2153,6 +2153,9 @@ const DoctorAICore = {
           last={ok:false,status:res.status,error:text.slice(0,500),model:candidate,reason:GroqAI._friendlyReason(res.status),retryAfterMs};
           if(res.status===401||res.status===403)return last;
           if(res.status===429){
+            // Para chamadas do Radar, nunca repetir automaticamente: protege a
+            // cota da GROQ e evita tempestade de requisições.
+            if(searchSettings)return last;
             if(attempt===1){ await GroqAI._sleep(GroqAI._retryAfterMs(res,900)); continue; }
             break;
           }
