@@ -1,0 +1,11 @@
+{
+  "name": "Motorista Legislativo — Câmara Municipal de Ipameri",
+  "short_name": "Motorista Legis",
+  "description": "Doctor Core — aplicativo de estudo para o concurso de Agente Legislativo — Motorista Legislativo.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#071322",
+  "theme_color": "#0A192F",
+  "lang": "pt-BR",
+  "orientation": "portrait-primary"
+}
