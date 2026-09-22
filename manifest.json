@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "status": 200,
+  "statusText": "OK",
+  "text": "{\n  \"name\": \"Motorista Legislativo — Doctor Concursos\",\n  \"short_name\": \"Motorista Legis\",\n  \"description\": \"App de estudo para o Edital nº 02/2026 — Agente Legislativo — Motorista Legislativo, Câmara Municipal de Ipameri\",\n  \"start_url\": \"./index.html?v=1.10.8\",\n  \"scope\": \"./\",\n  \"display\": \"standalone\",\n  \"orientation\": \"portrait-primary\",\n  \"background_color\": \"#0A192F\",\n  \"theme_color\": \"#0A192F\",\n  \"lang\": \"pt-BR\",\n  \"icons\": [\n    {\n      \"src\": \"assets/icons/icon-48.png?v=1.10.8\",\n      \"sizes\": \"48x48\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"assets/icons/icon-72.png?v=1.10.8\",\n      \"sizes\": \"72x72\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"assets/icons/icon-96.png?v=1.10.8\",\n      \"sizes\": \"96x96\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"assets/icons/icon-128.png?v=1.10.8\",\n      \"sizes\": \"128x128\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"assets/icons/icon-144.png?v=1.10.8\",\n      \"sizes\": \"144x144\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"assets/icons/icon-192.png?v=1.10.8\",\n      \"sizes\": \"192x192\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"assets/icons/icon-256.png?v=1.10.8\",\n      \"sizes\": \"256x256\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"assets/icons/icon-512.png?v=1.10.8\",\n      \"sizes\": \"512x512\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"assets/icons/icon-512-maskable.png?v=1.10.8\",\n      \"sizes\": \"512x512\",\n      \"type\": \"image/png\",\n      \"purpose\": \"maskable\"\n    }\n  ]\n}\n",
+  "headers": {
+    "access-control-allow-origin": "*",
+    "age": "0",
+    "cache-control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+    "content-disposition": "inline; filename=\"manifest.json\"",
+    "content-encoding": "br",
+    "content-type": "application/json; charset=utf-8",
+    "date": "Tue, 22 Sep 2026 16:57:36 GMT",
+    "etag": "W/\"ce4220455e75a5289d31c3c154d325d2\"",
+    "last-modified": "Tue, 22 Sep 2026 16:57:36 GMT",
+    "server": "Vercel",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "transfer-encoding": "chunked",
+    "x-vercel-cache": "MISS",
+    "x-vercel-id": "gru1:iad1::p969f-1790096256568-e59043b857e6"
+  }
+}
