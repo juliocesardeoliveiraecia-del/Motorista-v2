@@ -10,7 +10,7 @@ Versão de produção recuperada do deployment ativo do Vercel e preparada para 
 - Banca: Instituto Verbena / UFG
 - Edital: nº 02/2026
 - PWA/offline: mantido
-- Radar Doctor: busca manual, proteção contra 429/cota, busca web obrigatória e parser tolerante aos formatos de resposta do Compound
+- Radar Doctor: busca manual, proteção contra 429/cota, busca web obrigatória via GPT-OSS + browser_search e parser tolerante aos resultados de busca
 - GROQ: mantida como provedora de IA; nenhuma chave é gravada no repositório
 - Supabase: contrato de integração preparado, ainda desligado
 - Pagamentos: contrato de integração preparado para Mercado Pago, ainda desligado
@@ -57,7 +57,7 @@ Planejado para:
 
 O Radar deste app deve:
 - priorizar o concurso atual;
-- usar busca web real;
+- usar busca web real via `openai/gpt-oss-120b` + `browser_search` (o Compound antigo foi descontinuado pela Groq em 21/09/2026);
 - priorizar Instituto Verbena/UFG e Câmara de Ipameri;
 - nunca fabricar notícia;
 - não substituir notícia do concurso por notícias genéricas;
