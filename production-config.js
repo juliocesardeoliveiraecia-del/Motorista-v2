@@ -8,9 +8,9 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   environment: 'production',
   integrations: {
     supabase: {
-      enabled: false,
-      url: '',
-      anonKey: ''
+      enabled: true,
+      url: 'https://rouuppeosmizzqnubhgs.supabase.co',
+      publishableKey: 'sb_publishable_nm9slmAVYcgzoXs-m1gLuw_8K317SbN'
     },
     payments: {
       enabled: false,
