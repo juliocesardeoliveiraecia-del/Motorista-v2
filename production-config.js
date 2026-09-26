@@ -4,13 +4,13 @@
  * Supabase, pagamentos e a Plataforma Principal são conectados.
  */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.10.11',
+  version: '1.10.12',
   environment: 'production',
   integrations: {
     supabase: {
-      enabled: false,
-      url: '',
-      anonKey: ''
+      enabled: true,
+      url: 'https://rouuppeosmizzqnubhgs.supabase.co',
+      publishableKey: 'sb_publishable_nm9slmAVYcgzoXs-m1gLuw_8K317SbN'
     },
     payments: {
       enabled: false,

@@ -2328,112 +2328,7 @@ const DoctorAICore = {
     }));
   },
 
-  async refreshRadar(force=false){
-    const now=Date.now();
-    const TTL=6*60*60*1000;
-    const MANUAL_COOLDOWN=10*60*1000;
-    const radarState=Store.state.radar||{};
-    const last=radarState.lastSyncAt?new Date(radarState.lastSyncAt).getTime():0;
-    const lastAttempt=radarState.lastAttemptAt?new Date(radarState.lastAttemptAt).getTime():0;
-    const fresh=last>0&&(now-last)<TTL;
-    const cooling=lastAttempt>0&&(now-lastAttempt)<MANUAL_COOLDOWN;
-    const rateUntil=radarState.rateLimitedUntil?new Date(radarState.rateLimitedUntil).getTime():0;
-
-    if(!force&&fresh)return {ok:true,items:RadarDoctor.relevant(),cached:true,reason:'fresh'};
-    if(force&&rateUntil>now)return {ok:false,reason:'rate-limit',nextAllowedAt:rateUntil,items:RadarDoctor.relevant()};
-    if(force&&cooling)return {ok:false,reason:'cooldown',nextAllowedAt:lastAttempt+MANUAL_COOLDOWN,items:RadarDoctor.relevant()};
-    if(!navigator.onLine)return {ok:false,reason:'offline',items:RadarDoctor.relevant()};
-    if(!GroqAI.hasKey())return {ok:false,reason:'no-key',items:RadarDoctor.relevant()};
-    if(this._refreshing)return {ok:false,reason:'busy',items:RadarDoctor.relevant()};
-
-    this._refreshing=true;
-    // Every attempt, including a failed one, gets a local cooldown. This is
-    // critical: repeated clicks must never turn a 429 into a request storm.
-    Store.state.radar.lastAttemptAt=new Date(now).toISOString();
-    Store.state.radar.nextAllowedAt=new Date(now+MANUAL_COOLDOWN).toISOString();
-    Store.save();
-    try{
-      const c=EXAM_CONFIG;
-      const officialDomains=['institutoverbena.ufg.br','camaraipameri.go.gov.br'];
-      const radarSources=Array.isArray(c.radarSources)?c.radarSources:[];
-      const prompt=[
-        'Você é o RADAR DOCTOR. Faça UMA busca web real e exclusiva do concurso deste aplicativo.',
-        `CONCURSO: ${c.productName}. Órgão: ${c.orgName}. Cargo: ${c.cargo}. Banca: ${c.banca}. Edital: ${c.editalNumber}.`,
-        'A busca web é obrigatória. Procure a publicação oficial mais recente e qualquer atualização relevante do certame.',
-        `Pesquise pelos termos: "${c.orgName}", "${c.cargo}", "${c.editalNumber}", "${c.banca}" e "Ipameri".`,
-        radarSources.length?`Páginas-âncora: ${radarSources.join(' | ')}`:'',
-        'Prioridade: Instituto Verbena/UFG e Câmara Municipal de Ipameri. Considere edital, retificação, comunicado, cronograma, local/horário de prova, convocação, gabarito e resultado.',
-        'Não invente notícia, URL ou data. Não use conhecimento interno como fonte.',
-        'Retorne SOMENTE JSON: {"items":[{"title":"...","summary":"...","body":"...","action":"...","category":"EDITAL|COMUNICADO|CRONOGRAMA|PROVA|GABARITO|RESULTADO|OUTRO","source":"...","url":"...","date":"...","official":true,"contestRelated":true}]}.',
-        'No máximo 7 itens. Se não encontrar novidade, retorne items vazio.',
-        `Data atual: ${new Date(now).toLocaleDateString('pt-BR')}.`
-      ].filter(Boolean).join('\n');
-
-      // UMA única chamada por atualização. Nada de segunda tentativa automática:
-      // isso era uma das causas do consumo desnecessário da quota.
-      const r=await this.call({
-        model:'groq/compound-mini',
-        messages:[
-          {role:'system',content:'Você é um monitor oficial de concursos. Execute uma busca web antes de responder. Use somente fontes encontradas na web.'},
-          {role:'user',content:prompt}
-        ],
-        responseFormat:null,temperature:0,timeout:60000,
-        searchSettings:{country:'brazil',include_domains:officialDomains},maxTokens:1800
-      });
-      if(!r.ok){
-        if(r.status===429){
-          const until=Date.now()+Math.max(60000,Number(r.retryAfterMs||0));
-          Store.state.radar.rateLimitedUntil=new Date(until).toISOString();
-          Store.state.radar.nextAllowedAt=new Date(until).toISOString();
-          Store.save();
-          return {...r,reason:'rate-limit',nextAllowedAt:until,items:RadarDoctor.relevant()};
-        }
-        return {...r,items:RadarDoctor.relevant()};
-      }
-
-      const parsed=this.parseJSON(r.content);
-      let contestItems=Array.isArray(parsed?.items)?parsed.items:[];
-      if(!contestItems.length){
-        contestItems=this._radarItemsFromSearchResults(this._extractRadarSearchResults(r.data),now);
-      }
-
-      const clean=[]; const seen=new Set();
-      for(const x of contestItems){
-        if(!x||!x.title)continue;
-        const title=String(x.title).trim();
-        const summary=String(x.summary||x.text||x.snippet||x.content||'').trim();
-        const url=String(x.url||x.link||'').trim();
-        let source=String(x.source||x.domain||'').trim();
-        if(!source&&url){try{source=new URL(url).hostname.replace(/^www\./,'')}catch(_){} }
-        if(!title||!summary||!source||!url||!this._radarAllowedUrl(url))continue;
-        const key=title.toLowerCase().replace(/\W+/g,' ')+'|'+url.toLowerCase();
-        if(seen.has(key))continue; seen.add(key);
-        clean.push({
-          id:`radar-ai-${now}-${clean.length}`,tag:String(x.category||'CONCURSO ATUAL'),
-          title:title.slice(0,180),text:summary.slice(0,700),body:String(x.body||summary).trim().slice(0,2600),
-          action:String(x.action||'').trim().slice(0,1400),source:source.slice(0,140),url,
-          date:String(x.date||new Date(now).toLocaleDateString('pt-BR')).slice(0,40),
-          priority:'high',official:Boolean(x.official!==false),contestRelated:true,isPromotion:false
-        });
-        if(clean.length>=7)break;
-      }
-
-      const promotions=RadarDoctor.platformCatalog().length?this._catalogPromotions(now):[];
-      const finalItems=[...clean,...promotions.slice(0,3)];
-      if(!finalItems.length)return {ok:false,reason:'radar-empty',items:RadarDoctor.relevant()};
-
-      delete Store.state.radar.rateLimitedUntil;
-      RadarDoctor.items=finalItems;
-      Store.state.radar.items=finalItems;
-      Store.state.radar.seenIds=finalItems.map(x=>x.id);
-      Store.state.radar.lastSyncAt=new Date().toISOString();
-      Store.state.radar.nextAllowedAt=new Date(now+MANUAL_COOLDOWN).toISOString();
-      Store.state.radar.refreshCount=(Store.state.radar.refreshCount||0)+1;
-      Store.state.aiCore.lastRadarAt=Store.state.radar.lastSyncAt;
-      Store.save();
-      return {ok:true,items:finalItems,webSearch:true,model:r.model,refreshCount:Store.state.radar.refreshCount,contestCount:clean.length,promotionCount:promotions.length};
-    } finally { this._refreshing=false; }
-  }};
+};
 
 
 /* ===== views.js ===== */
@@ -2645,243 +2540,129 @@ const UI = {
 /* ===== DOCTOR CORE V1 SERVICES ===== */
 const RadarDoctor = {
   _refreshing:false,
-  _lastAutoRefreshAt:0,
   items:[],
+  catalog:[],
+  currentProductUuid:null,
 
-  // Catálogo comercial: somente produtos ativos da Plataforma podem aparecer
-  // como divulgação. O produto atual nunca entra na propaganda.
-  platformCatalog(){
+  _escape(v){
+    return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  },
+  _cfg(){ return window.DOCTOR_PRODUCTION_CONFIG?.integrations?.supabase || {}; },
+  _headers(){
+    const c=this._cfg();
+    return c.publishableKey ? {'apikey':c.publishableKey,'Content-Type':'application/json'} : {};
+  },
+  async _fetch(path,options={}){
+    const c=this._cfg();
+    if(!c.enabled||!c.url||!c.publishableKey) throw Object.assign(new Error('Central Radar não configurado.'),{code:'central-disabled'});
+    const res=await fetch(c.url.replace(/\\/$/,'')+'/rest/v1/'+path,{...options,headers:{...this._headers(),...(options.headers||{})}});
+    const text=await res.text(); let data=null; try{data=text?JSON.parse(text):null;}catch(_){data=text;}
+    if(!res.ok) throw Object.assign(new Error((data&&data.message)||('HTTP '+res.status)),{status:res.status,data});
+    return data;
+  },
+  async _resolveCurrentProduct(){
     const bridge=window.DOCTOR_PLATFORM_BRIDGE;
-    let list=null;
     try{
-      if(bridge && typeof bridge.getProductCatalog==='function') list=bridge.getProductCatalog();
-    }catch(_){ list=null; }
-    if(!Array.isArray(list)) list=window.DOCTOR_PLATFORM_CATALOG;
-    if(!Array.isArray(list)) list=EXAM_CONFIG.platformCatalog;
-    return list.filter(x=>x && (x.status==='active'||x.active===true) && x.productId!==EXAM_CONFIG.productId);
+      const bridgeProduct=bridge?.getProductCatalog?.();
+      if(Array.isArray(bridgeProduct)){
+        const found=bridgeProduct.find(x=>x?.productId===EXAM_CONFIG.productId||x?.appId===EXAM_CONFIG.appId);
+        if(found?.uuid||/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(String(found?.productId||''))) return String(found.uuid||found.productId);
+      }
+    }catch(_){}
+    const slug=encodeURIComponent(String(EXAM_CONFIG.productId||'').trim());
+    const rows=await this._fetch('products?select=id,slug,status&slug=eq.'+slug+'&status=eq.published&limit=1');
+    const id=Array.isArray(rows)&&rows[0]?.id?String(rows[0].id):null;
+    this.currentProductUuid=id;
+    return id;
   },
-
-  currentProduct(){
-    const c=EXAM_CONFIG;
-    return {
-      productId:c.productId,
-      appId:c.appId,
-      name:c.productName,
-      shortName:c.productName,
-      banca:c.banca,
-      orgName:c.orgName,
-      cargo:c.cargo,
-      editalNumber:c.editalNumber
-    };
+  async _loadCatalog(){
+    const rows=await this._fetch('products?select=id,name,slug,description,cover_url,status,sort_order,product_apps(app_id,apps(name,slug,app_url,status))&status=eq.published&order=sort_order.asc');
+    const currentSlug=String(EXAM_CONFIG.productId||'');
+    this.catalog=(Array.isArray(rows)?rows:[]).filter(p=>p&&p.status==='published').map(p=>{
+      const app=(p.product_apps||[]).map(x=>x.apps).find(x=>x&&x.status==='active')||(p.product_apps||[])[0]?.apps||null;
+      return {productId:p.id,slug:p.slug,name:p.name,description:p.description||'',url:app?.app_url||'',appId:app?.slug||'',current:p.slug===currentSlug};
+    });
+    return this.catalog;
   },
-
+  async _centralNews(productUuid,limit=14){
+    const c=this._cfg();
+    const res=await fetch(c.url.replace(/\\/$/,'')+'/rest/v1/rpc/get_radar_feed',{method:'POST',headers:this._headers(),body:JSON.stringify({p_product_id:productUuid,p_limit:limit})});
+    const text=await res.text(); let data=null; try{data=text?JSON.parse(text):null;}catch(_){data=text;}
+    if(!res.ok) throw Object.assign(new Error((data&&data.message)||('HTTP '+res.status)),{status:res.status,data});
+    return Array.isArray(data)?data:[];
+  },
+  async loadCentral(){
+    const productUuid=await this._resolveCurrentProduct();
+    if(!productUuid) return {ok:false,reason:'catalog-pending',items:[]};
+    this.currentProductUuid=productUuid;
+    const [news,catalog]=await Promise.all([this._centralNews(productUuid,14),this._loadCatalog()]);
+    const primary=news.filter(x=>x.is_primary===true);
+    const secondary=news.filter(x=>x.is_primary===false);
+    const selected=[...primary.slice(0,10),...secondary.slice(0,4)];
+    if(selected.length<14) selected.push(...primary.slice(10,10+(14-selected.length)));
+    const mapped=selected.slice(0,14).map(x=>({
+      id:'central-radar-'+x.id,tag:'CONCURSO '+(x.is_primary?'ATUAL':'OUTRO PRODUTO'),
+      title:String(x.title||'Atualização do Radar Doctor').slice(0,180),
+      text:String(x.summary||'').slice(0,700),body:String(x.summary||'').slice(0,2600),
+      source:String(x.source_name||'Fonte oficial').slice(0,140),sourceUrl:String(x.source_url||''),
+      url:String(x.content_url||''),imageUrl:String(x.image_url||''),videoUrl:String(x.video_url||''),
+      date:x.published_at?new Date(x.published_at).toLocaleDateString('pt-BR'):'',
+      publishedAt:x.published_at||null,priority:'high',official:true,
+      contestRelated:Boolean(x.is_primary),isPromotion:false,productId:x.product_id||null
+    }));
+    const promos=catalog.filter(x=>!x.current).slice(0,6).map(x=>({
+      id:'central-promo-'+x.productId,tag:'OUTRO PRODUTO DOCTOR',title:x.name,
+      text:x.description||'Novo produto publicado na grade Doctor.',
+      body:x.description||'Produto publicado na grade Doctor.',source:'Doctor Concursos',url:x.url||'',
+      date:'',priority:'normal',official:true,contestRelated:false,isPromotion:true,productId:x.productId
+    }));
+    return {ok:true,items:[...mapped,...promos],contestCount:mapped.length,promotionCount:promos.length};
+  },
   relevant(){
     const stored=Store.state.radar?.items;
     if(Array.isArray(stored))this.items=stored;
-    return [...this.items].sort((a,b)=>{
-      if(Boolean(a.isPromotion)!==Boolean(b.isPromotion)) return a.isPromotion?1:-1;
-      return (b.priority==='high'?2:1)-(a.priority==='high'?2:1);
-    });
+    return [...this.items];
   },
-
   ticker(){
     const arr=this.relevant();
-    if(!arr.length){
-      return `<div class="radar-ticker" aria-label="Radar Doctor"><div class="radar-label">📡 RADAR DOCTOR <span>• AO VIVO</span></div><div class="radar-track"><div class="radar-move" style="animation:none;transform:none;padding-left:22px"><span class="radar-item">Radar aguardando pesquisa manual — toque em <b>Atualizar Radar</b></span></div></div></div>`;
-    }
+    if(!arr.length) return '<div class="radar-ticker" aria-label="Radar Doctor"><div class="radar-label">📡 RADAR DOCTOR <span>• CENTRAL</span></div><div class="radar-track"><div class="radar-move" style="animation:none;transform:none;padding-left:22px"><span class="radar-item">Radar central aguardando conteúdo oficial publicado na Plataforma.</span></div></div></div>';
     const doubled=[...arr,...arr];
-    return `<div class="radar-ticker" aria-label="Radar Doctor"><div class="radar-label">📡 RADAR DOCTOR <span>• AO VIVO</span></div><div class="radar-track"><div class="radar-move">${doubled.map(n=>`<span class="radar-item" data-radar-id="${n.id}">[${String(n.tag||'RADAR')}] <b>${String(n.title||'').replace(/</g,'&lt;')}</b></span>`).join('')}</div></div></div>`;
+    return '<div class="radar-ticker" aria-label="Radar Doctor"><div class="radar-label">📡 RADAR DOCTOR <span>• CENTRAL</span></div><div class="radar-track"><div class="radar-move">'+doubled.map(n=>'<span class="radar-item" data-radar-id="'+this._escape(n.id)+'">['+this._escape(n.tag||'RADAR')+'] <b>'+this._escape(n.title||'')+'</b></span>').join('')+'</div></div></div>';
   },
-
   card(){
     const n=this.relevant()[0];
-    const title=n?String(n.title||'Radar Doctor'):'Radar Doctor pronto para monitorar seu concurso';
-    const text=n?String(n.text||''):'Toque em Ver notícias para consultar a banca e as fontes oficiais em tempo real.';
-    const source=n?String(n.source||''):'Pesquisa web oficial · GROQ';
-    return `<div class="section-title">📡 Radar Doctor</div><div class="card radar-card"><div class="radar-preview"><div><span class="tag">RADAR</span><h3>${title.replace(/</g,'&lt;')}</h3><p>${text.replace(/</g,'&lt;')}</p></div></div><div class="subj-row" style="margin-top:10px"><span class="muted">${source.replace(/</g,'&lt;')}</span><button class="btn btn-outline btn-sm" id="open-radar">Ver notícias</button></div></div>`;
+    return '<div class="section-title">📡 Radar Doctor</div><div class="card radar-card"><div class="radar-preview"><div><span class="tag">RADAR CENTRAL</span><h3>'+this._escape(n?.title||'Radar Doctor centralizado')+'</h3><p>'+this._escape(n?.text||'O conteúdo vem da base central do Radar Doctor no Supabase.')+'</p></div></div><div class="subj-row" style="margin-top:10px"><span class="muted">'+this._escape(n?.source||'Supabase · Radar Doctor')+'</span><button class="btn btn-outline btn-sm" id="open-radar">Ver notícias</button></div></div>';
   },
-
-  _timeLabel(){const t=Store.state.radar?.lastSyncAt;return t?new Date(t).toLocaleString('pt-BR'):'Ainda não atualizada';},
-
+  _timeLabel(){const t=Store.state.radar?.lastSyncAt;return t?new Date(t).toLocaleString('pt-BR'):'Ainda não sincronizado';},
   page(){
-    const arr=this.relevant();
-    const contest=arr.filter(x=>!x.isPromotion);
-    const promos=arr.filter(x=>x.isPromotion);
-    const last=this._timeLabel();
-    const fresh=!!Store.state.radar?.lastSyncAt && (Date.now()-new Date(Store.state.radar.lastSyncAt).getTime()<6*60*60*1000);
-    const next=Store.state.radar?.nextAllowedAt?new Date(Store.state.radar.nextAllowedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):null;
-    const promoCount=this.platformCatalog().length;
-    return `<div class="tool-page radar-page"><div class="tool-hero radar-hero"><div class="radar-live"><i></i> RADAR DOCTOR · MONITORAMENTO REAL</div><h2>📡 Notícias do seu concurso</h2><p>70% do Radar acompanha <b>somente o concurso deste aplicativo</b>, priorizando a banca e as fontes oficiais. Os 30% restantes são reservados para divulgação de outros aplicativos Doctor já ativos na Plataforma.</p><div class="radar-mix"><span>70% · seu concurso</span><span>30% · outros apps Doctor</span><span>🛡️ Banca + fontes oficiais</span><span>⏱️ Cache inteligente · 6h · busca manual</span></div><div class="tool-hero-actions"><button class="btn btn-outline" id="radar-back">← Voltar aos estudos</button><button class="btn btn-primary" id="radar-refresh">🔎 ${fresh?'Verificar novidades':'Atualizar Radar'}</button></div><div class="muted" style="margin-top:8px;font-size:10px">Última busca: ${last}${next&&fresh?` · próxima busca permitida após ${next}`:''}</div></div><div class="tool-kpis"><div class="tool-kpi"><strong>${contest.length}</strong><span>notícias do concurso</span></div><div class="tool-kpi"><strong>${promos.length}</strong><span>apps divulgados</span></div><div class="tool-kpi"><strong>${Store.state.radar?.refreshCount||0}</strong><span>pesquisas realizadas</span></div></div><div class="card" style="margin-top:14px;padding:13px"><strong>🎯 Regra editorial do Radar</strong><p class="muted" style="margin:5px 0 0">O Radar pesquisa a web apenas sobre <b>${String(EXAM_CONFIG.productName).replace(/</g,'&lt;')}</b>. Se a banca publicar edital, retificação, comunicado, local de prova, gabarito ou outra atualização relevante, o Doctor pesquisa, lê a informação encontrada e apresenta uma análise objetiva para o aluno. Não há notícias genéricas de outros concursos nesta área.</p></div><div class="section-title">Últimas atualizações</div>${arr.length?`<div class="radar-grid-v17">${arr.map(n=>n.isPromotion?`<article class="card radar-news-v17" tabindex="0" role="button" data-radar-id="${n.id}"><span class="radar-source-badge">🚀 APP DOCTOR · CONHEÇA</span><div class="badge" style="margin-top:8px">${String(n.tag||'OUTRO APP').replace(/</g,'&lt;')}</div><h3>${String(n.title||'').replace(/</g,'&lt;')}</h3><p class="muted">${String(n.text||'').replace(/</g,'&lt;')}</p><div class="radar-source-line"><span>${String(n.source||'Doctor Concursos').replace(/</g,'&lt;')}</span><span>Oferta da Plataforma</span></div><span class="radar-read">Conhecer este aplicativo →</span></article>`:`<article class="card radar-news-v17" tabindex="0" role="button" data-radar-id="${n.id}">${n.official?'<span class="radar-source-badge">✓ FONTE OFICIAL</span>':''}<div class="badge" style="margin-top:8px">${String(n.tag||'CONCURSO ATUAL').replace(/</g,'&lt;')}</div><h3>${String(n.title||'').replace(/</g,'&lt;')}</h3><p class="muted">${String(n.text||'').replace(/</g,'&lt;')}</p><div class="radar-source-line"><span>${String(n.source||'').replace(/</g,'&lt;')}</span><span>${String(n.date||'').replace(/</g,'&lt;')}</span></div><span class="radar-read">Ler análise dentro do app →</span></article>`).join('')}</div>`:`<div class="card" style="padding:18px;text-align:center"><strong>🔎 Nenhuma atualização verificada carregada.</strong><p class="muted" style="margin:7px 0 0">Toque em <b>Atualizar Radar</b> para pesquisar a banca e as fontes oficiais. A pesquisa é manual para proteger sua cota GROQ. O Doctor não inventará notícia nem preencherá o espaço com notícias de outros concursos.</p></div>`}<p class="radar-no-external">${promoCount?`📣 A Plataforma possui ${promoCount} outro(s) app(s) ativo(s) para divulgação neste Radar.`:'📣 Quando a Plataforma disponibilizar outro aplicativo, ele poderá aparecer automaticamente aqui como divulgação.'}</p></div>`;
+    const arr=this.relevant(), contest=arr.filter(x=>!x.isPromotion), promos=arr.filter(x=>x.isPromotion);
+    const fresh=!!Store.state.radar?.lastSyncAt&&(Date.now()-new Date(Store.state.radar.lastSyncAt).getTime()<6*60*60*1000);
+    return '<div class="tool-page radar-page"><div class="tool-hero radar-hero"><div class="radar-live"><i></i> RADAR DOCTOR · CENTRAL</div><h2>📡 Notícias do seu concurso</h2><p><b>70%</b> do lote é priorizado para o produto/concurso atual e <b>30%</b> para notícias/oportunidades dos demais produtos publicados na grade Doctor.</p><div class="radar-mix"><span>70% · seu concurso</span><span>30% · grade Doctor</span><span>🛡️ somente fonte oficial</span><span>☁️ fonte central Supabase</span></div><div class="tool-hero-actions"><button class="btn btn-outline" id="radar-back">← Voltar aos estudos</button><button class="btn btn-primary" id="radar-refresh">🔄 '+(fresh?'Sincronizar Radar':'Atualizar Radar')+'</button></div><div class="muted" style="margin-top:8px;font-size:10px">Última sincronização: '+this._escape(this._timeLabel())+'</div></div><div class="tool-kpis"><div class="tool-kpi"><strong>'+contest.length+'</strong><span>itens do concurso</span></div><div class="tool-kpi"><strong>'+promos.length+'</strong><span>oportunidades da grade</span></div><div class="tool-kpi"><strong>'+((Store.state.radar?.refreshCount)||0)+'</strong><span>sincronizações</span></div></div><div class="card" style="margin-top:14px;padding:13px"><strong>🎯 Nova arquitetura</strong><p class="muted" style="margin:5px 0 0">O aplicativo não faz scraping nem pesquisa web própria. Ele consome a base central do Radar Doctor, que identifica produto, fonte oficial e conteúdo. Notícias duplicadas são controladas pelo <b>content_url</b>.</p></div><div class="section-title">Últimas atualizações</div>'+ (arr.length?'<div class="radar-grid-v17">'+arr.map(n=>n.isPromotion?'<article class="card radar-news-v17" tabindex="0" role="button" data-radar-id="'+this._escape(n.id)+'"><span class="radar-source-badge">🚀 OUTRO PRODUTO DOCTOR</span><div class="badge" style="margin-top:8px">'+this._escape(n.tag)+'</div><h3>'+this._escape(n.title)+'</h3><p class="muted">'+this._escape(n.text)+'</p><div class="radar-source-line"><span>'+this._escape(n.source)+'</span><span>Grade Doctor</span></div><span class="radar-read">Conhecer produto →</span></article>':'<article class="card radar-news-v17" tabindex="0" role="button" data-radar-id="'+this._escape(n.id)+'"><span class="radar-source-badge">✓ FONTE OFICIAL</span><div class="badge" style="margin-top:8px">'+this._escape(n.tag)+'</div><h3>'+this._escape(n.title)+'</h3><p class="muted">'+this._escape(n.text)+'</p><div class="radar-source-line"><span>'+this._escape(n.source)+'</span><span>'+this._escape(n.date)+'</span></div><span class="radar-read">Ler no Radar →</span></article>').join('')+'</div>':'<div class="card" style="padding:18px;text-align:center"><strong>☁️ O Radar central ainda não tem conteúdo publicado para este produto.</strong><p class="muted" style="margin:7px 0 0">O aplicativo já está preparado para consumir a nova estrutura. Quando o produto estiver publicado no catálogo central e houver itens oficiais associados, eles aparecerão aqui automaticamente.</p></div>')+'</div>';
   },
-
   article(id){
     const n=this.items.find(x=>x.id===id);if(!n)return this.page();
-    const safeUrl=String(n.url||'').replace(/"/g,'&quot;');
-    if(n.isPromotion){
-      return `<div class="tool-page radar-article"><button class="btn btn-ghost btn-sm" id="radar-article-back">← Voltar ao Radar</button><div class="card" style="margin-top:12px;padding:18px"><span class="radar-source-badge">🚀 APP DOCTOR · CONHEÇA</span><div class="badge" style="margin-top:10px">${String(n.tag||'OUTRO APP').replace(/</g,'&lt;')}</div><h2 style="margin:10px 0 6px">${String(n.title||'').replace(/</g,'&lt;')}</h2><div class="muted" style="font-size:11px">${String(n.source||'Doctor Concursos').replace(/</g,'&lt;')}</div><div class="radar-article-source"><strong>Sobre este aplicativo</strong><div class="radar-article-body" style="margin-top:9px">${String(n.body||n.text||'').replace(/</g,'&lt;')}</div></div>${safeUrl?`<div class="tool-hero-actions"><a class="btn btn-primary" href="${safeUrl}" target="_blank" rel="noopener noreferrer">🚀 Conhecer aplicativo</a></div>`:''}<div class="tool-hero-actions"><button class="btn btn-outline" id="radar-article-study">← Voltar ao Radar</button></div></div></div>`;
-    }
-    return `<div class="tool-page radar-article"><button class="btn btn-ghost btn-sm" id="radar-article-back">← Voltar ao Radar</button><div class="card" style="margin-top:12px;padding:18px">${n.official?'<span class="radar-source-badge">✓ FONTE OFICIAL</span>':''}<div class="badge" style="margin-top:10px">${String(n.tag||'CONCURSO ATUAL').replace(/</g,'&lt;')}</div><h2 style="margin:10px 0 6px">${String(n.title||'').replace(/</g,'&lt;')}</h2><div class="muted" style="font-size:11px">${String(n.source||'').replace(/</g,'&lt;')} · ${String(n.date||'').replace(/</g,'&lt;')}</div><div class="radar-article-source"><strong>📌 O que aconteceu</strong><div class="radar-article-body" style="margin-top:9px">${String(n.body||n.text||'').replace(/</g,'&lt;')}</div></div>${n.action?`<div class="radar-article-source"><strong>🎯 O que o aluno precisa fazer</strong><div class="radar-article-body" style="margin-top:9px">${String(n.action).replace(/</g,'&lt;')}</div></div>`:''}${safeUrl?`<div class="tool-hero-actions"><a class="btn btn-outline" href="${safeUrl}" target="_blank" rel="noopener noreferrer">🔗 Conferir fonte oficial</a></div>`:''}<div class="radar-article-source"><strong>Regra editorial</strong><div class="muted" style="margin-top:4px">O Radar usa a informação encontrada em fonte oficial ou diretamente relacionada ao certame. Em caso de mudança de edital, cronograma ou regra de prova, a fonte original continua sendo a referência final.</div></div><div class="tool-hero-actions"><button class="btn btn-primary" id="radar-article-study">📚 Voltar para estudar</button></div></div></div>`;
-  }
-};
-
-const CoreNotes = {
-  list(){ return Store.state.notes || []; },
-  clearDraft(){ Store.state.noteDraft={title:'',body:'',subjectId:SUBJECTS[0]?.id||'',folderId:'folder-general',tags:'',updatedAt:null}; Store.save(); },
-  trash(id){ const n=Store.state.notes.find(x=>x.id===id); if(!n)return false; n.deletedAt=new Date().toISOString(); n.updatedAt=n.deletedAt; Store.state.syncQueue.push({type:'upsert',entity:'note',id:n.id,at:n.updatedAt}); Store.save(); return true; },
-  restore(id){ const n=Store.state.notes.find(x=>x.id===id); if(!n)return false; n.deletedAt=null; n.updatedAt=new Date().toISOString(); Store.save(); return true; },
-  folders(){ return Store.state.noteFolders || []; },
-  getFolder(id){ return this.folders().find(f=>f.id===id) || this.folders()[0]; },
-  createFolder(name,color='#1687ff'){
-    const clean=String(name||'').trim(); if(!clean) return null;
-    const now=new Date().toISOString(); const f={id:'folder-'+Date.now(),name:clean.slice(0,40),color,createdAt:now,updatedAt:now};
-    Store.state.noteFolders.unshift(f); Store.save(); return f;
+    const safeUrl=this._escape(n.url||'');
+    if(n.isPromotion) return '<div class="tool-page radar-article"><button class="btn btn-ghost btn-sm" id="radar-article-back">← Voltar ao Radar</button><div class="card" style="margin-top:12px;padding:18px"><span class="radar-source-badge">🚀 OUTRO PRODUTO DOCTOR</span><div class="badge" style="margin-top:10px">'+this._escape(n.tag)+'</div><h2 style="margin:10px 0 6px">'+this._escape(n.title)+'</h2><div class="muted">'+this._escape(n.source)+'</div><div class="radar-article-source"><strong>Sobre este produto</strong><div class="radar-article-body" style="margin-top:9px">'+this._escape(n.body||n.text)+'</div></div>'+(safeUrl?'<div class="tool-hero-actions"><a class="btn btn-primary" href="'+safeUrl+'" target="_blank" rel="noopener noreferrer">🚀 Conhecer aplicativo</a></div>':'')+'</div></div>';
+    return '<div class="tool-page radar-article"><button class="btn btn-ghost btn-sm" id="radar-article-back">← Voltar ao Radar</button><div class="card" style="margin-top:12px;padding:18px"><span class="radar-source-badge">✓ FONTE OFICIAL</span><div class="badge" style="margin-top:10px">'+this._escape(n.tag)+'</div><h2 style="margin:10px 0 6px">'+this._escape(n.title)+'</h2><div class="muted" style="font-size:11px">'+this._escape(n.source)+' · '+this._escape(n.date)+'</div><div class="radar-article-source"><strong>Conteúdo</strong><div class="radar-article-body" style="margin-top:9px">'+this._escape(n.body||n.text)+'</div></div>'+(safeUrl?'<div class="tool-hero-actions"><a class="btn btn-outline" href="'+safeUrl+'" target="_blank" rel="noopener noreferrer">Abrir publicação oficial</a></div>':'')+'</div></div>';
   },
-  renameFolder(id,name){ const f=this.getFolder(id); if(!f||id==='folder-general') return false; f.name=String(name||f.name).trim().slice(0,40)||f.name; f.updatedAt=new Date().toISOString(); Store.save(); return true; },
-  deleteFolder(id){
-    if(id==='folder-general') return false;
-    const f=this.getFolder(id); if(!f) return false;
-    Store.state.notes.forEach(n=>{if(n.folderId===id)n.folderId='folder-general';});
-    Store.state.noteFolders=Store.state.noteFolders.filter(x=>x.id!==id); Store.save(); return true;
-  },
-  save(title,body,subjectId,folderId='folder-general',tags=[],editingId=null){
-    const now=new Date().toISOString(); const cleanTags=[...new Set(String(tags||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,8))];
-    if(editingId){ const n=Store.state.notes.find(x=>x.id===editingId); if(!n)return null; Object.assign(n,{title:title.trim()||'Anotação sem título',body:body.trim(),subjectId,folderId:folderId||'folder-general',tags:cleanTags,updatedAt:now}); Store.state.syncQueue.push({type:'upsert',entity:'note',id:n.id,at:now}); Store.save(); return n; }
-    const n={id:'note-'+Date.now(),title:title.trim()||'Anotação sem título',body:body.trim(),subjectId,folderId:folderId||'folder-general',tags:cleanTags,favorite:false,pinned:false,createdAt:now,updatedAt:now};
-    Store.state.notes.unshift(n); Store.state.syncQueue.push({type:'upsert',entity:'note',id:n.id,at:now}); Store.save(); return n;
-  },
-  delete(id){ Store.state.notes=Store.state.notes.filter(n=>n.id!==id); Store.save(); },
-  toggleFavorite(id){const n=Store.state.notes.find(x=>x.id===id);if(n){n.favorite=!n.favorite;n.updatedAt=new Date().toISOString();Store.save();}},
-  togglePinned(id){const n=Store.state.notes.find(x=>x.id===id);if(n){n.pinned=!n.pinned;n.updatedAt=new Date().toISOString();Store.save();}}
-};
-
-// Armazenamento persistente dos áudios: IndexedDB evita perder gravações ao recarregar o PWA.
-const AudioDB = {
-  db:null,
-  async open(){
-    if(this.db)return this.db;
-    this.db=await new Promise((resolve,reject)=>{const r=indexedDB.open('doctor-audio-v1',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('blobs'))r.result.createObjectStore('blobs');};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
-    return this.db;
-  },
-  async put(id,blob){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction('blobs','readwrite');tx.objectStore('blobs').put(blob,id);tx.oncomplete=()=>res(true);tx.onerror=()=>rej(tx.error);});},
-  async get(id){const db=await this.open();return new Promise((res,rej)=>{const r=db.transaction('blobs').objectStore('blobs').get(id);r.onsuccess=()=>res(r.result||null);r.onerror=()=>rej(r.error);});},
-  async remove(id){try{const db=await this.open();db.transaction('blobs','readwrite').objectStore('blobs').delete(id);}catch(e){}}
-};
-const CoreRecorder = {
-  mediaRecorder:null, chunks:[], stream:null, startedAt:null, stopping:false, stopPromise:null, mimeType:'', lastError:null,
-  isRecording(){ return !!this.mediaRecorder && this.mediaRecorder.state === 'recording'; },
-  _cleanup(){
-    try{ this.stream?.getTracks?.().forEach(t=>{try{t.stop();}catch(e){}}); }catch(e){}
-    this.stream=null; this.mediaRecorder=null; this.startedAt=null; this.stopping=false;
-  },
-  _errorMessage(err){
-    const n=err?.name||'';
-    if(n==='NotAllowedError'||n==='SecurityError') return 'Permissão do microfone negada. Autorize o microfone para este aplicativo e tente novamente.';
-    if(n==='NotFoundError') return 'Nenhum microfone disponível foi encontrado neste dispositivo.';
-    if(n==='NotReadableError'||n==='TrackStartError') return 'O microfone está ocupado por outro aplicativo. Feche o outro uso do microfone e tente novamente.';
-    if(n==='OverconstrainedError') return 'O microfone deste dispositivo não aceitou as configurações solicitadas.';
-    if(n==='AbortError') return 'O acesso ao microfone foi interrompido. Tente novamente.';
-    return err?.message || 'Não foi possível iniciar a gravação neste dispositivo.';
-  },
-  async start(){
-    if(this.isRecording()) return;
-    if(this.stopping) throw new Error('O gravador ainda está finalizando a gravação anterior. Aguarde um instante.');
-    if(!window.isSecureContext) throw new Error('O microfone só pode ser usado em uma conexão segura (HTTPS).');
-    if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) throw new Error('Gravação de áudio não é suportada neste navegador.');
-    this.lastError=null; this.chunks=[]; this.mimeType='';
-    let stream=null;
+  async refreshRadar(force=false){
+    const now=Date.now(), TTL=6*60*60*1000, COOLDOWN=10*60*1000, state=Store.state.radar||{};
+    const last=state.lastSyncAt?new Date(state.lastSyncAt).getTime():0, attempt=state.lastAttemptAt?new Date(state.lastAttemptAt).getTime():0;
+    if(!force&&last&&now-last<TTL)return {ok:true,items:this.relevant(),cached:true};
+    if(force&&attempt&&now-attempt<COOLDOWN)return {ok:false,reason:'cooldown',nextAllowedAt:attempt+COOLDOWN,items:this.relevant()};
+    if(!navigator.onLine)return {ok:false,reason:'offline',items:this.relevant()};
+    if(this._refreshing)return {ok:false,reason:'busy',items:this.relevant()};
+    const cfg=this._cfg();
+    if(!cfg.enabled||!cfg.url||!cfg.publishableKey)return {ok:false,reason:'central-disabled',items:this.relevant()};
+    this._refreshing=true; state.lastAttemptAt=new Date(now).toISOString(); state.nextAllowedAt=new Date(now+COOLDOWN).toISOString(); Store.save();
     try{
-      // Compatibilidade ampla: começamos com áudio simples e aplicamos melhorias quando o navegador aceitar.
-      try{
-        stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
-      }catch(firstErr){
-        stream=await navigator.mediaDevices.getUserMedia({audio:true});
-      }
-      this.stream=stream;
-      const candidates=[
-        'audio/webm;codecs=opus','audio/webm','audio/mp4;codecs=mp4a.40.2','audio/mp4','audio/ogg;codecs=opus'
-      ];
-      const supported=candidates.filter(x=>{try{return typeof MediaRecorder.isTypeSupported==='function'?MediaRecorder.isTypeSupported(x):true;}catch(e){return false;}});
-      const attempts=[...supported,''];
-      let recorder=null, chosen='';
-      let lastCtorError=null;
-      for(const mime of attempts){
-        try{
-          recorder=mime?new MediaRecorder(stream,{mimeType:mime,audioBitsPerSecond:128000}):new MediaRecorder(stream,{audioBitsPerSecond:128000});
-          chosen=recorder.mimeType||mime||'';
-          break;
-        }catch(e){lastCtorError=e;}
-      }
-      if(!recorder) throw lastCtorError||new Error('Este dispositivo não encontrou um formato de gravação compatível.');
-      this.mediaRecorder=recorder; this.mimeType=chosen||'audio/webm'; this.chunks=[];
-      recorder.ondataavailable=e=>{ if(e?.data?.size) this.chunks.push(e.data); };
-      recorder.onerror=e=>{ this.lastError=e?.error||new Error('O navegador interrompeu a gravação.'); };
-      try{ recorder.start(250); }catch(e){ this._cleanup(); throw e; }
-      this.startedAt=Date.now();
-      return {mimeType:this.mimeType};
-    }catch(err){
-      this._cleanup();
-      const e=new Error(this._errorMessage(err)); e.name=err?.name||'RecorderStartError'; throw e;
-    }
-  },
-  stop(){
-    if(this.stopPromise) return this.stopPromise;
-    const r=this.mediaRecorder;
-    if(!r){ this._cleanup(); return Promise.resolve(null); }
-    this.stopping=true;
-    this.stopPromise=new Promise(resolve=>{
-      let settled=false;
-      const finish=()=>{
-        if(settled)return; settled=true;
-        const type=r.mimeType||this.mimeType||'audio/webm';
-        const parts=this.chunks.slice();
-        const blob=parts.length?new Blob(parts,{type}):null;
-        this._cleanup(); this.chunks=[]; this.stopPromise=null;
-        resolve(blob);
-      };
-      const watchdog=setTimeout(finish,5000);
-      const done=()=>{clearTimeout(watchdog);finish();};
-      r.addEventListener?.('stop',done,{once:true});
-      r.addEventListener?.('error',done,{once:true});
-      try{
-        if(r.state==='recording'){
-          try{r.requestData?.();}catch(e){}
-          r.stop();
-        }else done();
-      }catch(e){done();}
-    });
-    return this.stopPromise;
+      const r=await this.loadCentral();
+      if(!r.ok)return {...r,items:this.relevant()};
+      this.items=r.items; state.items=r.items; state.seenIds=r.items.map(x=>x.id); state.lastSyncAt=new Date().toISOString(); state.nextAllowedAt=new Date(now+COOLDOWN).toISOString(); state.refreshCount=(state.refreshCount||0)+1; state.source='supabase-central-radar'; Store.state.radar=state; Store.save();
+      return {ok:true,items:r.items,central:true,contestCount:r.contestCount,promotionCount:r.promotionCount};
+    }catch(e){ return {ok:false,reason:e?.code||'central-error',status:e?.status,error:String(e?.message||e),items:this.relevant()}; }
+    finally{this._refreshing=false;}
   }
-};
-const CoreEssay = {
-  save(title,body,editingId=null){const now=new Date().toISOString();if(editingId){const e=Store.state.essays.find(x=>x.id===editingId);if(!e)return null;Object.assign(e,{title:title.trim()||'Redação',body:body.trim(),updatedAt:now});Store.save();return e;}const e={id:'essay-'+Date.now(),title:title.trim()||'Redação',body:body.trim(),createdAt:now,updatedAt:now};Store.state.essays.unshift(e);Store.state.syncQueue.push({type:'upsert',entity:'essay',id:e.id,at:now});Store.save();return e;},
-  remove(id){Store.state.essays=Store.state.essays.filter(e=>e.id!==id);Store.save();},
-  draft(title,body,audioId=null){Store.state.essayDraft={title:String(title||''),body:String(body||''),audioId:audioId||Store.state.essayDraft?.audioId||null,updatedAt:new Date().toISOString()};Store.save();},
-  clearDraft(){Store.state.essayDraft={title:'',body:'',updatedAt:null,audioId:null};Store.save();},
-  attachAudio(audioId){Store.state.essayDraft.audioId=audioId||null;Store.save();},
-  countLines(text, charsPerLine=70){const t=String(text||'').replace(/\r/g,'').trim();if(!t)return 0;return t.split('\n').reduce((sum,line)=>sum+Math.max(1,Math.ceil(line.trim().length/charsPerLine)),0);},
-  async transcribeAudio(recordingId){
-    const rec=Store.state.recordings.find(r=>r.id===recordingId); if(!rec) return {ok:false,error:'Gravação não encontrada.'};
-    const blob=await AudioDB.get(rec.audioId); if(!blob) return {ok:false,error:'Áudio não encontrado neste dispositivo.'};
-    if(blob.size>25*1024*1024) return {ok:false,error:'Este áudio ultrapassa 25 MB, limite do nível gratuito para envio direto.'};
-    const key=GroqAI.getKey(); if(!key) return {ok:false,reason:'no-key'};
-    const fd=new FormData(); fd.append('file',blob,`${rec.name||'rascunho'}.${(blob.type||'audio/webm').includes('mp4')?'mp4':'webm'}`); fd.append('model','whisper-large-v3-turbo'); fd.append('language','pt'); fd.append('response_format','json'); fd.append('temperature','0');
-    try{
-      const controller=new AbortController(); const timeout=setTimeout(()=>controller.abort(),90000);
-      const res=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',signal:controller.signal,headers:{'Authorization':`Bearer ${key}`},body:fd}); clearTimeout(timeout);
-      let data=null; try{data=await res.json();}catch{}
-      if(!res.ok) return {ok:false,status:res.status,error:data?.error?.message||'A GROQ não conseguiu transcrever este áudio.'};
-      const text=String(data?.text||'').trim(); if(!text)return {ok:false,error:'A transcrição retornou vazia.'};
-      rec.transcript=text; rec.transcribedAt=new Date().toISOString(); Store.state.essayDraft.audioId=rec.audioId; Store.state.essayDraft.body=text; Store.state.essayDraft.title=Store.state.essayDraft.title||`Rascunho falado — ${new Date(rec.createdAt).toLocaleDateString('pt-BR')}`; Store.save();
-      return {ok:true,text,recording:rec};
-    }catch(e){return {ok:false,error:e?.name==='AbortError'?'A transcrição demorou demais. Tente novamente.':'Não foi possível conectar à GROQ para transcrever o áudio.'};}
-  }
-};
-const CoreSync = {
-  deviceId(){ if(!Store.state.deviceSession.id){ Store.state.deviceSession.id='device-'+crypto.randomUUID(); Store.state.deviceSession.createdAt=new Date().toISOString(); Store.save(); } return Store.state.deviceSession.id; },
-  markLocalChange(entity,id,op='upsert'){ const key=`${entity}:${id}`; const now=new Date().toISOString(); const q=Store.state.syncQueue.find(x=>x.key===key); if(q){q.at=now;q.op=op;q.version=now;} else Store.state.syncQueue.push({key,type:'mutation',entity,id,op,at:now,version:now}); Store.save(); },
-  status(){ return {online:navigator.onLine,queued:Store.state.syncQueue?.length||0,last:Store.state.radar?.lastSyncAt||null,deviceId:this.deviceId(),remoteConfigured:!!window.DOCTOR_PLATFORM_BRIDGE}; },
-  async flush(){ if(!navigator.onLine)return {ok:false,reason:'offline'}; const bridge=window.DOCTOR_PLATFORM_BRIDGE; if(!bridge||typeof bridge.sync!=='function')return {ok:false,reason:'platform-not-connected',queued:Store.state.syncQueue.length}; try{const r=await bridge.sync({deviceId:this.deviceId(),userId:bridge.userId||null,productId:EXAM_CONFIG.productId,mutations:Store.state.syncQueue.slice()}); if(r?.ok){Store.state.syncQueue=[];Store.state.deviceSession.lastSeenAt=new Date().toISOString();Store.save();} return r||{ok:false,reason:'empty-response'};}catch(e){return {ok:false,reason:'sync-error',error:String(e?.message||e)};} },
-  async claimSession(){ const bridge=window.DOCTOR_PLATFORM_BRIDGE; const deviceId=this.deviceId(); if(!bridge||typeof bridge.claimDeviceSession!=='function')return {ok:false,reason:'platform-not-connected',deviceId}; try{const r=await bridge.claimDeviceSession({userId:bridge.userId||null,productId:EXAM_CONFIG.productId,deviceId}); if(r?.ok){Store.state.deviceSession.lastSeenAt=new Date().toISOString();Store.save();} return r||{ok:false,reason:'empty-response'};}catch(e){return {ok:false,reason:'session-error',error:String(e?.message||e)};} }
 };
 
 const Views = { bind: {} };
@@ -3748,10 +3529,10 @@ Views.radar = function(){ return RadarDoctor.page(); };
 Views.bind.radar = function(){
   document.getElementById('radar-back')?.addEventListener('click',()=>UI.back());
   document.getElementById('radar-refresh')?.addEventListener('click',async e=>{
-    if(!GroqAI.hasKey()){UI.toast('Configure sua chave GROQ para ativar o Radar.','warn');UI.render('settings');return;}
+    if(!window.DOCTOR_PRODUCTION_CONFIG?.integrations?.supabase?.enabled){UI.toast('O Radar central ainda não está conectado à Plataforma.','warn');return;}
     if(!navigator.onLine){UI.toast('Sem internet. O Radar está mostrando o último conteúdo salvo.','warn');return;}
     e.currentTarget.disabled=true;e.currentTarget.textContent='🔎 Pesquisando novidades...';
-    const r=await DoctorAICore.refreshRadar(true);
+    const r=await RadarDoctor.refreshRadar(true);
     if(r.reason==='cooldown'){const t=r.nextAllowedAt?new Date(r.nextAllowedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'em breve';UI.toast(`Radar protegido contra buscas repetidas. Próxima pesquisa após ${t}.`,'warn');}
     else if(r.ok){UI.toast(`${r.items.filter(x=>!x.isPromotion).length} notícia(s) verificadas.`,'success');}
     else if(r.reason==='offline'){UI.toast('Sem internet. O Radar continua mostrando o último conteúdo salvo.','warn');}
