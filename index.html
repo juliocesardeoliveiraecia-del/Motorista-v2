@@ -2770,6 +2770,885 @@ const RadarDoctor = {
   }
 };
 
+const Views = { bind: {} };
+
+// Helper: envolve um ícone SVG (de ICONS) num span consistente, com fallback silencioso
+function iconEl(key, extraClass = '') {
+  const svg = ICONS[key];
+  if (!svg) {
+    console.warn(`[iconEl] Ícone "${key}" não existe em ICONS — verifique data.js/views.js.`);
+    return '';
+  }
+  return `<span class="icon-wrap ${extraClass}">${svg}</span>`;
+}
+
+// ---------------- HOME ----------------
+Views.home = function () {
+  const days = Store.daysUntilExam();
+  const acc = Store.overallAccuracy();
+  let totalAnswered = 0;
+  Object.values(Store.state.progress).forEach(p => totalAnswered += p.answered);
+  const examDate = new Date(EXAM_CONFIG.examDateISO);
+  const examDateShort = examDate.toLocaleDateString('pt-BR');
+  const plan = DailyPlan.getOrGenerate();
+  const planMinutes = DailyPlan.totalMinutes(plan);
+  const planDone = DailyPlan.completedCount(plan);
+  const wrongCount = Store.getWrongQuestions().length;
+  let totalFlashcards = 0;
+  Object.values(Store.state.flashcards).forEach(list => totalFlashcards += list.length);
+
+  return `
+    <section class="exam-hero" aria-label="Contagem regressiva para a prova">
+      <div class="exam-hero-photo">
+        <img class="exam-hero-chamber" src="assets/concurso/camara-ipameri.webp" alt="Câmara Municipal de Ipameri" loading="eager">
+        <div class="exam-hero-overlay" aria-hidden="true"></div>
+        <div class="exam-hero-content">
+          <div class="hero-label">Faltam para a prova</div>
+          <div class="hero-days">${days} dias</div>
+          <div class="hero-sub">${examDateShort} · ${EXAM_CONFIG.cargo}</div>
+        </div>
+      </div>
+      <div class="exam-hero-books" aria-hidden="true">
+        <div class="exam-hero-books-glow"></div>
+        <img src="${ILLUSTRATION_BOOKS_URI}" alt="">
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <div class="card stat"><div class="stat-value">${totalAnswered}</div><div class="stat-label">questões respondidas</div></div>
+      <div class="card stat"><div class="stat-value">${acc}%</div><div class="stat-label">aproveitamento geral</div></div>
+    </div>
+
+    <div class="section-title">Desempenho por matéria</div>
+    <div class="card">
+      ${SUBJECTS.map(s => {
+        const p = Store.state.progress[s.id];
+        const pct = p.answered > 0 ? Math.round((p.correct / p.answered) * 100) : null;
+        return `
+          <div class="subj-row">
+            <div class="subj-name">${iconEl(s.iconKey)} ${s.name}</div>
+            <div class="subj-pct">${pct === null ? '—' : pct + '%'}</div>
+          </div>
+          <div class="progress-bar"><div class="fill" style="width:${pct || 0}%"></div></div>
+        `;
+      }).join('')}
+    </div>
+
+    <div class="section-title">Plano de Hoje</div>
+    <div class="card plan-card">
+      <div class="plan-header">
+        <span>${iconEl('target')} <strong>${planMinutes} minutos</strong> de estudo</span>
+        <span class="muted">${planDone}/${plan.items.length}</span>
+      </div>
+      ${plan.items.map(item => {
+        const status = DailyPlan.itemStatus(item);
+        return `
+          <div class="plan-item ${status.done ? 'done' : ''}" data-plan-item="${item.id}">
+            <span class="plan-check">${status.done ? iconEl('checkCircle') : ''}</span>
+            <div class="plan-item-text">
+              <div class="plan-item-label">${item.label}</div>
+              <div class="plan-item-sub">${item.sublabel} · ${Math.round(item.minutes)} min${!status.done ? ` · ${status.doneCount}/${status.target}` : ''}</div>
+            </div>
+            <span class="chev">${iconEl('chevronRight')}</span>
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <button class="btn btn-primary btn-block" id="home-practice">Praticar Questões</button>
+
+    <div class="section-title">Revisão de Hoje</div>
+    <div class="card">
+      <div class="subj-row"><span>${iconEl('refresh')} Questões para revisar</span><span>${wrongCount}</span></div>
+      <div class="subj-row"><span>${iconEl('cards')} Flashcards salvos</span><span>${totalFlashcards}</span></div>
+      <button class="btn ${wrongCount > 0 ? 'btn-primary' : 'btn-outline'} btn-block" id="home-start-review" ${wrongCount === 0 ? 'disabled' : ''} style="margin-top:10px;">
+        ${wrongCount > 0 ? 'Começar Revisão' : 'Nenhum erro pendente'}
+      </button>
+      ${wrongCount > 0 ? `<button class="btn btn-ghost btn-sm" id="home-pontos-fracos">Ver pontos fracos</button>` : ''}
+    </div>
+
+    <button class="btn btn-orange btn-block" id="home-flashcards">${iconEl('cards')} Flashcards</button>
+    <button class="btn btn-danger btn-block" id="home-simulado">${iconEl('clipboard')} Simulado Oficial (${EXAM_CONFIG.totalQuestions} questões · ${EXAM_CONFIG.durationHours}h)</button>
+
+    ${Views.doctorCard()}
+
+    ${RadarDoctor.card()}
+
+    <div class="section-title">Ferramentas Doctor</div>
+    <div class="feature-grid">
+      <button type="button" class="card feature-card" id="home-notes" title="Abrir Caderno Doctor" aria-label="Abrir Caderno Doctor"><div class="feature-icon">📓</div><h3>Caderno Doctor</h3><p>Anotações organizadas por matéria.</p></button>
+      <button type="button" class="card feature-card" id="home-recorder" title="Abrir Gravador Doctor" aria-label="Abrir Gravador Doctor"><div class="feature-icon">🎙️</div><h3>Gravador Doctor</h3><p>Grave e organize áudios dentro da matéria.</p></button>
+      <button type="button" class="card feature-card" id="home-essay" title="Abrir Redação Doctor" aria-label="Abrir Redação Doctor"><div class="feature-icon">✍️</div><h3>Redação Doctor</h3><p>Área preparada para treinar redação.</p></button>
+      <button type="button" class="card feature-card" id="home-radar" title="Abrir Radar Doctor" aria-label="Abrir Radar Doctor"><div class="feature-icon">📡</div><h3>Radar Doctor</h3><p>Notícias e atualizações do concurso.</p></button>
+    </div>
+
+    ${Views.editalFooter()}
+  `;
+};
+
+Views.bind.home = function(){
+  document.getElementById('home-notes')?.addEventListener('click',()=>UI.render('notes'));
+  document.getElementById('home-recorder')?.addEventListener('click',()=>UI.render('recorderPick'));
+  document.getElementById('home-essay')?.addEventListener('click',()=>UI.render('essay'));
+  document.getElementById('home-radar')?.addEventListener('click',()=>UI.render('radar'));
+  document.getElementById('open-radar')?.addEventListener('click',()=>UI.render('radar'));
+};
+
+// Card de Evolução do Doctor — usa somente o asset oficial do nível atual. O nível e a barra de progresso já são 100% reais, calculados
+// a partir do XP ganho por estudo de verdade (Doctor.getProgress()).
+Views.doctorCard = function () {
+  const p = Doctor.getProgress();
+
+  return `
+    <div class="section-title">Evolução do seu Doctor</div>
+    <div class="card doctor-card">
+      <div class="doctor-avatar-box">
+        ${p.level.imageUri
+          ? `<img class="doctor-avatar-image" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async">`
+          : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
+      </div>
+      <div class="doctor-level-name">Nível ${p.level.level} · ${p.level.name}</div>
+      <div class="progress-bar"><div class="fill" style="width:${p.pct}%"></div></div>
+      <div class="doctor-xp-label">
+        ${p.isMax ? `Supremo · ${p.xp} XP acumulados` : `${p.xp} XP · faltam ${p.remaining} XP para o próximo nível`}
+      </div>
+    </div>
+  `;
+};
+
+// Ficha institucional do edital — rodapé presente na Home, com as informações
+// oficiais principais. Lê 100% de EXAM_CONFIG e SUBJECTS, então funciona pra
+// qualquer concurso/cargo sem precisar mexer neste código.
+Views.editalFooter = function () {
+  return `
+    <div class="edital-footer">
+      <div class="edital-photo-wrap"><img class="edital-photo" src="https://camaraipameri.go.gov.br/camara/storage/app/resources/resize/960_540_0_0_crop/img_4c40354850a52fa37fa0d4931da319c2.jpg" alt="Câmara Municipal de Ipameri" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="edital-photo-fallback">🏛️</div></div>
+      <div class="edital-org">${EXAM_CONFIG.orgName}${EXAM_CONFIG.orgState ? ' - ' + EXAM_CONFIG.orgState : ''}</div>
+      <div class="edital-cargo">${EXAM_CONFIG.cargo}</div>
+      <div class="edital-banca">Banca organizadora: ${EXAM_CONFIG.banca}</div>
+
+      <div class="edital-grid">
+        <div class="edital-item"><span class="edital-item-label">${iconEl('calendar')} Edital</span><span>${EXAM_CONFIG.editalNumber}</span></div>
+        <div class="edital-item"><span class="edital-item-label">${iconEl('clock')} Publicado em</span><span>${EXAM_CONFIG.editalPublishDate}</span></div>
+        <div class="edital-item"><span class="edital-item-label">${iconEl('mapPin')} Local da prova</span><span>${EXAM_CONFIG.applicationCity}</span></div>
+        <div class="edital-item"><span class="edital-item-label">${iconEl('clock')} Duração</span><span>${EXAM_CONFIG.durationHours} horas</span></div>
+        <div class="edital-item"><span class="edital-item-label">${iconEl('target')} Questões</span><span>${EXAM_CONFIG.totalQuestions} (${EXAM_CONFIG.alternativesPerQuestion} alternativas)</span></div>
+        <div class="edital-item"><span class="edital-item-label">${iconEl('checkCircle')} Aprovação</span><span>${EXAM_CONFIG.passingScore}/${EXAM_CONFIG.totalPoints} pontos</span></div>
+      </div>
+
+      <div class="edital-subdivider">Requisitos do cargo</div>
+      <p class="edital-small">${EXAM_CONFIG.requirement} · ${EXAM_CONFIG.workload} · ${EXAM_CONFIG.salary}</p>
+
+      <div class="edital-subdivider">O que é cobrado na prova</div>
+      ${SUBJECTS.map(s => `
+        <div class="edital-subject-row">
+          <span>${iconEl(s.iconKey)} ${s.name}</span>
+          <span class="muted">${s.officialQuestions}q · peso ${s.points}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+};
+
+
+Views.bind.home = function () {
+  document.getElementById('home-practice')?.addEventListener('click', () => UI.render('pickSubject'));
+  document.getElementById('home-flashcards')?.addEventListener('click', () => UI.render('flashcardsPickSubject'));
+  document.getElementById('home-simulado')?.addEventListener('click', () => UI.render('simuladoSetup'));
+
+  // FERRAMENTAS DOCTOR — cada card é um botão funcional. Esta ligação fica
+  // neste bind final da Home para não ser sobrescrita por definições anteriores.
+  document.getElementById('home-notes')?.addEventListener('click', () => UI.render('notes'));
+  document.getElementById('home-recorder')?.addEventListener('click', () => UI.render('recorderPick'));
+  document.getElementById('home-essay')?.addEventListener('click', () => UI.render('essay'));
+  document.getElementById('home-radar')?.addEventListener('click', () => UI.render('radar'));
+  document.getElementById('open-radar')?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); UI.render('radar'); });
+
+  document.querySelectorAll('[data-plan-item]').forEach(el => {
+    el.addEventListener('click', () => {
+      const plan = DailyPlan.getOrGenerate();
+      const item = plan.items.find(i => i.id === el.dataset.planItem);
+      if (!item) return;
+      if (item.type === 'practice') {
+        UI.practiceSubject = item.subjectId;
+        UI.render('practice');
+      } else if (item.type === 'review') {
+        Quiz.startErrorReview();
+        UI.render('reviewSession');
+      }
+    });
+  });
+
+  document.getElementById('home-start-review')?.addEventListener('click', () => {
+    Quiz.startErrorReview();
+    UI.render('reviewSession');
+  });
+  document.getElementById('home-pontos-fracos')?.addEventListener('click', () => UI.render('pontosFracos'));
+};
+
+// ---------------- SEUS PONTOS FRACOS ----------------
+Views.pontosFracos = function () {
+  const counts = Store.getWrongCountBySubject();
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+  return `
+    <button class="btn btn-ghost btn-sm" id="pf-back">${iconEl('arrowLeft')} Voltar</button>
+    <h2>${iconEl('target')} Seus Pontos Fracos</h2>
+    ${total === 0 ? `
+      <div class="card center"><p class="muted">Nenhum erro pendente agora. Continue praticando!</p></div>
+    ` : `
+      <p class="muted">Questões que você errou e ainda não acertou numa revisão.</p>
+      ${SUBJECTS.filter(s => counts[s.id] > 0).sort((a, b) => counts[b.id] - counts[a.id]).map(s => `
+        <div class="pick-card" data-subject="${s.id}">
+          <div class="subject-icon">${iconEl(s.iconKey)}</div>
+          <div class="pick-info">
+            <div class="name">${s.name}</div>
+            <div class="meta">${counts[s.id]} erro${counts[s.id] === 1 ? '' : 's'}</div>
+          </div>
+          <div class="chev">${iconEl('chevronRight')}</div>
+        </div>
+      `).join('')}
+      <button class="btn btn-primary btn-block" id="pf-review-all" style="margin-top:10px;">Revisar todos os erros (${total})</button>
+    `}
+  `;
+};
+
+Views.bind.pontosFracos = function () {
+  document.getElementById('pf-back')?.addEventListener('click', () => UI.back());
+  document.getElementById('pf-review-all')?.addEventListener('click', () => {
+    Quiz.startErrorReview();
+    UI.render('reviewSession');
+  });
+  document.querySelectorAll('.pick-card').forEach(el => {
+    el.addEventListener('click', () => {
+      Quiz.startErrorReview(el.dataset.subject);
+      UI.render('reviewSession');
+    });
+  });
+};
+
+// ---------------- SESSÃO DE REVISÃO DE ERROS ----------------
+Views.reviewSession = function () {
+  const s = Quiz.reviewSession;
+  if (!s) return '<div class="empty">Nenhuma revisão ativa.</div>';
+
+  if (s.questions.length === 0) {
+    return `
+      <button class="btn btn-ghost btn-sm" id="rv-back">${iconEl('arrowLeft')} Voltar</button>
+      <div class="card center"><p class="muted">Nenhum erro pendente para revisar aqui.</p></div>
+    `;
+  }
+
+  if (s.index >= s.questions.length) {
+    const correctedCount = s.answers.filter(a => a.correct).length;
+    return `
+      <div class="card center">
+        <div class="big-icon">${iconEl('trophy')}</div>
+        <h2>Revisão concluída</h2>
+        <p class="muted">Você acertou ${correctedCount} de ${s.answers.length} questão(ões) revisada(s).</p>
+        <button class="btn btn-primary btn-block" id="rv-done">Voltar ao início</button>
+      </div>
+    `;
+  }
+
+  const q = s.questions[s.index];
+  const answered = s.answers.length > s.index;
+  const last = answered ? s.answers[s.index] : null;
+  const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
+
+  return `
+    <div class="q-header">
+      <button class="btn btn-ghost btn-sm" id="rv-back">${iconEl('arrowLeft')} Voltar</button>
+      <span class="badge">${s.index + 1}/${s.questions.length}</span>
+    </div>
+    <div class="card">
+      <p class="q-text">${q.text}</p>
+      ${q.options.map((opt, i) => {
+        let cls = 'q-option';
+        if (answered) {
+          if (i === q.correct) cls += ' correct';
+          else if (i === last.selected) cls += ' wrong';
+        }
+        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
+      }).join('')}
+      ${answered ? `
+        <div class="explanation">
+          <strong>${last.correct ? iconEl('checkCircle') + ' Acertou dessa vez!' : iconEl('xCircle') + ' Ainda não foi.'}</strong>
+          <p>${q.explanations[last.selected]}</p>
+          ${!last.correct ? `<p><strong>Resposta certa:</strong> ${q.explanations[q.correct]}</p>` : ''}
+        </div>
+        <button class="btn btn-primary btn-block" id="rv-next">${s.index + 1 < s.questions.length ? 'Próxima' : 'Finalizar'}</button>
+      ` : ''}
+    </div>
+  `;
+};
+
+Views.bind.reviewSession = function () {
+  document.getElementById('rv-back')?.addEventListener('click', () => UI.back());
+  document.getElementById('rv-done')?.addEventListener('click', () => UI.render('home'));
+  document.querySelectorAll('.q-option').forEach(el => {
+    el.addEventListener('click', () => {
+      if (Quiz.reviewSession.answers.length > Quiz.reviewSession.index) return;
+      Quiz.answerReviewQuestion(parseInt(el.dataset.i, 10));
+      UI.render('reviewSession');
+    });
+  });
+  document.getElementById('rv-next')?.addEventListener('click', () => {
+    Quiz.nextReviewQuestion();
+    UI.render('reviewSession');
+  });
+};
+
+// ---------------- ESCOLHER MATÉRIA ----------------
+Views.pickSubject = function () {
+  return `
+    <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
+    <h2>Escolha a matéria</h2>
+    ${SUBJECTS.map(s => {
+      const p = Store.state.progress[s.id];
+      const have = Quiz.poolFor(s.id).length;
+      const feed = Store.state.feeds[s.id];
+      const inProgress = feed && feed.order.length > 0;
+      return `
+        <div class="pick-card" data-subject="${s.id}">
+          <div class="subject-icon">${iconEl(s.iconKey)}</div>
+          <div class="pick-info">
+            <div class="name">${s.name} ${inProgress ? '<span class="badge badge-live">continuar</span>' : ''}</div>
+            <div class="meta">${p.answered} respondidas · ${have} no banco</div>
+          </div>
+          <div class="chev">${iconEl('chevronRight')}</div>
+        </div>
+      `;
+    }).join('')}
+    <div class="pick-card" data-subject="todas">
+      <div class="subject-icon">${iconEl('target')}</div>
+      <div class="pick-info">
+        <div class="name">Todas (mix ponderado)</div>
+        <div class="meta">${QUESTIONS.length} questões no total</div>
+      </div>
+      <div class="chev">${iconEl('chevronRight')}</div>
+    </div>
+  `;
+};
+
+Views.bind.pickSubject = function () {
+  document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
+  document.querySelectorAll('.pick-card').forEach(el => {
+    el.addEventListener('click', () => {
+      UI.practiceSubject = el.dataset.subject;
+      UI.render('practice');
+    });
+  });
+};
+
+// ---------------- PRATICAR (fluxo contínuo e infinito) ----------------
+Views.practice = function () {
+  const subjectId = UI.practiceSubject;
+  if (!subjectId) return '<div class="empty">Nenhuma matéria selecionada.</div>';
+
+  const hasCurrent = Quiz.ensureCurrent(subjectId);
+  if (!hasCurrent) {
+    const subject = SUBJECTS.find(x => x.id === subjectId);
+    return `
+      <button class="btn btn-ghost btn-sm" id="practice-back">${iconEl('arrowLeft')} Voltar</button>
+      <div class="card center">
+        <div class="big-icon">${iconEl('trophy')}</div>
+        <h2>Você viu todas as questões ${subject ? 'de ' + subject.name : 'disponíveis'}!</h2>
+        <p class="muted">Gere novas com IA pra continuar praticando sem repetir nada.</p>
+        <button class="btn btn-primary btn-block" id="q-generate-more">${iconEl('bot')} Gerar novas questões com IA</button>
+      </div>
+    `;
+  }
+
+  const feed = Quiz.getFeed(subjectId);
+  const q = Quiz.currentQuestion(subjectId);
+  const answered = Quiz.isAnsweredAnywhere(q.id);
+  const selected = answered ? Store.state.answerLog[q.id] : null;
+  const correct = answered ? selected === q.correct : null;
+  const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
+  const canGoPrev = feed.position > 0;
+  const isFrontier = feed.position === feed.order.length - 1;
+  const needsMoreToAdvance = isFrontier && !Quiz.hasMoreFresh(subjectId);
+
+  return `
+    <button class="btn btn-ghost btn-sm" id="practice-back">${iconEl('arrowLeft')} Voltar</button>
+    <div class="q-header">
+      <span class="badge">Questão ${feed.position + 1}</span>
+      ${q.aiGenerated ? `<span class="badge badge-ai">${iconEl('bot')} IA</span>` : ''}
+    </div>
+    <div class="card">
+      <p class="q-text">${q.text}</p>
+      ${q.options.map((opt, i) => {
+        let cls = 'q-option';
+        if (answered) {
+          if (i === q.correct) cls += ' correct';
+          else if (i === selected) cls += ' wrong';
+        }
+        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
+      }).join('')}
+      ${answered ? `
+        <div class="explanation">
+          <strong>${correct ? iconEl('checkCircle') + ' Correto!' : iconEl('xCircle') + ' Incorreto.'}</strong>
+          <p>${q.explanations[selected]}</p>
+          ${!correct ? `<p><strong>Resposta certa:</strong> ${q.explanations[q.correct]}</p>` : ''}
+        </div>
+        ${needsMoreToAdvance ? `
+          <p class="muted center">Você viu todas as questões disponíveis até aqui.</p>
+          <div class="grid-2">
+            <button class="btn btn-outline btn-block" id="q-prev" ${canGoPrev ? '' : 'disabled'}>${iconEl('arrowLeft')} Anterior</button>
+            <button class="btn btn-primary btn-block" id="q-generate-inline">${iconEl('bot')} Gerar mais</button>
+          </div>
+        ` : `
+          <div class="grid-2">
+            <button class="btn btn-outline btn-block" id="q-prev" ${canGoPrev ? '' : 'disabled'}>${iconEl('arrowLeft')} Anterior</button>
+            <button class="btn btn-primary btn-block" id="q-next">Próxima ${iconEl('chevronRight')}</button>
+          </div>
+        `}
+      ` : `
+        ${canGoPrev ? `<button class="btn btn-ghost btn-sm" id="q-prev">${iconEl('arrowLeft')} Ver anterior</button>` : ''}
+      `}
+    </div>
+  `;
+};
+
+Views.bind.practice = function () {
+  const subjectId = UI.practiceSubject;
+  document.getElementById('practice-back')?.addEventListener('click', () => UI.back());
+
+  document.querySelectorAll('.q-option').forEach(el => {
+    el.addEventListener('click', () => {
+      const q = Quiz.currentQuestion(subjectId);
+      if (Quiz.isAnsweredAnywhere(q.id)) return; // já respondida, não deixa responder de novo
+      Quiz.answerFeedQuestion(subjectId, parseInt(el.dataset.i, 10));
+      UI.render('practice');
+    });
+  });
+
+  document.getElementById('q-prev')?.addEventListener('click', () => {
+    Quiz.goPrev(subjectId);
+    UI.render('practice');
+  });
+
+  document.getElementById('q-next')?.addEventListener('click', () => {
+    const result = Quiz.goNext(subjectId);
+    if (result === 'need-more') {
+      UI.toast('Você chegou ao fim das questões disponíveis desta matéria.', 'warn');
+    }
+    UI.render('practice');
+  });
+
+  document.getElementById('q-generate-inline')?.addEventListener('click', async (e) => {
+    if (!GroqAI.hasKey()) { UI.toast('Cadastre sua chave da Groq em Configurações.', 'warn'); UI.render('settings'); return; }
+    const btn = e.target;
+    btn.innerHTML = iconEl('bot') + ' Gerando...';
+    btn.disabled = true;
+    const targetSubject = subjectId === 'todas' ? Quiz.mostNeededSubjectForGeneration().id : subjectId;
+    const result = await GroqAI.generateQuestions(targetSubject, 6);
+    if (result.ok) {
+      UI.toast(`${result.added} questão(ões) nova(s) geradas!`, 'success');
+      Quiz.goNext(subjectId); // avança direto pra primeira questão nova, sem precisar de outro clique
+    } else {
+      UI.toast(result.reason==='no-key' ? 'Configure sua chave GROQ em Configurações.' : 'A IA está ocupada no momento. Aguarde alguns segundos e tente novamente.', 'warn');
+    }
+    UI.render('practice');
+  });
+
+  document.getElementById('q-generate-more')?.addEventListener('click', async (e) => {
+    if (!GroqAI.hasKey()) { UI.toast('Cadastre sua chave da Groq em Configurações.', 'warn'); UI.render('settings'); return; }
+    const btn = e.target;
+    btn.innerHTML = iconEl('bot') + ' Gerando...';
+    btn.disabled = true;
+    const targetSubject = subjectId === 'todas' ? Quiz.mostNeededSubjectForGeneration().id : subjectId;
+    const result = await GroqAI.generateQuestions(targetSubject, 6);
+    if (result.ok) {
+      UI.toast(`${result.added} questão(ões) nova(s) geradas!`, 'success');
+    } else {
+      UI.toast(result.reason==='no-key' ? 'Configure sua chave GROQ em Configurações.' : 'A IA está ocupada no momento. Aguarde alguns segundos e tente novamente.', 'warn');
+    }
+    UI.render('practice'); // ensureCurrent vai pegar automaticamente uma das novas
+  });
+};
+
+// ================= FLASHCARDS =================
+
+// ---------------- FLASHCARDS: ESCOLHER MATÉRIA ----------------
+Views.flashcardsPickSubject = function () {
+  return `
+    <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
+    <h2>${iconEl('cards')} Flashcards</h2>
+    <p class="muted">Escolha a matéria. A IA gera os flashcards mais relevantes pra ela — você escolhe quais salvar.</p>
+    ${SUBJECTS.map(s => {
+      const saved = Store.getSavedFlashcards(s.id);
+      return `
+        <div class="pick-card" data-subject="${s.id}">
+          <div class="subject-icon">${iconEl(s.iconKey)}</div>
+          <div class="pick-info">
+            <div class="name">${s.name}</div>
+            <div class="meta">${saved.length} flashcard${saved.length === 1 ? '' : 's'} salvo${saved.length === 1 ? '' : 's'}</div>
+          </div>
+          <div class="chev">${iconEl('chevronRight')}</div>
+        </div>
+      `;
+    }).join('')}
+  `;
+};
+
+Views.bind.flashcardsPickSubject = function () {
+  document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
+  document.querySelectorAll('.pick-card').forEach(el => {
+    el.addEventListener('click', () => {
+      UI.flashcardSubject = el.dataset.subject;
+      UI.render('flashcardsSubject');
+    });
+  });
+};
+
+// ---------------- FLASHCARDS: TELA DA MATÉRIA ----------------
+Views.flashcardsSubject = function () {
+  const subjectId = UI.flashcardSubject;
+  const subject = SUBJECTS.find(s => s.id === subjectId);
+  const saved = Store.getSavedFlashcards(subjectId);
+
+  return `
+    <button class="btn btn-ghost btn-sm" id="fc-back">${iconEl('arrowLeft')} Voltar</button>
+    <h2>${iconEl(subject.iconKey)} ${subject.name}</h2>
+    <div class="card">
+      <div class="stat center">
+        <div class="stat-value">${saved.length}</div>
+        <div class="stat-label">flashcard${saved.length === 1 ? '' : 's'} salvo${saved.length === 1 ? '' : 's'}</div>
+      </div>
+    </div>
+    ${saved.length > 0 ? `<button class="btn btn-outline btn-block" id="fc-view-saved">Ver meus flashcards salvos</button>` : ''}
+    <button class="btn btn-primary btn-block" id="fc-generate">${iconEl('bot')} Gerar novos flashcards com IA</button>
+    <p class="muted center">A IA prioriza os assuntos mais cobrados nesta matéria — e ajusta o foco conforme seu desempenho nas questões.</p>
+  `;
+};
+
+Views.bind.flashcardsSubject = function () {
+  const subjectId = UI.flashcardSubject;
+  document.getElementById('fc-back')?.addEventListener('click', () => UI.back());
+  document.getElementById('fc-view-saved')?.addEventListener('click', () => {
+    UI.flashcardSession = { subjectId, mode: 'browse', cards: [...Store.getSavedFlashcards(subjectId)], index: 0, flipped: false };
+    UI.render('flashcardsSession');
+  });
+  document.getElementById('fc-generate')?.addEventListener('click', async (e) => {
+    if (!GroqAI.hasKey()) { UI.toast('Cadastre sua chave da Groq em Configurações.', 'warn'); UI.render('settings'); return; }
+    const btn = e.target;
+    btn.innerHTML = iconEl('bot') + ' Gerando...';
+    btn.disabled = true;
+    const result = await GroqAI.generateFlashcards(subjectId, 6);
+    if (result.ok) {
+      UI.flashcardSession = { subjectId, mode: 'review', cards: result.cards, index: 0, flipped: false };
+      UI.render('flashcardsSession');
+    } else {
+      UI.toast(result.reason==='no-key' ? 'Configure sua chave GROQ em Configurações.' : 'A IA está ocupada no momento. Aguarde alguns segundos e tente novamente.', 'warn');
+      UI.render('flashcardsSubject');
+    }
+  });
+};
+
+// ---------------- FLASHCARDS: SESSÃO (revisar novos ou navegar salvos) ----------------
+Views.flashcardsSession = function () {
+  const s = UI.flashcardSession;
+  if (!s) return '<div class="empty">Nenhuma sessão de flashcards ativa.</div>';
+
+  if (s.cards.length === 0) {
+    return `
+      <button class="btn btn-ghost btn-sm" id="fc-session-back">${iconEl('arrowLeft')} Voltar</button>
+      <div class="card center">
+        <p class="muted">${s.mode === 'browse' ? 'Você ainda não salvou nenhum flashcard desta matéria.' : 'Nenhum flashcard disponível.'}</p>
+      </div>
+    `;
+  }
+
+  if (s.index >= s.cards.length) {
+    const savedCount = s.mode === 'review' ? s.savedCount || 0 : s.cards.length;
+    return `
+      <div class="card center">
+        <div class="big-icon">${iconEl('checkCircle')}</div>
+        <h2>${s.mode === 'review' ? 'Revisão concluída' : 'Fim da lista'}</h2>
+        ${s.mode === 'review' ? `<p class="muted">Você salvou ${savedCount} de ${s.cards.length} flashcard(s) gerados.</p>` : ''}
+        <button class="btn btn-primary btn-block" id="fc-session-done">Voltar</button>
+      </div>
+    `;
+  }
+
+  const card = s.cards[s.index];
+  const isSaved = s.mode === 'browse' || (Store.getSavedFlashcards(s.subjectId).some(c => c.front === card.front));
+
+  return `
+    <div class="q-header">
+      <button class="btn btn-ghost btn-sm" id="fc-session-back">${iconEl('arrowLeft')} Voltar</button>
+      <span class="badge">${s.index + 1}/${s.cards.length}</span>
+    </div>
+    <div class="flashcard-wrap">
+      <div class="flashcard ${s.flipped ? 'flipped' : ''}" id="flashcard-el">
+        <div class="flashcard-face flashcard-front">${card.front}</div>
+        <div class="flashcard-face flashcard-back">${card.back}</div>
+      </div>
+    </div>
+    <p class="muted center">Toque no card para virar</p>
+    ${s.mode === 'review' ? `
+      <div class="grid-2">
+        <button class="btn btn-outline btn-block" id="fc-skip">Pular</button>
+        <button class="btn btn-primary btn-block" id="fc-save">${iconEl('star')} Salvar</button>
+      </div>
+    ` : `
+      <div class="grid-2">
+        <button class="btn btn-outline btn-block" id="fc-remove">${iconEl('trash')} Remover</button>
+        <button class="btn btn-primary btn-block" id="fc-next-browse">Próximo</button>
+      </div>
+    `}
+  `;
+};
+
+Views.bind.flashcardsSession = function () {
+  const s = UI.flashcardSession;
+  document.getElementById('fc-session-back')?.addEventListener('click', () => UI.back());
+  document.getElementById('fc-session-done')?.addEventListener('click', () => UI.render('flashcardsSubject'));
+
+  document.getElementById('flashcard-el')?.addEventListener('click', () => {
+    s.flipped = !s.flipped;
+    UI.render('flashcardsSession');
+  });
+
+  document.getElementById('fc-skip')?.addEventListener('click', () => {
+    s.index++; s.flipped = false;
+    UI.render('flashcardsSession');
+  });
+
+  document.getElementById('fc-save')?.addEventListener('click', () => {
+    const card = s.cards[s.index];
+    Store.saveFlashcard(s.subjectId, card);
+    s.savedCount = (s.savedCount || 0) + 1;
+    s.index++; s.flipped = false;
+    UI.toast('Flashcard salvo!', 'success');
+    UI.render('flashcardsSession');
+  });
+
+  document.getElementById('fc-remove')?.addEventListener('click', () => {
+    const card = s.cards[s.index];
+    Store.removeFlashcard(s.subjectId, card.id);
+    s.cards.splice(s.index, 1);
+    s.flipped = false;
+    UI.render('flashcardsSession');
+  });
+
+  document.getElementById('fc-next-browse')?.addEventListener('click', () => {
+    s.index++; s.flipped = false;
+    UI.render('flashcardsSession');
+  });
+};
+
+// ---------------- SIMULADO: SETUP ----------------
+Views.simuladoSetup = function () {
+  const resumable = Quiz.resumableSimulado();
+  if (resumable) {
+    return `
+      <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
+      <h2>${iconEl('clipboard')} Simulado em andamento</h2>
+      <div class="card">
+        <p>Você tem um simulado começado, na questão <strong>${resumable.index + 1} de ${resumable.questions.length}</strong>.</p>
+        <button class="btn btn-primary btn-block" id="continue-simulado">Continuar de onde parei</button>
+        <button class="btn btn-danger btn-block" id="abandon-simulado">Abandonar e começar um novo</button>
+      </div>
+    `;
+  }
+
+  const readiness = Quiz.simuladoReadiness();
+  const allReady = readiness.every(r => r.missing === 0);
+
+  return `
+    <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
+    <h2>${iconEl('clipboard')} Simulado Oficial</h2>
+    <p class="muted">Reproduz exatamente a estrutura do ${EXAM_CONFIG.editalNumber}: ${EXAM_CONFIG.totalQuestions} questões, ${EXAM_CONFIG.alternativesPerQuestion} alternativas, ${EXAM_CONFIG.totalPoints} pontos, mínimo ${EXAM_CONFIG.passingScore} para aprovação, ${EXAM_CONFIG.durationHours} horas de duração.</p>
+    <div class="card">
+      ${readiness.map(r => `
+        <div class="subj-row">
+          <div class="subj-name">${r.subject.icon} ${r.subject.name}</div>
+          <div class="subj-pct">${r.have}/${r.need}</div>
+        </div>
+      `).join('')}
+    </div>
+    ${allReady ? `
+      <button class="btn btn-primary btn-block" id="start-simulado">Iniciar Simulado (4h)</button>
+    ` : `
+      <div class="card warn-card">
+        <p><strong>Faltam questões para montar o simulado oficial completo.</strong></p>
+        <p class="muted">Posso gerar as que faltam agora com IA (usa sua chave da Groq).</p>
+        <button class="btn btn-primary btn-block" id="fill-missing">${iconEl('bot')} Gerar questões faltantes</button>
+      </div>
+      <button class="btn btn-outline btn-block" id="start-simulado-partial">Iniciar mesmo assim (com o que tem)</button>
+    `}
+  `;
+};
+
+Views.bind.simuladoSetup = function () {
+  document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
+  document.getElementById('continue-simulado')?.addEventListener('click', () => {
+    Quiz.session = Quiz.resumableSimulado();
+    UI.render('simuladoRunning');
+  });
+  document.getElementById('abandon-simulado')?.addEventListener('click', () => {
+    if (confirm('Abandonar o simulado atual? O progresso dele será perdido.')) {
+      Quiz.clearPersisted();
+      Quiz.session = null;
+      UI.render('simuladoSetup');
+    }
+  });
+  document.getElementById('start-simulado')?.addEventListener('click', () => {
+    Quiz.startSimulado();
+    UI.render('simuladoRunning');
+  });
+  document.getElementById('start-simulado-partial')?.addEventListener('click', () => {
+    Quiz.startSimulado();
+    UI.render('simuladoRunning');
+  });
+  document.getElementById('fill-missing')?.addEventListener('click', async (e) => {
+    if (!GroqAI.hasKey()) { UI.toast('Cadastre sua chave da Groq em Configurações.', 'warn'); UI.render('settings'); return; }
+    const btn = e.target;
+    btn.disabled = true;
+    const readiness = Quiz.simuladoReadiness().filter(r => r.missing > 0);
+    for (const r of readiness) {
+      btn.innerHTML = iconEl('bot') + ' Gerando ' + r.subject.name + '...';
+      await GroqAI.fillSubjectTo(r.subject.id, r.need);
+    }
+    UI.toast('Banco de questões atualizado!', 'success');
+    UI.render('simuladoSetup');
+  });
+};
+
+// ---------------- SIMULADO: EXECUÇÃO ----------------
+Views.simuladoRunning = function () {
+  const s = Quiz.session;
+  if (!s || s.type !== 'simulado') return '<div class="empty">Nenhum simulado ativo.</div>';
+
+  if (s.index >= s.questions.length) {
+    UI._lastResult = Quiz.finishSimulado();
+    return Views.simuladoResult();
+  }
+
+  const q = s.questions[s.index];
+  const answered = s.answers.length > s.index;
+  const last = answered ? s.answers[s.index] : null;
+  const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
+
+  return `
+    <button class="btn btn-ghost btn-sm" id="sim-back">${iconEl('arrowLeft')} Sair do simulado</button>
+    <div class="q-header">
+      <span class="badge">${s.index + 1}/${s.questions.length}</span>
+      <span class="badge timer" id="sim-timer">${iconEl('clock')} --:--:--</span>
+    </div>
+    <div class="card">
+      <p class="q-text">${q.text}</p>
+      ${q.options.map((opt, i) => {
+        let cls = 'q-option';
+        if (answered) {
+          if (i === q.correct) cls += ' correct';
+          else if (i === last.selected) cls += ' wrong';
+        }
+        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
+      }).join('')}
+      ${answered ? `
+        <div class="explanation"><p>${q.explanations[last.selected]}</p></div>
+        <button class="btn btn-primary btn-block" id="sim-next">${s.index + 1 < s.questions.length ? 'Próxima' : 'Finalizar'}</button>
+      ` : ''}
+    </div>
+  `;
+};
+
+Views.bind.simuladoRunning = function () {
+  document.getElementById('sim-back')?.addEventListener('click', () => {
+    if (confirm('Sair do simulado? Seu progresso fica salvo e você pode continuar depois, na tela de Simulado.')) {
+      clearInterval(UI._timerInterval);
+      UI.render('home');
+    }
+  });
+  const s = Quiz.session;
+  if (s && s.type === 'simulado') {
+    clearInterval(UI._timerInterval);
+    UI._timerInterval = setInterval(() => {
+      const el = document.getElementById('sim-timer');
+      if (!el) { clearInterval(UI._timerInterval); return; }
+      const elapsed = Math.round((Date.now() - s.startedAt) / 1000);
+      const remaining = Math.max(0, s.timeLimitSeconds - elapsed);
+      const h = String(Math.floor(remaining / 3600)).padStart(2, '0');
+      const m = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
+      const sec = String(remaining % 60).padStart(2, '0');
+      el.innerHTML = iconEl('clock') + ` ${h}:${m}:${sec}`;
+      if (remaining <= 0) {
+        clearInterval(UI._timerInterval);
+        s.index = s.questions.length;
+        UI.render('simuladoRunning');
+      }
+    }, 1000);
+  }
+  document.querySelectorAll('.q-option').forEach(el => {
+    el.addEventListener('click', () => {
+      if (Quiz.session.answers.length > Quiz.session.index) return;
+      Quiz.answerCurrent(parseInt(el.dataset.i, 10));
+      UI.render('simuladoRunning');
+    });
+  });
+  document.getElementById('sim-next')?.addEventListener('click', () => {
+    Quiz.nextQuestion();
+    UI.render('simuladoRunning');
+  });
+};
+
+Views.simuladoResult = function () {
+  const r = UI._lastResult;
+  if (!r) return '<div class="empty">Nenhum resultado disponível.</div>';
+  const pct = Math.round((r.score / r.total) * 100);
+  const passed = r.score >= 60;
+
+  return `
+    <div class="card center">
+      <div class="big-icon">${passed ? iconEl('trophy') : iconEl('book')}</div>
+      <h2>${r.score} / ${r.total} pontos</h2>
+      <p class="${passed ? 'text-green' : 'text-orange'}"><strong>${passed ? 'Aprovado(a)! Acima dos 60 pontos mínimos.' : 'Abaixo dos 60 pontos mínimos — bora reforçar.'}</strong></p>
+      <p class="muted">Tempo utilizado: ${Math.floor(r.timeSpentSec / 60)} min</p>
+    </div>
+    <div class="section-title">Desempenho por matéria</div>
+    ${SUBJECTS.map(s => {
+      const b = r.bySubject[s.id];
+      const pct2 = b.total > 0 ? Math.round((b.correct / b.total) * 100) : 0;
+      return `
+        <div class="card">
+          <div class="subj-row"><div class="subj-name">${s.icon} ${s.name}</div><div class="subj-pct">${b.correct}/${b.total}</div></div>
+          <div class="progress-bar"><div class="fill" style="width:${pct2}%"></div></div>
+        </div>
+      `;
+    }).join('')}
+    <button class="btn btn-primary btn-block" id="result-home">Voltar ao início</button>
+  `;
+};
+
+Views.bind.simuladoResult = function () {
+  document.getElementById('result-home')?.addEventListener('click', () => { Quiz.session = null; UI.render('home'); });
+};
+
+
+// ---------------- RADAR / CADERNO / GRAVADOR / REDAÇÃO ----------------
+Views.radar = function(){ return RadarDoctor.page(); };
+Views.bind.radar = function(){
+  document.getElementById('radar-back')?.addEventListener('click',()=>UI.back());
+  document.getElementById('radar-refresh')?.addEventListener('click',async e=>{
+    if(!window.DOCTOR_PRODUCTION_CONFIG?.integrations?.supabase?.enabled){UI.toast('O Radar central ainda não está conectado à Plataforma.','warn');return;}
+    if(!navigator.onLine){UI.toast('Sem internet. O Radar está mostrando o último conteúdo salvo.','warn');return;}
+    e.currentTarget.disabled=true;e.currentTarget.textContent='🔎 Pesquisando novidades...';
+    const r=await RadarDoctor.refreshRadar(true);
+    if(r.reason==='cooldown'){const t=r.nextAllowedAt?new Date(r.nextAllowedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'em breve';UI.toast(`Radar protegido contra buscas repetidas. Próxima pesquisa após ${t}.`,'warn');}
+    else if(r.ok){UI.toast(`${r.items.filter(x=>!x.isPromotion).length} notícia(s) verificadas.`,'success');}
+    else if(r.reason==='offline'){UI.toast('Sem internet. O Radar continua mostrando o último conteúdo salvo.','warn');}
+    else if(r.reason==='no-key'){UI.toast('Configure sua chave GROQ para atualizar o Radar.','warn');}
+    else if(r.reason==='rate-limit'){const t=r.nextAllowedAt?new Date(r.nextAllowedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'em alguns instantes';UI.toast(`A GROQ está temporariamente limitada. O Radar não fará novas tentativas até ${t}.`,'warn');}
+    else{UI.toast(`Radar: ${r.status?`erro HTTP ${r.status}`:(r.reason||'falha na pesquisa web')}. O conteúdo salvo continua disponível.`,'warn');}
+    UI.render('radar');
+  });
+  document.querySelectorAll('.radar-news-v17').forEach(el=>{const open=()=>{UI._radarArticleId=el.dataset.radarId;UI.render('radarArticle');};el.addEventListener('click',open);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});});
+};
+
 Views.radarArticle=function(){ return RadarDoctor.article(UI._radarArticleId); };
 Views.bind.radarArticle=function(){ document.getElementById('radar-article-back')?.addEventListener('click',()=>UI.back()); document.getElementById('radar-article-study')?.addEventListener('click',()=>UI.goHome()); };
 
