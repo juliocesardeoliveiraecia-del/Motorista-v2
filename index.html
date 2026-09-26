@@ -1,13 +1,29 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script>
+/* Doctor Core — Radar central. Public Supabase config only; no secrets. */
+window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
+  version: '1.10.12',
+  environment: 'production',
+  integrations: {
+    supabase: {
+      enabled: true,
+      url: 'https://rouuppeosmizzqnubhgs.supabase.co',
+      publishableKey: 'sb_publishable_nm9slmAVYcgzoXs-m1gLuw_8K317SbN'
+    },
+    payments: { enabled: false, provider: 'asaas', checkoutUrl: '' },
+    platform: { bridgeEnabled: false }
+  }
+});
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.10.11">
+<meta name="doctor-core-version" content="1.10.12">
 <title>Motorista Legislativo</title>
 <meta name="description" content="App de estudo para o Edital nº 02/2026 - Agente Legislativo — Motorista Legislativo, Câmara Municipal de Ipameri">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.10.11">
+<link rel="manifest" href="manifest.json?v=1.10.12">
 <link rel="icon" type="image/png" sizes="48x48" href="assets/icons/icon-48.png?v=1.9.6">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png?v=1.9.6">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-192.png?v=1.9.6">
