@@ -1,5 +1,5 @@
 // service-worker.js — network-first (sempre busca a versão mais nova primeiro)
-const CACHE_NAME = 'motorista-ipameri-v1';
+const CACHE_NAME = 'motorista-ipameri-v1.10.12';
 const ASSETS = ['./', './index.html'];
 const NETWORK_TIMEOUT_MS = 3500;
 
@@ -22,7 +22,7 @@ function timeoutPromise(ms) {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const sameOrigin = req.url.startsWith(self.location.origin);
-  if (!sameOrigin) return; // deixa passar direto (ex: API da Groq)
+  if (!sameOrigin) return;
   if (req.method !== 'GET') return;
 
   event.respondWith(
