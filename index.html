@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.10.12',
+  version: '1.10.13',
   environment: 'production',
   integrations: {
     supabase: {
@@ -19,11 +19,11 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.10.12">
+<meta name="doctor-core-version" content="1.10.13">
 <title>Motorista Legislativo</title>
 <meta name="description" content="App de estudo para o Edital nº 02/2026 - Agente Legislativo — Motorista Legislativo, Câmara Municipal de Ipameri">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.10.12">
+<link rel="manifest" href="manifest.json?v=1.10.13">
 <link rel="icon" type="image/png" sizes="48x48" href="assets/icons/icon-48.png?v=1.9.6">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png?v=1.9.6">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-192.png?v=1.9.6">
@@ -2611,28 +2611,39 @@ const RadarDoctor = {
     const productUuid=await this._resolveCurrentProduct();
     if(!productUuid) return {ok:false,reason:'catalog-pending',items:[]};
     this.currentProductUuid=productUuid;
-    const [news,catalog]=await Promise.all([this._centralNews(productUuid,14),this._loadCatalog()]);
+
+    // A RPC central aplica a regra 70/30 e o fallback:
+    // até 70% do lote para o produto atual + até 30% para outros
+    // produtos publicados. Se faltar conteúdo secundário, ela completa
+    // com conteúdo primário — nunca com promoção fabricada no app.
+    const news=await this._centralNews(productUuid,14);
     const primary=news.filter(x=>x.is_primary===true);
     const secondary=news.filter(x=>x.is_primary===false);
-    const selected=[...primary.slice(0,10),...secondary.slice(0,4)];
-    if(selected.length<14) selected.push(...primary.slice(10,10+(14-selected.length)));
-    const mapped=selected.slice(0,14).map(x=>({
-      id:'central-radar-'+x.id,tag:'CONCURSO '+(x.is_primary?'ATUAL':'OUTRO PRODUTO'),
+    const mapped=news.slice(0,14).map(x=>({
+      id:'central-radar-'+x.id,
+      tag:'CONCURSO '+(x.is_primary?'ATUAL':'OUTRO PRODUTO'),
       title:String(x.title||'Atualização do Radar Doctor').slice(0,180),
-      text:String(x.summary||'').slice(0,700),body:String(x.summary||'').slice(0,2600),
-      source:String(x.source_name||'Fonte oficial').slice(0,140),sourceUrl:String(x.source_url||''),
-      url:String(x.content_url||''),imageUrl:String(x.image_url||''),videoUrl:String(x.video_url||''),
+      text:String(x.summary||'').slice(0,700),
+      body:String(x.summary||'').slice(0,2600),
+      source:String(x.source_name||'Fonte oficial').slice(0,140),
+      sourceUrl:String(x.source_url||''),
+      url:String(x.content_url||''),
+      imageUrl:String(x.image_url||''),
+      videoUrl:String(x.video_url||''),
       date:x.published_at?new Date(x.published_at).toLocaleDateString('pt-BR'):'',
-      publishedAt:x.published_at||null,priority:'high',official:true,
-      contestRelated:Boolean(x.is_primary),isPromotion:false,productId:x.product_id||null
+      publishedAt:x.published_at||null,
+      priority:'high',
+      official:true,
+      contestRelated:Boolean(x.is_primary),
+      isPromotion:false,
+      productId:x.product_id||null
     }));
-    const promos=catalog.filter(x=>!x.current).slice(0,6).map(x=>({
-      id:'central-promo-'+x.productId,tag:'OUTRO PRODUTO DOCTOR',title:x.name,
-      text:x.description||'Novo produto publicado na grade Doctor.',
-      body:x.description||'Produto publicado na grade Doctor.',source:'Doctor Concursos',url:x.url||'',
-      date:'',priority:'normal',official:true,contestRelated:false,isPromotion:true,productId:x.productId
-    }));
-    return {ok:true,items:[...mapped,...promos],contestCount:mapped.length,promotionCount:promos.length};
+    return {
+      ok:true,
+      items:mapped,
+      contestCount:primary.length,
+      promotionCount:secondary.length
+    };
   },
   relevant(){
     const stored=Store.state.radar?.items;
