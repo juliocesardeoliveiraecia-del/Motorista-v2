@@ -1,69 +1,56 @@
 # Doctor Core — Motorista Legislativo
 
-Versão de produção recuperada do deployment ativo do Vercel e preparada para o fluxo **GitHub → Vercel**.
+## Estado auditado
 
-## Estado desta versão
+- **Core:** V1.10.13
+- **Concurso:** Câmara Municipal de Ipameri/GO
+- **Cargo:** Agente Legislativo — Motorista Legislativo
+- **Banca:** Instituto Verbena / UFG
+- **Edital:** nº 02/2026
+- **PWA/offline:** ativo
+- **Radar:** infraestrutura central Supabase + RPC `get_radar_feed`
+- **IA:** GROQ; geração de questões passa por validação estrutural e revisão independente quando gerada por IA
+- **Pagamentos:** contrato preparado para Asaas; nenhuma credencial privada no repositório
+- **Plataforma:** bridge preparada; sem inventar RPC/RLS/migrações no Core
 
-- Versão do aplicativo: **V1.10.11**
-- Concurso: Câmara Municipal de Ipameri/GO
-- Cargo: Agente Legislativo — Motorista Legislativo
-- Banca: Instituto Verbena / UFG
-- Edital: nº 02/2026
-- PWA/offline: mantido
-- Radar Doctor: busca manual, proteção contra 429/cota, busca web obrigatória via GPT-OSS + browser_search e parser tolerante aos resultados de busca
-- GROQ: mantida como provedora de IA; nenhuma chave é gravada no repositório
-- Supabase: contrato de integração preparado, ainda desligado
-- Pagamentos: contrato de integração preparado para Mercado Pago, ainda desligado
-- Plataforma principal: bridge preparada sem alterar o contrato do Main/Supabase
+## Regra de publicação
 
-## Fonte
+O código de produção deve entrar em `main`. O Vercel conectado ao GitHub publica automaticamente o que estiver em `main`.
 
-O deployment de produção existente no Vercel foi identificado como um deployment do tipo **Drop**. O HTML publicado foi recuperado diretamente do deployment e versionado nesta branch antes de qualquer alteração estrutural.
+## Radar central
 
-## Fluxo de publicação
+O app não deve fazer scraping independente para montar o feed público. O Radar central fornece os itens por produto, fonte e classificação primária/secundária. A RPC central aplica a regra aproximada 70/30 e o fallback para conteúdo primário quando não houver conteúdo secundário suficiente.
 
-1. Alterações entram nesta branch.
-2. Validar o build/preview.
-3. Merge para `main`.
-4. Vercel fica conectado ao GitHub e cria o deployment automaticamente.
-5. Produção só recebe o código que estiver em `main`.
+Somente itens publicados e oficiais entram no feed público do app. A deduplicação central usa `content_url`.
 
-## Segredos
+## Qualidade de questões
 
-Não colocar GROQ API Key, Supabase service role key, Mercado Pago access token ou qualquer outro segredo neste repositório. Segredos pertencem às Environment Variables do Vercel.
+A seleção da alternativa é determinística: o índice selecionado é comparado ao gabarito da própria questão. Portanto, uma divergência do tipo “marcou a correta e apareceu errada” é tratada como problema de conteúdo/gabarito, não como algo que deve ser mascarado pela interface.
 
-## Integrações
+Antes da produção em massa, o Core precisa ter uma esteira formal de QA de conteúdo:
+1. validação estrutural;
+2. validação de uma única alternativa correta;
+3. coerência entre gabarito e explicações;
+4. checagem de duplicidade;
+5. rastreabilidade de fonte/contexto;
+6. revisão independente;
+7. bloqueio de publicação para conteúdo não aprovado.
 
-O arquivo `production-config.js` contém apenas configuração pública e flags. A conexão real deve ser ativada depois de confirmar os contratos da Plataforma Principal.
+O banco estático atual contém 32 questões embutidas no app (8 Português, 6 RLM, 6 Realidade, 12 Específicos), enquanto o simulado oficial exige 40 (10/3/2/25). Isso está registrado como item de fechamento do Core; não considerar o pacote pronto para replicação em massa apenas com esse banco.
 
-### Supabase
+## Produção em massa
 
-Planejado para:
-- autenticação/entitlement vindo da Plataforma;
-- sincronização do progresso;
-- sessão de dispositivo único;
-- fila offline com timestamps/conflitos;
-- nenhuma migração/RLS/RPC nova será inventada no Core.
+A arquitetura-alvo é separar claramente:
+- **Core:** motor, navegação, armazenamento local, offline, sincronização, sessão de dispositivo, IA, QA, UI e ferramentas;
+- **Configuração do produto:** concurso, cargo, banca, edital, datas, distribuição da prova, identidade;
+- **Conteúdo:** matérias, tópicos, questões, flashcards, fontes e rastreabilidade.
 
-### Mercado Pago
+A meta é que um novo aplicativo seja produzido por troca de configuração/conteúdo, sem copiar e alterar a lógica do Core.
 
-Planejado para:
-- checkout na Plataforma principal;
-- confirmação de pagamento no backend/Plataforma;
-- geração de entitlement;
-- Core apenas consome o entitlement e não recebe credenciais privadas do Mercado Pago.
+## Segurança
 
-## Regra do Radar
+Nunca versionar GROQ API key, Supabase service-role key, tokens de pagamento ou outros segredos. O repositório pode conter somente configuração pública necessária ao cliente.
 
-O Radar deste app deve:
-- priorizar o concurso atual;
-- usar busca web real via `openai/gpt-oss-120b` + `browser_search` (o Compound antigo foi descontinuado pela Groq em 21/09/2026);
-- priorizar Instituto Verbena/UFG e Câmara de Ipameri;
-- nunca fabricar notícia;
-- não substituir notícia do concurso por notícias genéricas;
-- divulgar outros apps Doctor somente a partir do catálogo ativo da Plataforma;
-- respeitar proteção de quota e cooldown.
+## Rollback
 
-## Próximo passo
-
-Conectar este repositório ao projeto Vercel existente **doctor-core-v1-motorista-legislativo**, mantendo o deployment atual como rollback até a validação do preview.
+O deployment Drop histórico permanece como referência de recuperação enquanto a linha GitHub → Vercel é homologada.
