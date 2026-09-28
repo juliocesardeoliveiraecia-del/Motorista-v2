@@ -1359,7 +1359,7 @@ const ILLUSTRATION_BOOKS_URI = 'data:image/webp;base64,UklGRph0AABXRUJQVlA4WAoAA
    em outro concurso, troque apenas esses dois arquivos.
    ============================================================ */
 
-const DOCTOR_CORE_BUILD = '1.10.8';
+const DOCTOR_CORE_BUILD = '1.10.13';
 const STORAGE_KEY = 'motorista-ipameri-v2';
 const EXAM_DATE = new Date(EXAM_CONFIG.examDateISO);
 
@@ -2690,6 +2690,135 @@ const RadarDoctor = {
     }catch(e){ return {ok:false,reason:e?.code||'central-error',status:e?.status,error:String(e?.message||e),items:this.relevant()}; }
     finally{this._refreshing=false;}
   }
+};
+
+const AudioDB = {
+  db:null,
+  async open(){
+    if(this.db)return this.db;
+    this.db=await new Promise((resolve,reject)=>{const r=indexedDB.open('doctor-audio-v1',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('blobs'))r.result.createObjectStore('blobs');};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
+    return this.db;
+  },
+  async put(id,blob){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction('blobs','readwrite');tx.objectStore('blobs').put(blob,id);tx.oncomplete=()=>res(true);tx.onerror=()=>rej(tx.error);});},
+  async get(id){const db=await this.open();return new Promise((res,rej)=>{const r=db.transaction('blobs').objectStore('blobs').get(id);r.onsuccess=()=>res(r.result||null);r.onerror=()=>rej(r.error);});},
+  async remove(id){try{const db=await this.open();db.transaction('blobs','readwrite').objectStore('blobs').delete(id);}catch(e){}}
+};
+const CoreRecorder = {
+  mediaRecorder:null, chunks:[], stream:null, startedAt:null, stopping:false, stopPromise:null, mimeType:'', lastError:null,
+  isRecording(){ return !!this.mediaRecorder && this.mediaRecorder.state === 'recording'; },
+  _cleanup(){
+    try{ this.stream?.getTracks?.().forEach(t=>{try{t.stop();}catch(e){}}); }catch(e){}
+    this.stream=null; this.mediaRecorder=null; this.startedAt=null; this.stopping=false;
+  },
+  _errorMessage(err){
+    const n=err?.name||'';
+    if(n==='NotAllowedError'||n==='SecurityError') return 'Permissão do microfone negada. Autorize o microfone para este aplicativo e tente novamente.';
+    if(n==='NotFoundError') return 'Nenhum microfone disponível foi encontrado neste dispositivo.';
+    if(n==='NotReadableError'||n==='TrackStartError') return 'O microfone está ocupado por outro aplicativo. Feche o outro uso do microfone e tente novamente.';
+    if(n==='OverconstrainedError') return 'O microfone deste dispositivo não aceitou as configurações solicitadas.';
+    if(n==='AbortError') return 'O acesso ao microfone foi interrompido. Tente novamente.';
+    return err?.message || 'Não foi possível iniciar a gravação neste dispositivo.';
+  },
+  async start(){
+    if(this.isRecording()) return;
+    if(this.stopping) throw new Error('O gravador ainda está finalizando a gravação anterior. Aguarde um instante.');
+    if(!window.isSecureContext) throw new Error('O microfone só pode ser usado em uma conexão segura (HTTPS).');
+    if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) throw new Error('Gravação de áudio não é suportada neste navegador.');
+    this.lastError=null; this.chunks=[]; this.mimeType='';
+    let stream=null;
+    try{
+      // Compatibilidade ampla: começamos com áudio simples e aplicamos melhorias quando o navegador aceitar.
+      try{
+        stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+      }catch(firstErr){
+        stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      }
+      this.stream=stream;
+      const candidates=[
+        'audio/webm;codecs=opus','audio/webm','audio/mp4;codecs=mp4a.40.2','audio/mp4','audio/ogg;codecs=opus'
+      ];
+      const supported=candidates.filter(x=>{try{return typeof MediaRecorder.isTypeSupported==='function'?MediaRecorder.isTypeSupported(x):true;}catch(e){return false;}});
+      const attempts=[...supported,''];
+      let recorder=null, chosen='';
+      let lastCtorError=null;
+      for(const mime of attempts){
+        try{
+          recorder=mime?new MediaRecorder(stream,{mimeType:mime,audioBitsPerSecond:128000}):new MediaRecorder(stream,{audioBitsPerSecond:128000});
+          chosen=recorder.mimeType||mime||'';
+          break;
+        }catch(e){lastCtorError=e;}
+      }
+      if(!recorder) throw lastCtorError||new Error('Este dispositivo não encontrou um formato de gravação compatível.');
+      this.mediaRecorder=recorder; this.mimeType=chosen||'audio/webm'; this.chunks=[];
+      recorder.ondataavailable=e=>{ if(e?.data?.size) this.chunks.push(e.data); };
+      recorder.onerror=e=>{ this.lastError=e?.error||new Error('O navegador interrompeu a gravação.'); };
+      try{ recorder.start(250); }catch(e){ this._cleanup(); throw e; }
+      this.startedAt=Date.now();
+      return {mimeType:this.mimeType};
+    }catch(err){
+      this._cleanup();
+      const e=new Error(this._errorMessage(err)); e.name=err?.name||'RecorderStartError'; throw e;
+    }
+  },
+  stop(){
+    if(this.stopPromise) return this.stopPromise;
+    const r=this.mediaRecorder;
+    if(!r){ this._cleanup(); return Promise.resolve(null); }
+    this.stopping=true;
+    this.stopPromise=new Promise(resolve=>{
+      let settled=false;
+      const finish=()=>{
+        if(settled)return; settled=true;
+        const type=r.mimeType||this.mimeType||'audio/webm';
+        const parts=this.chunks.slice();
+        const blob=parts.length?new Blob(parts,{type}):null;
+        this._cleanup(); this.chunks=[]; this.stopPromise=null;
+        resolve(blob);
+      };
+      const watchdog=setTimeout(finish,5000);
+      const done=()=>{clearTimeout(watchdog);finish();};
+      r.addEventListener?.('stop',done,{once:true});
+      r.addEventListener?.('error',done,{once:true});
+      try{
+        if(r.state==='recording'){
+          try{r.requestData?.();}catch(e){}
+          r.stop();
+        }else done();
+      }catch(e){done();}
+    });
+    return this.stopPromise;
+  }
+};
+const CoreEssay = {
+  save(title,body,editingId=null){const now=new Date().toISOString();if(editingId){const e=Store.state.essays.find(x=>x.id===editingId);if(!e)return null;Object.assign(e,{title:title.trim()||'Redação',body:body.trim(),updatedAt:now});Store.save();return e;}const e={id:'essay-'+Date.now(),title:title.trim()||'Redação',body:body.trim(),createdAt:now,updatedAt:now};Store.state.essays.unshift(e);Store.state.syncQueue.push({type:'upsert',entity:'essay',id:e.id,at:now});Store.save();return e;},
+  remove(id){Store.state.essays=Store.state.essays.filter(e=>e.id!==id);Store.save();},
+  draft(title,body,audioId=null){Store.state.essayDraft={title:String(title||''),body:String(body||''),audioId:audioId||Store.state.essayDraft?.audioId||null,updatedAt:new Date().toISOString()};Store.save();},
+  clearDraft(){Store.state.essayDraft={title:'',body:'',updatedAt:null,audioId:null};Store.save();},
+  attachAudio(audioId){Store.state.essayDraft.audioId=audioId||null;Store.save();},
+  countLines(text, charsPerLine=70){const t=String(text||'').replace(/\r/g,'').trim();if(!t)return 0;return t.split('\n').reduce((sum,line)=>sum+Math.max(1,Math.ceil(line.trim().length/charsPerLine)),0);},
+  async transcribeAudio(recordingId){
+    const rec=Store.state.recordings.find(r=>r.id===recordingId); if(!rec) return {ok:false,error:'Gravação não encontrada.'};
+    const blob=await AudioDB.get(rec.audioId); if(!blob) return {ok:false,error:'Áudio não encontrado neste dispositivo.'};
+    if(blob.size>25*1024*1024) return {ok:false,error:'Este áudio ultrapassa 25 MB, limite do nível gratuito para envio direto.'};
+    const key=GroqAI.getKey(); if(!key) return {ok:false,reason:'no-key'};
+    const fd=new FormData(); fd.append('file',blob,`${rec.name||'rascunho'}.${(blob.type||'audio/webm').includes('mp4')?'mp4':'webm'}`); fd.append('model','whisper-large-v3-turbo'); fd.append('language','pt'); fd.append('response_format','json'); fd.append('temperature','0');
+    try{
+      const controller=new AbortController(); const timeout=setTimeout(()=>controller.abort(),90000);
+      const res=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',signal:controller.signal,headers:{'Authorization':`Bearer ${key}`},body:fd}); clearTimeout(timeout);
+      let data=null; try{data=await res.json();}catch{}
+      if(!res.ok) return {ok:false,status:res.status,error:data?.error?.message||'A GROQ não conseguiu transcrever este áudio.'};
+      const text=String(data?.text||'').trim(); if(!text)return {ok:false,error:'A transcrição retornou vazia.'};
+      rec.transcript=text; rec.transcribedAt=new Date().toISOString(); Store.state.essayDraft.audioId=rec.audioId; Store.state.essayDraft.body=text; Store.state.essayDraft.title=Store.state.essayDraft.title||`Rascunho falado — ${new Date(rec.createdAt).toLocaleDateString('pt-BR')}`; Store.save();
+      return {ok:true,text,recording:rec};
+    }catch(e){return {ok:false,error:e?.name==='AbortError'?'A transcrição demorou demais. Tente novamente.':'Não foi possível conectar à GROQ para transcrever o áudio.'};}
+  }
+};
+const CoreSync = {
+  deviceId(){ if(!Store.state.deviceSession.id){ Store.state.deviceSession.id='device-'+crypto.randomUUID(); Store.state.deviceSession.createdAt=new Date().toISOString(); Store.save(); } return Store.state.deviceSession.id; },
+  markLocalChange(entity,id,op='upsert'){ const key=`${entity}:${id}`; const now=new Date().toISOString(); const q=Store.state.syncQueue.find(x=>x.key===key); if(q){q.at=now;q.op=op;q.version=now;} else Store.state.syncQueue.push({key,type:'mutation',entity,id,op,at:now,version:now}); Store.save(); },
+  status(){ return {online:navigator.onLine,queued:Store.state.syncQueue?.length||0,last:Store.state.radar?.lastSyncAt||null,deviceId:this.deviceId(),remoteConfigured:!!window.DOCTOR_PLATFORM_BRIDGE}; },
+  async flush(){ if(!navigator.onLine)return {ok:false,reason:'offline'}; const bridge=window.DOCTOR_PLATFORM_BRIDGE; if(!bridge||typeof bridge.sync!=='function')return {ok:false,reason:'platform-not-connected',queued:Store.state.syncQueue.length}; try{const r=await bridge.sync({deviceId:this.deviceId(),userId:bridge.userId||null,productId:EXAM_CONFIG.productId,mutations:Store.state.syncQueue.slice()}); if(r?.ok){Store.state.syncQueue=[];Store.state.deviceSession.lastSeenAt=new Date().toISOString();Store.save();} return r||{ok:false,reason:'empty-response'};}catch(e){return {ok:false,reason:'sync-error',error:String(e?.message||e)};} },
+  async claimSession(){ const bridge=window.DOCTOR_PLATFORM_BRIDGE; const deviceId=this.deviceId(); if(!bridge||typeof bridge.claimDeviceSession!=='function')return {ok:false,reason:'platform-not-connected',deviceId}; try{const r=await bridge.claimDeviceSession({userId:bridge.userId||null,productId:EXAM_CONFIG.productId,deviceId}); if(r?.ok){Store.state.deviceSession.lastSeenAt=new Date().toISOString();Store.save();} return r||{ok:false,reason:'empty-response'};}catch(e){return {ok:false,reason:'session-error',error:String(e?.message||e)};} }
 };
 
 const Views = { bind: {} };
