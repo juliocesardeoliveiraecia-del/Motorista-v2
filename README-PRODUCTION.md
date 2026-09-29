@@ -54,3 +54,20 @@ Nunca versionar GROQ API key, Supabase service-role key, tokens de pagamento ou 
 ## Rollback
 
 O deployment Drop histórico permanece como referência de recuperação enquanto a linha GitHub → Vercel é homologada.
+
+
+## Core Industrial Hardening — 1.10.14
+
+Esta branch prepara o Core para a futura fábrica de aplicativos:
+
+- Product Context e conteúdo foram separados do runtime (`product-context.js` e `content.js`).
+- O Core ganhou contrato único de avaliação/versionamento em `core/question-contract.js`.
+- Questões só entram nos pools de estudo quando `reviewStatus="approved"`.
+- Cada resposta auditada registra `questionVersionId`, `contentHash` e `contextVersionId`, reduzindo risco de divergência entre clique, revisão e resultado.
+- Foi criado o gate automatizado `tools/audit-content.mjs` e a política `CORE-QUESTION-PUBLICATION-POLICY.md`.
+- O Service Worker passou a cachear os módulos externos e `version.json`.
+- O banco atual de 32 questões recebeu uma baseline de QA interno com rastreabilidade explícita. Isso não substitui nova revisão quando edital/lei/conteúdo mudar.
+
+### Regra para a fábrica
+
+Novo aplicativo deve trocar Product Context + conteúdo + assets/configuração. Não se deve duplicar ou editar a lógica do motor para adaptar outro concurso. Antes de publicar qualquer novo conteúdo, o pipeline deve executar validação estrutural, revisão semântica/editorial, versionamento e gate de publicação.
