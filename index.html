@@ -2422,6 +2422,7 @@ Views.reviewSession = function () {
   const q = s.questions[s.index];
   const answered = s.answers.length > s.index;
   const last = answered ? s.answers[s.index] : null;
+  const audit = answered ? DoctorQuestionContract.audit(q, last.selected, EXAM_CONFIG.contentVersion) : null;
   const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
 
   return `
@@ -2434,7 +2435,8 @@ Views.reviewSession = function () {
       ${q.options.map((opt, i) => {
         let cls = 'q-option';
         if (answered) {
-          if (i === q.correct) cls += ' correct';
+          if (audit && audit.correct === true && i === last.selected) cls += ' correct';
+          else if (audit && i === q.correct) cls += ' correct';
           else if (i === last.selected) cls += ' wrong';
         }
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
@@ -2845,11 +2847,10 @@ Views.simuladoSetup = function () {
       <button class="btn btn-primary btn-block" id="start-simulado">Iniciar Simulado (4h)</button>
     ` : `
       <div class="card warn-card">
-        <p><strong>Faltam questões para montar o simulado oficial completo.</strong></p>
-        <p class="muted">Posso gerar as que faltam agora com IA (usa sua chave da Groq).</p>
-        <button class="btn btn-primary btn-block" id="fill-missing">${iconEl('bot')} Gerar questões faltantes</button>
+        <p><strong>O simulado oficial ainda não pode ser iniciado.</strong></p>
+        <p class="muted">O Core bloqueia provas incompletas. As questões faltantes precisam ser disponibilizadas e aprovadas pelo fluxo de revisão antes de entrarem no simulado.</p>
+        <button class="btn btn-primary btn-block" id="fill-missing">${iconEl('bot')} Preparar questões faltantes</button>
       </div>
-      <button class="btn btn-outline btn-block" id="start-simulado-partial">Iniciar mesmo assim (com o que tem)</button>
     `}
   `;
 };
@@ -2868,10 +2869,6 @@ Views.bind.simuladoSetup = function () {
     }
   });
   document.getElementById('start-simulado')?.addEventListener('click', () => {
-    Quiz.startSimulado();
-    UI.render('simuladoRunning');
-  });
-  document.getElementById('start-simulado-partial')?.addEventListener('click', () => {
     Quiz.startSimulado();
     UI.render('simuladoRunning');
   });
@@ -2921,7 +2918,7 @@ Views.simuladoRunning = function () {
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
       }).join('')}
       ${answered ? `
-        <div class="explanation"><p>${q.explanations[last.selected]}</p></div>
+        <div class="explanation"><p>${q.explanations[last.selected] || 'Resposta registrada.'}</p></div>
         <button class="btn btn-primary btn-block" id="sim-next">${s.index + 1 < s.questions.length ? 'Próxima' : 'Finalizar'}</button>
       ` : ''}
     </div>
@@ -2971,13 +2968,14 @@ Views.simuladoResult = function () {
   const r = UI._lastResult;
   if (!r) return '<div class="empty">Nenhum resultado disponível.</div>';
   const pct = Math.round((r.score / r.total) * 100);
-  const passed = r.score >= 60;
+  const passingScore = Number(EXAM_CONFIG.passingScore);
+  const passed = r.score >= passingScore;
 
   return `
     <div class="card center">
       <div class="big-icon">${passed ? iconEl('trophy') : iconEl('book')}</div>
       <h2>${r.score} / ${r.total} pontos</h2>
-      <p class="${passed ? 'text-green' : 'text-orange'}"><strong>${passed ? 'Aprovado(a)! Acima dos 60 pontos mínimos.' : 'Abaixo dos 60 pontos mínimos — bora reforçar.'}</strong></p>
+      <p class="${passed ? 'text-green' : 'text-orange'}"><strong>${passed ? 'Aprovado(a)! Acima dos 60 pontos mínimos.' : 'Abaixo da pontuação mínima (${passingScore} pontos) — bora reforçar.'}</strong></p>
       <p class="muted">Tempo utilizado: ${Math.floor(r.timeSpentSec / 60)} min</p>
     </div>
     <div class="section-title">Desempenho por matéria</div>
