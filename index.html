@@ -812,11 +812,13 @@ const Store = {
   // em cada questão), comparando com o gabarito. Evita duplicar dado que já existe.
   getWrongQuestions(subjectId = null) {
     const wrong = [];
-    Object.entries(this.state.answerLog).forEach(([questionId, selected]) => {
+    Object.entries(this.state.answerAudit || {}).forEach(([questionId, audit]) => {
       const q = QUESTIONS.find(x => x.id === questionId);
-      if (!q) return; // questão pode ter sumido (ex: reset parcial), ignora com segurança
+      if (!q || !audit) return;
+      const currentVersion = DoctorQuestionContract.version(q).questionVersionId;
+      if (audit.questionVersionId !== currentVersion) return;
       if (subjectId && q.subjectId !== subjectId) return;
-      if (selected !== q.correct) wrong.push({ question: q, selected });
+      if (audit.ok && audit.correct === false) wrong.push({ question: q, selected: audit.selected, audit });
     });
     return wrong;
   },
@@ -832,8 +834,13 @@ const Store = {
   // O XP de questão NÃO é concedido no erro; somente o primeiro acerto original
   // ou o primeiro acerto posterior na revisão pode gerar XP.
   reviewAnswer(questionId, selected) {
+    const q = QUESTIONS.find(x => x.id === questionId);
+    if (!q) return { ok: false, reason: 'question-not-found' };
+    const audit = DoctorQuestionContract.audit(q, selected, EXAM_CONFIG.contentVersion);
     this.state.answerLog[questionId] = selected;
+    this.state.answerAudit[questionId] = audit;
     this.save();
+    return audit;
   }
 };
 
@@ -863,7 +870,11 @@ const Quiz = {
   isPublishedQuestion(q) { return !!q && q.reviewStatus === 'approved'; },
 
   isAnsweredAnywhere(questionId) {
-    return Object.prototype.hasOwnProperty.call(Store.state.answerLog, questionId);
+    const q = QUESTIONS.find(x => x.id === questionId);
+    const audit = Store.state.answerAudit?.[questionId];
+    if (!q || !audit) return false;
+    const currentVersion = DoctorQuestionContract.version(q).questionVersionId;
+    return audit.questionVersionId === currentVersion;
   },
 
   // Escolhe uma questão nunca respondida antes (em qualquer sessão), da matéria
@@ -2519,9 +2530,11 @@ Views.practice = function () {
 
   const feed = Quiz.getFeed(subjectId);
   const q = Quiz.currentQuestion(subjectId);
-  const answered = Quiz.isAnsweredAnywhere(q.id);
-  const selected = answered ? Store.state.answerLog[q.id] : null;
-  const correct = answered ? selected === q.correct : null;
+  const audit = Store.state.answerAudit?.[q.id];
+  const currentVersionId = DoctorQuestionContract.version(q).questionVersionId;
+  const answered = !!audit && audit.questionVersionId === currentVersionId && audit.ok === true;
+  const selected = answered ? audit.selected : null;
+  const correct = answered ? audit.correct : null;
   const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
   const canGoPrev = feed.position > 0;
   const isFrontier = feed.position === feed.order.length - 1;
@@ -2538,7 +2551,8 @@ Views.practice = function () {
       ${q.options.map((opt, i) => {
         let cls = 'q-option';
         if (answered) {
-          if (i === q.correct) cls += ' correct';
+          if (audit.correct === true && i === selected) cls += ' correct';
+          else if (i === q.correct) cls += ' correct';
           else if (i === selected) cls += ' wrong';
         }
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
@@ -2546,7 +2560,7 @@ Views.practice = function () {
       ${answered ? `
         <div class="explanation">
           <strong>${correct ? iconEl('checkCircle') + ' Correto!' : iconEl('xCircle') + ' Incorreto.'}</strong>
-          <p>${q.explanations[selected]}</p>
+          <p>${q.explanations[selected] || 'Resposta registrada.'}</p>
           ${!correct ? `<p><strong>Resposta certa:</strong> ${q.explanations[q.correct]}</p>` : ''}
         </div>
         ${needsMoreToAdvance ? `
