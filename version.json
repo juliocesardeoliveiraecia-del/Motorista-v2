@@ -1,0 +1,8 @@
+{
+  "coreVersion": "1.10.15",
+  "contentVersion": "2026.1",
+  "auditBaseline": "CORE-AUDIT-2026-09-29",
+  "architecture": "core-content-product-context-v1",
+  "questionContract": "v1",
+  "releaseStatus": "hardening-qa"
+}
