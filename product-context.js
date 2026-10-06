@@ -20,6 +20,16 @@ const EXAM_CONFIG = {
   totalPoints: 100,
   passingScore: 60,
   alternativesPerQuestion: 4,
+  examRules: {
+    questionCount: 40,
+    durationSeconds: 4 * 60 * 60,
+    questionType: 'multiple-choice',
+    optionCount: 4,
+    optionLabels: ['A','B','C','D'],
+    answerPolicy: 'single-correct',
+    scoring: { correct: 'subject-weight', incorrectPoints: 0, blankPoints: 0 },
+    passingScore: { type: 'points', value: 60 }
+  },
 
   // Informações do cargo (rodapé / ficha do edital)
   requirement: 'Ensino Médio completo + CNH categoria AD',
