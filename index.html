@@ -588,13 +588,13 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 /* Product Context + Product Content packages are loaded before the Core engine. */
 window.DOCTOR_PLATFORM_CATALOG = window.DOCTOR_PLATFORM_CATALOG || EXAM_CONFIG.platformCatalog || [];
 const ExamRules = Object.freeze({
-  questionCount: Number(EXAM_CONFIG.examRules?.questionCount ?? ExamRules.questionCount ?? 0),
+  questionCount: Number(EXAM_CONFIG.examRules?.questionCount ?? EXAM_CONFIG.totalQuestions ?? 0),
   durationSeconds: Number(EXAM_CONFIG.examRules?.durationSeconds ?? ((EXAM_CONFIG.durationHours || 0) * 3600)),
   questionType: String(EXAM_CONFIG.examRules?.questionType || EXAM_CONFIG.aiProfile?.questionMode || 'multiple-choice'),
-  optionCount: Number(EXAM_CONFIG.examRules?.optionCount ?? ExamRules.optionCount ?? 4),
+  optionCount: Number(EXAM_CONFIG.examRules?.optionCount ?? EXAM_CONFIG.alternativesPerQuestion ?? 4),
   optionLabels: Object.freeze(Array.isArray(EXAM_CONFIG.examRules?.optionLabels) && EXAM_CONFIG.examRules.optionLabels.length
     ? EXAM_CONFIG.examRules.optionLabels.map(String)
-    : Array.from({length:Number(EXAM_CONFIG.examRules?.optionCount ?? ExamRules.optionCount ?? 4)},(_,i)=>String.fromCharCode(65+i))),
+    : Array.from({length:Number(EXAM_CONFIG.examRules?.optionCount ?? EXAM_CONFIG.alternativesPerQuestion ?? 4)},(_,i)=>String.fromCharCode(65+i))),
   answerPolicy: String(EXAM_CONFIG.examRules?.answerPolicy || EXAM_CONFIG.aiProfile?.answerPolicy || 'single-correct'),
   scoring: Object.freeze({
     correct: EXAM_CONFIG.examRules?.scoring?.correct ?? 'subject-weight',
