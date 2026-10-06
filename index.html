@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.10.13',
+  version: '1.10.14',
   environment: 'production',
   integrations: {
     supabase: {
@@ -19,11 +19,11 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.10.13">
+<meta name="doctor-core-version" content="1.10.14">
 <title>Motorista Legislativo</title>
 <meta name="description" content="App de estudo para o Edital nº 02/2026 - Agente Legislativo — Motorista Legislativo, Câmara Municipal de Ipameri">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.10.13">
+<link rel="manifest" href="manifest.json?v=1.10.14">
 <link rel="icon" type="image/png" sizes="48x48" href="assets/icons/icon-48.png?v=1.9.6">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png?v=1.9.6">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-192.png?v=1.9.6">
@@ -1359,7 +1359,7 @@ const ILLUSTRATION_BOOKS_URI = 'data:image/webp;base64,UklGRph0AABXRUJQVlA4WAoAA
    em outro concurso, troque apenas esses dois arquivos.
    ============================================================ */
 
-const DOCTOR_CORE_BUILD = '1.10.13';
+const DOCTOR_CORE_BUILD = '1.10.14';
 const STORAGE_KEY = 'motorista-ipameri-v2';
 const EXAM_DATE = new Date(EXAM_CONFIG.examDateISO);
 
@@ -1379,7 +1379,10 @@ function defaultState() {
     aiQuestions: [], // questões geradas por IA, persistidas aqui para sobreviver a reload/fechar o app
     activeSession: null, // sessão de SIMULADO em andamento (prática usa "feeds", ver abaixo)
     feeds: {}, // fluxo contínuo por matéria: { subjectId: { order: [ids...], position: n } }
-    answerLog: {}, // { questionId: selectedOptionIndex } — permite rever perguntas já respondidas
+    answerLog: {}, // legado: { questionId: selectedOptionIndex }
+    answerMeta: {}, // evidência imutável da resposta
+    questionIntegrity: { version: '1.0.0', auditedAt: null, invalidIds: [], quarantinedIds: [], bankCount: 0, validCount: 0 },
+    // permite rever perguntas já respondidas
     flashcards: {}, // { subjectId: [ {id, front, back, aiGenerated} ] } — só os SALVOS pelo aluno
     dailyPlan: null, // { date: 'YYYY-MM-DD', items: [...] } — Plano de Hoje, regenerado a cada dia
     xp: 0, // XP do Doctor — ganho exclusivamente por atividade acadêmica real
@@ -1398,6 +1401,36 @@ function defaultState() {
   };
 }
 
+const DoctorQuestionIntegrity = {
+  VERSION:'1.0.0',
+  normalize(v){return String(v==null?'':v).trim().replace(/\\s+/g,' ').toLowerCase();},
+  fingerprint(q){return [q&&q.id,q&&q.subjectId,q&&q.text,...(Array.isArray(q&&q.options)?q.options:[]),q&&q.correct,...(Array.isArray(q&&q.explanations)?q.explanations:[])].map(this.normalize).join('¦');},
+  validate(q){
+    const n=Number(EXAM_CONFIG&&EXAM_CONFIG.alternativesPerQuestion||4),e=[];
+    if(!q||typeof q!=='object')e.push('questão inválida');
+    if(!String(q&&q.id||'').trim())e.push('id ausente');
+    if(!String(q&&q.subjectId||'').trim()||!SUBJECTS.some(function(x){return x.id===q.subjectId;}))e.push('matéria inválida');
+    if(String(q&&q.text||'').trim().length<20)e.push('enunciado curto/vazio');
+    if(!Array.isArray(q&&q.options)||q.options.length!==n)e.push('número de alternativas inválido');
+    const o=Array.isArray(q&&q.options)?q.options.map(function(x){return String(x==null?'':x).trim();}):[];
+    if(o.some(function(x){return !x;}))e.push('alternativa vazia');
+    if(new Set(o.map(this.normalize)).size!==o.length)e.push('alternativas duplicadas');
+    if(!Number.isInteger(q&&q.correct)||q.correct<0||q.correct>=n)e.push('gabarito fora do intervalo');
+    if(!Array.isArray(q&&q.explanations)||q.explanations.length!==n)e.push('explicações desalinhadas');
+    if(Array.isArray(q&&q.explanations)&&q.explanations.some(function(x){return !String(x==null?'':x).trim();}))e.push('explicação vazia');
+    return {ok:e.length===0,errors:e};
+  },
+  auditBank(){
+    const invalid=[],seen=new Set();
+    (QUESTIONS||[]).forEach(function(q){const v=DoctorQuestionIntegrity.validate(q),fp=DoctorQuestionIntegrity.fingerprint(q);if(seen.has(fp))invalid.push({id:q.id,errors:['duplicata exata']});else seen.add(fp);if(!v.ok)invalid.push({id:q&&q.id||'sem-id',errors:v.errors});});
+    const ids=[...new Set(invalid.map(function(x){return x.id;}))];
+    Store.state.questionIntegrity={version:this.VERSION,auditedAt:new Date().toISOString(),invalidIds:ids,quarantinedIds:ids,bankCount:QUESTIONS.length,validCount:QUESTIONS.length-ids.length};Store.save();
+    return {ok:ids.length===0,total:QUESTIONS.length,valid:QUESTIONS.length-ids.length,invalid:invalid};
+  },
+  evidence(q,selected,phase){return {questionId:q.id,questionFingerprint:this.fingerprint(q),selected:selected,correct:q.correct,isCorrect:selected===q.correct,phase:phase,recordedAt:new Date().toISOString()};},
+  answer(q,selected,phase){const v=this.validate(q);if(!v.ok)return {ok:false,reason:'question-integrity',errors:v.errors};if(!Number.isInteger(selected)||selected<0||selected>=q.options.length)return {ok:false,reason:'invalid-option'};const ev=this.evidence(q,selected,phase);Store.state.answerMeta[q.id]=ev;Store.state.answerLog[q.id]=selected;return {ok:true,evidence:ev};},
+  getEvidence(q){const ev=Store.state.answerMeta&&Store.state.answerMeta[q.id];if(!ev)return null;if(ev.questionFingerprint!==this.fingerprint(q))return {mismatch:true,...ev};return ev;}
+};
 const Store = {
   state: null,
   load() {
@@ -1412,6 +1445,8 @@ const Store = {
       if (this.state.activeSession === undefined) this.state.activeSession = null;
       if (!this.state.feeds) this.state.feeds = {};
       if (!this.state.answerLog) this.state.answerLog = {};
+      if (!this.state.answerMeta || typeof this.state.answerMeta !== 'object') this.state.answerMeta = {};
+      if (!this.state.questionIntegrity || typeof this.state.questionIntegrity !== 'object') this.state.questionIntegrity = {version:'1.0.0',auditedAt:null,invalidIds:[],quarantinedIds:[],bankCount:0,validCount:0};
       if (!this.state.flashcards) this.state.flashcards = {};
       if (!Array.isArray(this.state.notes)) this.state.notes = [];
       if (!Array.isArray(this.state.noteFolders) || !this.state.noteFolders.length) this.state.noteFolders = [{id:'folder-general',name:'Geral',color:'#1687ff',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}];
@@ -1596,13 +1631,11 @@ const Quiz = {
 
   // Registra a resposta da questão atual do feed (não usado no simulado, que tem seu próprio fluxo)
   answerFeedQuestion(subjectId, optionIndex) {
-    const q = this.currentQuestion(subjectId);
-    const correct = optionIndex === q.correct;
-    Store.state.answerLog[q.id] = optionIndex;
-    const counted = Store.registerAnswer(q.subjectId, q.id, correct); // usa q.subjectId real
-    Store.save();
-    if (counted && correct) Doctor.addXP(5, `question:${q.id}`);
-    return correct;
+    const q=this.currentQuestion(subjectId); if(!q)return {ok:false,reason:'question-missing'};
+    const evidence=DoctorQuestionIntegrity.answer(q,optionIndex,'practice'); if(!evidence.ok)return evidence;
+    const counted=Store.registerAnswer(q.subjectId,q.id,evidence.evidence.isCorrect); Store.save();
+    if(counted&&evidence.evidence.isCorrect)Doctor.addXP(5,`question:${q.id}`);
+    return evidence;
   },
 
   // Avança no feed. Se a próxima posição já tinha sido carregada antes (o usuário voltou
@@ -1706,14 +1739,12 @@ const Quiz = {
   },
 
   answerCurrent(optionIndex) {
-    const s = this.session;
-    const q = s.questions[s.index];
-    const correct = optionIndex === q.correct;
-    s.answers.push({ questionId: q.id, subjectId: q.subjectId, selected: optionIndex, correct });
-    const counted = Store.registerAnswer(q.subjectId, q.id, correct);
-    this.persist();
-    if (counted && correct) Doctor.addXP(5, `question:${q.id}`);
-    return correct;
+    const s=this.session,q=s.questions[s.index]; if(!q)return {ok:false,reason:'question-missing'};
+    const evidence=DoctorQuestionIntegrity.answer(q,optionIndex,'simulado'); if(!evidence.ok)return evidence;
+    s.answers.push({questionId:q.id,subjectId:q.subjectId,selected:optionIndex,correct:evidence.evidence.isCorrect,questionFingerprint:evidence.evidence.questionFingerprint});
+    const counted=Store.registerAnswer(q.subjectId,q.id,evidence.evidence.isCorrect); this.persist();
+    if(counted&&evidence.evidence.isCorrect)Doctor.addXP(5,`question:${q.id}`);
+    return evidence;
   },
 
   nextQuestion() {
@@ -1777,17 +1808,12 @@ const Quiz = {
   },
 
   answerReviewQuestion(optionIndex) {
-    const s = this.reviewSession;
-    const q = s.questions[s.index];
-    const correct = optionIndex === q.correct;
-    s.answers.push({ questionId: q.id, subjectId: q.subjectId, selected: optionIndex, correct });
-    Store.reviewAnswer(q.id, optionIndex); // sobrescreve o answerLog, não mexe no progresso
-    if (correct && !Store.state.xpReviewRewards[q.id]) {
-      Store.state.xpReviewRewards[q.id] = true;
-      Store.save();
-      Doctor.addXP(5, `review:${q.id}`);
-    } // recompensa o primeiro acerto de revisão de cada erro
-    return correct;
+    const s=this.reviewSession,q=s.questions[s.index]; if(!q)return {ok:false,reason:'question-missing'};
+    const evidence=DoctorQuestionIntegrity.answer(q,optionIndex,'review'); if(!evidence.ok)return evidence;
+    s.answers.push({questionId:q.id,subjectId:q.subjectId,selected:optionIndex,correct:evidence.evidence.isCorrect,questionFingerprint:evidence.evidence.questionFingerprint});
+    Store.reviewAnswer(q.id,optionIndex);
+    if(evidence.evidence.isCorrect&&!Store.state.xpReviewRewards[q.id]){Store.state.xpReviewRewards[q.id]=true;Store.save();Doctor.addXP(5,`review:${q.id}`);}
+    return evidence;
   },
 
   nextReviewQuestion() {
@@ -2058,7 +2084,7 @@ const GroqAI = {
     const run=(async()=>{
       const existingSamples=Quiz.shuffle(Quiz.poolFor(subjectId)).slice(0,8);
       const prompt=this._buildPrompt(subject,count,existingSamples);
-      const r=await DoctorAICore.call({messages:[{role:'system',content:'Você é o gerador de questões do Doctor. Produza apenas conteúdo dentro do contexto recebido.'},{role:'user',content:DoctorAICore.context()+'\\n'+prompt}],responseFormat:{type:'json_object'},temperature:0.45,timeout:45000});
+      const r=await DoctorAICore.call({messages:[{role:'system',content:'Você é o gerador de questões do Doctor. Produza apenas conteúdo dentro do contexto recebido.'},{role:'user',content:DoctorAICore.context()+'\\n'+prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_questions',strict:true,schema:DoctorAICore.questionSchema(count,EXAM_CONFIG.alternativesPerQuestion)}},temperature:0.45,timeout:45000});
       if(!r.ok) return r;
       const parsed=DoctorAICore.parseJSON(r.content); const raw=Array.isArray(parsed?.questions)?parsed.questions:[];
       let validated=this._validateAndTag(raw,subjectId);
@@ -2221,7 +2247,7 @@ const DoctorAICore = {
     const n=EXAM_CONFIG.alternativesPerQuestion;
     const payload=questions.map((q,i)=>({index:i,text:q.text,options:q.options,correct:q.correct,explanations:q.explanations}));
     const prompt=`Você é o REVISOR DOCTOR, uma camada independente do gerador.\n${this.context()}\nMatéria: ${subject.name}\nTópicos permitidos:\n${subject.topics.map(x=>'- '+x).join('\n')}\n\nAnalise cada questão abaixo ANTES de permitir sua entrega ao aluno.\nREGRAS: (1) exatamente ${n} alternativas; (2) somente uma correta; (3) gabarito deve ser defensável; (4) explicações coerentes com o gabarito; (5) sem informação inventada; (6) se houver artigo, lei, data ou fato atual cuja correção não possa ser sustentada com segurança pelo contexto recebido, marque REJEITAR em vez de adivinhar; (7) questão fora do edital ou incompatível com o estilo da banca = REJEITAR.\nResponda JSON com decisions: [{index,status,reason,correctedQuestion}]. status só pode ser APROVAR, CORRIGIR ou REJEITAR. correctedQuestion deve existir sempre; quando não houver correção segura, repita a questão original.\nQUESTÕES:\n${JSON.stringify(payload)}`;
-    const r=await this.call({messages:[{role:'system',content:'Você é o Revisor Doctor. Nunca aprove uma questão só porque parece plausível.'},{role:'user',content:prompt}],responseFormat:{type:'json_object'},temperature:0});
+    const r=await this.call({messages:[{role:'system',content:'Você é o Revisor Doctor. Nunca aprove uma questão só porque parece plausível.'},{role:'user',content:prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_review_decisions',strict:true,schema:{type:'object',additionalProperties:false,properties:{decisions:{type:'array',items:{type:'object',additionalProperties:false,properties:{index:{type:'integer'},status:{type:'string',enum:['APROVAR','CORRIGIR','REJEITAR']},reason:{type:'string'},correctedQuestion:{type:'object',additionalProperties:false,properties:{text:{type:'string'},options:{type:'array',items:{type:'string'}},correct:{type:'integer'},explanations:{type:'array',items:{type:'string'}}},required:['text','options','correct','explanations']}},required:['index','status','reason','correctedQuestion']}}},required:['decisions']}}},temperature:0});
     if(!r.ok)return {ok:false,reason:'review-unavailable',error:r.error,status:r.status};
     const parsed=this.parseJSON(r.content); if(!parsed||!Array.isArray(parsed.decisions))return {ok:false,reason:'review-invalid'};
     const out=[];
@@ -2240,7 +2266,7 @@ const DoctorAICore = {
   async reviewFlashcards(cards,subject){
     const payload=cards.map((c,i)=>({index:i,front:c.front,back:c.back}));
     const prompt=`Você é o REVISOR DOCTOR de flashcards.\n${this.context()}\nMatéria: ${subject.name}.\nVerifique se cada card está dentro do edital, factual e claro, sem ambiguidade e sem invenção. Rejeite conteúdo que dependa de informação atual não sustentada pelo contexto. Responda JSON: {"cards":[{"index":0,"status":"APROVAR|CORRIGIR|REJEITAR","front":"...","back":"...","reason":"..."}]}.`;
-    const r=await this.call({messages:[{role:'system',content:'Você é revisor independente de conteúdo educacional.'},{role:'user',content:prompt+'\nCARDS:\n'+JSON.stringify(payload)}],responseFormat:{type:'json_object'},temperature:0});
+    const r=await this.call({messages:[{role:'system',content:'Você é revisor independente de conteúdo educacional.'},{role:'user',content:prompt+'\nCARDS:\n'+JSON.stringify(payload)}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_flashcard_review',strict:true,schema:{type:'object',additionalProperties:false,properties:{cards:{type:'array',items:{type:'object',additionalProperties:false,properties:{index:{type:'integer'},status:{type:'string',enum:['APROVAR','CORRIGIR','REJEITAR']},front:{type:'string'},back:{type:'string'},reason:{type:'string'}},required:['index','status','front','back','reason']}}},required:['cards']}}},temperature:0});
     if(!r.ok)return {ok:false,reason:'review-unavailable'};
     const p=this.parseJSON(r.content); if(!p?.cards)return {ok:false,reason:'review-invalid'};
     const out=[]; p.cards.forEach(d=>{const c=cards[d.index];if(!c)return;if((d.status==='APROVAR'||d.status==='CORRIGIR')&&String(d.front||'').trim()&&String(d.back||'').trim()){out.push({...c,front:String(d.front).trim(),back:String(d.back).trim(),reviewedByDoctor:true});Store.state.aiCore.reviewStats.approved++;if(d.status==='CORRIGIR')Store.state.aiCore.reviewStats.repaired++;}else Store.state.aiCore.reviewStats.rejected++;});
@@ -2368,6 +2394,7 @@ const UI = {
 
   init() {
     Store.load();
+try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditoria estrutural do banco falhou',e);}
     document.documentElement.setAttribute('data-theme', Store.state.theme);
     document.documentElement.style.setProperty('--blue-dark', EXAM_CONFIG.primaryColor);
     document.documentElement.style.setProperty('--blue-mid', EXAM_CONFIG.primaryColorMid);
@@ -3122,7 +3149,8 @@ Views.reviewSession = function () {
         }
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
       }).join('')}
-      ${answered ? `
+      ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Resposta preservada — revisão necessária</strong><p>O conteúdo desta questão mudou depois da resposta. O Core não vai recalcular nem marcar sua resposta como errada. A questão foi bloqueada para revisão.</p></div>` : ''}
+      ${answered && !integrityMismatch ? `
         <div class="explanation">
           <strong>${last.correct ? iconEl('checkCircle') + ' Acertou dessa vez!' : iconEl('xCircle') + ' Ainda não foi.'}</strong>
           <p>${q.explanations[last.selected]}</p>
@@ -3213,9 +3241,11 @@ Views.practice = function () {
 
   const feed = Quiz.getFeed(subjectId);
   const q = Quiz.currentQuestion(subjectId);
-  const answered = Quiz.isAnsweredAnywhere(q.id);
-  const selected = answered ? Store.state.answerLog[q.id] : null;
-  const correct = answered ? selected === q.correct : null;
+  const evidence = DoctorQuestionIntegrity.getEvidence(q);
+  const answered = !!evidence;
+  const integrityMismatch = !!evidence?.mismatch;
+  const selected = answered && !integrityMismatch ? evidence.selected : null;
+  const correct = answered && !integrityMismatch ? evidence.isCorrect : null;
   const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
   const canGoPrev = feed.position > 0;
   const isFrontier = feed.position === feed.order.length - 1;
@@ -3231,8 +3261,8 @@ Views.practice = function () {
       <p class="q-text">${q.text}</p>
       ${q.options.map((opt, i) => {
         let cls = 'q-option';
-        if (answered) {
-          if (i === q.correct) cls += ' correct';
+        if (answered && !integrityMismatch) {
+          if (i === evidence.correct) cls += ' correct';
           else if (i === selected) cls += ' wrong';
         }
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
@@ -3270,7 +3300,8 @@ Views.bind.practice = function () {
     el.addEventListener('click', () => {
       const q = Quiz.currentQuestion(subjectId);
       if (Quiz.isAnsweredAnywhere(q.id)) return; // já respondida, não deixa responder de novo
-      Quiz.answerFeedQuestion(subjectId, parseInt(el.dataset.i, 10));
+      const result=Quiz.answerFeedQuestion(subjectId,parseInt(el.dataset.i,10));
+      if(result?.reason==='question-integrity'){UI.toast('Questão bloqueada por falha de integridade. Ela não será entregue como válida.','warn');return;}
       UI.render('practice');
     });
   });
@@ -3637,7 +3668,8 @@ Views.bind.simuladoRunning = function () {
   document.querySelectorAll('.q-option').forEach(el => {
     el.addEventListener('click', () => {
       if (Quiz.session.answers.length > Quiz.session.index) return;
-      Quiz.answerCurrent(parseInt(el.dataset.i, 10));
+      const result=Quiz.answerCurrent(parseInt(el.dataset.i,10));
+      if(result?.reason==='question-integrity'){UI.toast('Questão bloqueada por falha de integridade. Ela não será contabilizada.','warn');return;}
       UI.render('simuladoRunning');
     });
   });
