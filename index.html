@@ -1788,6 +1788,11 @@ const UI = {
 
   init() {
     Store.load();
+    document.title = EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Doctor Core';
+    const topbarTitle = document.getElementById('topbar-title');
+    if (topbarTitle) topbarTitle.textContent = EXAM_CONFIG.orgName || EXAM_CONFIG.productName || 'Doctor Concursos';
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) metaDescription.setAttribute('content', 'Doctor Core — ' + String(EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'aplicativo de estudos'));
 try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditoria estrutural do banco falhou',e);}
     document.documentElement.setAttribute('data-theme', Store.state.theme);
     document.documentElement.style.setProperty('--blue-dark', EXAM_CONFIG.primaryColor);
