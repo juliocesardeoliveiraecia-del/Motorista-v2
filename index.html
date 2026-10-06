@@ -2464,7 +2464,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.10.8', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.10.15', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
