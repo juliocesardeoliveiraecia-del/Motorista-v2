@@ -1440,7 +1440,7 @@ const GroqAI = {
   _buildPrompt(subject, count, existingSamples) {
     const sampleText = existingSamples.map(q => `- ${q.text}`).join('\n');
     const n = ExamRules.optionCount;
-    const letters = Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i)).join(', ');
+    const letters = ExamRules.optionLabels.join(', ');
     return `Você é especialista em elaborar questões de concurso público brasileiro, no padrão do(a) ${EXAM_CONFIG.banca}, para o ${EXAM_CONFIG.editalNumber} do(a) ${EXAM_CONFIG.orgName}, cargo "${EXAM_CONFIG.cargo}".\n\nGere ${count} questões NOVAS e ORIGINAIS sobre a matéria "${subject.name}", usando SOMENTE os tópicos oficiais abaixo:\n${subject.topics.map(t => '- ' + t).join('\n')}\n\nQuestões já existentes (não repita o mesmo enunciado nem a mesma ideia central):\n${sampleText || '(nenhuma)'}\n\nREGRAS:\n1. Exatamente ${n} alternativas (${letters}).\n2. Apenas 1 correta.\n3. Uma explicação própria para cada alternativa, na mesma ordem.\n4. Não invente artigos, datas, normas ou fatos. Se não tiver segurança, não use o dado específico.\n5. Nível médio, objetivo e compatível com concurso público real.\n6. Português do Brasil.\n7. Responda SOMENTE JSON válido no formato {"questions":[{"text":"...","options":[...],"correct":0,"explanations":[...]}]}.`;
   },
 
@@ -2646,7 +2646,7 @@ Views.practice = function () {
   const integrityMismatch = !!evidence?.mismatch;
   const selected = answered && !integrityMismatch ? evidence.selected : null;
   const correct = answered && !integrityMismatch ? evidence.isCorrect : null;
-  const letters = Array.from({ length: ExamRules.optionCount }, (_, i) => String.fromCharCode(65 + i));
+  const letters = ExamRules.optionLabels;
   const canGoPrev = feed.position > 0;
   const isFrontier = feed.position === feed.order.length - 1;
   const needsMoreToAdvance = isFrontier && !Quiz.hasMoreFresh(subjectId);
