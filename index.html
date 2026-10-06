@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.10.14',
+  version: '1.10.15',
   environment: 'production',
   integrations: {
     supabase: {
@@ -23,7 +23,7 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
 <title>Motorista Legislativo</title>
 <meta name="description" content="App de estudo para o Edital nº 02/2026 - Agente Legislativo — Motorista Legislativo, Câmara Municipal de Ipameri">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.10.14">
+<link rel="manifest" href="manifest.json?v=1.10.15">
 <link rel="icon" type="image/png" sizes="48x48" href="assets/icons/icon-48.png?v=1.9.6">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png?v=1.9.6">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-192.png?v=1.9.6">
@@ -1422,13 +1422,45 @@ const DoctorQuestionIntegrity = {
   },
   auditBank(){
     const invalid=[],seen=new Set();
-    (QUESTIONS||[]).forEach(function(q){const v=DoctorQuestionIntegrity.validate(q),fp=DoctorQuestionIntegrity.fingerprint(q);if(seen.has(fp))invalid.push({id:q.id,errors:['duplicata exata']});else seen.add(fp);if(!v.ok)invalid.push({id:q&&q.id||'sem-id',errors:v.errors});});
-    const ids=[...new Set(invalid.map(function(x){return x.id;}))];
-    Store.state.questionIntegrity={version:this.VERSION,auditedAt:new Date().toISOString(),invalidIds:ids,quarantinedIds:ids,bankCount:QUESTIONS.length,validCount:QUESTIONS.length-ids.length};Store.save();
-    return {ok:ids.length===0,total:QUESTIONS.length,valid:QUESTIONS.length-ids.length,invalid:invalid};
+    (QUESTIONS||[]).forEach(function(q){
+      const v=DoctorQuestionIntegrity.validate(q),fp=DoctorQuestionIntegrity.fingerprint(q);
+      if(seen.has(fp)) invalid.push({id:q&&q.id||'sem-id',errors:['duplicata exata']});
+      else seen.add(fp);
+      if(!v.ok) invalid.push({id:q&&q.id||'sem-id',errors:v.errors});
+    });
+    const ids=[...new Set(invalid.map(function(x){return x.id;}).filter(Boolean))];
+    Store.state.questionIntegrity={
+      version:this.VERSION,
+      auditedAt:new Date().toISOString(),
+      invalidIds:ids,
+      quarantinedIds:ids,
+      bankCount:QUESTIONS.length,
+      validCount:Math.max(0,QUESTIONS.length-ids.length)
+    };
+    Store.save();
+    return {ok:ids.length===0,total:QUESTIONS.length,valid:Math.max(0,QUESTIONS.length-ids.length),invalid:invalid};
+  },
+  isQuarantined(q){
+    const ids=Store.state.questionIntegrity?.quarantinedIds||[];
+    return !!q && ids.includes(q.id);
+  },
+  assertDeliverable(q){
+    const v=this.validate(q);
+    if(!v.ok)return {ok:false,reason:'question-integrity',errors:v.errors};
+    if(this.isQuarantined(q))return {ok:false,reason:'question-quarantined',errors:['questão em quarentena']};
+    if(q.aiGenerated && q.reviewedByDoctor!==true)return {ok:false,reason:'question-not-reviewed',errors:['questão gerada por IA sem revisão independente']};
+    return {ok:true};
   },
   evidence(q,selected,phase){return {questionId:q.id,questionFingerprint:this.fingerprint(q),selected:selected,correct:q.correct,isCorrect:selected===q.correct,phase:phase,recordedAt:new Date().toISOString()};},
-  answer(q,selected,phase){const v=this.validate(q);if(!v.ok)return {ok:false,reason:'question-integrity',errors:v.errors};if(!Number.isInteger(selected)||selected<0||selected>=q.options.length)return {ok:false,reason:'invalid-option'};const ev=this.evidence(q,selected,phase);Store.state.answerMeta[q.id]=ev;Store.state.answerLog[q.id]=selected;return {ok:true,evidence:ev};},
+  answer(q,selected,phase){
+    const gate=this.assertDeliverable(q);
+    if(!gate.ok)return {ok:false,reason:gate.reason,errors:gate.errors};
+    if(!Number.isInteger(selected)||selected<0||selected>=q.options.length)return {ok:false,reason:'invalid-option'};
+    const ev=this.evidence(q,selected,phase);
+    Store.state.answerMeta[q.id]=ev;
+    Store.state.answerLog[q.id]=selected;
+    return {ok:true,evidence:ev};
+  },
   getEvidence(q){const ev=Store.state.answerMeta&&Store.state.answerMeta[q.id];if(!ev)return null;if(ev.questionFingerprint!==this.fingerprint(q))return {mismatch:true,...ev};return ev;}
 };
 const Store = {
@@ -1550,11 +1582,25 @@ const Store = {
     const wrong = [];
     Object.entries(this.state.answerLog).forEach(([questionId, selected]) => {
       const q = QUESTIONS.find(x => x.id === questionId);
-      if (!q) return; // questão pode ter sumido (ex: reset parcial), ignora com segurança
+      if (!q) return;
       if (subjectId && q.subjectId !== subjectId) return;
-      if (selected !== q.correct) wrong.push({ question: q, selected });
+      const evidence=this.state.answerMeta?.[questionId];
+      // Nunca inferir "erro" usando um gabarito novo sobre uma resposta antiga.
+      // Se o conteúdo mudou, a questão fica fora do Caderno de Erros até revisão.
+      if(evidence && evidence.questionFingerprint!==DoctorQuestionIntegrity.fingerprint(q)) return;
+      const expected=evidence && Number.isInteger(evidence.correct) ? evidence.correct : q.correct;
+      if (selected !== expected) wrong.push({ question: q, selected });
     });
     return wrong;
+  },
+  getIntegrityBlockedQuestions(subjectId = null) {
+    const blocked=[];
+    Object.values(this.state.answerMeta||{}).forEach(ev=>{
+      const q=QUESTIONS.find(x=>x.id===ev.questionId);
+      if(!q || (subjectId && q.subjectId!==subjectId)) return;
+      if(ev.questionFingerprint!==DoctorQuestionIntegrity.fingerprint(q)) blocked.push({question:q,evidence:ev});
+    });
+    return blocked;
   },
   getWrongCountBySubject() {
     const counts = {};
@@ -1686,7 +1732,12 @@ const Quiz = {
   },
 
   poolFor(subjectId) {
-    return QUESTIONS.filter(q => q.subjectId === subjectId);
+    const blocked=new Set(Store.state.questionIntegrity?.quarantinedIds||[]);
+    return QUESTIONS.filter(q =>
+      q.subjectId === subjectId &&
+      !blocked.has(q.id) &&
+      (!q.aiGenerated || q.reviewedByDoctor===true)
+    );
   },
 
   session: null, // usado exclusivamente pelo Simulado (a Prática usa Store.state.feeds, acima)
@@ -1712,11 +1763,18 @@ const Quiz = {
 
   // Simulado oficial: usa a distribuição exata do edital (10/3/2/25 = 40, 100 pontos)
   startSimulado() {
+    const readiness=this.simuladoReadiness();
+    if(readiness.some(r=>r.missing>0)){
+      return {ok:false,reason:'incomplete-bank',readiness};
+    }
     let questions = [];
     SUBJECTS.forEach(s => {
       const pool = this.shuffle(this.poolFor(s.id));
       questions = questions.concat(pool.slice(0, s.officialQuestions));
     });
+    if(questions.length!==EXAM_CONFIG.totalQuestions){
+      return {ok:false,reason:'invalid-distribution',count:questions.length,expected:EXAM_CONFIG.totalQuestions};
+    }
     this.session = {
       type: 'simulado',
       questions: this.shuffle(questions),
@@ -2096,6 +2154,7 @@ const GroqAI = {
       }
       if(!validated.length) return {ok:false,reason:'review-rejected'};
       validated.forEach(q=>{ QUESTIONS.push(q); Store.state.aiQuestions.push(q); });
+      DoctorQuestionIntegrity.auditBank();
       Store.save();
       return {ok:true,added:validated.length,model:r.model};
     })();
@@ -3563,7 +3622,7 @@ Views.simuladoSetup = function () {
         <p class="muted">Posso gerar as que faltam agora com IA (usa sua chave da Groq).</p>
         <button class="btn btn-primary btn-block" id="fill-missing">${iconEl('bot')} Gerar questões faltantes</button>
       </div>
-      <button class="btn btn-outline btn-block" id="start-simulado-partial">Iniciar mesmo assim (com o que tem)</button>
+      <div class="card warn-card"><strong>O simulado oficial permanece bloqueado até completar o banco.</strong><p class="muted">Isso evita entregar uma prova que não reproduza a distribuição real do edital.</p></div>
     `}
   `;
 };
@@ -3582,11 +3641,12 @@ Views.bind.simuladoSetup = function () {
     }
   });
   document.getElementById('start-simulado')?.addEventListener('click', () => {
-    Quiz.startSimulado();
-    UI.render('simuladoRunning');
-  });
-  document.getElementById('start-simulado-partial')?.addEventListener('click', () => {
-    Quiz.startSimulado();
+    const result=Quiz.startSimulado();
+    if(!result || result.ok===false){
+      UI.toast('O simulado continua bloqueado até o banco estar completo e íntegro.','warn');
+      UI.render('simuladoSetup');
+      return;
+    }
     UI.render('simuladoRunning');
   });
   document.getElementById('fill-missing')?.addEventListener('click', async (e) => {
@@ -3637,7 +3697,7 @@ Views.simuladoRunning = function () {
         }
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
       }).join('')}
-      ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Questão bloqueada para revisão</strong><p>A questão mudou depois da resposta. O resultado registrado permanece imutável e não será recalculado silenciosamente.</p></div>` : ''}
+      ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Questão bloqueada para revisão</strong><p>A questão mudou depois da resposta. O Core preservou a resposta original e bloqueou a correção automática para impedir um falso “erro”.</p></div>` : ''}
       ${answered && !integrityMismatch ? `
         <div class="explanation"><p>${q.explanations[last.selected]}</p></div>
         <button class="btn btn-primary btn-block" id="sim-next">${s.index + 1 < s.questions.length ? 'Próxima' : 'Finalizar'}</button>
