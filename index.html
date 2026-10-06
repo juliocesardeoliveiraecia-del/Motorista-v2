@@ -3132,6 +3132,8 @@ Views.reviewSession = function () {
   const q = s.questions[s.index];
   const answered = s.answers.length > s.index;
   const last = answered ? s.answers[s.index] : null;
+  const evidence = q ? DoctorQuestionIntegrity.getEvidence(q) : null;
+  const integrityMismatch = !!evidence?.mismatch || !!(last?.questionFingerprint && q && last.questionFingerprint !== DoctorQuestionIntegrity.fingerprint(q));
   const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
 
   return `
@@ -3143,9 +3145,10 @@ Views.reviewSession = function () {
       <p class="q-text">${q.text}</p>
       ${q.options.map((opt, i) => {
         let cls = 'q-option';
-        if (answered) {
-          if (i === q.correct) cls += ' correct';
-          else if (i === last.selected) cls += ' wrong';
+        if (answered && !integrityMismatch) {
+          if (i === last.selected && last.correct) cls += ' correct';
+          else if (i === last.selected && !last.correct) cls += ' wrong';
+          else if (i === q.correct) cls += ' correct';
         }
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
       }).join('')}
@@ -3632,7 +3635,7 @@ Views.simuladoRunning = function () {
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
       }).join('')}
       ${answered ? `
-        <div class="explanation"><p>${q.explanations[last.selected]}</p></div>
+${integrityMismatch ? `        <div class="explanation warn-card"><strong>${iconEl('xCircle')} Questão bloqueada para revisão</strong><p>A questão mudou depois da resposta. O resultado registrado permanece imutável e não será recalculado silenciosamente.</p></div>` : `        <div class="explanation"><p>${q.explanations[last.selected]}</p></div>`}
         <button class="btn btn-primary btn-block" id="sim-next">${s.index + 1 < s.questions.length ? 'Próxima' : 'Finalizar'}</button>
       ` : ''}
     </div>
