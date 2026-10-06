@@ -11,7 +11,7 @@ function must(label, condition){
   console.log('PASS:',label);
 }
 
-must('Core version 1.10.15 in index', /doctor-core-version["'] content=["']1\.10\.15/.test(index));
+must('Core version 1.10.15 in index', /<meta name="doctor-core-version" content="1\.10\.15">/.test(index));
 must('Core version 1.10.15 in production-config', /version:\s*['"]1\.10\.15['"]/.test(prod));
 must('Manifest version 1.10.15', manifest.version === '1.10.15');
 must('Service worker cache is 1.10.15', /motorista-ipameri-v1\.10\.15/.test(sw));
