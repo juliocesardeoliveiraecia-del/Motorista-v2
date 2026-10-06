@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.10.13',
+  version: '1.10.14',
   environment: 'production',
   integrations: {
     supabase: {
@@ -19,11 +19,11 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.10.13">
+<meta name="doctor-core-version" content="1.10.14">
 <title>Motorista Legislativo</title>
 <meta name="description" content="App de estudo para o Edital nº 02/2026 - Agente Legislativo — Motorista Legislativo, Câmara Municipal de Ipameri">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.10.13">
+<link rel="manifest" href="manifest.json?v=1.10.14">
 <link rel="icon" type="image/png" sizes="48x48" href="assets/icons/icon-48.png?v=1.9.6">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png?v=1.9.6">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-192.png?v=1.9.6">
@@ -1359,7 +1359,7 @@ const ILLUSTRATION_BOOKS_URI = 'data:image/webp;base64,UklGRph0AABXRUJQVlA4WAoAA
    em outro concurso, troque apenas esses dois arquivos.
    ============================================================ */
 
-const DOCTOR_CORE_BUILD = '1.10.13';
+const DOCTOR_CORE_BUILD = '1.10.14';
 const STORAGE_KEY = 'motorista-ipameri-v2';
 const EXAM_DATE = new Date(EXAM_CONFIG.examDateISO);
 
@@ -1379,7 +1379,10 @@ function defaultState() {
     aiQuestions: [], // questões geradas por IA, persistidas aqui para sobreviver a reload/fechar o app
     activeSession: null, // sessão de SIMULADO em andamento (prática usa "feeds", ver abaixo)
     feeds: {}, // fluxo contínuo por matéria: { subjectId: { order: [ids...], position: n } }
-    answerLog: {}, // { questionId: selectedOptionIndex } — permite rever perguntas já respondidas
+    answerLog: {}, // legado: { questionId: selectedOptionIndex }
+    answerMeta: {}, // evidência imutável da resposta
+    questionIntegrity: { version: '1.0.0', auditedAt: null, invalidIds: [], quarantinedIds: [], bankCount: 0, validCount: 0 },
+    // permite rever perguntas já respondidas
     flashcards: {}, // { subjectId: [ {id, front, back, aiGenerated} ] } — só os SALVOS pelo aluno
     dailyPlan: null, // { date: 'YYYY-MM-DD', items: [...] } — Plano de Hoje, regenerado a cada dia
     xp: 0, // XP do Doctor — ganho exclusivamente por atividade acadêmica real
@@ -1398,6 +1401,36 @@ function defaultState() {
   };
 }
 
+const DoctorQuestionIntegrity = {
+  VERSION:'1.0.0',
+  normalize(v){return String(v==null?'':v).trim().replace(/\\s+/g,' ').toLowerCase();},
+  fingerprint(q){return [q&&q.id,q&&q.subjectId,q&&q.text,...(Array.isArray(q&&q.options)?q.options:[]),q&&q.correct,...(Array.isArray(q&&q.explanations)?q.explanations:[])].map(this.normalize).join('¦');},
+  validate(q){
+    const n=Number(EXAM_CONFIG&&EXAM_CONFIG.alternativesPerQuestion||4),e=[];
+    if(!q||typeof q!=='object')e.push('questão inválida');
+    if(!String(q&&q.id||'').trim())e.push('id ausente');
+    if(!String(q&&q.subjectId||'').trim()||!SUBJECTS.some(function(x){return x.id===q.subjectId;}))e.push('matéria inválida');
+    if(String(q&&q.text||'').trim().length<20)e.push('enunciado curto/vazio');
+    if(!Array.isArray(q&&q.options)||q.options.length!==n)e.push('número de alternativas inválido');
+    const o=Array.isArray(q&&q.options)?q.options.map(function(x){return String(x==null?'':x).trim();}):[];
+    if(o.some(function(x){return !x;}))e.push('alternativa vazia');
+    if(new Set(o.map(this.normalize)).size!==o.length)e.push('alternativas duplicadas');
+    if(!Number.isInteger(q&&q.correct)||q.correct<0||q.correct>=n)e.push('gabarito fora do intervalo');
+    if(!Array.isArray(q&&q.explanations)||q.explanations.length!==n)e.push('explicações desalinhadas');
+    if(Array.isArray(q&&q.explanations)&&q.explanations.some(function(x){return !String(x==null?'':x).trim();}))e.push('explicação vazia');
+    return {ok:e.length===0,errors:e};
+  },
+  auditBank(){
+    const invalid=[],seen=new Set();
+    (QUESTIONS||[]).forEach(function(q){const v=DoctorQuestionIntegrity.validate(q),fp=DoctorQuestionIntegrity.fingerprint(q);if(seen.has(fp))invalid.push({id:q.id,errors:['duplicata exata']});else seen.add(fp);if(!v.ok)invalid.push({id:q&&q.id||'sem-id',errors:v.errors});});
+    const ids=[...new Set(invalid.map(function(x){return x.id;}))];
+    Store.state.questionIntegrity={version:this.VERSION,auditedAt:new Date().toISOString(),invalidIds:ids,quarantinedIds:ids,bankCount:QUESTIONS.length,validCount:QUESTIONS.length-ids.length};Store.save();
+    return {ok:ids.length===0,total:QUESTIONS.length,valid:QUESTIONS.length-ids.length,invalid:invalid};
+  },
+  evidence(q,selected,phase){return {questionId:q.id,questionFingerprint:this.fingerprint(q),selected:selected,correct:q.correct,isCorrect:selected===q.correct,phase:phase,recordedAt:new Date().toISOString()};},
+  answer(q,selected,phase){const v=this.validate(q);if(!v.ok)return {ok:false,reason:'question-integrity',errors:v.errors};if(!Number.isInteger(selected)||selected<0||selected>=q.options.length)return {ok:false,reason:'invalid-option'};const ev=this.evidence(q,selected,phase);Store.state.answerMeta[q.id]=ev;Store.state.answerLog[q.id]=selected;return {ok:true,evidence:ev};},
+  getEvidence(q){const ev=Store.state.answerMeta&&Store.state.answerMeta[q.id];if(!ev)return null;if(ev.questionFingerprint!==this.fingerprint(q))return {mismatch:true,...ev};return ev;}
+};
 const Store = {
   state: null,
   load() {
@@ -1412,6 +1445,8 @@ const Store = {
       if (this.state.activeSession === undefined) this.state.activeSession = null;
       if (!this.state.feeds) this.state.feeds = {};
       if (!this.state.answerLog) this.state.answerLog = {};
+      if (!this.state.answerMeta || typeof this.state.answerMeta !== 'object') this.state.answerMeta = {};
+      if (!this.state.questionIntegrity || typeof this.state.questionIntegrity !== 'object') this.state.questionIntegrity = {version:'1.0.0',auditedAt:null,invalidIds:[],quarantinedIds:[],bankCount:0,validCount:0};
       if (!this.state.flashcards) this.state.flashcards = {};
       if (!Array.isArray(this.state.notes)) this.state.notes = [];
       if (!Array.isArray(this.state.noteFolders) || !this.state.noteFolders.length) this.state.noteFolders = [{id:'folder-general',name:'Geral',color:'#1687ff',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}];
@@ -1596,13 +1631,11 @@ const Quiz = {
 
   // Registra a resposta da questão atual do feed (não usado no simulado, que tem seu próprio fluxo)
   answerFeedQuestion(subjectId, optionIndex) {
-    const q = this.currentQuestion(subjectId);
-    const correct = optionIndex === q.correct;
-    Store.state.answerLog[q.id] = optionIndex;
-    const counted = Store.registerAnswer(q.subjectId, q.id, correct); // usa q.subjectId real
-    Store.save();
-    if (counted && correct) Doctor.addXP(5, `question:${q.id}`);
-    return correct;
+    const q=this.currentQuestion(subjectId); if(!q)return {ok:false,reason:'question-missing'};
+    const evidence=DoctorQuestionIntegrity.answer(q,optionIndex,'practice'); if(!evidence.ok)return evidence;
+    const counted=Store.registerAnswer(q.subjectId,q.id,evidence.evidence.isCorrect); Store.save();
+    if(counted&&evidence.evidence.isCorrect)Doctor.addXP(5,`question:${q.id}`);
+    return evidence;
   },
 
   // Avança no feed. Se a próxima posição já tinha sido carregada antes (o usuário voltou
@@ -1706,14 +1739,12 @@ const Quiz = {
   },
 
   answerCurrent(optionIndex) {
-    const s = this.session;
-    const q = s.questions[s.index];
-    const correct = optionIndex === q.correct;
-    s.answers.push({ questionId: q.id, subjectId: q.subjectId, selected: optionIndex, correct });
-    const counted = Store.registerAnswer(q.subjectId, q.id, correct);
-    this.persist();
-    if (counted && correct) Doctor.addXP(5, `question:${q.id}`);
-    return correct;
+    const s=this.session,q=s.questions[s.index]; if(!q)return {ok:false,reason:'question-missing'};
+    const evidence=DoctorQuestionIntegrity.answer(q,optionIndex,'simulado'); if(!evidence.ok)return evidence;
+    s.answers.push({questionId:q.id,subjectId:q.subjectId,selected:optionIndex,correct:evidence.evidence.isCorrect,questionFingerprint:evidence.evidence.questionFingerprint});
+    const counted=Store.registerAnswer(q.subjectId,q.id,evidence.evidence.isCorrect); this.persist();
+    if(counted&&evidence.evidence.isCorrect)Doctor.addXP(5,`question:${q.id}`);
+    return evidence;
   },
 
   nextQuestion() {
@@ -1777,17 +1808,12 @@ const Quiz = {
   },
 
   answerReviewQuestion(optionIndex) {
-    const s = this.reviewSession;
-    const q = s.questions[s.index];
-    const correct = optionIndex === q.correct;
-    s.answers.push({ questionId: q.id, subjectId: q.subjectId, selected: optionIndex, correct });
-    Store.reviewAnswer(q.id, optionIndex); // sobrescreve o answerLog, não mexe no progresso
-    if (correct && !Store.state.xpReviewRewards[q.id]) {
-      Store.state.xpReviewRewards[q.id] = true;
-      Store.save();
-      Doctor.addXP(5, `review:${q.id}`);
-    } // recompensa o primeiro acerto de revisão de cada erro
-    return correct;
+    const s=this.reviewSession,q=s.questions[s.index]; if(!q)return {ok:false,reason:'question-missing'};
+    const evidence=DoctorQuestionIntegrity.answer(q,optionIndex,'review'); if(!evidence.ok)return evidence;
+    s.answers.push({questionId:q.id,subjectId:q.subjectId,selected:optionIndex,correct:evidence.evidence.isCorrect,questionFingerprint:evidence.evidence.questionFingerprint});
+    Store.reviewAnswer(q.id,optionIndex);
+    if(evidence.evidence.isCorrect&&!Store.state.xpReviewRewards[q.id]){Store.state.xpReviewRewards[q.id]=true;Store.save();Doctor.addXP(5,`review:${q.id}`);}
+    return evidence;
   },
 
   nextReviewQuestion() {
