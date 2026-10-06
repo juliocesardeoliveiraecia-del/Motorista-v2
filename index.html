@@ -585,32 +585,11 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   </div>
 </footer>
 <script>
-/* ===== config.js ===== */
-/* ============================================================
-   CONFIG.JS — O "combustível": dados específicos DESTE concurso.
-   Este arquivo (junto com data.js) é o único que precisa mudar
-   para reaproveitar o motor (Doctor Core: app.js, groq.js,
-   views.js, icons.js) em outro concurso e cargo. Nada no motor
-   depende de "Ipameri" ou "Motorista Legislativo" escrito à
-   mão — tudo lê daqui.
-   ============================================================ */
-
-/* Product Context externalizado para permitir a fábrica de aplicativos. */
+/* Product Context + Product Content packages are loaded before the Core engine. */
 window.DOCTOR_PLATFORM_CATALOG = window.DOCTOR_PLATFORM_CATALOG || EXAM_CONFIG.platformCatalog || [];
 
 
-/* ===== data.js ===== */
-/* ============================================================
-   DATA.JS — O "combustível" (parte 2): matérias e banco de
-   questões, 100% alinhados ao Edital nº 02/2026 (Instituto
-   Verbena/UFG) para o cargo Agente Legislativo - Motorista
-   Legislativo, Câmara Municipal de Ipameri-GO. Junto com
-   config.js, é o único arquivo que muda ao reaproveitar o
-   motor (Doctor Core) em outro concurso.
-   Prova: 40 questões, múltipla escolha com 4 alternativas (A-D),
-   100 pontos, mínimo 60 para aprovação.
-   ============================================================ */
-
+/* Product Content package loaded externally. */
 /* Product Content externalizado: matérias e questões pertencem ao pacote do produto. */
 ;
 
