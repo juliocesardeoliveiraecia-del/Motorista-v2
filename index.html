@@ -587,6 +587,22 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 <script>
 /* Product Context + Product Content packages are loaded before the Core engine. */
 window.DOCTOR_PLATFORM_CATALOG = window.DOCTOR_PLATFORM_CATALOG || EXAM_CONFIG.platformCatalog || [];
+const ExamRules = Object.freeze({
+  questionCount: Number(EXAM_CONFIG.examRules?.questionCount ?? ExamRules.questionCount ?? 0),
+  durationSeconds: Number(EXAM_CONFIG.examRules?.durationSeconds ?? ((EXAM_CONFIG.durationHours || 0) * 3600)),
+  questionType: String(EXAM_CONFIG.examRules?.questionType || EXAM_CONFIG.aiProfile?.questionMode || 'multiple-choice'),
+  optionCount: Number(EXAM_CONFIG.examRules?.optionCount ?? ExamRules.optionCount ?? 4),
+  optionLabels: Object.freeze(Array.isArray(EXAM_CONFIG.examRules?.optionLabels) && EXAM_CONFIG.examRules.optionLabels.length
+    ? EXAM_CONFIG.examRules.optionLabels.map(String)
+    : Array.from({length:Number(EXAM_CONFIG.examRules?.optionCount ?? ExamRules.optionCount ?? 4)},(_,i)=>String.fromCharCode(65+i))),
+  answerPolicy: String(EXAM_CONFIG.examRules?.answerPolicy || EXAM_CONFIG.aiProfile?.answerPolicy || 'single-correct'),
+  scoring: Object.freeze({
+    correct: EXAM_CONFIG.examRules?.scoring?.correct ?? 'subject-weight',
+    incorrectPoints: Number(EXAM_CONFIG.examRules?.scoring?.incorrectPoints ?? 0),
+    blankPoints: Number(EXAM_CONFIG.examRules?.scoring?.blankPoints ?? 0)
+  }),
+  passingScore: EXAM_CONFIG.examRules?.passingScore ?? {type:'points',value:Number(EXAM_CONFIG.passingScore||0)}
+});
 
 
 /* Product Content package loaded externally. */
@@ -715,7 +731,7 @@ const DoctorQuestionIntegrity = {
   normalize(v){return String(v==null?'':v).trim().replace(/\\s+/g,' ').toLowerCase();},
   fingerprint(q){return [q&&q.id,q&&q.subjectId,q&&q.text,...(Array.isArray(q&&q.options)?q.options:[]),q&&q.correct,...(Array.isArray(q&&q.explanations)?q.explanations:[])].map(this.normalize).join('¦');},
   validate(q){
-    const n=Number(EXAM_CONFIG&&EXAM_CONFIG.alternativesPerQuestion||4),e=[];
+    const n=Number(EXAM_CONFIG&&ExamRules.optionCount||4),e=[];
     if(!q||typeof q!=='object')e.push('questão inválida');
     if(!String(q&&q.id||'').trim())e.push('id ausente');
     if(!String(q&&q.subjectId||'').trim()||!SUBJECTS.some(function(x){return x.id===q.subjectId;}))e.push('matéria inválida');
@@ -1082,8 +1098,8 @@ const Quiz = {
       const pool = this.shuffle(this.poolFor(s.id));
       questions = questions.concat(pool.slice(0, s.officialQuestions));
     });
-    if(questions.length!==EXAM_CONFIG.totalQuestions){
-      return {ok:false,reason:'invalid-distribution',count:questions.length,expected:EXAM_CONFIG.totalQuestions};
+    if(questions.length!==ExamRules.questionCount){
+      return {ok:false,reason:'invalid-distribution',count:questions.length,expected:ExamRules.questionCount};
     }
     this.session = {
       type: 'simulado',
@@ -1091,7 +1107,7 @@ const Quiz = {
       index: 0,
       answers: [],
       startedAt: Date.now(),
-      timeLimitSeconds: EXAM_CONFIG.durationHours * 60 * 60 // igual à duração real da prova
+      timeLimitSeconds: ExamRules.durationSeconds // igual à duração real da prova
     };
     this.persist();
     return this.session;
@@ -1422,13 +1438,13 @@ const GroqAI = {
 
   _buildPrompt(subject, count, existingSamples) {
     const sampleText = existingSamples.map(q => `- ${q.text}`).join('\n');
-    const n = EXAM_CONFIG.alternativesPerQuestion;
+    const n = ExamRules.optionCount;
     const letters = Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i)).join(', ');
     return `Você é especialista em elaborar questões de concurso público brasileiro, no padrão do(a) ${EXAM_CONFIG.banca}, para o ${EXAM_CONFIG.editalNumber} do(a) ${EXAM_CONFIG.orgName}, cargo "${EXAM_CONFIG.cargo}".\n\nGere ${count} questões NOVAS e ORIGINAIS sobre a matéria "${subject.name}", usando SOMENTE os tópicos oficiais abaixo:\n${subject.topics.map(t => '- ' + t).join('\n')}\n\nQuestões já existentes (não repita o mesmo enunciado nem a mesma ideia central):\n${sampleText || '(nenhuma)'}\n\nREGRAS:\n1. Exatamente ${n} alternativas (${letters}).\n2. Apenas 1 correta.\n3. Uma explicação própria para cada alternativa, na mesma ordem.\n4. Não invente artigos, datas, normas ou fatos. Se não tiver segurança, não use o dado específico.\n5. Nível médio, objetivo e compatível com concurso público real.\n6. Português do Brasil.\n7. Responda SOMENTE JSON válido no formato {"questions":[{"text":"...","options":[...],"correct":0,"explanations":[...]}]}.`;
   },
 
   _validateAndTag(rawQuestions, subjectId) {
-    const stamp=Date.now(); const n=EXAM_CONFIG.alternativesPerQuestion; const valid=[]; const seen=new Set();
+    const stamp=Date.now(); const n=ExamRules.optionCount; const valid=[]; const seen=new Set();
     rawQuestions.forEach((q,i)=>{
       if(!q||typeof q.text!=='string'||q.text.trim().length<20)return;
       if(!Array.isArray(q.options)||q.options.length!==n)return;
@@ -1452,7 +1468,7 @@ const GroqAI = {
     const run=(async()=>{
       const existingSamples=Quiz.shuffle(Quiz.poolFor(subjectId)).slice(0,8);
       const prompt=this._buildPrompt(subject,count,existingSamples);
-      const r=await DoctorAICore.call({messages:[{role:'system',content:'Você é o gerador de questões do Doctor. Produza apenas conteúdo dentro do contexto recebido.'},{role:'user',content:DoctorAICore.context()+'\\n'+prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_questions',strict:true,schema:DoctorAICore.questionSchema(count,EXAM_CONFIG.alternativesPerQuestion)}},temperature:0.45,timeout:45000});
+      const r=await DoctorAICore.call({messages:[{role:'system',content:'Você é o gerador de questões do Doctor. Produza apenas conteúdo dentro do contexto recebido.'},{role:'user',content:DoctorAICore.context()+'\\n'+prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_questions',strict:true,schema:DoctorAICore.questionSchema(count,ExamRules.optionCount)}},temperature:0.45,timeout:45000});
       if(!r.ok) return r;
       const parsed=DoctorAICore.parseJSON(r.content); const raw=Array.isArray(parsed?.questions)?parsed.questions:[];
       let validated=this._validateAndTag(raw,subjectId);
@@ -1599,7 +1615,7 @@ const DoctorAICore = {
     return null;
   },
   validateQuestion(q,subjectId){
-    const n=EXAM_CONFIG.alternativesPerQuestion;
+    const n=ExamRules.optionCount;
     if(!q||typeof q.text!=='string'||q.text.trim().length<20)return false;
     if(!Array.isArray(q.options)||q.options.length!==n)return false;
     if(!q.options.every(x=>typeof x==='string'&&x.trim()))return false;
@@ -1613,7 +1629,7 @@ const DoctorAICore = {
   },
   async reviewQuestions(questions,subject) {
     if(!questions?.length) return {ok:true,questions:[]};
-    const n=EXAM_CONFIG.alternativesPerQuestion;
+    const n=ExamRules.optionCount;
     const payload=questions.map((q,i)=>({index:i,text:q.text,options:q.options,correct:q.correct,explanations:q.explanations}));
     const prompt=`Você é o REVISOR DOCTOR, uma camada independente do gerador.\n${this.context()}\nMatéria: ${subject.name}\nTópicos permitidos:\n${subject.topics.map(x=>'- '+x).join('\n')}\n\nAnalise cada questão abaixo ANTES de permitir sua entrega ao aluno.\nREGRAS: (1) exatamente ${n} alternativas; (2) somente uma correta; (3) gabarito deve ser defensável; (4) explicações coerentes com o gabarito; (5) sem informação inventada; (6) se houver artigo, lei, data ou fato atual cuja correção não possa ser sustentada com segurança pelo contexto recebido, marque REJEITAR em vez de adivinhar; (7) questão fora do edital ou incompatível com o estilo da banca = REJEITAR.\nResponda JSON com decisions: [{index,status,reason,correctedQuestion}]. status só pode ser APROVAR, CORRIGIR ou REJEITAR. correctedQuestion deve existir sempre; quando não houver correção segura, repita a questão original.\nQUESTÕES:\n${JSON.stringify(payload)}`;
     const r=await this.call({messages:[{role:'system',content:'Você é o Revisor Doctor. Nunca aprove uma questão só porque parece plausível.'},{role:'user',content:prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_review_decisions',strict:true,schema:{type:'object',additionalProperties:false,properties:{decisions:{type:'array',items:{type:'object',additionalProperties:false,properties:{index:{type:'integer'},status:{type:'string',enum:['APROVAR','CORRIGIR','REJEITAR']},reason:{type:'string'},correctedQuestion:{type:'object',additionalProperties:false,properties:{text:{type:'string'},options:{type:'array',items:{type:'string'}},correct:{type:'integer'},explanations:{type:'array',items:{type:'string'}}},required:['text','options','correct','explanations']}},required:['index','status','reason','correctedQuestion']}}},required:['decisions']}}},temperature:0});
@@ -2326,7 +2342,7 @@ Views.home = function () {
     </div>
 
     <button class="btn btn-orange btn-block" id="home-flashcards">${iconEl('cards')} Flashcards</button>
-    <button class="btn btn-danger btn-block" id="home-simulado">${iconEl('clipboard')} Simulado Oficial (${EXAM_CONFIG.totalQuestions} questões · ${EXAM_CONFIG.durationHours}h)</button>
+    <button class="btn btn-danger btn-block" id="home-simulado">${iconEl('clipboard')} Simulado Oficial (${ExamRules.questionCount} questões · ${EXAM_CONFIG.durationHours}h)</button>
 
     ${Views.doctorCard()}
 
@@ -2390,7 +2406,7 @@ Views.editalFooter = function () {
         <div class="edital-item"><span class="edital-item-label">${iconEl('clock')} Publicado em</span><span>${EXAM_CONFIG.editalPublishDate}</span></div>
         <div class="edital-item"><span class="edital-item-label">${iconEl('mapPin')} Local da prova</span><span>${EXAM_CONFIG.applicationCity}</span></div>
         <div class="edital-item"><span class="edital-item-label">${iconEl('clock')} Duração</span><span>${EXAM_CONFIG.durationHours} horas</span></div>
-        <div class="edital-item"><span class="edital-item-label">${iconEl('target')} Questões</span><span>${EXAM_CONFIG.totalQuestions} (${EXAM_CONFIG.alternativesPerQuestion} alternativas)</span></div>
+        <div class="edital-item"><span class="edital-item-label">${iconEl('target')} Questões</span><span>${ExamRules.questionCount} (${ExamRules.optionCount} alternativas)</span></div>
         <div class="edital-item"><span class="edital-item-label">${iconEl('checkCircle')} Aprovação</span><span>${EXAM_CONFIG.passingScore}/${EXAM_CONFIG.totalPoints} pontos</span></div>
       </div>
 
@@ -2514,7 +2530,7 @@ Views.reviewSession = function () {
   const last = answered ? s.answers[s.index] : null;
   const evidence = q ? DoctorQuestionIntegrity.getEvidence(q) : null;
   const integrityMismatch = !!evidence?.mismatch || !!(last?.questionFingerprint && q && last.questionFingerprint !== DoctorQuestionIntegrity.fingerprint(q));
-  const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
+  const letters = ExamRules.optionLabels;
 
   return `
     <div class="q-header">
@@ -2629,7 +2645,7 @@ Views.practice = function () {
   const integrityMismatch = !!evidence?.mismatch;
   const selected = answered && !integrityMismatch ? evidence.selected : null;
   const correct = answered && !integrityMismatch ? evidence.isCorrect : null;
-  const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
+  const letters = Array.from({ length: ExamRules.optionCount }, (_, i) => String.fromCharCode(65 + i));
   const canGoPrev = feed.position > 0;
   const isFrontier = feed.position === feed.order.length - 1;
   const needsMoreToAdvance = isFrontier && !Quiz.hasMoreFresh(subjectId);
@@ -2926,7 +2942,7 @@ Views.simuladoSetup = function () {
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
     <h2>${iconEl('clipboard')} Simulado Oficial</h2>
-    <p class="muted">Reproduz exatamente a estrutura do ${EXAM_CONFIG.editalNumber}: ${EXAM_CONFIG.totalQuestions} questões, ${EXAM_CONFIG.alternativesPerQuestion} alternativas, ${EXAM_CONFIG.totalPoints} pontos, mínimo ${EXAM_CONFIG.passingScore} para aprovação, ${EXAM_CONFIG.durationHours} horas de duração.</p>
+    <p class="muted">Reproduz exatamente a estrutura do ${EXAM_CONFIG.editalNumber}: ${ExamRules.questionCount} questões, ${ExamRules.optionCount} alternativas, ${EXAM_CONFIG.totalPoints} pontos, mínimo ${EXAM_CONFIG.passingScore} para aprovação, ${EXAM_CONFIG.durationHours} horas de duração.</p>
     <div class="card">
       ${readiness.map(r => `
         <div class="subj-row">
@@ -2999,7 +3015,7 @@ Views.simuladoRunning = function () {
   const last = answered ? s.answers[s.index] : null;
   const evidence = q ? DoctorQuestionIntegrity.getEvidence(q) : null;
   const integrityMismatch = !!evidence?.mismatch || !!(last?.questionFingerprint && q && last.questionFingerprint !== DoctorQuestionIntegrity.fingerprint(q));
-  const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
+  const letters = Array.from({ length: ExamRules.optionCount }, (_, i) => String.fromCharCode(65 + i));
 
   return `
     <button class="btn btn-ghost btn-sm" id="sim-back">${iconEl('arrowLeft')} Sair do simulado</button>
