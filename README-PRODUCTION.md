@@ -2,7 +2,7 @@
 
 ## Estado auditado
 
-- **Core:** V1.10.15
+- **Core:** V1.11.0
 - **Concurso:** Câmara Municipal de Ipameri/GO
 - **Cargo:** Agente Legislativo — Motorista Legislativo
 - **Banca:** Instituto Verbena / UFG
@@ -55,7 +55,7 @@ Nunca versionar GROQ API key, Supabase service-role key, tokens de pagamento ou 
 
 O deployment Drop histórico permanece como referência de recuperação enquanto a linha GitHub → Vercel é homologada.
 
-## Auditoria Core V1.10.15
+## Auditoria Core V1.11.0
 
 - Resposta do aluno é registrada por fingerprint da questão; alteração posterior do conteúdo não transforma uma resposta originalmente correta em erro.
 - Questões estruturalmente inválidas ou duplicadas entram em quarentena e não são entregues.
