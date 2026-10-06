@@ -1147,13 +1147,14 @@ const Quiz = {
 
     s.answers.forEach(a => {
       const subj = SUBJECTS.find(x => x.id === a.subjectId);
+      if (!subj) return;
       bySubject[a.subjectId].total++;
-      totalPoints += subj.points;
-      if (a.correct) {
-        bySubject[a.subjectId].correct++;
-        bySubject[a.subjectId].points += subj.points;
-        earnedPoints += subj.points;
-      }
+      const correctPoints = ExamRules.scoring.correct === 'subject-weight' ? Number(subj.points || 0) : Number(ExamRules.scoring.correct || 0);
+      const answerPoints = a.correct ? correctPoints : Number(ExamRules.scoring.incorrectPoints || 0);
+      totalPoints += correctPoints;
+      if (a.correct) bySubject[a.subjectId].correct++;
+      bySubject[a.subjectId].points += answerPoints;
+      earnedPoints += answerPoints;
     });
 
     const result = {
