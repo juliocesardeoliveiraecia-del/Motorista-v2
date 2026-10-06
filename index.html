@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.10.15',
+  version: '1.11.0',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,18 +17,20 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
+<script src="product-context.js?v=1.11.0"></script>
+<script src="product-content.js?v=1.11.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.10.15">
-<title>Motorista Legislativo</title>
-<meta name="description" content="App de estudo para o Edital nº 02/2026 - Agente Legislativo — Motorista Legislativo, Câmara Municipal de Ipameri">
+<meta name="doctor-core-version" content="1.11.0">
+<title>Doctor Core</title>
+<meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.10.15">
+<link rel="manifest" href="manifest.json?v=1.11.0">
 <link rel="icon" type="image/png" sizes="48x48" href="assets/icons/icon-48.png?v=1.9.6">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png?v=1.9.6">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-192.png?v=1.9.6">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Motorista Legis">
+<meta name="apple-mobile-web-app-title" content="Doctor Core">
 <style>
 :root {
   --blue-dark: #0A192F;
@@ -562,7 +564,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
     <img class="topbar-logo" src="data:image/png;base64,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" alt="Doctor Concursos" width="28" height="28">
     <div class="topbar-lines">
       <div class="topbar-parent-brand">Doctor Concursos</div>
-      <h1 id="topbar-title">Câmara Municipal de Ipameri</h1>
+      <h1 id="topbar-title">Doctor Concursos</h1>
     </div>
   </button>
   <div class="topbar-actions">
@@ -579,711 +581,33 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   <img class="footer-logo" src="data:image/png;base64,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" alt="JCO Company">
   <div class="footer-text">
     <div class="footer-company">JCO Company</div>
-    <div class="footer-meta"><span id="footer-year"></span> · Todos os direitos reservados · Core V1.9.4 · Ícone PWA padrão Doctor</div>
+    <div class="footer-meta"><span id="footer-year"></span> · Todos os direitos reservados · Core <span id="footer-core-version"></span> · Ícone PWA padrão Doctor</div>
   </div>
 </footer>
 <script>
-/* ===== config.js ===== */
-/* ============================================================
-   CONFIG.JS — O "combustível": dados específicos DESTE concurso.
-   Este arquivo (junto com data.js) é o único que precisa mudar
-   para reaproveitar o motor (Doctor Core: app.js, groq.js,
-   views.js, icons.js) em outro concurso e cargo. Nada no motor
-   depende de "Ipameri" ou "Motorista Legislativo" escrito à
-   mão — tudo lê daqui.
-   ============================================================ */
-
-const EXAM_CONFIG = {
-  // Identidade do concurso
-  orgName: 'Câmara Municipal de Ipameri',
-  orgState: 'GO',
-  cargo: 'Agente Legislativo — Motorista Legislativo',
-  banca: 'Instituto Verbena / UFG',
-  editalNumber: 'Edital nº 02/2026',
-  editalPublishDate: '01/06/2026',
-
-  // Prova
-  examDateISO: '2026-09-13T13:00:00',
-  examDateLabel: '13 de setembro de 2026, à tarde',
-  applicationCity: 'Ipameri/GO',
-  durationHours: 4,
-  totalQuestions: 40,
-  totalPoints: 100,
-  passingScore: 60,
-  alternativesPerQuestion: 4,
-
-  // Informações do cargo (rodapé / ficha do edital)
-  requirement: 'Ensino Médio completo + CNH categoria AD',
-  workload: '30h semanais',
-  salary: 'R$ 3.061,34',
-
-  // Nome comercial do produto vendido — o que aparece em destaque no topo do
-  // app. Pode ser mais curto/direto que o "cargo" oficial do edital acima.
-  productName: 'Motorista Legislativo — Câmara Municipal de Ipameri',
-
-  // Ícone temático do cargo (chave de icons.js) — troque para outro cargo
-  themeIcon: 'car',
-
-  // Identidade visual PWA — padrão compartilhado por todos os aplicativos Doctor.
-  // Para um novo concurso, o Core permanece igual; altere somente appIconBadge.
-  appIconSystemVersion: '1.0',
-  appIconBadge: 'MOTORISTA LEGISLATIVO',
-  appIconBase: 'assets/icons/doctor-core-master-base.png',
-  appIconSizes: [48, 72, 96, 128, 144, 192, 256, 512],
-
-  // Doctor Core V1 — identidade estável do produto e versão de conteúdo
-  appId: 'doctor-motorista-legislativo',
-  productId: 'motorista-legislativo',
-  coreVersion: '1.1.0-core',
-  contentVersion: '2026.1',
-  editorialMode: 'edital-plus-banca',
-  // Perfil operacional da IA: muda com o concurso/banca, não com o Core.
-  aiProfile: {
-    questionMode: 'multiple-choice',
-    answerPolicy: 'single-correct',
-    revisionRequired: true,
-    currentFactsNeedSource: true,
-    radar: { contestShare: 0.70, promotionShare: 0.30, discoveryShare: 0.00, officialFirst: true },
-    essay: { enabled: true, teachStructure: true, analyzeText: true }
-  },
-  radarShareRatio: { contest: 0.70, promotion: 0.30, discovery: 0.00 },
-  // Fontes oficiais prioritárias do Radar. São referências de pesquisa, não conteúdo congelado.
-  // O agente continua fazendo busca em tempo real; estas URLs apenas garantem que ele comece no lugar certo.
-  radarSources: [
-    'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/',
-    'https://institutoverbena.ufg.br/'
-  ],
-  sync: { enabled: true, provider: 'supabase-adapter-pending' },
-  sessionPolicy: 'single-active-device',
-  // Identidade visual — os mesmos valores que já estavam fixos no CSS.
-  // Trocar aqui muda a cor do app inteiro sem mexer em nenhum outro arquivo.
-  primaryColor: '#0A192F',
-  primaryColorMid: '#16345E',
-  accentColor: '#2ECC71',
-  accentColorDark: '#1E9E58',
-
-  // Catálogo local/ponteado da Plataforma Doctor. O Core nunca inventa
-  // produtos: só usa itens marcados como active=true para a faixa comercial
-  // de 30% do Radar. A Plataforma pode substituir este catálogo em runtime
-  // por window.DOCTOR_PLATFORM_CATALOG ou bridge.getProductCatalog().
-  platformCatalog: [
-    { productId: 'motorista-legislativo', appId: 'doctor-motorista-legislativo', name: 'Motorista Legislativo — Câmara Municipal de Ipameri', shortName: 'Motorista Legislativo', status: 'active', url: '', current: true },
-  ]
-};
-
-window.EXAM_CONFIG = EXAM_CONFIG;
+/* Product Context + Product Content packages are loaded before the Core engine. */
 window.DOCTOR_PLATFORM_CATALOG = window.DOCTOR_PLATFORM_CATALOG || EXAM_CONFIG.platformCatalog || [];
+const ExamRules = Object.freeze({
+  questionCount: Number(EXAM_CONFIG.examRules?.questionCount ?? EXAM_CONFIG.totalQuestions ?? 0),
+  durationSeconds: Number(EXAM_CONFIG.examRules?.durationSeconds ?? ((EXAM_CONFIG.durationHours || 0) * 3600)),
+  questionType: String(EXAM_CONFIG.examRules?.questionType || EXAM_CONFIG.aiProfile?.questionMode || 'multiple-choice'),
+  optionCount: Number(EXAM_CONFIG.examRules?.optionCount ?? EXAM_CONFIG.alternativesPerQuestion ?? 4),
+  optionLabels: Object.freeze(Array.isArray(EXAM_CONFIG.examRules?.optionLabels) && EXAM_CONFIG.examRules.optionLabels.length
+    ? EXAM_CONFIG.examRules.optionLabels.map(String)
+    : Array.from({length:Number(EXAM_CONFIG.examRules?.optionCount ?? EXAM_CONFIG.alternativesPerQuestion ?? 4)},(_,i)=>String.fromCharCode(65+i))),
+  answerPolicy: String(EXAM_CONFIG.examRules?.answerPolicy || EXAM_CONFIG.aiProfile?.answerPolicy || 'single-correct'),
+  scoring: Object.freeze({
+    correct: EXAM_CONFIG.examRules?.scoring?.correct ?? 'subject-weight',
+    incorrectPoints: Number(EXAM_CONFIG.examRules?.scoring?.incorrectPoints ?? 0),
+    blankPoints: Number(EXAM_CONFIG.examRules?.scoring?.blankPoints ?? 0)
+  }),
+  passingScore: EXAM_CONFIG.examRules?.passingScore ?? {type:'points',value:Number(EXAM_CONFIG.passingScore||0)}
+});
 
 
-/* ===== data.js ===== */
-/* ============================================================
-   DATA.JS — O "combustível" (parte 2): matérias e banco de
-   questões, 100% alinhados ao Edital nº 02/2026 (Instituto
-   Verbena/UFG) para o cargo Agente Legislativo - Motorista
-   Legislativo, Câmara Municipal de Ipameri-GO. Junto com
-   config.js, é o único arquivo que muda ao reaproveitar o
-   motor (Doctor Core) em outro concurso.
-   Prova: 40 questões, múltipla escolha com 4 alternativas (A-D),
-   100 pontos, mínimo 60 para aprovação.
-   ============================================================ */
-
-const SUBJECTS = [
-  {
-    id: 'portugues',
-    name: 'Língua Portuguesa',
-    icon: '📘',
-    iconKey: 'book',
-    officialQuestions: 10,
-    points: 2,
-    topics: [
-      'Gêneros textuais e suas funcionalidades',
-      'Compreensão e interpretação de textos',
-      'Variação linguística',
-      'Gramática normativa',
-      'Produção de sentidos: polissemia, ironia, ambiguidade, inferência',
-      'Coesão e coerência textual',
-      'Sequências textuais (narrativa, descritiva, argumentativa, injuntiva, expositiva)',
-      'Tipos de argumento',
-      'Classificação gramatical e formação de palavras',
-      'Coordenação e subordinação (orações e termos)',
-      'Concordância e regência verbal e nominal',
-      'Pontuação e acentuação',
-      'Acordo Ortográfico da Língua Portuguesa (1990)'
-    ]
-  },
-  {
-    id: 'rlm',
-    name: 'Raciocínio Lógico-Matemático',
-    icon: '🧮',
-    iconKey: 'calculator',
-    officialQuestions: 3,
-    points: 1,
-    topics: [
-      'Resolução de problemas com raciocínio lógico',
-      'Sequências lógicas e numéricas',
-      'Proporcionalidade direta e inversa',
-      'Regra de três simples e composta',
-      'Porcentagem: aumentos, descontos, variações',
-      'Matemática financeira básica (juros simples)',
-      'Leitura e interpretação de tabelas e gráficos',
-      'Lógica proposicional: conectivos, tabelas-verdade, negação',
-      'Progressões aritméticas simples',
-      'Dedução lógica e diagramas'
-    ]
-  },
-  {
-    id: 'realidade',
-    name: 'Realidade de Goiás e Ipameri',
-    icon: '🌾',
-    iconKey: 'mapPin',
-    officialQuestions: 2,
-    points: 1,
-    topics: [
-      'Conflitos sociais, pobreza e direitos humanos',
-      'Emergências de saúde e epidemias',
-      'Meio ambiente e mudanças climáticas',
-      'Arte, cultura e patrimônio do Centro-Oeste',
-      'Formação histórico-territorial de Goiás e Ipameri',
-      'Política, economia e sociedade em Goiás (da Colônia à República)',
-      'Agricultura e urbanização em Goiás',
-      'Aspectos físicos do território goiano (vegetação, hidrografia, clima, relevo)',
-      'Natureza, cultura e turismo em Goiás',
-      'Aspectos histórico-geográficos de Ipameri'
-    ]
-  },
-  {
-    id: 'especificos',
-    name: 'Conhecimentos Específicos — Motorista Legislativo',
-    icon: '🚐',
-    iconKey: 'car',
-    officialQuestions: 25,
-    points: 3,
-    topics: [
-      'Legislação de trânsito: CTB (Lei 9.503/1997) e normas do CONTRAN',
-      'Direção defensiva e procedimentos em ocorrências/acidentes',
-      'Noções de mecânica básica e conservação do veículo',
-      'Transporte institucional: segurança, postura, sigilo, responsabilidade',
-      'Ética, disciplina e relações interpessoais no serviço público',
-      'Preenchimento de relatórios de viagem e controle de quilometragem'
-    ]
-  }
-];
-
-// Cada questão: 4 alternativas (A-D), 1 correta, explicação de cada uma.
-const QUESTIONS = [
-
-  // ================= LÍNGUA PORTUGUESA =================
-  {
-    id: 'pt-1', subjectId: 'portugues',
-    text: 'Assinale a alternativa em que a concordância verbal está de acordo com a norma padrão:',
-    options: [
-      'Fazem dois anos que ele trabalha na Câmara.',
-      'Faz dois anos que ele trabalha na Câmara.',
-      'Houveram problemas na viagem oficial.',
-      'Deve haverem novas contratações.'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: o verbo "fazer" indicando tempo decorrido é impessoal, ficando sempre na 3ª pessoa do singular.',
-      'Correto: "faz" no singular é a forma adequada para expressar tempo decorrido.',
-      'Errado: "haver" no sentido de existir é impessoal; o correto é "houve".',
-      'Errado: por ser impessoal, o verbo auxiliar também fica no singular: "deve haver".'
-    ]
-  },
-  {
-    id: 'pt-2', subjectId: 'portugues',
-    text: 'Em "O motorista, que dirigia com atenção, evitou o acidente", a oração destacada classifica-se como:',
-    options: [
-      'Coordenada assindética',
-      'Subordinada adjetiva',
-      'Subordinada substantiva',
-      'Coordenada sindética explicativa'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: não há duas orações de mesmo valor sintático ligadas sem conjunção.',
-      'Correto: "que dirigia com atenção" caracteriza o substantivo "motorista", funcionando como um adjetivo.',
-      'Errado: a oração não exerce função de substantivo (sujeito, objeto etc.).',
-      'Errado: não há conjunção explicativa (pois, que, porque) nesse sentido.'
-    ]
-  },
-  {
-    id: 'pt-3', subjectId: 'portugues',
-    text: 'Assinale a alternativa em que o uso da crase está correto:',
-    options: [
-      'Cheguei à Ipameri no domingo.',
-      'Entreguei o relatório à ele.',
-      'Vou à sede da Câmara buscar o veículo.',
-      'Fui à pé até o trabalho.'
-    ],
-    correct: 2,
-    explanations: [
-      'Errado: nomes de cidade, em regra, não recebem artigo, então não há crase antes deles.',
-      'Errado: antes de pronome pessoal ("ele") não se usa crase.',
-      'Correto: "sede" é substantivo feminino que aceita o artigo "a", formando a crase com a preposição "a".',
-      'Errado: a locução "a pé" não admite crase.'
-    ]
-  },
-  {
-    id: 'pt-4', subjectId: 'portugues',
-    text: 'Qual das alternativas apresenta um exemplo de coesão referencial (retomada de um termo já citado)?',
-    options: [
-      '"O motorista chegou cedo. Ele revisou o veículo antes da viagem."',
-      '"Chegou cedo e revisou o veículo antes da viagem."',
-      '"Primeiro chegou cedo, depois revisou o veículo."',
-      '"Como chegou cedo, revisou o veículo com calma."'
-    ],
-    correct: 0,
-    explanations: [
-      'Correto: o pronome "ele" retoma "o motorista", caracterizando coesão referencial.',
-      'Errado: aqui há apenas elipse do sujeito, sem uso de elemento retomador explícito.',
-      'Errado: "depois" é um conector de sequência temporal, não de retomada referencial.',
-      'Errado: "como" indica causa, não retomada de um termo anterior.'
-    ]
-  },
-  {
-    id: 'pt-5', subjectId: 'portugues',
-    text: 'Assinale a alternativa em que todas as palavras estão corretamente acentuadas segundo o Acordo Ortográfico vigente:',
-    options: [
-      'Ítinerário, veiculo, orgão',
-      'Itinerário, veículo, órgão',
-      'Itinerário, veiculo, orgao',
-      'Itinerario, veículo, orgão'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: "ítinerário" não existe com acento no "í"; "veiculo" e "orgão" estão incorretos.',
-      'Correto: todas as três palavras seguem as regras de acentuação vigentes.',
-      'Errado: "veiculo" (sem acento) e "orgao" (sem acento e sem "ã") estão incorretos.',
-      'Errado: "itinerario" perdeu o acento obrigatório e "orgão" está grafado errado (o certo é "órgão").'
-    ]
-  },
-  {
-    id: 'pt-6', subjectId: 'portugues',
-    text: 'Sobre os tipos de argumento em um texto dissertativo, um "argumento de autoridade" é aquele que:',
-    options: [
-      'Usa dados estatísticos para comprovar uma tese',
-      'Recorre à opinião de um especialista ou de uma fonte reconhecida no assunto',
-      'Apresenta um exemplo concreto do cotidiano',
-      'Compara duas situações semelhantes para reforçar uma ideia'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: esse é o argumento de dados estatísticos, uma categoria diferente.',
-      'Correto: o argumento de autoridade se apoia na credibilidade de uma pessoa ou fonte especializada no tema.',
-      'Errado: esse é o argumento por exemplificação.',
-      'Errado: esse é o argumento por comparação/analogia.'
-    ]
-  },
-  {
-    id: 'pt-7', subjectId: 'portugues',
-    text: 'Na frase "O motorista obedece ao regulamento interno", a regência do verbo "obedecer" está:',
-    options: [
-      'Incorreta, pois o verbo não exige preposição',
-      'Correta, pois "obedecer" é transitivo indireto e exige a preposição "a"',
-      'Incorreta, pois deveria ser "obedece o regulamento"',
-      'Correta, mas apenas na linguagem informal'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: o verbo "obedecer" exige, sim, a preposição "a" na norma padrão.',
-      'Correto: "obedecer a alguém/algo" é a regência exigida pela norma padrão.',
-      'Errado: sem a preposição, a frase estaria em desacordo com a norma padrão.',
-      'Errado: essa regência é exigida também na linguagem formal, não é uma questão de informalidade.'
-    ]
-  },
-  {
-    id: 'pt-8', subjectId: 'portugues',
-    text: 'Assinale a alternativa que exemplifica uma sequência textual predominantemente injuntiva:',
-    options: [
-      '"Ontem fomos à sede da Câmara buscar os documentos."',
-      '"O prédio da Câmara é amplo, com fachada de vidro."',
-      '"Verifique o nível de óleo antes de ligar o veículo."',
-      '"A postura ética é fundamental no serviço público porque garante a confiança da população."'
-    ],
-    correct: 2,
-    explanations: [
-      'Errado: essa frase narra um fato, é uma sequência narrativa.',
-      'Errado: essa frase descreve características, é uma sequência descritiva.',
-      'Correto: instruções e comandos (verbos no imperativo) caracterizam a sequência injuntiva.',
-      'Errado: essa frase defende um ponto de vista com justificativa, é uma sequência argumentativa.'
-    ]
-  },
-
-  // ================= RACIOCÍNIO LÓGICO-MATEMÁTICO =================
-  {
-    id: 'rlm-1', subjectId: 'rlm',
-    text: 'Um veículo percorre 180 km em 3 horas, mantendo velocidade constante. Qual é a velocidade média?',
-    options: ['50 km/h', '60 km/h', '70 km/h', '90 km/h'],
-    correct: 1,
-    explanations: [
-      'Errado: 180 ÷ 3 não resulta em 50.',
-      'Correto: velocidade média = distância ÷ tempo = 180 ÷ 3 = 60 km/h.',
-      'Errado: 70 km/h corresponderia a uma distância maior no mesmo tempo.',
-      'Errado: 90 km/h corresponderia à mesma distância em apenas 2 horas.'
-    ]
-  },
-  {
-    id: 'rlm-2', subjectId: 'rlm',
-    text: 'Se 8 litros de combustível custam R$ 44,00, quanto custarão 15 litros ao mesmo preço por litro?',
-    options: ['R$ 78,00', 'R$ 80,00', 'R$ 82,50', 'R$ 85,00'],
-    correct: 2,
-    explanations: [
-      'Errado: valor abaixo do correto.',
-      'Errado: valor abaixo do correto.',
-      'Correto: preço por litro = 44 ÷ 8 = R$ 5,50; para 15 litros = 5,50 × 15 = R$ 82,50.',
-      'Errado: valor acima do correto.'
-    ]
-  },
-  {
-    id: 'rlm-3', subjectId: 'rlm',
-    text: 'Considere a proposição "Se chove, então a rua fica molhada". A negação lógica dessa proposição condicional é:',
-    options: [
-      'Se não chove, a rua não fica molhada.',
-      'Chove e a rua não fica molhada.',
-      'Não chove ou a rua fica molhada.',
-      'A rua fica molhada e não chove.'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: essa é a proposição inversa, não a negação lógica.',
-      'Correto: a negação de "se P então Q" é "P e não Q" — ou seja, chove e a rua não fica molhada.',
-      'Errado: essa frase é logicamente equivalente à proposição original (contrapositiva disfarçada), não sua negação.',
-      'Errado: essa reformulação não corresponde à negação da condicional.'
-    ]
-  },
-  {
-    id: 'rlm-4', subjectId: 'rlm',
-    text: 'Uma viagem de 240 km terá redução de 25% no percurso após a abertura de uma nova rodovia. Qual será a nova distância?',
-    options: ['160 km', '180 km', '200 km', '220 km'],
-    correct: 1,
-    explanations: [
-      'Errado: 25% de 240 km é 60 km, e 240 - 60 = 180, não 160.',
-      'Correto: 25% de 240 km = 60 km; 240 - 60 = 180 km.',
-      'Errado: esse valor corresponderia a uma redução menor que 25%.',
-      'Errado: esse valor corresponderia a uma redução ainda menor.'
-    ]
-  },
-  {
-    id: 'rlm-5', subjectId: 'rlm',
-    text: 'Na sequência numérica 3, 7, 11, 15, ..., qual é o próximo número?',
-    options: ['17', '18', '19', '21'],
-    correct: 2,
-    explanations: [
-      'Errado: a razão da sequência é 4, então 17 não é o próximo termo.',
-      'Errado: 18 não segue o padrão de soma constante de 4.',
-      'Correto: cada termo aumenta 4 em relação ao anterior (progressão aritmética de razão 4); 15 + 4 = 19.',
-      'Errado: 21 excede o padrão da sequência em 2 unidades.'
-    ]
-  },
-  {
-    id: 'rlm-6', subjectId: 'rlm',
-    text: 'Um capital de R$ 2.000,00 é aplicado a juros simples de 2% ao mês. Qual será o valor total após 5 meses?',
-    options: ['R$ 2.100,00', 'R$ 2.150,00', 'R$ 2.200,00', 'R$ 2.400,00'],
-    correct: 2,
-    explanations: [
-      'Errado: esse valor corresponde a um rendimento menor do que o calculado.',
-      'Errado: valor não corresponde ao cálculo de juros simples com esses dados.',
-      'Correto: juros = 2000 × 0,02 × 5 = 200; total = 2000 + 200 = R$ 2.200,00.',
-      'Errado: esse valor seria obtido com uma taxa ou tempo maiores que os informados.'
-    ]
-  },
-
-  // ================= REALIDADE DE GOIÁS E IPAMERI =================
-  {
-    id: 'real-1', subjectId: 'realidade',
-    text: 'O estado que se originou da divisão territorial de Goiás em 1988 é:',
-    options: ['Mato Grosso do Sul', 'Distrito Federal', 'Tocantins', 'Rondônia'],
-    correct: 2,
-    explanations: [
-      'Errado: o Mato Grosso do Sul se originou da divisão do antigo Mato Grosso, em 1977.',
-      'Errado: o Distrito Federal foi criado antes, na década de 1960, com a construção de Brasília.',
-      'Correto: o Tocantins foi criado em 1988, a partir do desmembramento do norte de Goiás, pela Constituição Federal.',
-      'Errado: Rondônia não tem relação com o território de Goiás.'
-    ]
-  },
-  {
-    id: 'real-2', subjectId: 'realidade',
-    text: 'A economia do estado de Goiás é historicamente marcada, sobretudo a partir da segunda metade do século XX, pela expansão de qual setor?',
-    options: [
-      'Extração mineral de metais preciosos',
-      'Agronegócio (grãos e pecuária)',
-      'Indústria naval',
-      'Turismo litorâneo'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: a mineração teve papel histórico relevante no período colonial, mas não é o que marca a economia goiana moderna.',
-      'Correto: a modernização da agricultura e a expansão da pecuária e da produção de grãos (como soja e milho) são centrais na economia de Goiás desde a segunda metade do século XX.',
-      'Errado: Goiás não tem tradição relevante em indústria naval.',
-      'Errado: Goiás não possui litoral.'
-    ]
-  },
-  {
-    id: 'real-3', subjectId: 'realidade',
-    text: 'Em relação ao relevo e à hidrografia de Goiás, é correto afirmar que o estado:',
-    options: [
-      'É predominantemente montanhoso, com pouca disponibilidade de água',
-      'Situa-se majoritariamente no bioma Cerrado, com relevo de chapadas e planaltos',
-      'Está localizado na Bacia Amazônica, com predomínio de floresta equatorial',
-      'É formado majoritariamente por áreas litorâneas e de mangue'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: o relevo de Goiás é majoritariamente de planaltos e chapadas, não montanhoso, e o estado tem rios importantes.',
-      'Correto: Goiás está localizado predominantemente no bioma Cerrado, caracterizado por planaltos, chapadas e vegetação típica de savana tropical.',
-      'Errado: Goiás não está na Bacia Amazônica nem tem floresta equatorial como vegetação predominante.',
-      'Errado: Goiás é um estado interior, sem litoral.'
-    ]
-  },
-  {
-    id: 'real-4', subjectId: 'realidade',
-    text: 'A Câmara Municipal de Ipameri-GO, enquanto órgão do Poder Legislativo municipal, tem como principal atribuição:',
-    options: [
-      'Administrar diretamente os serviços de saúde do município',
-      'Elaborar, discutir e votar as leis municipais, fiscalizando o Poder Executivo',
-      'Julgar processos criminais ocorridos no município',
-      'Nomear diretamente o prefeito do município'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: a administração direta dos serviços públicos é atribuição do Poder Executivo (Prefeitura).',
-      'Correto: cabe à Câmara Municipal, como Poder Legislativo local, elaborar e votar leis, além de fiscalizar os atos do Executivo.',
-      'Errado: julgar processos é função do Poder Judiciário.',
-      'Errado: o prefeito é eleito pelo voto popular, não nomeado pela Câmara.'
-    ]
-  },
-  {
-    id: 'real-5', subjectId: 'realidade',
-    text: 'Sobre desastres ambientais e mudanças climáticas, uma das principais preocupações atuais em regiões de Cerrado, como Goiás, é:',
-    options: [
-      'O derretimento de geleiras próximas ao estado',
-      'Furacões frequentes de grande intensidade',
-      'Queimadas e desmatamento, que afetam a vegetação nativa e os recursos hídricos',
-      'A elevação do nível do mar sobre áreas costeiras do estado'
-    ],
-    correct: 2,
-    explanations: [
-      'Errado: Goiás não possui geleiras nem está próximo a regiões com esse fenômeno.',
-      'Errado: furacões não são um fenômeno característico do interior do Brasil.',
-      'Correto: queimadas (naturais e criminosas) e o desmatamento são preocupações centrais no Cerrado, impactando a vegetação e os mananciais de água.',
-      'Errado: Goiás não possui litoral, portanto não é afetado pela elevação do nível do mar.'
-    ]
-  },
-  {
-    id: 'real-6', subjectId: 'realidade',
-    text: 'O município de Ipameri está localizado em qual região do estado de Goiás?',
-    options: ['Norte de Goiás', 'Região metropolitana de Goiânia', 'Sudeste goiano', 'Extremo oeste de Goiás'],
-    correct: 2,
-    explanations: [
-      'Errado: Ipameri não se localiza na região norte do estado.',
-      'Errado: Ipameri não integra a região metropolitana da capital.',
-      'Correto: Ipameri está localizada na região sudeste do estado de Goiás.',
-      'Errado: Ipameri não se localiza no extremo oeste goiano.'
-    ]
-  },
-
-  // ================= CONHECIMENTOS ESPECÍFICOS (Motorista Legislativo) =================
-  {
-    id: 'esp-1', subjectId: 'especificos',
-    text: 'Segundo o Código de Trânsito Brasileiro, dirigir sob a influência de álcool é infração classificada como:',
-    options: ['Leve', 'Média', 'Grave', 'Gravíssima'],
-    correct: 3,
-    explanations: [
-      'Errado: infrações leves têm penalidades bem menores que a prevista para essa conduta.',
-      'Errado: a gravidade dessa infração é maior do que a classificação média.',
-      'Errado: a classificação grave não corresponde ao tratamento dado a essa conduta pelo CTB.',
-      'Correto: dirigir sob influência de álcool é infração gravíssima, sujeita a multa (multiplicada) e suspensão do direito de dirigir.'
-    ]
-  },
-  {
-    id: 'esp-2', subjectId: 'especificos',
-    text: 'A sinalização semafórica na cor amarela piscando indica que o condutor deve:',
-    options: [
-      'Parar obrigatoriamente',
-      'Seguir com atenção e velocidade reduzida',
-      'Acelerar para não perder a preferência',
-      'Aguardar autorização de agente de trânsito'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: parada obrigatória é indicada pelo sinal vermelho ou pela placa "PARE".',
-      'Correto: o amarelo piscando indica que o condutor deve reduzir a velocidade e seguir com atenção redobrada.',
-      'Errado: essa sinalização não indica prioridade para acelerar.',
-      'Errado: essa indicação não exige a presença de agente de trânsito.'
-    ]
-  },
-  {
-    id: 'esp-3', subjectId: 'especificos',
-    text: 'A "regra dos 2 segundos", usada na direção defensiva, tem como finalidade:',
-    options: [
-      'Calcular o tempo ideal de troca de marchas',
-      'Definir a distância de segurança em relação ao veículo da frente',
-      'Determinar o tempo de uso da seta antes de uma conversão',
-      'Medir o tempo de aquecimento do motor'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: a regra não trata de troca de marchas.',
-      'Correto: a regra ajuda a manter uma distância segura do veículo à frente, considerando o tempo de reação e frenagem.',
-      'Errado: não se relaciona ao uso da seta.',
-      'Errado: não é uma métrica de funcionamento mecânico do motor.'
-    ]
-  },
-  {
-    id: 'esp-4', subjectId: 'especificos',
-    text: 'Ao se deparar com um acidente de trânsito, a atitude inicial mais adequada do motorista é:',
-    options: [
-      'Remover imediatamente as vítimas do local',
-      'Sinalizar o local para evitar novos acidentes e acionar o socorro especializado',
-      'Ir embora do local para não se envolver',
-      'Discutir com os envolvidos sobre a responsabilidade pelo ocorrido'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: mover vítimas sem necessidade e sem treinamento pode agravar lesões, principalmente na coluna.',
-      'Correto: sinalizar o local e acionar o socorro (SAMU 192) protege a todos e agiliza o atendimento adequado.',
-      'Errado: afastar-se sem prestar auxílio pode configurar omissão de socorro.',
-      'Errado: essa atitude não contribui para a segurança nem para o atendimento das vítimas.'
-    ]
-  },
-  {
-    id: 'esp-5', subjectId: 'especificos',
-    text: 'Se a luz de advertência de óleo do painel acender durante a condução, o motorista deve:',
-    options: [
-      'Ignorar, pois é uma luz apenas informativa',
-      'Acelerar até chegar ao destino final',
-      'Parar o veículo com segurança assim que possível e verificar o problema',
-      'Aguardar a próxima troca de óleo programada'
-    ],
-    correct: 2,
-    explanations: [
-      'Errado: essa luz indica um problema real que pode causar dano grave ao motor.',
-      'Errado: continuar rodando com a pressão de óleo baixa pode danificar seriamente o motor.',
-      'Correto: a recomendação de segurança é parar assim que possível e verificar a causa do alerta.',
-      'Errado: o problema pode ser urgente e não deve esperar a manutenção programada.'
-    ]
-  },
-  {
-    id: 'esp-6', subjectId: 'especificos',
-    text: 'Durante o transporte de um vereador, o motorista ouve um assunto sigiloso tratado no veículo. A conduta correta é:',
-    options: [
-      'Comentar o assunto com colegas de trabalho depois',
-      'Manter sigilo absoluto sobre o que foi ouvido',
-      'Publicar um resumo em redes sociais, por transparência',
-      'Anotar os detalhes para uso pessoal futuro'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: comentar o assunto viola a confidencialidade esperada da função.',
-      'Correto: discrição e sigilo são deveres do motorista legislativo ao transportar autoridades.',
-      'Errado: divulgar informações sigilosas fere o dever de confidencialidade e pode causar dano institucional.',
-      'Errado: registrar informações sigilosas para uso pessoal é conduta antiética.'
-    ]
-  },
-  {
-    id: 'esp-7', subjectId: 'especificos',
-    text: 'A calibragem incorreta dos pneus (abaixo do recomendado pelo fabricante) tende a causar, entre outros efeitos:',
-    options: [
-      'Redução do consumo de combustível',
-      'Maior aderência em qualquer situação de piso',
-      'Aumento do consumo de combustível e desgaste irregular do pneu',
-      'Melhora significativa na frenagem'
-    ],
-    correct: 2,
-    explanations: [
-      'Errado: pneus com calibragem baixa aumentam o atrito com o solo, elevando o consumo de combustível.',
-      'Errado: a calibragem incorreta pode, na verdade, reduzir a estabilidade em curvas e frenagens.',
-      'Correto: a calibragem baixa aumenta o atrito e desgasta as bordas do pneu de forma irregular, além de elevar o consumo.',
-      'Errado: a calibragem incorreta tende a prejudicar, não melhorar, a frenagem do veículo.'
-    ]
-  },
-  {
-    id: 'esp-8', subjectId: 'especificos',
-    text: 'Segundo o CTB, o uso do cinto de segurança é obrigatório para:',
-    options: [
-      'Somente o condutor',
-      'Somente os ocupantes do banco da frente',
-      'Condutor e todos os passageiros, em qualquer banco',
-      'Apenas em rodovias, sendo facultativo em vias urbanas'
-    ],
-    correct: 2,
-    explanations: [
-      'Errado: a obrigatoriedade não se limita ao condutor.',
-      'Errado: a obrigatoriedade se estende a todos os bancos, não somente ao dianteiro.',
-      'Correto: o CTB exige o uso do cinto de segurança por todos os ocupantes do veículo, em qualquer banco.',
-      'Errado: a obrigatoriedade vale tanto em vias urbanas quanto em rodovias.'
-    ]
-  },
-  {
-    id: 'esp-9', subjectId: 'especificos',
-    text: 'No preenchimento do relatório de viagem de um veículo oficial, é uma informação essencial a ser registrada:',
-    options: [
-      'Apenas o nome do motorista responsável',
-      'Itinerário, quilometragem percorrida e horários de saída e chegada',
-      'Somente a cor do veículo utilizado',
-      'A opinião pessoal do motorista sobre o trajeto'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: apenas o nome do motorista não é suficiente para um controle adequado da viagem.',
-      'Correto: itinerário, quilometragem e horários são informações centrais no controle de uso de veículos oficiais.',
-      'Errado: a cor do veículo não é uma informação relevante para o controle de viagens.',
-      'Errado: opiniões pessoais não fazem parte do registro técnico de uma viagem oficial.'
-    ]
-  },
-  {
-    id: 'esp-10', subjectId: 'especificos',
-    text: 'Em relação à ética no serviço público, o princípio da impessoalidade determina que o servidor deve:',
-    options: [
-      'Tratar com prioridade os cidadãos que conhece pessoalmente',
-      'Tratar todos os cidadãos de forma igualitária, sem favorecimentos pessoais',
-      'Priorizar o atendimento de acordo com sua conveniência pessoal',
-      'Seguir apenas as normas que considerar convenientes'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: favorecer conhecidos contraria diretamente o princípio da impessoalidade.',
-      'Correto: a impessoalidade exige tratamento igualitário a todos os cidadãos, sem favorecimentos pessoais.',
-      'Errado: o atendimento não deve se guiar pela conveniência pessoal do servidor.',
-      'Errado: o servidor público deve seguir todas as normas aplicáveis, não apenas as que considerar convenientes.'
-    ]
-  },
-  {
-    id: 'esp-11', subjectId: 'especificos',
-    text: 'De acordo com as normas do CONTRAN sobre sinalização, uma placa de fundo vermelho com uma faixa branca na horizontal e o dizer "PARE" é classificada como uma sinalização:',
-    options: [
-      'De regulamentação',
-      'De advertência',
-      'De indicação',
-      'Educativa'
-    ],
-    correct: 0,
-    explanations: [
-      'Correto: a placa "PARE" é uma sinalização de regulamentação, pois impõe uma obrigação (parar) ao condutor.',
-      'Errado: placas de advertência alertam sobre uma condição perigosa à frente, geralmente com fundo amarelo.',
-      'Errado: placas de indicação fornecem informações úteis, como localização de serviços, e não impõem obrigações.',
-      'Errado: sinalização educativa tem caráter informativo/orientador, não impositivo, como o "PARE".'
-    ]
-  },
-  {
-    id: 'esp-12', subjectId: 'especificos',
-    text: 'Antes de iniciar uma viagem, é uma boa prática de manutenção preventiva do veículo:',
-    options: [
-      'Verificar apenas o nível de combustível',
-      'Verificar pneus, níveis de fluidos (óleo, água) e funcionamento de freios e luzes',
-      'Aguardar algum problema aparecer durante o trajeto para depois verificar',
-      'Realizar a verificação apenas uma vez por mês, independentemente do uso'
-    ],
-    correct: 1,
-    explanations: [
-      'Errado: verificar apenas o combustível não é suficiente para garantir a segurança do trajeto.',
-      'Correto: uma checagem preventiva (pneus, fluidos, freios e luzes) antes de cada saída reduz o risco de panes e acidentes.',
-      'Errado: esperar o problema aparecer no trajeto é uma prática de risco, e não de prevenção.',
-      'Errado: a verificação preventiva deve ser feita antes de cada uso relevante, não apenas mensalmente.'
-    ]
-  }
-];
+/* Product Content package loaded externally. */
+/* Product Content externalizado: matérias e questões pertencem ao pacote do produto. */
+;
 
 window.SUBJECTS = SUBJECTS;
 window.QUESTIONS = QUESTIONS;
@@ -1359,8 +683,9 @@ const ILLUSTRATION_BOOKS_URI = 'data:image/webp;base64,UklGRph0AABXRUJQVlA4WAoAA
    em outro concurso, troque apenas esses dois arquivos.
    ============================================================ */
 
-const DOCTOR_CORE_BUILD = '1.10.14';
-const STORAGE_KEY = 'motorista-ipameri-v2';
+const DOCTOR_CORE_BUILD = window.DOCTOR_PRODUCTION_CONFIG?.version || '0.0.0';
+const STORAGE_KEY = 'doctor-core:' + String(EXAM_CONFIG.productId || 'unknown');
+const LEGACY_STORAGE_KEY = EXAM_CONFIG.productId === 'motorista-legislativo' ? 'motorista-ipameri-v2' : null;
 const EXAM_DATE = new Date(EXAM_CONFIG.examDateISO);
 
 function defaultState() {
@@ -1406,7 +731,7 @@ const DoctorQuestionIntegrity = {
   normalize(v){return String(v==null?'':v).trim().replace(/\\s+/g,' ').toLowerCase();},
   fingerprint(q){return [q&&q.id,q&&q.subjectId,q&&q.text,...(Array.isArray(q&&q.options)?q.options:[]),q&&q.correct,...(Array.isArray(q&&q.explanations)?q.explanations:[])].map(this.normalize).join('¦');},
   validate(q){
-    const n=Number(EXAM_CONFIG&&EXAM_CONFIG.alternativesPerQuestion||4),e=[];
+    const n=Number(EXAM_CONFIG&&ExamRules.optionCount||4),e=[];
     if(!q||typeof q!=='object')e.push('questão inválida');
     if(!String(q&&q.id||'').trim())e.push('id ausente');
     if(!String(q&&q.subjectId||'').trim()||!SUBJECTS.some(function(x){return x.id===q.subjectId;}))e.push('matéria inválida');
@@ -1467,7 +792,7 @@ const Store = {
   state: null,
   load() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY) || (LEGACY_STORAGE_KEY ? localStorage.getItem(LEGACY_STORAGE_KEY) : null);
       this.state = raw ? JSON.parse(raw) : defaultState();
       SUBJECTS.forEach(s => {
         if (!this.state.progress[s.id]) this.state.progress[s.id] = { answered: 0, correct: 0 };
@@ -1523,7 +848,8 @@ const Store = {
     }
     return this.state;
   },
-  save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state)); },
+  save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+      if (LEGACY_STORAGE_KEY) { try { localStorage.removeItem(LEGACY_STORAGE_KEY); } catch (_) {} } },
   reset() {
     this.state = defaultState();
     this.save();
@@ -1772,8 +1098,8 @@ const Quiz = {
       const pool = this.shuffle(this.poolFor(s.id));
       questions = questions.concat(pool.slice(0, s.officialQuestions));
     });
-    if(questions.length!==EXAM_CONFIG.totalQuestions){
-      return {ok:false,reason:'invalid-distribution',count:questions.length,expected:EXAM_CONFIG.totalQuestions};
+    if(questions.length!==ExamRules.questionCount){
+      return {ok:false,reason:'invalid-distribution',count:questions.length,expected:ExamRules.questionCount};
     }
     this.session = {
       type: 'simulado',
@@ -1781,7 +1107,7 @@ const Quiz = {
       index: 0,
       answers: [],
       startedAt: Date.now(),
-      timeLimitSeconds: EXAM_CONFIG.durationHours * 60 * 60 // igual à duração real da prova
+      timeLimitSeconds: ExamRules.durationSeconds // igual à duração real da prova
     };
     this.persist();
     return this.session;
@@ -1821,13 +1147,14 @@ const Quiz = {
 
     s.answers.forEach(a => {
       const subj = SUBJECTS.find(x => x.id === a.subjectId);
+      if (!subj) return;
       bySubject[a.subjectId].total++;
-      totalPoints += subj.points;
-      if (a.correct) {
-        bySubject[a.subjectId].correct++;
-        bySubject[a.subjectId].points += subj.points;
-        earnedPoints += subj.points;
-      }
+      const correctPoints = ExamRules.scoring.correct === 'subject-weight' ? Number(subj.points || 0) : Number(ExamRules.scoring.correct || 0);
+      const answerPoints = a.correct ? correctPoints : Number(ExamRules.scoring.incorrectPoints || 0);
+      totalPoints += correctPoints;
+      if (a.correct) bySubject[a.subjectId].correct++;
+      bySubject[a.subjectId].points += answerPoints;
+      earnedPoints += answerPoints;
     });
 
     const result = {
@@ -2112,13 +1439,13 @@ const GroqAI = {
 
   _buildPrompt(subject, count, existingSamples) {
     const sampleText = existingSamples.map(q => `- ${q.text}`).join('\n');
-    const n = EXAM_CONFIG.alternativesPerQuestion;
-    const letters = Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i)).join(', ');
-    return `Você é especialista em elaborar questões de concurso público brasileiro, no padrão do(a) ${EXAM_CONFIG.banca}, para o ${EXAM_CONFIG.editalNumber} do(a) ${EXAM_CONFIG.orgName}, cargo "${EXAM_CONFIG.cargo}".\n\nGere ${count} questões NOVAS e ORIGINAIS sobre a matéria "${subject.name}", usando SOMENTE os tópicos oficiais abaixo:\n${subject.topics.map(t => '- ' + t).join('\n')}\n\nQuestões já existentes (não repita o mesmo enunciado nem a mesma ideia central):\n${sampleText || '(nenhuma)'}\n\nREGRAS:\n1. Exatamente ${n} alternativas (${letters}).\n2. Apenas 1 correta.\n3. Uma explicação própria para cada alternativa, na mesma ordem.\n4. Não invente artigos, datas, normas ou fatos. Se não tiver segurança, não use o dado específico.\n5. Nível médio, objetivo e compatível com concurso público real.\n6. Português do Brasil.\n7. Responda SOMENTE JSON válido no formato {"questions":[{"text":"...","options":[...],"correct":0,"explanations":[...]}]}.`;
+    const n = ExamRules.optionCount;
+    const letters = ExamRules.optionLabels.join(', ');
+    return `Você é especialista em elaborar questões de concurso público brasileiro, no padrão do(a) ${EXAM_CONFIG.banca}, para o ${EXAM_CONFIG.editalNumber} do(a) ${EXAM_CONFIG.orgName}, cargo "${EXAM_CONFIG.cargo}". O formato desta prova é "${ExamRules.questionType}" e a política de resposta é "${ExamRules.answerPolicy}".\n\nGere ${count} questões NOVAS e ORIGINAIS sobre a matéria "${subject.name}", usando SOMENTE os tópicos oficiais abaixo:\n${subject.topics.map(t => '- ' + t).join('\n')}\n\nQuestões já existentes (não repita o mesmo enunciado nem a mesma ideia central):\n${sampleText || '(nenhuma)'}\n\nREGRAS:\n1. Exatamente ${n} alternativas (${letters}).\n2. Apenas 1 correta.\n3. Uma explicação própria para cada alternativa, na mesma ordem.\n4. Não invente artigos, datas, normas ou fatos. Se não tiver segurança, não use o dado específico.\n5. Nível médio, objetivo e compatível com concurso público real.\n6. Português do Brasil.\n7. Responda SOMENTE JSON válido no formato {"questions":[{"text":"...","options":[...],"correct":0,"explanations":[...]}]}.`;
   },
 
   _validateAndTag(rawQuestions, subjectId) {
-    const stamp=Date.now(); const n=EXAM_CONFIG.alternativesPerQuestion; const valid=[]; const seen=new Set();
+    const stamp=Date.now(); const n=ExamRules.optionCount; const valid=[]; const seen=new Set();
     rawQuestions.forEach((q,i)=>{
       if(!q||typeof q.text!=='string'||q.text.trim().length<20)return;
       if(!Array.isArray(q.options)||q.options.length!==n)return;
@@ -2142,7 +1469,7 @@ const GroqAI = {
     const run=(async()=>{
       const existingSamples=Quiz.shuffle(Quiz.poolFor(subjectId)).slice(0,8);
       const prompt=this._buildPrompt(subject,count,existingSamples);
-      const r=await DoctorAICore.call({messages:[{role:'system',content:'Você é o gerador de questões do Doctor. Produza apenas conteúdo dentro do contexto recebido.'},{role:'user',content:DoctorAICore.context()+'\\n'+prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_questions',strict:true,schema:DoctorAICore.questionSchema(count,EXAM_CONFIG.alternativesPerQuestion)}},temperature:0.45,timeout:45000});
+      const r=await DoctorAICore.call({messages:[{role:'system',content:'Você é o gerador de questões do Doctor. Produza apenas conteúdo dentro do contexto recebido.'},{role:'user',content:DoctorAICore.context()+'\\n'+prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_questions',strict:true,schema:DoctorAICore.questionSchema(count,ExamRules.optionCount)}},temperature:0.45,timeout:45000});
       if(!r.ok) return r;
       const parsed=DoctorAICore.parseJSON(r.content); const raw=Array.isArray(parsed?.questions)?parsed.questions:[];
       let validated=this._validateAndTag(raw,subjectId);
@@ -2289,7 +1616,7 @@ const DoctorAICore = {
     return null;
   },
   validateQuestion(q,subjectId){
-    const n=EXAM_CONFIG.alternativesPerQuestion;
+    const n=ExamRules.optionCount;
     if(!q||typeof q.text!=='string'||q.text.trim().length<20)return false;
     if(!Array.isArray(q.options)||q.options.length!==n)return false;
     if(!q.options.every(x=>typeof x==='string'&&x.trim()))return false;
@@ -2303,7 +1630,7 @@ const DoctorAICore = {
   },
   async reviewQuestions(questions,subject) {
     if(!questions?.length) return {ok:true,questions:[]};
-    const n=EXAM_CONFIG.alternativesPerQuestion;
+    const n=ExamRules.optionCount;
     const payload=questions.map((q,i)=>({index:i,text:q.text,options:q.options,correct:q.correct,explanations:q.explanations}));
     const prompt=`Você é o REVISOR DOCTOR, uma camada independente do gerador.\n${this.context()}\nMatéria: ${subject.name}\nTópicos permitidos:\n${subject.topics.map(x=>'- '+x).join('\n')}\n\nAnalise cada questão abaixo ANTES de permitir sua entrega ao aluno.\nREGRAS: (1) exatamente ${n} alternativas; (2) somente uma correta; (3) gabarito deve ser defensável; (4) explicações coerentes com o gabarito; (5) sem informação inventada; (6) se houver artigo, lei, data ou fato atual cuja correção não possa ser sustentada com segurança pelo contexto recebido, marque REJEITAR em vez de adivinhar; (7) questão fora do edital ou incompatível com o estilo da banca = REJEITAR.\nResponda JSON com decisions: [{index,status,reason,correctedQuestion}]. status só pode ser APROVAR, CORRIGIR ou REJEITAR. correctedQuestion deve existir sempre; quando não houver correção segura, repita a questão original.\nQUESTÕES:\n${JSON.stringify(payload)}`;
     const r=await this.call({messages:[{role:'system',content:'Você é o Revisor Doctor. Nunca aprove uma questão só porque parece plausível.'},{role:'user',content:prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_review_decisions',strict:true,schema:{type:'object',additionalProperties:false,properties:{decisions:{type:'array',items:{type:'object',additionalProperties:false,properties:{index:{type:'integer'},status:{type:'string',enum:['APROVAR','CORRIGIR','REJEITAR']},reason:{type:'string'},correctedQuestion:{type:'object',additionalProperties:false,properties:{text:{type:'string'},options:{type:'array',items:{type:'string'}},correct:{type:'integer'},explanations:{type:'array',items:{type:'string'}}},required:['text','options','correct','explanations']}},required:['index','status','reason','correctedQuestion']}}},required:['decisions']}}},temperature:0});
@@ -2394,7 +1721,11 @@ const DoctorAICore = {
   _radarAllowedUrl(url){
     try{
       const host=new URL(url).hostname.toLowerCase().replace(/^www\./,'');
-      return host==='institutoverbena.ufg.br' || host.endsWith('.institutoverbena.ufg.br') || host==='camaraipameri.go.gov.br';
+      const allowed=Array.isArray(EXAM_CONFIG.radarAllowedHosts)?EXAM_CONFIG.radarAllowedHosts:[];
+      return allowed.some(base=>{
+        const b=String(base||'').toLowerCase().replace(/^www\./,'');
+        return host===b || host.endsWith('.'+b);
+      });
     }catch(_){return false;}
   },
 
@@ -2453,6 +1784,13 @@ const UI = {
 
   init() {
     Store.load();
+    document.title = EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Doctor Core';
+    const topbarTitle = document.getElementById('topbar-title');
+    if (topbarTitle) topbarTitle.textContent = EXAM_CONFIG.orgName || EXAM_CONFIG.productName || 'Doctor Concursos';
+    const footerCoreVersion = document.getElementById('footer-core-version');
+    if (footerCoreVersion) footerCoreVersion.textContent = DOCTOR_CORE_BUILD;
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) metaDescription.setAttribute('content', 'Doctor Core — ' + String(EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'aplicativo de estudos'));
 try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditoria estrutural do banco falhou',e);}
     document.documentElement.setAttribute('data-theme', Store.state.theme);
     document.documentElement.style.setProperty('--blue-dark', EXAM_CONFIG.primaryColor);
@@ -2464,7 +1802,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.10.15', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.11.0', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
@@ -2937,7 +2275,7 @@ Views.home = function () {
   return `
     <section class="exam-hero" aria-label="Contagem regressiva para a prova">
       <div class="exam-hero-photo">
-        <img class="exam-hero-chamber" src="assets/concurso/camara-ipameri.webp" alt="Câmara Municipal de Ipameri" loading="eager">
+        <img class="exam-hero-chamber" src="${EXAM_CONFIG.heroImage || ''}" alt="${EXAM_CONFIG.orgName || 'Concurso'}" loading="eager">
         <div class="exam-hero-overlay" aria-hidden="true"></div>
         <div class="exam-hero-content">
           <div class="hero-label">Faltam para a prova</div>
@@ -3005,7 +2343,7 @@ Views.home = function () {
     </div>
 
     <button class="btn btn-orange btn-block" id="home-flashcards">${iconEl('cards')} Flashcards</button>
-    <button class="btn btn-danger btn-block" id="home-simulado">${iconEl('clipboard')} Simulado Oficial (${EXAM_CONFIG.totalQuestions} questões · ${EXAM_CONFIG.durationHours}h)</button>
+    <button class="btn btn-danger btn-block" id="home-simulado">${iconEl('clipboard')} Simulado Oficial (${ExamRules.questionCount} questões · ${EXAM_CONFIG.durationHours}h)</button>
 
     ${Views.doctorCard()}
 
@@ -3059,7 +2397,7 @@ Views.doctorCard = function () {
 Views.editalFooter = function () {
   return `
     <div class="edital-footer">
-      <div class="edital-photo-wrap"><img class="edital-photo" src="https://camaraipameri.go.gov.br/camara/storage/app/resources/resize/960_540_0_0_crop/img_4c40354850a52fa37fa0d4931da319c2.jpg" alt="Câmara Municipal de Ipameri" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="edital-photo-fallback">🏛️</div></div>
+      <div class="edital-photo-wrap"><img class="edital-photo" src="${EXAM_CONFIG.organizationImageUrl || ''}" alt="${EXAM_CONFIG.orgName || 'Órgão'}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="edital-photo-fallback">🏛️</div></div>
       <div class="edital-org">${EXAM_CONFIG.orgName}${EXAM_CONFIG.orgState ? ' - ' + EXAM_CONFIG.orgState : ''}</div>
       <div class="edital-cargo">${EXAM_CONFIG.cargo}</div>
       <div class="edital-banca">Banca organizadora: ${EXAM_CONFIG.banca}</div>
@@ -3069,7 +2407,7 @@ Views.editalFooter = function () {
         <div class="edital-item"><span class="edital-item-label">${iconEl('clock')} Publicado em</span><span>${EXAM_CONFIG.editalPublishDate}</span></div>
         <div class="edital-item"><span class="edital-item-label">${iconEl('mapPin')} Local da prova</span><span>${EXAM_CONFIG.applicationCity}</span></div>
         <div class="edital-item"><span class="edital-item-label">${iconEl('clock')} Duração</span><span>${EXAM_CONFIG.durationHours} horas</span></div>
-        <div class="edital-item"><span class="edital-item-label">${iconEl('target')} Questões</span><span>${EXAM_CONFIG.totalQuestions} (${EXAM_CONFIG.alternativesPerQuestion} alternativas)</span></div>
+        <div class="edital-item"><span class="edital-item-label">${iconEl('target')} Questões</span><span>${ExamRules.questionCount} (${ExamRules.optionCount} alternativas)</span></div>
         <div class="edital-item"><span class="edital-item-label">${iconEl('checkCircle')} Aprovação</span><span>${EXAM_CONFIG.passingScore}/${EXAM_CONFIG.totalPoints} pontos</span></div>
       </div>
 
@@ -3193,7 +2531,7 @@ Views.reviewSession = function () {
   const last = answered ? s.answers[s.index] : null;
   const evidence = q ? DoctorQuestionIntegrity.getEvidence(q) : null;
   const integrityMismatch = !!evidence?.mismatch || !!(last?.questionFingerprint && q && last.questionFingerprint !== DoctorQuestionIntegrity.fingerprint(q));
-  const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
+  const letters = ExamRules.optionLabels;
 
   return `
     <div class="q-header">
@@ -3308,7 +2646,7 @@ Views.practice = function () {
   const integrityMismatch = !!evidence?.mismatch;
   const selected = answered && !integrityMismatch ? evidence.selected : null;
   const correct = answered && !integrityMismatch ? evidence.isCorrect : null;
-  const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
+  const letters = ExamRules.optionLabels;
   const canGoPrev = feed.position > 0;
   const isFrontier = feed.position === feed.order.length - 1;
   const needsMoreToAdvance = isFrontier && !Quiz.hasMoreFresh(subjectId);
@@ -3605,7 +2943,7 @@ Views.simuladoSetup = function () {
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
     <h2>${iconEl('clipboard')} Simulado Oficial</h2>
-    <p class="muted">Reproduz exatamente a estrutura do ${EXAM_CONFIG.editalNumber}: ${EXAM_CONFIG.totalQuestions} questões, ${EXAM_CONFIG.alternativesPerQuestion} alternativas, ${EXAM_CONFIG.totalPoints} pontos, mínimo ${EXAM_CONFIG.passingScore} para aprovação, ${EXAM_CONFIG.durationHours} horas de duração.</p>
+    <p class="muted">Reproduz exatamente a estrutura do ${EXAM_CONFIG.editalNumber}: ${ExamRules.questionCount} questões, ${ExamRules.optionCount} alternativas, ${EXAM_CONFIG.totalPoints} pontos, mínimo ${EXAM_CONFIG.passingScore} para aprovação, ${EXAM_CONFIG.durationHours} horas de duração.</p>
     <div class="card">
       ${readiness.map(r => `
         <div class="subj-row">
@@ -3678,7 +3016,7 @@ Views.simuladoRunning = function () {
   const last = answered ? s.answers[s.index] : null;
   const evidence = q ? DoctorQuestionIntegrity.getEvidence(q) : null;
   const integrityMismatch = !!evidence?.mismatch || !!(last?.questionFingerprint && q && last.questionFingerprint !== DoctorQuestionIntegrity.fingerprint(q));
-  const letters = Array.from({ length: EXAM_CONFIG.alternativesPerQuestion }, (_, i) => String.fromCharCode(65 + i));
+  const letters = Array.from({ length: ExamRules.optionCount }, (_, i) => String.fromCharCode(65 + i));
 
   return `
     <button class="btn btn-ghost btn-sm" id="sim-back">${iconEl('arrowLeft')} Sair do simulado</button>

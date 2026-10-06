@@ -4,7 +4,7 @@
  * Supabase, pagamentos e a Plataforma Principal são conectados.
  */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.10.15',
+  version: '1.11.0',
   environment: 'production',
   integrations: {
     supabase: {

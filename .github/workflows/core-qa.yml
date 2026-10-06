@@ -2,7 +2,7 @@ name: Doctor Core QA
 
 on:
   push:
-    branches: [main, core-audit-v1.10.15]
+    branches: [main, core-industrial-v1.11.0]
   pull_request:
     branches: [main]
 
@@ -15,3 +15,4 @@ jobs:
         with:
           node-version: 22
       - run: node qa/core-static-audit.mjs
+      - run: node qa/question-content-audit.mjs
