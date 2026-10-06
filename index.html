@@ -688,8 +688,9 @@ const ILLUSTRATION_BOOKS_URI = 'data:image/webp;base64,UklGRph0AABXRUJQVlA4WAoAA
    em outro concurso, troque apenas esses dois arquivos.
    ============================================================ */
 
-const DOCTOR_CORE_BUILD = '1.10.14';
-const STORAGE_KEY = 'motorista-ipameri-v2';
+const DOCTOR_CORE_BUILD = window.DOCTOR_PRODUCTION_CONFIG?.version || '0.0.0';
+const STORAGE_KEY = 'doctor-core:' + String(EXAM_CONFIG.productId || 'unknown');
+const LEGACY_STORAGE_KEY = EXAM_CONFIG.productId === 'motorista-legislativo' ? 'motorista-ipameri-v2' : null;
 const EXAM_DATE = new Date(EXAM_CONFIG.examDateISO);
 
 function defaultState() {
@@ -796,7 +797,7 @@ const Store = {
   state: null,
   load() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY) || (LEGACY_STORAGE_KEY ? localStorage.getItem(LEGACY_STORAGE_KEY) : null);
       this.state = raw ? JSON.parse(raw) : defaultState();
       SUBJECTS.forEach(s => {
         if (!this.state.progress[s.id]) this.state.progress[s.id] = { answered: 0, correct: 0 };
@@ -852,7 +853,8 @@ const Store = {
     }
     return this.state;
   },
-  save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state)); },
+  save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+      if (LEGACY_STORAGE_KEY) { try { localStorage.removeItem(LEGACY_STORAGE_KEY); } catch (_) {} } },
   reset() {
     this.state = defaultState();
     this.save();
