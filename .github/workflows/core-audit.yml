@@ -1,0 +1,22 @@
+name: Doctor Core Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Auditoria estrutural do Core
+        run: node tools/audit-core.mjs
+      - name: Auditoria determinística do conteúdo
+        run: node tools/audit-content.mjs
