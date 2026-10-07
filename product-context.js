@@ -57,7 +57,7 @@ const EXAM_CONFIG = {
   // Doctor Core V1 — identidade estável do produto e versão de conteúdo
   appId: 'doctor-motorista-legislativo',
   productId: 'motorista-legislativo',
-  coreVersion: '1.1.0-core',
+  coreVersion: '1.12.0-core',
   contentVersion: '2026.1',
   editorialMode: 'edital-plus-banca',
   // Perfil operacional da IA: muda com o concurso/banca, não com o Core.
