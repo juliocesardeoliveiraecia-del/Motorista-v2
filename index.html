@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.11.0',
+  version: '1.12.0',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,15 +17,15 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
-<script src="product-context.js?v=1.11.0"></script>
-<script src="product-content.js?v=1.11.0"></script>
+<script src="product-context.js?v=1.12.0"></script>
+<script src="product-content.js?v=1.12.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.11.0">
+<meta name="doctor-core-version" content="1.12.0">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.11.0">
+<link rel="manifest" href="manifest.json?v=1.12.0">
 <link rel="icon" type="image/png" sizes="48x48" href="assets/icons/icon-48.png?v=1.9.6">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png?v=1.9.6">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-192.png?v=1.9.6">
@@ -782,8 +782,12 @@ const DoctorQuestionIntegrity = {
     if(!gate.ok)return {ok:false,reason:gate.reason,errors:gate.errors};
     if(!Number.isInteger(selected)||selected<0||selected>=q.options.length)return {ok:false,reason:'invalid-option'};
     const ev=this.evidence(q,selected,phase);
-    Store.state.answerMeta[q.id]=ev;
-    Store.state.answerLog[q.id]=selected;
+    // Revisão é uma nova tentativa pedagógica e NÃO pode sobrescrever a evidência original.
+    // A resposta original é a fonte do Caderno de Erros e da auditoria de integridade.
+    if(phase!=='review'){
+      Store.state.answerMeta[q.id]=ev;
+      Store.state.answerLog[q.id]=selected;
+    }
     return {ok:true,evidence:ev};
   },
   getEvidence(q){const ev=Store.state.answerMeta&&Store.state.answerMeta[q.id];if(!ev)return null;if(ev.questionFingerprint!==this.fingerprint(q))return {mismatch:true,...ev};return ev;}
@@ -975,7 +979,8 @@ const Quiz = {
   // Escolhe uma questão nunca respondida antes (em qualquer sessão), da matéria
   // pedida ou, no modo "todas", do conjunto inteiro.
   pickFreshQuestion(subjectId) {
-    const pool = subjectId === 'todas' ? QUESTIONS : this.poolFor(subjectId);
+    const blocked=new Set(Store.state.questionIntegrity?.quarantinedIds||[]);
+    const pool = subjectId === 'todas' ? QUESTIONS.filter(q => !blocked.has(q.id) && (!q.aiGenerated || q.reviewedByDoctor===true)) : this.poolFor(subjectId);
     const candidates = pool.filter(q => !this.isAnsweredAnywhere(q.id));
     if (candidates.length === 0) return null;
     return this.shuffle(candidates)[0];
@@ -1802,7 +1807,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.11.0', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.12.0', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
