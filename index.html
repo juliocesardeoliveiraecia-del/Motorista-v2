@@ -3467,6 +3467,7 @@ if (document.getElementById('splash-logo')) document.getElementById('splash-logo
 if (document.getElementById('splash-text')) document.getElementById('splash-text').textContent = EXAM_CONFIG.productName;
 if (document.getElementById('footer-year')) document.getElementById('footer-year').textContent = '© ' + new Date().getFullYear();
 if (document.getElementById('settings-toggle')) document.getElementById('settings-toggle').innerHTML = ICONS.gear;
+window.DOCTOR_CORE_RUNTIME = { Store, Quiz, DoctorQuestionIntegrity, DoctorAICore, RadarDoctor, CoreSync, CoreRecorder, CoreEssay };
 UI.init();
 
 </script>
@@ -3559,5 +3560,6 @@ UI.init();
   schedule();
 })();
 </script>
+<script src="./doctor-core-quality.js?v=1.12.1" defer></script>
 </body>
 </html>
