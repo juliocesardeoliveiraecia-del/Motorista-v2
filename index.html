@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.0',
+  version: '1.12.1',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,15 +17,15 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
-<script src="product-context.js?v=1.12.0"></script>
-<script src="product-content.js?v=1.12.0"></script>
+<script src="product-context.js?v=1.12.1"></script>
+<script src="product-content.js?v=1.12.1"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.0">
+<meta name="doctor-core-version" content="1.12.1">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.12.0">
+<link rel="manifest" href="manifest.json?v=1.12.1">
 <link rel="icon" type="image/png" sizes="48x48" href="assets/icons/icon-48.png?v=1.9.6">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png?v=1.9.6">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-192.png?v=1.9.6">
@@ -1148,17 +1148,41 @@ const Quiz = {
     const bySubject = {};
     let totalPoints = 0, earnedPoints = 0;
 
-    SUBJECTS.forEach(subj => { bySubject[subj.id] = { correct: 0, total: 0, points: 0 }; });
+    // O resultado deve representar a prova inteira, não apenas as questões
+    // respondidas. Questões em branco valem zero, mas continuam compondo
+    // o denominador e o total por matéria. Isso evita resultados falsos
+    // como "20/40" quando o aluno deixou questões sem responder.
+    SUBJECTS.forEach(subj => {
+      bySubject[subj.id] = { correct: 0, total: 0, points: 0, answered: 0, blank: 0 };
+    });
 
-    s.answers.forEach(a => {
-      const subj = SUBJECTS.find(x => x.id === a.subjectId);
+    // O conjunto do simulado define o total real da prova.
+    s.questions.forEach(q => {
+      const subj = SUBJECTS.find(x => x.id === q.subjectId);
       if (!subj) return;
-      bySubject[a.subjectId].total++;
-      const correctPoints = ExamRules.scoring.correct === 'subject-weight' ? Number(subj.points || 0) : Number(ExamRules.scoring.correct || 0);
-      const answerPoints = a.correct ? correctPoints : Number(ExamRules.scoring.incorrectPoints || 0);
+      const correctPoints = ExamRules.scoring.correct === 'subject-weight'
+        ? Number(subj.points || 0)
+        : Number(ExamRules.scoring.correct || 0);
+      bySubject[q.subjectId].total++;
       totalPoints += correctPoints;
-      if (a.correct) bySubject[a.subjectId].correct++;
-      bySubject[a.subjectId].points += answerPoints;
+    });
+
+    const answersByQuestion = new Map((s.answers || []).map(a => [a.questionId, a]));
+    s.questions.forEach(q => {
+      const subj = SUBJECTS.find(x => x.id === q.subjectId);
+      if (!subj) return;
+      const a = answersByQuestion.get(q.id);
+      if (!a) {
+        bySubject[q.subjectId].blank++;
+        return;
+      }
+      bySubject[q.subjectId].answered++;
+      const correctPoints = ExamRules.scoring.correct === 'subject-weight'
+        ? Number(subj.points || 0)
+        : Number(ExamRules.scoring.correct || 0);
+      const answerPoints = a.correct ? correctPoints : Number(ExamRules.scoring.incorrectPoints || 0);
+      if (a.correct) bySubject[q.subjectId].correct++;
+      bySubject[q.subjectId].points += answerPoints;
       earnedPoints += answerPoints;
     });
 
@@ -1807,7 +1831,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.12.0', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.12.1', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
