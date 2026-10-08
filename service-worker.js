@@ -1,5 +1,5 @@
 // service-worker.js — network-first (sempre busca a versão mais nova primeiro)
-const CACHE_NAME = 'motorista-ipameri-v1.12.0';
+const CACHE_NAME = 'motorista-ipameri-v1.12.1';
 const ASSETS = ['./', './index.html'];
 const NETWORK_TIMEOUT_MS = 3500;
 
