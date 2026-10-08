@@ -8,5 +8,13 @@
   "theme_color": "#0A192F",
   "lang": "pt-BR",
   "orientation": "portrait-primary",
-  "version": "1.12.1"
+  "version": "1.12.1",
+  "icons": [
+    {
+      "src": "doctor-core-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
