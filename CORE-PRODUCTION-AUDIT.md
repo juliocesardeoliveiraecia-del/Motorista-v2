@@ -69,7 +69,7 @@ Esta é a matriz oficial de fechamento do Core antes da produção em massa de a
 - versão Core alinhada em 1.12.1;
 - service worker e manifesto alinhados.
 
-### Conteúdo Motorista Legislativo ainda requer fechamento
+### Assets — bloqueio encontrado na auditoria\nO `product-context.js` referencia assets relativos que não estão presentes no repositório atual, incluindo `assets/concurso/camara-ipameri.webp`, `assets/icons/doctor-core-master-base.png` e `assets/doctor/evolution/doctor-level-01.png`. Eles precisam ser internalizados no repositório ou substituídos por assets oficiais disponíveis antes de declarar o Core/primeiro produto 100% pronto para produção.\n\n### Conteúdo Motorista Legislativo ainda requer fechamento
 O pacote atual possui 32 questões:
 - Português: 8 / 10 necessárias;
 - Raciocínio Lógico: 6 / 3 necessárias;
