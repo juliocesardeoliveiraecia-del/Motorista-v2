@@ -111,10 +111,10 @@
 
   function persistReport(report){
     try{
-      if(window.Store?.state){
-        window.Store.state.aiCore = window.Store.state.aiCore || {};
-        window.Store.state.aiCore.qualityAudit = report;
-        window.Store.save?.();
+      if(window.DOCTOR_CORE_RUNTIME?.Store?.state){
+        window.DOCTOR_CORE_RUNTIME?.Store.state.aiCore = window.DOCTOR_CORE_RUNTIME?.Store.state.aiCore || {};
+        window.DOCTOR_CORE_RUNTIME?.Store.state.aiCore.qualityAudit = report;
+        window.DOCTOR_CORE_RUNTIME?.Store.save?.();
       }
     }catch(_){}
   }
@@ -137,18 +137,18 @@
 
   // Segurança adicional: depois de cada resposta, confira a evidência antes
   // de permitir que a UI considere a resposta válida.
-  if(window.Quiz){
+  if(window.DOCTOR_CORE_RUNTIME?.Quiz){
     const wrap = (name) => {
-      const original = window.Quiz[name];
+      const original = window.DOCTOR_CORE_RUNTIME?.Quiz[name];
       if(typeof original !== 'function' || original.__doctorQualityWrapped) return;
       const wrapped = function(...args){
-        const before = API.fingerprint(window.Quiz.currentQuestion?.(args[0]) || null);
+        const before = API.fingerprint(window.DOCTOR_CORE_RUNTIME?.Quiz.currentQuestion?.(args[0]) || null);
         const result = original.apply(this,args);
         if(result?.ok && result.evidence){
-          const q = window.Quiz.currentQuestion?.(args[0]);
+          const q = window.DOCTOR_CORE_RUNTIME?.Quiz.currentQuestion?.(args[0]);
           const check = API.verifyEvidence(q,result.evidence,result.evidence.selected);
           if(!check.ok){
-            try{ window.Store.state.answerMeta[q.id] = null; window.Store.save(); }catch(_){}
+            try{ window.DOCTOR_CORE_RUNTIME?.Store.state.answerMeta[q.id] = null; window.DOCTOR_CORE_RUNTIME?.Store.save(); }catch(_){}
             return {ok:false,reason:'quality-gate-'+check.reason};
           }
           if(before && before !== result.evidence.questionFingerprint) return {ok:false,reason:'quality-gate-question-changed'};
@@ -156,7 +156,7 @@
         return result;
       };
       wrapped.__doctorQualityWrapped = true;
-      window.Quiz[name] = wrapped;
+      window.DOCTOR_CORE_RUNTIME?.Quiz[name] = wrapped;
     };
     wrap('answerFeedQuestion');
     wrap('answerCurrent');
