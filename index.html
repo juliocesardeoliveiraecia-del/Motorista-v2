@@ -2304,7 +2304,7 @@ Views.home = function () {
   return `
     <section class="exam-hero" aria-label="Contagem regressiva para a prova">
       <div class="exam-hero-photo">
-        <img class="exam-hero-chamber" src="${EXAM_CONFIG.heroImage || ''}" alt="${EXAM_CONFIG.orgName || 'Concurso'}" loading="eager">
+        <img class="exam-hero-chamber" src="${EXAM_CONFIG.heroImage || ''}" alt="${EXAM_CONFIG.orgName || 'Concurso'}" loading="eager" onerror="this.style.display='none';">
         <div class="exam-hero-overlay" aria-hidden="true"></div>
         <div class="exam-hero-content">
           <div class="hero-label">Faltam para a prova</div>
