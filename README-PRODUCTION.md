@@ -63,3 +63,9 @@ O deployment Drop histórico permanece como referência de recuperação enquant
 - Simulado oficial não pode mais ser iniciado parcialmente.
 - O banco é reauditado depois da inclusão de conteúdo gerado por IA.
 - O próximo estágio para produção em massa é a homologação da camada central do Radar e a revisão factual/fontes do conteúdo de cada produto; o Core não inventa aprovação factual.
+
+
+## Auditoria de abertura PWA — V1.12.2 (correção em homologação)
+- Identificado risco no service worker: quando a rede falha, ele devolve `index.html` como fallback para qualquer recurso, inclusive scripts. Isso pode gerar erro de sintaxe e impedir a inicialização offline.
+- Correção planejada: cachear os scripts críticos e limitar o fallback HTML a navegações/documentos.
+- A publicação ainda precisa ser atualizada e testada em navegador real; deployment `main` anterior está READY, mas build verde não comprova execução correta no cliente.
