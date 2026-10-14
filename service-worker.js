@@ -1,10 +1,24 @@
 // service-worker.js — network-first (sempre busca a versão mais nova primeiro)
-const CACHE_NAME = 'motorista-ipameri-v1.12.2';
-const ASSETS = ['./', './index.html', './manifest.json', './production-config.js', './doctor-core-quality.js', './assets/doctor/evolution/doctor-avatar-fallback.svg'];
+const CACHE_NAME = 'motorista-ipameri-v1.12.3';
+const ASSETS = [
+  './', './index.html', './manifest.json', './version.json',
+  './production-config.js', './product-context.js', './product-content.js',
+  './doctor-core-quality.js', './doctor-core-icon.svg',
+  './assets/doctor/evolution/doctor-avatar-fallback.svg'
+];
 const NETWORK_TIMEOUT_MS = 3500;
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    // A single optional/missing asset must never cancel SW installation.
+    await Promise.allSettled(ASSETS.map(async (asset) => {
+      try {
+        const response = await fetch(asset, { cache: 'reload' });
+        if (response && response.ok) await cache.put(asset, response);
+      } catch (_) { /* optional asset; network-first still serves it later */ }
+    }));
+  })());
   self.skipWaiting();
 });
 
