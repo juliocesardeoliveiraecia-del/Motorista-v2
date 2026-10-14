@@ -1,6 +1,6 @@
 // service-worker.js — network-first (sempre busca a versão mais nova primeiro)
-const CACHE_NAME = 'motorista-ipameri-v1.12.1';
-const ASSETS = ['./', './index.html'];
+const CACHE_NAME = 'motorista-ipameri-v1.12.2';
+const ASSETS = ['./', './index.html', './manifest.json', './production-config.js', './doctor-core-quality.js', './assets/doctor/evolution/doctor-avatar-fallback.svg'];
 const NETWORK_TIMEOUT_MS = 3500;
 
 self.addEventListener('install', (event) => {
