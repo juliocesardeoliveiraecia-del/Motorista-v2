@@ -554,6 +554,16 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   .ai-indicator .ai-mini-dot{width:6px;height:6px;box-shadow:0 0 0 3px rgba(32,184,107,.10);}
 }
 
+
+/* Avatar Doctor: fallback visual com escala por nível quando o PNG individual estiver ausente. */
+.doctor-avatar-box img.doctor-avatar-level-1{max-height:150px;max-width:34%}
+.doctor-avatar-box img.doctor-avatar-level-2{max-height:190px;max-width:44%}
+.doctor-avatar-box img.doctor-avatar-level-3{max-height:240px;max-width:54%}
+.doctor-avatar-box img.doctor-avatar-level-4{max-height:285px;max-width:62%}
+.doctor-avatar-box img.doctor-avatar-level-5,.doctor-avatar-box img.doctor-avatar-level-6{max-height:330px;max-width:70%}
+.doctor-avatar-box img.doctor-avatar-level-7,.doctor-avatar-box img.doctor-avatar-level-8,.doctor-avatar-box img.doctor-avatar-level-9,.doctor-avatar-box img.doctor-avatar-level-10{max-height:350px;max-width:80%}
+.doctor-avatar-box img.doctor-avatar-fallback-image{object-fit:contain;background:transparent;border-radius:12px}
+@media(max-width:640px){.doctor-avatar-box img.doctor-avatar-level-1{max-height:120px;max-width:32%}.doctor-avatar-box img.doctor-avatar-level-2{max-height:160px}.doctor-avatar-box img.doctor-avatar-level-3{max-height:210px}.doctor-avatar-box img.doctor-avatar-level-4{max-height:250px}.doctor-avatar-box img.doctor-avatar-level-5,.doctor-avatar-box img.doctor-avatar-level-6{max-height:285px}.doctor-avatar-box img.doctor-avatar-level-7,.doctor-avatar-box img.doctor-avatar-level-8,.doctor-avatar-box img.doctor-avatar-level-9,.doctor-avatar-box img.doctor-avatar-level-10{max-height:295px}}
 </style>
 </head>
 <body>
@@ -2421,7 +2431,7 @@ Views.doctorCard = function () {
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
         ${p.level.imageUri
-          ? `<img class="doctor-avatar-image" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.2&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.2&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
