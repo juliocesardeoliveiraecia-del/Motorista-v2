@@ -2736,7 +2736,7 @@ Views.practice = function () {
         }
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
       }).join('')}
-      ${answered && integrityMismatch ? '<div class="explanation warn-card"><strong>Questão em revisão</strong><p>O conteúdo mudou desde a resposta registrada. A correção automática foi suspensa para evitar um falso erro.</p></div><div class="grid-2"><button class="btn btn-outline btn-block" id="q-prev">Anterior</button><button class="btn btn-primary btn-block" id="q-next">Próxima</button></div>' : answered ? `
+      ${answered && integrityMismatch ? '<div class="explanation warn-card"><strong>Questão em revisão</strong><p>O conteúdo mudou desde a resposta registrada. A correção automática foi suspensa para evitar um falso erro.</p></div><div class="grid-2"><button class="btn btn-outline btn-block" id="q-prev">Anterior</button><button class="btn btn-primary btn-block" id="q-next">Próxima</button></div><button class="btn btn-outline btn-block" id="q-generate-inline">Gerar mais questões</button>' : answered ? `
         <div class="explanation">
           <strong>${correct ? iconEl('checkCircle') + ' Correto!' : iconEl('xCircle') + ' Incorreto.'}</strong>
           <p>${q.explanations[selected]}</p>
