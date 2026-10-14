@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.1',
+  version: '1.12.3',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,18 +17,18 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
-<script src="product-context.js?v=1.12.1"></script>
-<script src="product-content.js?v=1.12.1"></script>
+<script src="product-context.js?v=1.12.3"></script>
+<script src="product-content.js?v=1.12.3"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.1">
+<meta name="doctor-core-version" content="1.12.3">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.12.1">
-<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.1">
+<link rel="manifest" href="manifest.json?v=1.12.3">
+<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.3">
 
-<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.1">
+<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.3">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Doctor Core">
 <style>
@@ -567,7 +567,74 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 </style>
 </head>
 <body>
-<div id="splash" aria-label="Carregando Doctor Concursos"><img class="logo" id="splash-logo" alt="Doctor Concursos"><div id="splash-text"></div><div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.1</div><div id="splash-progress" aria-hidden="true"></div></div>
+<div id="splash" aria-label="Carregando Doctor Concursos"><img class="logo" id="splash-logo" alt="Doctor Concursos"><div id="splash-text"></div>
+
+<script>
+/* Doctor Core Boot Watchdog — never leave the student trapped on the splash screen. */
+(function () {
+  var started = Date.now();
+  function showBootFailure(reason) {
+    var splash = document.getElementById('splash');
+    if (!splash || !document.body) return;
+    if (splash.dataset.bootFailureShown === '1') return;
+    splash.dataset.bootFailureShown = '1';
+    var title = document.getElementById('splash-text');
+    var subtitle = document.getElementById('splash-subtitle');
+    var progress = document.getElementById('splash-progress');
+    if (title) title.textContent = 'Não foi possível abrir o Doctor Core';
+    if (subtitle) subtitle.textContent = 'A inicialização demorou mais que o esperado. Seus dados locais foram preservados.';
+    if (progress) progress.style.display = 'none';
+    var old = document.getElementById('doctor-boot-recovery');
+    if (!old) {
+      var box = document.createElement('div');
+      box.id = 'doctor-boot-recovery';
+      box.style.cssText = 'margin:18px 20px 0;display:flex;gap:10px;flex-wrap:wrap;justify-content:center';
+      var retry = document.createElement('button');
+      retry.type = 'button';
+      retry.textContent = 'Tentar abrir novamente';
+      retry.style.cssText = 'padding:12px 18px;border:0;border-radius:10px;font-weight:800;background:#F5A623;color:#0A192F';
+      retry.onclick = function () { window.location.reload(); };
+      var safe = document.createElement('button');
+      safe.type = 'button';
+      safe.textContent = 'Abrir sem cache';
+      safe.style.cssText = 'padding:12px 18px;border:1px solid rgba(255,255,255,.55);border-radius:10px;font-weight:700;background:transparent;color:white';
+      safe.onclick = async function () {
+        try {
+          if ('serviceWorker' in navigator) {
+            var regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(function (r) { return r.unregister(); }));
+          }
+          if ('caches' in window) {
+            var keys = await caches.keys();
+            await Promise.all(keys.filter(function (k) { return k.indexOf('motorista-ipameri-') === 0; }).map(function (k) { return caches.delete(k); }));
+          }
+        } catch (_) {}
+        window.location.reload();
+      };
+      box.appendChild(retry); box.appendChild(safe); splash.appendChild(box);
+    }
+    if (reason) console.error('[Doctor Core boot watchdog]', reason);
+  }
+  window.__DOCTOR_BOOT_WATCHDOG__ = setTimeout(function () {
+    if (document.getElementById('splash')) showBootFailure('boot-timeout-after-15000ms');
+  }, 15000);
+  window.addEventListener('error', function (event) {
+    if (event && event.error && document.getElementById('splash')) {
+      setTimeout(function () {
+        if (document.getElementById('splash')) showBootFailure(event.error.message || 'uncaught-runtime-error');
+      }, 8000);
+    }
+  });
+  window.addEventListener('unhandledrejection', function (event) {
+    if (document.getElementById('splash')) {
+      setTimeout(function () {
+        if (document.getElementById('splash')) showBootFailure(event.reason && event.reason.message || 'unhandled-promise-rejection');
+      }, 8000);
+    }
+  });
+})();
+</script>
+<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.3</div><div id="splash-progress" aria-hidden="true"></div></div>
 <div id="toast-container"></div>
 <header class="topbar">
   <button type="button" class="topbar-brand" id="topbar-home" aria-label="Voltar para a página inicial do Doctor Concursos" title="Voltar para o início">
@@ -1841,7 +1908,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.12.2', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.12.3', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
@@ -1857,7 +1924,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
       setTimeout(() => sessionStorage.removeItem('doctor-core-sw-reloaded'), 12000);
       // Se uma instalação antiga conseguir abrir uma cópia stale do HTML,
       // consulta o marcador de build sem usar cache e força a versão atual.
-      fetch('./version.json?v=1.12.2-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+      fetch('./version.json?v=1.12.3-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
         if (v?.version && v.version !== DOCTOR_CORE_BUILD) window.location.reload();
       }).catch(() => {});
     }
@@ -2017,7 +2084,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
           return;
         }
         this.dataset.fallbackApplied = '1';
-        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.2';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.3';
         this.classList.add('doctor-avatar-fallback-image');
       });
     });
@@ -2431,7 +2498,7 @@ Views.doctorCard = function () {
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
         ${p.level.imageUri
-          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.2&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.3&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
@@ -3585,6 +3652,6 @@ UI.init();
   schedule();
 })();
 </script>
-<script src="./doctor-core-quality.js?v=1.12.2" defer></script>
+<script src="./doctor-core-quality.js?v=1.12.3" defer></script>
 </body>
 </html>
