@@ -5,10 +5,10 @@
   const runtime=window.DOCTOR_CORE_RUNTIME||{};
   const subjects=window.SUBJECTS||[];
   const questions=window.QUESTIONS||[];
-  const rules=window.ExamRules||{};
+  const rules=(window.EXAM_CONFIG&&window.EXAM_CONFIG.examRules)||window.ExamRules||{};
 
   function norm(v){return String(v==null?'':v).trim().replace(/\s+/g,' ').toLowerCase();}
-  function fingerprint(q){return [q?.id,q?.subjectId,q?.text,...(Array.isArray(q?.options)?q.options:[]),q?.correct,...(Array.isArray(q?.explanations)?q.explanations:[])].map(norm).join('¦');}
+  function fingerprint(q){return [q?.subjectId,q?.text,...(Array.isArray(q?.options)?q.options:[])].map(norm).join('¦');}
 
   function auditBank(){
     const invalid=[],ids=new Set(),fps=new Set(),duplicateIds=[],duplicateFingerprints=[];
