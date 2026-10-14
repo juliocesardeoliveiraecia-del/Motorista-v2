@@ -2,7 +2,7 @@
 
 ## Estado auditado
 
-- **Core:** V1.11.0
+- **Core:** V1.12.2
 - **Concurso:** Câmara Municipal de Ipameri/GO
 - **Cargo:** Agente Legislativo — Motorista Legislativo
 - **Banca:** Instituto Verbena / UFG
@@ -55,7 +55,7 @@ Nunca versionar GROQ API key, Supabase service-role key, tokens de pagamento ou 
 
 O deployment Drop histórico permanece como referência de recuperação enquanto a linha GitHub → Vercel é homologada.
 
-## Auditoria Core V1.11.0
+## Auditoria Core V1.12.2
 
 - Resposta do aluno é registrada por fingerprint da questão; alteração posterior do conteúdo não transforma uma resposta originalmente correta em erro.
 - Questões estruturalmente inválidas ou duplicadas entram em quarentena e não são entregues.
@@ -63,3 +63,12 @@ O deployment Drop histórico permanece como referência de recuperação enquant
 - Simulado oficial não pode mais ser iniciado parcialmente.
 - O banco é reauditado depois da inclusão de conteúdo gerado por IA.
 - O próximo estágio para produção em massa é a homologação da camada central do Radar e a revisão factual/fontes do conteúdo de cada produto; o Core não inventa aprovação factual.
+
+
+## Auditoria Core V1.12.2 — achados e correções
+
+- Corrigida a normalização de texto usada no fingerprint de integridade: espaços consecutivos agora são normalizados corretamente.
+- A auditoria de questões detecta duplicatas por enunciado e alternativas, independentemente do ID, e coloca os itens envolvidos em quarentena.
+- O Quality Gate consulta as regras de prova do contexto do produto, não uma propriedade global inexistente.
+- O pré-cache do PWA inclui os arquivos versionados do contexto, conteúdo e Quality Gate, alinhados à versão 1.12.2.
+- Auditoria estática do pacote atual: 32 questões (8 Português, 6 RLM, 6 Realidade, 12 Específicos), sem IDs duplicados, sem duplicatas por enunciado/alternativas, com quatro alternativas e quatro explicações por questão e com rótulos de explicação compatíveis com o índice correto. O banco ainda não cobre a distribuição oficial 10/3/2/25; por segurança, o simulado oficial permanece bloqueado até o conteúdo completar a distribuição. Revisão factual individual das questões ainda é necessária antes da produção em massa.
