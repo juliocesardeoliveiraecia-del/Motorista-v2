@@ -31,7 +31,7 @@ const answerContract = sandbox.DoctorAnswerContract;
 
 const errors = [];
 const warnings = [];
-const norm = (v) => String(v ?? '').trim().replace(/\\s+/g, ' ').toLowerCase();
+const norm = (v) => String(v ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
 const subjectIds = new Set((SUBJECTS || []).map((s) => s.id));
 const ids = new Set();
 
