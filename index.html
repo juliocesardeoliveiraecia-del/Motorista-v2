@@ -842,11 +842,18 @@ const DoctorQuestionIntegrity = {
     const ids=Store.state.questionIntegrity?.quarantinedIds||[];
     return !!q && ids.includes(q.id);
   },
+  isIndependentlyApproved(q){
+    return !!q &&
+      q.reviewedByDoctor===true &&
+      ['approved','APROVAR'].includes(String(q.reviewStatus||'')) &&
+      Boolean(String(q.sourceReference||'').trim()) &&
+      Boolean(String(q.contextVersionId||'').trim());
+  },
   assertDeliverable(q){
     const v=this.validate(q);
     if(!v.ok)return {ok:false,reason:'question-integrity',errors:v.errors};
     if(this.isQuarantined(q))return {ok:false,reason:'question-quarantined',errors:['questão em quarentena']};
-    if(q.aiGenerated && q.reviewedByDoctor!==true)return {ok:false,reason:'question-not-reviewed',errors:['questão gerada por IA sem revisão independente']};
+    if(!this.isIndependentlyApproved(q))return {ok:false,reason:'question-not-approved',errors:['questão sem aprovação editorial independente e rastreabilidade de fonte/contexto; conteúdo bloqueado']};
     return {ok:true};
   },
   evidence(q,selected,phase){const result=window.DoctorAnswerContract&&window.DoctorAnswerContract.evaluate(q,selected);if(!result||!result.ok)return null;return {questionId:q.id,questionFingerprint:this.fingerprint(q),selected:result.selected,correct:result.correct,isCorrect:result.isCorrect,phase:phase,recordedAt:new Date().toISOString()};},
@@ -1054,7 +1061,7 @@ const Quiz = {
   // pedida ou, no modo "todas", do conjunto inteiro.
   pickFreshQuestion(subjectId) {
     const blocked=new Set(Store.state.questionIntegrity?.quarantinedIds||[]);
-    const pool = subjectId === 'todas' ? QUESTIONS.filter(q => !blocked.has(q.id) && (!q.aiGenerated || q.reviewedByDoctor===true)) : this.poolFor(subjectId);
+    const pool = subjectId === 'todas' ? QUESTIONS.filter(q => !blocked.has(q.id) && DoctorQuestionIntegrity.isIndependentlyApproved(q)) : this.poolFor(subjectId);
     const candidates = pool.filter(q => !this.isAnsweredAnywhere(q.id));
     if (candidates.length === 0) return null;
     return this.shuffle(candidates)[0];
@@ -1141,7 +1148,7 @@ const Quiz = {
     return QUESTIONS.filter(q =>
       q.subjectId === subjectId &&
       !blocked.has(q.id) &&
-      (!q.aiGenerated || q.reviewedByDoctor===true)
+      DoctorQuestionIntegrity.isIndependentlyApproved(q)
     );
   },
 
