@@ -1999,6 +1999,18 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
       }
     }
     document.getElementById('main-view').innerHTML = Views[view] ? Views[view]() : Views.home();
+    document.querySelectorAll('.doctor-avatar-image').forEach((img) => {
+      img.addEventListener('error', function () {
+        if (this.dataset.fallbackApplied === '1') {
+          this.style.display = 'none';
+          if (this.nextElementSibling) this.nextElementSibling.style.display = 'inline-flex';
+          return;
+        }
+        this.dataset.fallbackApplied = '1';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.2';
+        this.classList.add('doctor-avatar-fallback-image');
+      }, { once: true });
+    });
     if (Views.bind[view]) Views.bind[view]();
     this._decoratePageBack();
     this.refreshGlobalChrome();
@@ -2411,6 +2423,7 @@ Views.doctorCard = function () {
         ${p.level.imageUri
           ? `<img class="doctor-avatar-image" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.2&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
+        <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
       </div>
       <div class="doctor-level-name">Nível ${p.level.level} · ${p.level.name}</div>
