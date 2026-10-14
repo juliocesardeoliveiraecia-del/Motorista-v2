@@ -20,6 +20,7 @@ import vm from 'node:vm';
 const release = process.argv.includes('--release');
 const file = new URL('../product-content.js', import.meta.url);
 const source = fs.readFileSync(file, 'utf8');
+const runtimeSource = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const sandbox = { console };
 vm.createContext(sandbox);
 const evaluatorSource = fs.readFileSync(new URL('../question-evaluation.js', import.meta.url), 'utf8');
@@ -52,10 +53,10 @@ for (const selected of [-1, 4, 1.5, '2']) {
     errors.push(`Contrato aceitou opção inválida: ${String(selected)}.`);
   }
 }
-if (!source.includes('DoctorAnswerContract.evaluate')) {
+if (!runtimeSource.includes('DoctorAnswerContract.evaluate')) {
   errors.push('Runtime não usa o mesmo contrato de avaliação que a auditoria testa.');
 }
-if (!source.includes('question-evaluation.js')) {
+if (!runtimeSource.includes('question-evaluation.js')) {
   errors.push('Runtime não carrega o módulo de avaliação compartilhado.');
 }
 
