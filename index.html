@@ -2019,7 +2019,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
         this.dataset.fallbackApplied = '1';
         this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.2';
         this.classList.add('doctor-avatar-fallback-image');
-      }, { once: true });
+      });
     });
     if (Views.bind[view]) Views.bind[view]();
     this._decoratePageBack();
