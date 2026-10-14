@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.1',
+  version: '1.12.2',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,18 +17,18 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
-<script src="product-context.js?v=1.12.1"></script>
-<script src="product-content.js?v=1.12.1"></script>
+<script src="product-context.js?v=1.12.2"></script>
+<script src="product-content.js?v=1.12.2"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.1">
+<meta name="doctor-core-version" content="1.12.2">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.12.1">
-<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.1">
+<link rel="manifest" href="manifest.json?v=1.12.2">
+<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.2">
 
-<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.1">
+<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Doctor Core">
 <style>
@@ -567,7 +567,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 </style>
 </head>
 <body>
-<div id="splash" aria-label="Carregando Doctor Concursos"><img class="logo" id="splash-logo" alt="Doctor Concursos"><div id="splash-text"></div><div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.1</div><div id="splash-progress" aria-hidden="true"></div></div>
+<div id="splash" aria-label="Carregando Doctor Concursos"><img class="logo" id="splash-logo" alt="Doctor Concursos"><div id="splash-text"></div><div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.2</div><div id="splash-progress" aria-hidden="true"></div></div>
 <div id="toast-container"></div>
 <header class="topbar">
   <button type="button" class="topbar-brand" id="topbar-home" aria-label="Voltar para a página inicial do Doctor Concursos" title="Voltar para o início">
@@ -738,8 +738,9 @@ function defaultState() {
 
 const DoctorQuestionIntegrity = {
   VERSION:'1.0.0',
-  normalize(v){return String(v==null?'':v).trim().replace(/\\s+/g,' ').toLowerCase();},
+  normalize(v){return String(v==null?'':v).trim().replace(/\s+/g,' ').toLowerCase();},
   fingerprint(q){return [q&&q.id,q&&q.subjectId,q&&q.text,...(Array.isArray(q&&q.options)?q.options:[]),q&&q.correct,...(Array.isArray(q&&q.explanations)?q.explanations:[])].map(this.normalize).join('¦');},
+  contentFingerprint(q){return [q&&q.subjectId,q&&q.text,...(Array.isArray(q&&q.options)?q.options:[])].map(this.normalize).join('¦');},
   validate(q){
     const n=Number(EXAM_CONFIG&&ExamRules.optionCount||4),e=[];
     if(!q||typeof q!=='object')e.push('questão inválida');
@@ -753,24 +754,38 @@ const DoctorQuestionIntegrity = {
     if(!Number.isInteger(q&&q.correct)||q.correct<0||q.correct>=n)e.push('gabarito fora do intervalo');
     if(!Array.isArray(q&&q.explanations)||q.explanations.length!==n)e.push('explicações desalinhadas');
     if(Array.isArray(q&&q.explanations)&&q.explanations.some(function(x){return !String(x==null?'':x).trim();}))e.push('explicação vazia');
+    if(Array.isArray(q&&q.explanations)&&Number.isInteger(q&&q.correct)&&q.correct>=0&&q.correct<q.explanations.length){
+      if(/^(errado|incorreto|incorreta)\b/i.test(String(q.explanations[q.correct]||'').trim()))e.push('explicação do gabarito contradiz a resposta correta');
+      q.explanations.forEach(function(x,i){if(i!==q.correct&&/^(correto|correta|alternativa correta)\b/i.test(String(x||'').trim()))e.push('explicação de alternativa incorreta marcada como correta (índice '+i+')');});
+    }
     return {ok:e.length===0,errors:e};
   },
   auditBank(){
-    const invalid=[],seen=new Set();
+    const invalid=[],seenContent=new Map(),seenIds=new Map();
     (QUESTIONS||[]).forEach(function(q){
-      const v=DoctorQuestionIntegrity.validate(q),fp=DoctorQuestionIntegrity.fingerprint(q);
-      if(seen.has(fp)) invalid.push({id:q&&q.id||'sem-id',errors:['duplicata exata']});
-      else seen.add(fp);
-      if(!v.ok) invalid.push({id:q&&q.id||'sem-id',errors:v.errors});
+      const v=DoctorQuestionIntegrity.validate(q);
+      const id=String(q&&q.id||'sem-id');
+      if(!v.ok) invalid.push({id:id,errors:v.errors});
+      if(q&&q.id){
+        if(seenIds.has(q.id)){
+          invalid.push({id:q.id,errors:['ID de questão duplicado']});
+          invalid.push({id:seenIds.get(q.id),errors:['ID de questão duplicado']});
+        } else seenIds.set(q.id,q.id);
+      }
+      const fp=DoctorQuestionIntegrity.contentFingerprint(q);
+      if(seenContent.has(fp)){
+        invalid.push({id:id,errors:['conteúdo duplicado: enunciado e alternativas já cadastrados']});
+        invalid.push({id:seenContent.get(fp),errors:['conteúdo duplicado: enunciado e alternativas já cadastrados']});
+      } else seenContent.set(fp,id);
     });
-    const ids=[...new Set(invalid.map(function(x){return x.id;}).filter(Boolean))];
+    const ids=[...new Set(invalid.map(function(x){return String(x.id);}).filter(Boolean))];
     Store.state.questionIntegrity={
       version:this.VERSION,
       auditedAt:new Date().toISOString(),
       invalidIds:ids,
       quarantinedIds:ids,
       bankCount:QUESTIONS.length,
-      validCount:Math.max(0,QUESTIONS.length-ids.length)
+      validCount:QUESTIONS.filter(function(q){return q&&q.id&&!ids.includes(String(q.id));}).length
     };
     Store.save();
     return {ok:ids.length===0,total:QUESTIONS.length,valid:Math.max(0,QUESTIONS.length-ids.length),invalid:invalid};
