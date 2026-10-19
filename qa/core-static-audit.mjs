@@ -19,8 +19,8 @@ must('Index version marker matches production config', index.includes('doctor-co
 must('Manifest version matches production config', manifest.version === version);
 must('Service worker cache matches production config', sw.includes('motorista-ipameri-v'+version));
 must('Service worker cache-buster matches production config', index.includes('service-worker.js?v='+version));
-must('Product Context is loaded before Core engine', index.indexOf('product-context.js?v=1.11.0') < index.indexOf('/* ===== icons.js'));
-must('Product Content is loaded before Core engine', index.indexOf('product-content.js?v=1.11.0') < index.indexOf('/* ===== icons.js'));
+must('Product Context is loaded before Core engine', index.indexOf('product-context.js?v='+version) < index.indexOf('/* ===== icons.js'));
+must('Product Content is loaded before Core engine', index.indexOf('product-content.js?v='+version) < index.indexOf('/* ===== icons.js'));
 must('Core engine does not redeclare EXAM_CONFIG', !/const\s+EXAM_CONFIG\s*=/.test(index));
 must('Product Context declares EXAM_CONFIG', /const\s+EXAM_CONFIG\s*=/.test(context));
 must('Product Content declares SUBJECTS and QUESTIONS', /const\s+SUBJECTS\s*=/.test(content) && /const\s+QUESTIONS\s*=/.test(content));
