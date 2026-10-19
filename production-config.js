@@ -14,7 +14,7 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
     },
     payments: {
       enabled: false,
-      provider: 'asaas',
+      provider: 'doctor-platform',
       checkoutUrl: ''
     },
     platform: {
