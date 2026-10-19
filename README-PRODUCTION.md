@@ -10,7 +10,7 @@
 - **PWA/offline:** ativo
 - **Radar:** infraestrutura central Supabase + RPC `get_radar_feed`
 - **IA:** GROQ; geração de questões passa por validação estrutural, quarentena de conteúdo inválido e revisão independente antes da entrega ao aluno
-- **Pagamentos:** contrato preparado para Asaas; nenhuma credencial privada no repositório
+- **Pagamentos:** checkout e concessão de acesso pertencem à Plataforma Doctor; integração do app permanece desativada até a ponte central ser homologada
 - **Plataforma:** bridge preparada; sem inventar RPC/RLS/migrações no Core
 
 ## Regra de publicação
