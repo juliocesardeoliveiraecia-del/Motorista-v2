@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.5',
+  version: '1.12.6',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,18 +17,18 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
-<script src="product-context.js?v=1.12.5"></script>
-<script src="product-content.js?v=1.12.5"></script>
+<script src="product-context.js?v=1.12.6"></script>
+<script src="product-content.js?v=1.12.6"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.5">
+<meta name="doctor-core-version" content="1.12.6">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.12.5">
-<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.5">
+<link rel="manifest" href="manifest.json?v=1.12.6">
+<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.6">
 
-<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.5">
+<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.6">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Doctor Core">
 <style>
@@ -392,7 +392,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .feature-card:after{content:'ABRIR →';position:absolute;right:14px;bottom:13px;font-size:10px;font-weight:900;letter-spacing:.06em;color:var(--blue-mid);opacity:.85}
 .feature-card .feature-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:23px;margin-bottom:10px;box-shadow:0 7px 18px rgba(0,0,0,.12)}
 .feature-card h3{font-size:15px!important;margin:0 0 5px!important}.feature-card p{max-width:90%;line-height:1.45!important}.feature-card:hover{transform:translateY(-3px)!important;box-shadow:0 12px 26px rgba(0,0,0,.12)!important}.feature-card:active{transform:translateY(-1px)!important}
-#home-notes .feature-icon{background:linear-gradient(135deg,#1687ff,#0757c9);color:#fff}#home-recorder .feature-icon{background:linear-gradient(135deg,#ffd400,#ffb300);color:#111}#home-essay .feature-icon{background:linear-gradient(135deg,#20b86b,#128653);color:#fff}#home-radar .feature-icon{background:linear-gradient(135deg,#101820,#05090d);color:#ffd400;border:1px solid #ffd400}
+#home-notes .feature-icon{background:linear-gradient(135deg,#1687ff,#0757c9);color:#fff}#home-recorder .feature-icon{background:linear-gradient(135deg,#ffd400,#ffb300);color:#111}#home-essay .feature-icon{background:linear-gradient(135deg,#20b86b,#128653);color:#fff}#home-scanner .feature-icon{background:linear-gradient(135deg,#101820,#05090d);color:#ffd400;border:1px solid #ffd400}
 .tool-page{animation:toolIn .22s ease both}.tool-hero{border:1px solid var(--border);border-radius:18px;padding:18px;background:linear-gradient(135deg,rgba(22,135,255,.10),rgba(32,184,107,.05));margin-bottom:16px}.tool-hero h2{margin:5px 0 6px}.tool-hero p{margin:0;max-width:760px;line-height:1.55}.tool-hero-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.tool-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:14px}.tool-kpi{border:1px solid var(--border);border-radius:13px;padding:11px;background:var(--surface)}.tool-kpi strong{font-size:18px;display:block}.tool-kpi span{font-size:10px;color:var(--text-muted)}
 .radar-hero{background:linear-gradient(135deg,#070b10,#111b27);color:#fff;border:1px solid rgba(255,212,0,.35);overflow:hidden}.radar-hero h2{color:#fff}.radar-hero p{color:#d7dde5}.radar-live{display:inline-flex;gap:7px;align-items:center;color:#ffd400;font-size:10px;font-weight:900;letter-spacing:.08em}.radar-live i{width:8px;height:8px;border-radius:50%;background:#ffd400;box-shadow:0 0 0 5px rgba(255,212,0,.12);animation:pulse 1.3s infinite}.radar-mix{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.radar-mix span{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);padding:7px 9px;border-radius:20px;font-size:10px}.radar-news{cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;position:relative}.radar-news:hover{transform:translateY(-2px);border-color:rgba(255,212,0,.6);box-shadow:0 10px 24px rgba(0,0,0,.12)}.radar-news:after{content:'Ler dentro do app →';display:block;margin-top:10px;color:#d7a900;font-size:10px;font-weight:900}.radar-source-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:900;padding:4px 7px;border-radius:20px;background:rgba(32,184,107,.10);color:#15945b}.radar-media{width:100%;max-height:300px;object-fit:cover;border-radius:14px;margin:12px 0}.radar-article{max-width:900px;margin:0 auto}.radar-article-body{font-size:14px;line-height:1.8;white-space:pre-wrap}.radar-article-source{border-left:4px solid #ffd400;padding:11px 13px;background:rgba(255,212,0,.08);border-radius:0 10px 10px 0;margin:14px 0}.radar-no-external{font-size:10px;color:var(--text-muted);margin-top:10px}.essay-audio-panel{border:1px solid rgba(32,184,107,.28);background:linear-gradient(135deg,rgba(32,184,107,.08),rgba(22,135,255,.04))}.essay-audio-card{border:1px solid var(--border);border-radius:14px;padding:13px;background:var(--surface);margin-top:10px}.essay-audio-card h4{margin:0 0 3px}.essay-audio-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.record-label{display:inline-block;margin-left:7px;padding:3px 6px;border-radius:10px;background:rgba(255,179,0,.14);color:#b27800;font-size:8px;font-weight:900}.recorder-page .record-card.essay-draft{border-color:rgba(255,179,0,.55)}.recorder-page .rec-essay-banner{margin-top:13px;padding:12px;border-radius:12px;background:rgba(255,212,0,.10);border:1px solid rgba(255,212,0,.28);font-size:11px;line-height:1.5}.notes-page .notes-sidebar{box-shadow:0 7px 20px rgba(0,0,0,.06)}.notes-page .notes-editor{box-shadow:0 8px 24px rgba(0,0,0,.06)}
 @keyframes toolIn{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:none}}
@@ -472,6 +472,8 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   box-shadow: 0 10px 28px rgba(0,0,0,.16);
 }
 .exam-hero-photo { position: relative; min-width: 0; overflow: hidden; }
+.exam-hero-photo.image-unavailable { background: radial-gradient(circle at 78% 25%, rgba(245,166,35,.24), transparent 28%), linear-gradient(135deg,#071322 0%,#16345E 58%,#0A192F 100%); }
+.exam-hero-photo.image-unavailable .exam-hero-overlay { background: linear-gradient(90deg,rgba(3,12,24,.72),rgba(3,12,24,.22)); }
 .exam-hero-chamber {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: center 58%;
@@ -566,7 +568,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 @media(max-width:640px){.doctor-avatar-box img.doctor-avatar-level-1{max-height:120px;max-width:32%}.doctor-avatar-box img.doctor-avatar-level-2{max-height:160px}.doctor-avatar-box img.doctor-avatar-level-3{max-height:210px}.doctor-avatar-box img.doctor-avatar-level-4{max-height:250px}.doctor-avatar-box img.doctor-avatar-level-5,.doctor-avatar-box img.doctor-avatar-level-6{max-height:285px}.doctor-avatar-box img.doctor-avatar-level-7,.doctor-avatar-box img.doctor-avatar-level-8,.doctor-avatar-box img.doctor-avatar-level-9,.doctor-avatar-box img.doctor-avatar-level-10{max-height:295px}}
 </style>
 
-/* Doctor Core 1.12.5 — Radar removido por decisão de produto. */
+/* Doctor Core 1.12.6 — Radar removido por decisão de produto. */
 <style id="doctor-radar-removal">
   #radar-ticker-mount, #home-radar, .radar-page, [data-tool="radar"], #open-radar { display:none !important; }
   #main-view { padding-bottom: 12px !important; }
@@ -642,7 +644,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   });
 })();
 </script>
-<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.5</div><div id="splash-progress" aria-hidden="true"></div></div>
+<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.6</div><div id="splash-progress" aria-hidden="true"></div></div>
 <div id="toast-container"></div>
 <header class="topbar">
   <button type="button" class="topbar-brand" id="topbar-home" aria-label="Voltar para a página inicial do Doctor Concursos" title="Voltar para o início">
@@ -1916,7 +1918,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.12.5', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.12.6', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
@@ -1932,7 +1934,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
       setTimeout(() => sessionStorage.removeItem('doctor-core-sw-reloaded'), 12000);
       // Se uma instalação antiga conseguir abrir uma cópia stale do HTML,
       // consulta o marcador de build sem usar cache e força a versão atual.
-      fetch('./version.json?v=1.12.5-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+      fetch('./version.json?v=1.12.6-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
         if (v?.version && v.version !== DOCTOR_CORE_BUILD) window.location.reload();
       }).catch(() => {});
     }
@@ -2092,7 +2094,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
           return;
         }
         this.dataset.fallbackApplied = '1';
-        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.5';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.6';
         this.classList.add('doctor-avatar-fallback-image');
       });
     });
@@ -2402,7 +2404,7 @@ Views.home = function () {
   return `
     <section class="exam-hero" aria-label="Contagem regressiva para a prova">
       <div class="exam-hero-photo">
-        <img class="exam-hero-chamber" src="${EXAM_CONFIG.heroImage || ''}" alt="${EXAM_CONFIG.orgName || 'Concurso'}" loading="eager" onerror="this.style.display='none';">
+        <img class="exam-hero-chamber" src="${EXAM_CONFIG.heroImage || ''}" alt="${EXAM_CONFIG.orgName || 'Concurso'}" loading="eager" onerror="this.style.display='none';this.parentElement.classList.add('image-unavailable');">
         <div class="exam-hero-overlay" aria-hidden="true"></div>
         <div class="exam-hero-content">
           <div class="hero-label">Faltam para a prova</div>
@@ -2472,17 +2474,15 @@ Views.home = function () {
     <button class="btn btn-orange btn-block" id="home-flashcards">${iconEl('cards')} Flashcards</button>
     <button class="btn btn-danger btn-block" id="home-simulado">${iconEl('clipboard')} Simulado Oficial (${ExamRules.questionCount} questões · ${EXAM_CONFIG.durationHours}h)</button>
 
-    ${Views.doctorCard()}
-
-    <!-- Radar Doctor removido da interface do Core por decisão de produto. -->
-
     <div class="section-title">Ferramentas Doctor</div>
     <div class="feature-grid">
       <button type="button" class="card feature-card" id="home-notes" title="Abrir Caderno Doctor" aria-label="Abrir Caderno Doctor"><div class="feature-icon">📓</div><h3>Caderno Doctor</h3><p>Anotações organizadas por matéria.</p></button>
       <button type="button" class="card feature-card" id="home-recorder" title="Abrir Gravador Doctor" aria-label="Abrir Gravador Doctor"><div class="feature-icon">🎙️</div><h3>Gravador Doctor</h3><p>Grave e organize áudios dentro da matéria.</p></button>
       <button type="button" class="card feature-card" id="home-essay" title="Abrir Redação Doctor" aria-label="Abrir Redação Doctor"><div class="feature-icon">✍️</div><h3>Redação Doctor</h3><p>Área preparada para treinar redação.</p></button>
-      <button type="button" class="card feature-card" id="home-radar" title="Abrir Radar Doctor" aria-label="Abrir Radar Doctor"><div class="feature-icon">📡</div><h3>Radar Doctor</h3><p>Notícias e atualizações do concurso.</p></button>
+      <button type="button" class="card feature-card" id="home-scanner" title="Abrir Scanner Doctor" aria-label="Abrir Scanner Doctor"><div class="feature-icon">📷</div><h3>Scanner Doctor</h3><p>Fotografe, digitalize e guarde seus documentos.</p></button>
     </div>
+
+    ${Views.doctorCard()}
 
     ${Views.editalFooter()}
   `;
@@ -2492,7 +2492,7 @@ Views.bind.home = function(){
   document.getElementById('home-notes')?.addEventListener('click',()=>UI.render('notes'));
   document.getElementById('home-recorder')?.addEventListener('click',()=>UI.render('recorderPick'));
   document.getElementById('home-essay')?.addEventListener('click',()=>UI.render('essay'));
-  document.getElementById('home-radar')?.addEventListener('click',()=>UI.render('radar'));
+  document.getElementById('home-scanner')?.addEventListener('click',()=>UI.render('scannerDoctor'));
   document.getElementById('open-radar')?.addEventListener('click',()=>UI.render('radar'));
 };
 
@@ -2506,7 +2506,7 @@ Views.doctorCard = function () {
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
         ${p.level.imageUri
-          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.5&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.6&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
@@ -3660,7 +3660,7 @@ UI.init();
   schedule();
 })();
 </script>
-<script src="./doctor-core-quality.js?v=1.12.5" defer></script>
+<script src="./doctor-core-quality.js?v=1.12.6" defer></script>
 
 <script id="doctor-radar-removal-runtime">
 /* Remove o ponto de montagem e os atalhos do Radar sem afetar as demais ferramentas. */
@@ -3671,5 +3671,6 @@ UI.init();
 })();
 </script>
 
+<script src="./scanner-doctor.js?v=1.12.6" defer></script>
 </body>
 </html>
