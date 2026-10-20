@@ -7,6 +7,7 @@
 - O Scanner informa explicitamente que os arquivos ficam no dispositivo e não são enviados automaticamente para a nuvem.
 - Versão/cache alinhados para 1.12.6 nos arquivos de runtime, manifest, service worker e version.json.
 - Banner de concurso recebe fundo de contingência quando a imagem externa falha; a imagem oficial não é substituída por uma imagem inventada.
+- Auditoria de assets: os PNGs `assets/doctor/evolution/doctor-level-01.png` até `doctor-level-10.png` não existem no branch `main`/branch auditado; o fallback SVG existe e é usado pelo runtime quando o PNG não carrega. Recuperar os dez assets oficiais reais do pacote histórico antes de considerar a evolução visualmente homologada.
 
 ## Limites e pendências de homologação
 - A câmera depende de suporte/permissões do navegador e normalmente funciona em contexto HTTPS; validar em Android e desktop.
