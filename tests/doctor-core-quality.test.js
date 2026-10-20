@@ -64,7 +64,7 @@ try {
   }
   {
     const approved=q('approved','a','Questão aprovada com contexto vigente');
-    const pending=q('pending','a','Questão sem aprovação editorial','0','pending');
+    const pending=q('pending','a','Questão sem aprovação editorial',0,'pending');
     const pool=[approved,pending];
     const integrity={assertDeliverable(){return {ok:true};}};
     const quiz={session:null,poolFor(id){return pool.filter(x=>x.subjectId===id);},
