@@ -1,0 +1,33 @@
+name: Doctor Core version contract
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'service-worker.js'
+      - 'production-config.js'
+      - 'version.json'
+      - 'product-context.js'
+      - 'scripts/check-version-contract.mjs'
+      - '.github/workflows/core-version-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'service-worker.js'
+      - 'production-config.js'
+      - 'version.json'
+      - 'product-context.js'
+      - 'scripts/check-version-contract.mjs'
+      - '.github/workflows/core-version-contract.yml'
+
+jobs:
+  version-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate app version consistency
+        run: node scripts/check-version-contract.mjs
