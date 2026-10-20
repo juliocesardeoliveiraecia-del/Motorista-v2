@@ -1,16 +1,16 @@
-/* Doctor Core Quality Gate — V1.1.0
+/* Doctor Core Quality Gate — V1.1.1
  * Auditoria estrutural e de contrato. Não substitui revisão factual independente.
  */
 (function(){
   'use strict';
-  const VERSION='1.1.0';
+  const VERSION='1.1.1';
   const runtime=window.DOCTOR_CORE_RUNTIME||{};
   const subjects=Array.isArray(window.SUBJECTS)?window.SUBJECTS:[];
   const questions=Array.isArray(window.QUESTIONS)?window.QUESTIONS:[];
   const rules=window.ExamRules||{};
 
   function norm(v){
-    return String(v==null?'':v).normalize('NFKC').trim().replace(/\\s+/g,' ').toLocaleLowerCase('pt-BR');
+    return String(v==null?'':v).normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase('pt-BR');
   }
   // Não inclui ID, gabarito nem explicações: conteúdo duplicado com outro ID
   // ou gabarito divergente deve ser detectado, não tratado como questão distinta.
