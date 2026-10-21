@@ -76,13 +76,6 @@ const EXAM_CONFIG = {
   accentColor: '#2ECC71',
   accentColorDark: '#1E9E58',
 
-  // Catálogo local/ponteado da Plataforma Doctor. O Core nunca inventa
-  // produtos: só usa itens marcados como active=true para a faixa comercial
-  // de 30% do Radar. A Plataforma pode substituir este catálogo em runtime
-  // por window.DOCTOR_PLATFORM_CATALOG ou bridge.getProductCatalog().
-  platformCatalog: [
-    { productId: 'motorista-legislativo', appId: 'doctor-motorista-legislativo', name: 'Motorista Legislativo — Câmara Municipal de Ipameri', shortName: 'Motorista Legislativo', status: 'active', url: '', current: true },
-  ]
 };
 
 window.EXAM_CONFIG = EXAM_CONFIG;
