@@ -8,9 +8,7 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   environment: 'production',
   integrations: {
     supabase: {
-      enabled: true,
-      url: 'https://rouuppeosmizzqnubhgs.supabase.co',
-      publishableKey: 'sb_publishable_nm9slmAVYcgzoXs-m1gLuw_8K317SbN'
+      enabled: false, url: '', publishableKey: ''
     },
     payments: { enabled: false, provider: 'doctor-platform', checkoutUrl: '' },
     platform: { bridgeEnabled: false }
@@ -277,11 +275,11 @@ input[type=password], input[type=text] { width: 100%; padding: 12px; border-radi
 .ai-banner strong{color:#ffd54a}.ai-banner .spacer{flex:1}.ai-banner button{white-space:nowrap}
 .ai-status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700}.ai-status.ok .ai-status-dot{background:#2ecc71;box-shadow:0 0 0 4px rgba(46,204,113,.12)}.ai-status.bad .ai-status-dot{background:#e74c3c;box-shadow:0 0 0 4px rgba(231,76,60,.12)}
 .radar-ticker{width:100%;background:#050505;color:#fff;display:flex;align-items:center;overflow:hidden;border-top:2px solid #f5c400;border-bottom:2px solid #f5c400;min-height:38px;box-shadow:0 -4px 18px rgba(0,0,0,.12)}
-/* : fixo durante a navegação; ao alcançar o rodapé, encaixa-se no fluxo para revelar o rodapé completo. */
-#radar-ticker-mount{position:fixed;left:0;right:0;bottom:0;z-index:89;margin:0;transition:none;}
-#radar-ticker-mount.radar-at-footer{position:absolute;left:0;right:0;bottom:auto;z-index:19;}
-#radar-ticker-mount .radar-ticker{min-height:40px;}
-body{scroll-padding-bottom:52px;}
+
+
+
+
+
 .radar-label{flex:0 0 auto;background:#050505;color:#ffd21a;padding:10px 12px;font-size:12px;font-weight:900;letter-spacing:.05em;z-index:2;border-right:1px solid #2b2b2b}.radar-label span{color:#fff}.radar-track{overflow:hidden;flex:1;white-space:nowrap}.radar-move{display:inline-flex;gap:28px;padding-left:22px;animation:radarMove 34s linear infinite}.radar-item{cursor:pointer;color:#fff;font-size:12px}.radar-item b{color:#ffd21a}.radar-item:hover{text-decoration:underline}@keyframes radarMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .radar-card{overflow:hidden}.radar-card .radar-preview{height:150px;border-radius:12px;background:linear-gradient(135deg,#050505,#17233a);display:flex;align-items:flex-end;padding:16px;color:#fff;position:relative}.radar-preview .tag{background:#ffd21a;color:#111;font-weight:900;font-size:10px;padding:5px 7px;border-radius:6px;display:inline-block;margin-bottom:7px}.radar-preview h3{margin:0;font-size:18px}.radar-preview p{margin:6px 0 0;color:#d9d9d9;font-size:12px}.radar-grid{display:grid;gap:10px;margin-top:10px}.radar-news{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);cursor:pointer}.radar-news:hover{transform:translateY(-1px)}
 .feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.feature-card{text-align:left}.feature-card .feature-icon{font-size:22px;margin-bottom:6px}.feature-card h3{margin:0 0 4px}.feature-card p{margin:0;color:var(--text-muted);font-size:12px}.note-item,.record-item{padding:12px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;background:var(--surface)}.note-item h4,.record-item h4{margin:0 0 5px}.note-meta{font-size:11px;color:var(--text-muted)}.record-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.record-mode-selector{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 7px}.record-mode{min-height:48px;font-weight:900}.record-mode.active{box-shadow:0 0 0 2px rgba(22,135,255,.28),0 5px 16px rgba(0,0,0,.10);transform:translateY(-1px)}.record-mode-help{font-size:11px;line-height:1.45;color:var(--text-muted);text-align:center;margin:4px auto 12px;max-width:620px}.record-main{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}.record-main.recording{background:linear-gradient(135deg,#e74c3c,#b51f2b)!important;border-color:#e74c3c!important;color:#fff!important}.record-main:disabled{opacity:.75;cursor:wait}@media(max-width:640px){.record-mode-selector{grid-template-columns:1fr}.record-mode{min-height:52px}.record-main{min-height:72px}}.recording-dot{width:10px;height:10px;border-radius:50%;background:#e74c3c;display:inline-block;animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.35}}
