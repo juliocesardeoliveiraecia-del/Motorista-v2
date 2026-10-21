@@ -31,12 +31,11 @@ must('Stale-answer fingerprint protection exists', index.includes('questionFinge
 must('Official simulado partial start is absent', !index.includes('start-simulado-partial'));
 must('Official simulado has engine-level readiness gate', index.includes("reason:'incomplete-bank'"));
 must('AI generation re-audits the bank', /DoctorQuestionIntegrity\.auditBank\(\);[\s\S]{0,120}Store\.save\(\);[\s\S]{0,80}return \{ok:true,added/.test(index));
-must('Central Radar RPC is wired', index.includes('rpc/get_radar_feed'));
-must('Radar consumes content_url from central feed', index.includes('x.content_url'));
+must('Radar is removed from the app runtime', !index.includes('RadarDoctor') && !index.includes('get_radar_feed') && !index.includes('Views.radar') && !context.includes('radarSources') && !context.includes('radarAllowedHosts') && !context.includes('platformCatalog'));
 must('No Groq Compound legacy identifier', !index.includes('groq/compound'));
 must('Storage namespace derives from productId', index.includes("'doctor-core:' + String(EXAM_CONFIG.productId"));
 must('Core build derives from production config', index.includes('window.DOCTOR_PRODUCTION_CONFIG?.version'));
 must('Product asset paths are context-driven', !index.includes('assets/concurso/camara-ipameri.webp') && !index.includes('camaraipameri.go.gov.br'));
-must('Radar allowlist is context-driven', !index.includes("host==='institutoverbena.ufg.br'"));
+must('Radar allowlist is absent from the app Product Context', !/radarAllowedHosts|radarSources|radarShareRatio|platformCatalog/i.test(context));
 must('No obvious private secret patterns in source', !/(service[-_ ]role|sk_live_|gsk_[A-Za-z0-9_-]{20,})/i.test(index+prod+context+content));
 console.log('CORE STATIC QA: OK');

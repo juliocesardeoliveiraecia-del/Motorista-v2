@@ -2,9 +2,9 @@
 <html lang="pt-BR">
 <head>
 <script>
-/* Doctor Core — Radar central. Public Supabase config only; no secrets. */
+/* Doctor Core — configuração pública de produção; sem segredos. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.6',
+  version: '1.12.7',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,18 +17,18 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
-<script src="product-context.js?v=1.12.6"></script>
-<script src="product-content.js?v=1.12.6"></script>
+<script src="product-context.js?v=1.12.7"></script>
+<script src="product-content.js?v=1.12.7"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.6">
+<meta name="doctor-core-version" content="1.12.7">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.12.6">
-<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.6">
+<link rel="manifest" href="manifest.json?v=1.12.7">
+<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.7">
 
-<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.6">
+<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Doctor Core">
 <style>
@@ -52,7 +52,7 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; font-family: var(--font); background: var(--bg); color: var(--text); }
 body { padding-bottom: 0; }
-#main-view { padding-bottom: calc(var(--radar-reserve, 52px) + 16px); }
+#main-view { padding-bottom: 12px; }
 button { font-family: inherit; cursor: pointer; }
 h1, h2, h3 { margin: 0 0 8px; }
 p { margin: 0 0 8px; }
@@ -275,18 +275,10 @@ input[type=password], input[type=text] { width: 100%; padding: 12px; border-radi
 .ai-banner{margin:10px auto 0;max-width:980px;background:#111;color:#fff;border:1px solid rgba(255,193,7,.45);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 6px 20px rgba(0,0,0,.12)}
 .ai-banner .ai-dot,.ai-status-dot{width:9px;height:9px;border-radius:50%;background:#f1c40f;flex:0 0 auto;box-shadow:0 0 0 4px rgba(241,196,15,.12)}
 .ai-banner strong{color:#ffd54a}.ai-banner .spacer{flex:1}.ai-banner button{white-space:nowrap}
-.ai-status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700}.ai-status.ok .ai-status-dot{background:#2ecc71;box-shadow:0 0 0 4px rgba(46,204,113,.12)}.ai-status.bad .ai-status-dot{background:#e74c3c;box-shadow:0 0 0 4px rgba(231,76,60,.12)}
-.radar-ticker{width:100%;background:#050505;color:#fff;display:flex;align-items:center;overflow:hidden;border-top:2px solid #f5c400;border-bottom:2px solid #f5c400;min-height:38px;box-shadow:0 -4px 18px rgba(0,0,0,.12)}
-/* Radar Doctor: fixo durante a navegação; ao alcançar o rodapé, encaixa-se no fluxo para revelar o rodapé completo. */
-#radar-ticker-mount{position:fixed;left:0;right:0;bottom:0;z-index:89;margin:0;transition:none;}
-#radar-ticker-mount.radar-at-footer{position:absolute;left:0;right:0;bottom:auto;z-index:19;}
-#radar-ticker-mount .radar-ticker{min-height:40px;}
-body{scroll-padding-bottom:52px;}
-.radar-label{flex:0 0 auto;background:#050505;color:#ffd21a;padding:10px 12px;font-size:12px;font-weight:900;letter-spacing:.05em;z-index:2;border-right:1px solid #2b2b2b}.radar-label span{color:#fff}.radar-track{overflow:hidden;flex:1;white-space:nowrap}.radar-move{display:inline-flex;gap:28px;padding-left:22px;animation:radarMove 34s linear infinite}.radar-item{cursor:pointer;color:#fff;font-size:12px}.radar-item b{color:#ffd21a}.radar-item:hover{text-decoration:underline}@keyframes radarMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.radar-card{overflow:hidden}.radar-card .radar-preview{height:150px;border-radius:12px;background:linear-gradient(135deg,#050505,#17233a);display:flex;align-items:flex-end;padding:16px;color:#fff;position:relative}.radar-preview .tag{background:#ffd21a;color:#111;font-weight:900;font-size:10px;padding:5px 7px;border-radius:6px;display:inline-block;margin-bottom:7px}.radar-preview h3{margin:0;font-size:18px}.radar-preview p{margin:6px 0 0;color:#d9d9d9;font-size:12px}.radar-grid{display:grid;gap:10px;margin-top:10px}.radar-news{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);cursor:pointer}.radar-news:hover{transform:translateY(-1px)}
+.ai-status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700}.ai-status.ok .ai-status-dot{background:#2ecc71;box-shadow:0 0 0 4px rgba(46,204,113,.12)}.ai-status.bad .ai-status-dot{background:#e74c3c;box-shadow:0 0 0 4px rgba(231,76,60,.12)}to{transform:translateX(-50%)}}
 .feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.feature-card{text-align:left}.feature-card .feature-icon{font-size:22px;margin-bottom:6px}.feature-card h3{margin:0 0 4px}.feature-card p{margin:0;color:var(--text-muted);font-size:12px}.note-item,.record-item{padding:12px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;background:var(--surface)}.note-item h4,.record-item h4{margin:0 0 5px}.note-meta{font-size:11px;color:var(--text-muted)}.record-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.record-mode-selector{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 7px}.record-mode{min-height:48px;font-weight:900}.record-mode.active{box-shadow:0 0 0 2px rgba(22,135,255,.28),0 5px 16px rgba(0,0,0,.10);transform:translateY(-1px)}.record-mode-help{font-size:11px;line-height:1.45;color:var(--text-muted);text-align:center;margin:4px auto 12px;max-width:620px}.record-main{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}.record-main.recording{background:linear-gradient(135deg,#e74c3c,#b51f2b)!important;border-color:#e74c3c!important;color:#fff!important}.record-main:disabled{opacity:.75;cursor:wait}@media(max-width:640px){.record-mode-selector{grid-template-columns:1fr}.record-mode{min-height:52px}.record-main{min-height:72px}}.recording-dot{width:10px;height:10px;border-radius:50%;background:#e74c3c;display:inline-block;animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.35}}
 .textarea-core{width:100%;min-height:180px;resize:vertical;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);padding:12px;font:inherit;box-sizing:border-box}.field{margin-bottom:10px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.select-core,.input-core{width:100%;box-sizing:border-box;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)}
-@media(max-width:600px){.ai-banner{margin:8px 10px;font-size:12px}.ai-banner button{padding:8px 10px}.radar-label{padding:9px 8px;font-size:10px}.radar-item{font-size:11px}.feature-grid{grid-template-columns:1fr}.radar-preview{height:135px!important}}
+@media(max-width:600px){.ai-banner{margin:8px 10px;font-size:12px}.ai-banner button{padding:8px 10px}.feature-grid{grid-template-columns:1fr}}
 
 .header-tools .header-tool-caderno{background:linear-gradient(135deg,#1687ff,#0757c9)!important;color:#fff!important;border-color:#1687ff!important;font-weight:800!important;box-shadow:0 0 0 1px rgba(22,135,255,.28),0 4px 12px rgba(0,0,0,.18)!important}.header-tools .header-tool-gravador{background:linear-gradient(135deg,#ffd400,#ffb800)!important;color:#111!important;border-color:#ffd400!important;font-weight:800!important;box-shadow:0 0 0 1px rgba(255,212,0,.28),0 4px 12px rgba(0,0,0,.18)!important}
 
@@ -392,9 +384,8 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .feature-card:after{content:'ABRIR →';position:absolute;right:14px;bottom:13px;font-size:10px;font-weight:900;letter-spacing:.06em;color:var(--blue-mid);opacity:.85}
 .feature-card .feature-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:23px;margin-bottom:10px;box-shadow:0 7px 18px rgba(0,0,0,.12)}
 .feature-card h3{font-size:15px!important;margin:0 0 5px!important}.feature-card p{max-width:90%;line-height:1.45!important}.feature-card:hover{transform:translateY(-3px)!important;box-shadow:0 12px 26px rgba(0,0,0,.12)!important}.feature-card:active{transform:translateY(-1px)!important}
-#home-notes .feature-icon{background:linear-gradient(135deg,#1687ff,#0757c9);color:#fff}#home-recorder .feature-icon{background:linear-gradient(135deg,#ffd400,#ffb300);color:#111}#home-essay .feature-icon{background:linear-gradient(135deg,#20b86b,#128653);color:#fff}#home-radar .feature-icon{background:linear-gradient(135deg,#101820,#05090d);color:#ffd400;border:1px solid #ffd400}
-.tool-page{animation:toolIn .22s ease both}.tool-hero{border:1px solid var(--border);border-radius:18px;padding:18px;background:linear-gradient(135deg,rgba(22,135,255,.10),rgba(32,184,107,.05));margin-bottom:16px}.tool-hero h2{margin:5px 0 6px}.tool-hero p{margin:0;max-width:760px;line-height:1.55}.tool-hero-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.tool-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:14px}.tool-kpi{border:1px solid var(--border);border-radius:13px;padding:11px;background:var(--surface)}.tool-kpi strong{font-size:18px;display:block}.tool-kpi span{font-size:10px;color:var(--text-muted)}
-.radar-hero{background:linear-gradient(135deg,#070b10,#111b27);color:#fff;border:1px solid rgba(255,212,0,.35);overflow:hidden}.radar-hero h2{color:#fff}.radar-hero p{color:#d7dde5}.radar-live{display:inline-flex;gap:7px;align-items:center;color:#ffd400;font-size:10px;font-weight:900;letter-spacing:.08em}.radar-live i{width:8px;height:8px;border-radius:50%;background:#ffd400;box-shadow:0 0 0 5px rgba(255,212,0,.12);animation:pulse 1.3s infinite}.radar-mix{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.radar-mix span{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);padding:7px 9px;border-radius:20px;font-size:10px}.radar-news{cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;position:relative}.radar-news:hover{transform:translateY(-2px);border-color:rgba(255,212,0,.6);box-shadow:0 10px 24px rgba(0,0,0,.12)}.radar-news:after{content:'Ler dentro do app →';display:block;margin-top:10px;color:#d7a900;font-size:10px;font-weight:900}.radar-source-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:900;padding:4px 7px;border-radius:20px;background:rgba(32,184,107,.10);color:#15945b}.radar-media{width:100%;max-height:300px;object-fit:cover;border-radius:14px;margin:12px 0}.radar-article{max-width:900px;margin:0 auto}.radar-article-body{font-size:14px;line-height:1.8;white-space:pre-wrap}.radar-article-source{border-left:4px solid #ffd400;padding:11px 13px;background:rgba(255,212,0,.08);border-radius:0 10px 10px 0;margin:14px 0}.radar-no-external{font-size:10px;color:var(--text-muted);margin-top:10px}.essay-audio-panel{border:1px solid rgba(32,184,107,.28);background:linear-gradient(135deg,rgba(32,184,107,.08),rgba(22,135,255,.04))}.essay-audio-card{border:1px solid var(--border);border-radius:14px;padding:13px;background:var(--surface);margin-top:10px}.essay-audio-card h4{margin:0 0 3px}.essay-audio-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.record-label{display:inline-block;margin-left:7px;padding:3px 6px;border-radius:10px;background:rgba(255,179,0,.14);color:#b27800;font-size:8px;font-weight:900}.recorder-page .record-card.essay-draft{border-color:rgba(255,179,0,.55)}.recorder-page .rec-essay-banner{margin-top:13px;padding:12px;border-radius:12px;background:rgba(255,212,0,.10);border:1px solid rgba(255,212,0,.28);font-size:11px;line-height:1.5}.notes-page .notes-sidebar{box-shadow:0 7px 20px rgba(0,0,0,.06)}.notes-page .notes-editor{box-shadow:0 8px 24px rgba(0,0,0,.06)}
+#home-notes .feature-icon{background:linear-gradient(135deg,#1687ff,#0757c9);color:#fff}#home-recorder .feature-icon{background:linear-gradient(135deg,#ffd400,#ffb300);color:#111}#home-essay .feature-icon{background:linear-gradient(135deg,#20b86b,#128653);color:#fff}
+.tool-page{animation:toolIn .22s ease both}.tool-hero{border:1px solid var(--border);border-radius:18px;padding:18px;background:linear-gradient(135deg,rgba(22,135,255,.10),rgba(32,184,107,.05));margin-bottom:16px}.tool-hero h2{margin:5px 0 6px}.tool-hero p{margin:0;max-width:760px;line-height:1.55}.tool-hero-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.tool-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:14px}.tool-kpi{border:1px solid var(--border);border-radius:13px;padding:11px;background:var(--surface)}.tool-kpi strong{font-size:18px;display:block}.tool-kpi span{font-size:10px;color:var(--text-muted)}.essay-audio-panel{border:1px solid rgba(32,184,107,.28);background:linear-gradient(135deg,rgba(32,184,107,.08),rgba(22,135,255,.04))}.essay-audio-card{border:1px solid var(--border);border-radius:14px;padding:13px;background:var(--surface);margin-top:10px}.essay-audio-card h4{margin:0 0 3px}.essay-audio-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.record-label{display:inline-block;margin-left:7px;padding:3px 6px;border-radius:10px;background:rgba(255,179,0,.14);color:#b27800;font-size:8px;font-weight:900}.recorder-page .record-card.essay-draft{border-color:rgba(255,179,0,.55)}.recorder-page .rec-essay-banner{margin-top:13px;padding:12px;border-radius:12px;background:rgba(255,212,0,.10);border:1px solid rgba(255,212,0,.28);font-size:11px;line-height:1.5}.notes-page .notes-sidebar{box-shadow:0 7px 20px rgba(0,0,0,.06)}.notes-page .notes-editor{box-shadow:0 8px 24px rgba(0,0,0,.06)}
 @keyframes toolIn{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:none}}
 @media(max-width:700px){.tool-kpis{grid-template-columns:1fr 1fr}.feature-grid{grid-template-columns:1fr!important}.feature-card{min-height:124px}}
 @media(max-width:450px){.tool-kpis{grid-template-columns:1fr}.tool-hero{padding:14px}}
@@ -406,9 +397,9 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 #home-recorder .feature-icon{background:#1687ff;color:#fff}
 #home-essay{border-color:rgba(46,204,113,.48)!important;background:linear-gradient(135deg,rgba(46,204,113,.10),var(--surface))!important}
 #home-essay .feature-icon{background:#20b86b;color:#fff}
-#home-radar{border-color:rgba(245,196,0,.48)!important;background:linear-gradient(135deg,rgba(5,5,5,.08),var(--surface))!important}
-#home-radar .feature-icon{background:#050505;color:#ffd21a}
-[data-theme="dark"] #home-notes h3,[data-theme="dark"] #home-notes p,[data-theme="dark"] #home-recorder h3,[data-theme="dark"] #home-recorder p,[data-theme="dark"] #home-essay h3,[data-theme="dark"] #home-essay p,[data-theme="dark"] #home-radar h3,[data-theme="dark"] #home-radar p{color:#f4f6f9!important}
+
+
+[data-theme="dark"] #home-notes h3,[data-theme="dark"] #home-notes p,[data-theme="dark"] #home-recorder h3,[data-theme="dark"] #home-recorder p,[data-theme="dark"] #home-essay h3,[data-theme="dark"] #home-essay p{color:#f4f6f9!important}
 [data-theme="dark"] .edital-photo-wrap{box-shadow:0 8px 22px rgba(0,0,0,.30)}
 .groq-help summary{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text)}
 .groq-help summary:after{float:none!important;flex:0 0 auto}
@@ -420,8 +411,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 
 @media(max-width:600px){
   body { padding-bottom: 0; }
-  #main-view { padding-bottom: calc(var(--radar-reserve, 52px) + 12px); }
-  #radar-ticker-mount { bottom: 0; }
+  #main-view { padding-bottom: 12px; }
   .app-footer { min-height: 62px; padding: 8px 10px; }
   .footer-logo { width: 30px; }
   .footer-company { font-size: 11px; }
@@ -438,7 +428,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 
 <style id="doctor-tools-v17">
 /* V1.7 — revisão profissional das Ferramentas Doctor */
-.notes-page .tool-hero,.recorder-page .tool-hero,.essay-page .tool-hero,.radar-page .tool-hero{margin-bottom:14px}
+.notes-page .tool-hero,.recorder-page .tool-hero,.essay-page .tool-hero{margin-bottom:14px}
 .notes-workspace{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;align-items:start}
 .notes-sidebar{position:sticky;top:12px;padding:12px}.notes-sidebar-title{display:flex;align-items:center;justify-content:space-between;font-weight:900;margin-bottom:8px}.notes-sidebar-sub{font-size:10px;color:var(--text-muted);margin-bottom:10px}
 .folder-btn{width:100%;display:flex;align-items:center;gap:8px;border:0;background:transparent;color:var(--text);padding:9px 10px;border-radius:10px;text-align:left;cursor:pointer}.folder-btn:hover,.folder-btn.active{background:rgba(22,135,255,.09)}.folder-btn b{margin-left:auto;font-size:10px;color:var(--text-muted)}.folder-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}.folder-row{display:flex;align-items:center;gap:3px}.folder-row .folder-btn{min-width:0}.folder-more{border:0;background:transparent;color:var(--text-muted);cursor:pointer;border-radius:8px;padding:7px}.folder-more:hover{background:rgba(0,0,0,.06)}
@@ -449,8 +439,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .tool-empty-action{padding:30px;text-align:center}.tool-empty-action h3{margin:7px 0}.tool-empty-action p{max-width:520px;margin:0 auto 12px;color:var(--text-muted)}
 .recorder-hub{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:14px}.recorder-console-v17{padding:20px;text-align:center}.record-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.record-main-v17{width:150px;height:150px;border-radius:50%;border:0;background:#1687ff;color:#fff;box-shadow:0 12px 30px rgba(22,135,255,.25);cursor:pointer;font-size:13px;font-weight:900}.record-main-v17.recording{background:#d93b3b;box-shadow:0 12px 30px rgba(217,59,59,.25)}.record-main-v17 span{display:block;font-size:30px;margin-bottom:5px}.record-main-v17 small{display:block;font-weight:700;opacity:.8}.rec-help{padding:14px}.record-card-v17{padding:13px;margin-top:9px}.record-card-v17 .record-card-head{align-items:flex-start}.record-actions-v17{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.record-label{vertical-align:middle}
 .essay-layout-v17{display:grid;grid-template-columns:270px minmax(0,1fr);gap:14px;align-items:start}.essay-guide-v17{position:sticky;top:12px;padding:15px}.essay-editor-v17{padding:18px}.essay-textarea-v17{min-height:520px;line-height:1.85;font-size:14px}.essay-toolbar-v17{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.essay-stats-v17{display:flex;gap:12px;flex-wrap:wrap}.essay-stat-v17{min-width:70px}.essay-stat-v17 strong{display:block;font-size:17px}.essay-stat-v17 small{font-size:9px;color:var(--text-muted)}.essay-history-v17{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.essay-card-v17{padding:14px}.essay-card-v17 .essay-actions-v17{display:flex;gap:5px;margin-top:9px}.essay-audio-panel-v17{margin-bottom:14px}.transcript-box-v17{max-height:180px;overflow:auto;padding:10px;border-radius:10px;background:rgba(22,135,255,.05);font-size:11px;line-height:1.6;margin-top:8px}.transcript-box-v17 small{display:block;margin-top:6px;color:var(--text-muted)}
-.radar-grid-v17{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.radar-news-v17{cursor:pointer;position:relative;transition:.16s}.radar-news-v17:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(0,0,0,.09);border-color:rgba(255,212,0,.55)}.radar-news-v17 h3{margin:9px 0 5px}.radar-news-v17 p{line-height:1.55}.radar-read{display:inline-flex;margin-top:8px;font-size:10px;font-weight:900;color:#b88f00}.radar-source-line{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:8px;font-size:9px;color:var(--text-muted)}
-@media(max-width:800px){.notes-workspace,.recorder-hub,.essay-layout-v17{grid-template-columns:1fr}.notes-sidebar,.essay-guide-v17{position:static}.notes-grid-v17,.essay-history-v17,.radar-grid-v17{grid-template-columns:1fr}.record-main-v17{width:132px;height:132px}.essay-textarea-v17{min-height:420px}}
+@media(max-width:800px){.notes-workspace,.recorder-hub,.essay-layout-v17{grid-template-columns:1fr}.notes-sidebar,.essay-guide-v17{position:static}.notes-grid-v17,.essay-history-v17,.record-main-v17{width:132px;height:132px}.essay-textarea-v17{min-height:420px}}
 </style>
 <style id="doctor-audit-v18-css">.audit-health-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.audit-health-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px}.audit-health-item strong{display:block;font-size:13px}.audit-health-item span{display:block;font-size:11px;color:var(--text-muted);margin-top:4px}.audit-health-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#f5c400}.audit-health-dot.ok{background:#20b86b}.audit-health-dot.bad{background:#e53935}.audit-source-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.audit-source-pill{padding:5px 8px;border:1px solid var(--border);border-radius:999px;font-size:10px;color:var(--text-muted)}@media(max-width:700px){.audit-health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
@@ -566,12 +555,8 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 @media(max-width:640px){.doctor-avatar-box img.doctor-avatar-level-1{max-height:120px;max-width:32%}.doctor-avatar-box img.doctor-avatar-level-2{max-height:160px}.doctor-avatar-box img.doctor-avatar-level-3{max-height:210px}.doctor-avatar-box img.doctor-avatar-level-4{max-height:250px}.doctor-avatar-box img.doctor-avatar-level-5,.doctor-avatar-box img.doctor-avatar-level-6{max-height:285px}.doctor-avatar-box img.doctor-avatar-level-7,.doctor-avatar-box img.doctor-avatar-level-8,.doctor-avatar-box img.doctor-avatar-level-9,.doctor-avatar-box img.doctor-avatar-level-10{max-height:295px}}
 </style>
 
-/* Doctor Core 1.12.6 — Radar removido por decisão de produto. */
-<style id="doctor-radar-removal">
-  #radar-ticker-mount, #home-radar, .radar-page, [data-tool="radar"], #open-radar, #radar-back, #radar-refresh, #radar-article-back, [data-radar], .radar-ticker, .radar-hero { display:none !important; }
-  #main-view { padding-bottom: 12px !important; --radar-reserve: 0px; }
-  body { scroll-padding-bottom: 0 !important; }
-</style>
+
+
 
 </head>
 <body>
@@ -642,7 +627,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   });
 })();
 </script>
-<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.6</div><div id="splash-progress" aria-hidden="true"></div></div>
+<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.7</div><div id="splash-progress" aria-hidden="true"></div></div>
 <div id="toast-container"></div>
 <header class="topbar">
   <button type="button" class="topbar-brand" id="topbar-home" aria-label="Voltar para a página inicial do Doctor Concursos" title="Voltar para o início">
@@ -804,10 +789,9 @@ function defaultState() {
     recordings: [],
     essays: [],
     essayDraft: {title:'',body:'',updatedAt:null,audioId:null},
-    radar: { seenIds: [], interests: {}, lastSyncAt: null, items: [], lastAttemptAt: null, nextAllowedAt: null, refreshCount: 0 },
     syncQueue: [],
     deviceSession: { id: null, lastSeenAt: null },
-    aiCore: { version: '1.2.0', lastReviewAt: null, lastRadarAt: null, reviewStats: { approved: 0, rejected: 0, repaired: 0 } }
+    aiCore: { version: '1.2.0', lastReviewAt: null, reviewStats: { approved: 0, rejected: 0, repaired: 0 } }
   };
 }
 
@@ -903,14 +887,9 @@ const Store = {
       if (!this.state.essayDraft || typeof this.state.essayDraft !== 'object') this.state.essayDraft = {title:'',body:'',updatedAt:null,audioId:null};
       if (this.state.essayDraft.audioId === undefined) this.state.essayDraft.audioId = null;
       this.state.recordings.forEach(r => { if (r.isEssayDraft === undefined) r.isEssayDraft = false; });
-      if (!this.state.radar) this.state.radar = { seenIds: [], interests: {}, lastSyncAt: null, items: [], lastAttemptAt: null, nextAllowedAt: null, refreshCount: 0 };
-      if (this.state.radar.lastAttemptAt === undefined) this.state.radar.lastAttemptAt = null;
-      if (this.state.radar.nextAllowedAt === undefined) this.state.radar.nextAllowedAt = null;
-      if (typeof this.state.radar.refreshCount !== 'number') this.state.radar.refreshCount = 0;
-      if (!Array.isArray(this.state.radar.items)) this.state.radar.items = [];
       if (!Array.isArray(this.state.syncQueue)) this.state.syncQueue = [];
       if (!this.state.deviceSession) this.state.deviceSession = { id: null, lastSeenAt: null };
-      if (!this.state.aiCore) this.state.aiCore = { version: '1.2.0', lastReviewAt: null, lastRadarAt: null, reviewStats: { approved: 0, rejected: 0, repaired: 0 } };
+      if (!this.state.aiCore) this.state.aiCore = { version: '1.2.0', lastReviewAt: null, reviewStats: { approved: 0, rejected: 0, repaired: 0 } };
       if (!this.state.aiCore.version) this.state.aiCore.version='1.2.0';
       if (!this.state.aiCore.reviewStats) this.state.aiCore.reviewStats = { approved: 0, rejected: 0, repaired: 0 };
       if (this.state.dailyPlan === undefined) this.state.dailyPlan = null;
@@ -1672,7 +1651,7 @@ const DoctorAICore = {
           if(responseFormat)body.response_format=responseFormat;
           if(searchSettings){
             body.search_settings=searchSettings;
-            // Groq desativou Compound em 21/09/2026. O Radar usa o
+            // Groq desativou Compound em 21/09/2026. A busca web usa o
             // Browser Search nativo do GPT-OSS, que permanece suportado.
             body.tools=[{type:'browser_search'}];
             body.tool_choice='required';
@@ -1684,7 +1663,7 @@ const DoctorAICore = {
             const data=await res.json(); const content=data.choices?.[0]?.message?.content||'';
             const executed=data?.choices?.[0]?.message?.executed_tools;
             // Compound pode concluir uma pesquisa web com o conteúdo final vazio,
-            // mas ainda assim entregar os resultados em executed_tools. Para o Radar,
+            // mas ainda assim entregar os resultados em executed_tools. Para uma chamada com busca,
             // isso é uma resposta válida: nunca descarte a busca real por falta de texto.
             if(!content && !(searchSettings && Array.isArray(executed) && executed.length)){last={ok:false,reason:'empty-response',model:candidate}; continue;}
             Store.state.aiCore.activeModel=candidate; Store.state.aiCore.lastSuccessfulModelAt=new Date().toISOString(); Store.save();
@@ -1695,7 +1674,7 @@ const DoctorAICore = {
           last={ok:false,status:res.status,error:text.slice(0,500),model:candidate,reason:GroqAI._friendlyReason(res.status),retryAfterMs};
           if(res.status===401||res.status===403)return last;
           if(res.status===429){
-            // Para chamadas do Radar, nunca repetir automaticamente: protege a
+            // Para chamadas com busca, nunca repetir automaticamente: protege a
             // cota da GROQ e evita tempestade de requisições.
             if(searchSettings)return last;
             if(attempt===1){ await GroqAI._sleep(GroqAI._retryAfterMs(res,900)); continue; }
@@ -1782,97 +1761,6 @@ const DoctorAICore = {
     const r=await this.call({messages:[{role:'system',content:'Avalie redações de forma pedagógica, objetiva e respeitosa.'},{role:'user',content:prompt}],responseFormat:{type:'json_object'},temperature:0.15});
     if(!r.ok)return r; const p=this.parseJSON(r.content); if(!p)return {ok:false,reason:'invalid'}; return {ok:true,result:p};
   },
-  _extractRadarSearchResults(data){
-    // A API da Groq pode devolver o resultado da busca em search_results.results
-    // OU em executed_tools[].output como texto. As versões anteriores só tratavam
-    // do primeiro formato, o que fazia o Radar parecer vazio mesmo quando a busca
-    // tinha sido executada com sucesso.
-    const out=[]; const seen=new Set();
-    const add=(node,forcedSource='')=>{
-      if(!node || out.length>=40)return;
-      if(typeof node==='string'){
-        const text=node.trim();
-        if(!text)return;
-        // Formato comum: Title: ... / URL: ... / Content: ...
-        const blocks=text.split(/\n(?=Title\s*:)/i).filter(Boolean);
-        for(const block of blocks){
-          const title=(block.match(/Title\s*:\s*(.+)/i)?.[1]||'').trim();
-          const url=(block.match(/(?:URL|Link|Source)\s*:\s*(https?:\/\/\S+)/i)?.[1]||'').trim().replace(/[),.;]+$/,'');
-          const snippet=(block.match(/(?:Content|Snippet|Description|Text)\s*:\s*([\s\S]*?)(?=\n(?:Title|URL|Link|Source|Content|Snippet)\s*:|$)/i)?.[1]||block).trim();
-          if(title||url)add({title,url,snippet,source:forcedSource});
-        }
-        // Se não houver rótulos, ainda aproveita qualquer URL oficial encontrada.
-        if(!blocks.length || !out.length){
-          const urls=[...text.matchAll(/https?:\/\/[^\s<>"']+/g)].map(m=>m[0].replace(/[),.;]+$/,''));
-          urls.slice(0,8).forEach((url,i)=>add({title:`Atualização encontrada na fonte oficial ${i+1}`,url,snippet:text,source:forcedSource}));
-        }
-        return;
-      }
-      if(Array.isArray(node)){node.forEach(x=>add(x,forcedSource));return;}
-      if(typeof node!=='object')return;
-      const title=String(node.title||node.name||'').trim();
-      const url=String(node.url||node.link||node.source_url||'').trim();
-      const snippet=String(node.content||node.snippet||node.text||node.description||node.summary||node.output||'').trim();
-      const source=String(node.source||node.domain||forcedSource||'').trim();
-      if(title&&(url||snippet)){
-        const key=(title+'|'+url).toLowerCase();
-        if(!seen.has(key)){seen.add(key);out.push({title,url,snippet,source});}
-      }
-      if(Array.isArray(node.results))node.results.forEach(x=>add(x,source));
-      if(node.search_results) add(node.search_results,source);
-      if(node.searchResults) add(node.searchResults,source);
-      if(node.sources) add(node.sources,source);
-      if(node.output) add(node.output,source);
-      Object.entries(node).forEach(([k,v])=>{
-        if(['results','search_results','searchResults','sources','output','title','name','url','link','source_url','content','snippet','text','description','summary'].includes(k))return;
-        if(v&&typeof v==='object')add(v,source);
-      });
-    };
-    add(data?.choices?.[0]?.message?.executed_tools);
-    return out.slice(0,40);
-  },
-
-  _radarAllowedUrl(url){
-    try{
-      const host=new URL(url).hostname.toLowerCase().replace(/^www\./,'');
-      const allowed=Array.isArray(EXAM_CONFIG.radarAllowedHosts)?EXAM_CONFIG.radarAllowedHosts:[];
-      return allowed.some(base=>{
-        const b=String(base||'').toLowerCase().replace(/^www\./,'');
-        return host===b || host.endsWith('.'+b);
-      });
-    }catch(_){return false;}
-  },
-
-  _catalogPromotions(now){
-    const list=RadarDoctor.platformCatalog();
-    return list.slice(0,3).map((p,i)=>({
-      id:`radar-promo-${now}-${p.productId||i}`,
-      tag:'APP DOCTOR',
-      title:String(p.name||p.shortName||p.productId||'Novo aplicativo Doctor').slice(0,180),
-      text:String(p.promoText||p.description||`Estude com o aplicativo ${p.shortName||p.name||'Doctor'} e tenha uma preparação focada no seu concurso.`).slice(0,700),
-      body:String(p.promoText||p.description||`Aplicativo Doctor focado em ${p.shortName||p.name||'um novo concurso'}. Conheça a plataforma e estude com conteúdo direcionado ao edital e à banca.`).slice(0,2600),
-      source:'Doctor Concursos',url:String(p.url||p.appUrl||''),date:new Date(now).toLocaleDateString('pt-BR'),
-      priority:'normal',official:false,contestRelated:false,isPromotion:true,productId:p.productId||'',appId:p.appId||''
-    }));
-  },
-
-  _radarItemsFromSearchResults(results,now){
-    const c=EXAM_CONFIG;
-    const terms=[c.orgName,c.cargo,c.productName,c.banca,c.editalNumber,'câmara municipal de ipameri','concurso público da câmara municipal de ipameri','ipameri','verbena','ufg'].map(String).map(x=>x.toLowerCase());
-    const ranked=results.map((r,i)=>{
-      const hay=`${r.title} ${r.source} ${r.snippet} ${r.url}`.toLowerCase();
-      const official=/(institutoverbena\.ufg\.br|sistemas\.institutoverbena\.ufg\.br|camaraipameri\.go\.gov\.br)/i.test(hay);
-      const related=official || terms.some(t=>t&&hay.includes(t));
-      return {...r,related,official,score:(related?1000:0)+(official?250:0)+(r.url?10:0)-i};
-    }).filter(x=>x.related).sort((a,b)=>b.score-a.score);
-    return ranked.slice(0,7).map((x,i)=>({
-      id:`radar-web-${now}-${i}`,tag:'CONCURSO ATUAL',title:x.title.slice(0,180),
-      text:(x.snippet||'Atualização encontrada em fonte oficial.').slice(0,700),
-      body:(x.snippet||'Atualização encontrada em fonte oficial.').slice(0,2600),
-      source:(x.source||'Fonte oficial').slice(0,140),url:x.url||'',date:new Date(now).toLocaleDateString('pt-BR'),
-      priority:'high',official:true,contestRelated:true,isPromotion:false
-    }));
-  },
 
 };
 
@@ -1916,7 +1804,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.12.6', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.12.7', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
@@ -1932,7 +1820,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
       setTimeout(() => sessionStorage.removeItem('doctor-core-sw-reloaded'), 12000);
       // Se uma instalação antiga conseguir abrir uma cópia stale do HTML,
       // consulta o marcador de build sem usar cache e força a versão atual.
-      fetch('./version.json?v=1.12.6-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+      fetch('./version.json?v=1.12.7-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
         if (v?.version && v.version !== DOCTOR_CORE_BUILD) window.location.reload();
       }).catch(() => {});
     }
@@ -1967,9 +1855,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     window.addEventListener('online', () => { CoreSync.flush(); this.refreshGlobalChrome(); });
     window.addEventListener('offline', () => this.refreshGlobalChrome());
     CoreSync.claimSession();
-    // V1.10.8: Radar NÃO pesquisa automaticamente no boot. Uma abertura do app
-    // não pode consumir quota GROQ nem disparar várias buscas silenciosas.
-    document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
+document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
     // V1.8.5 — a marca Doctor Concursos é a âncora global da navegação.
     // O listener fica dentro do ciclo de inicialização do Core, garantindo
     // que o clique seja registrado depois que UI.render já existe.
@@ -2001,19 +1887,6 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
   },
 
   refreshGlobalChrome() {
-    const mount=document.getElementById('radar-ticker-mount');
-    if(mount){
-      mount.innerHTML=RadarDoctor.ticker();
-      if(!mount.dataset.radarBound){
-        mount.addEventListener('click',(e)=>{
-          const item=e.target.closest('[data-radar-id]');
-          if(!item) return;
-          this._radarArticleId=item.dataset.radarId;
-          this.render('radarArticle');
-        });
-        mount.dataset.radarBound='1';
-      }
-    }
     const b=document.getElementById('ai-indicator'); if(!b) return;
     const has=!!GroqAI.getKey();
     b.classList.toggle('off',!has);
@@ -2041,7 +1914,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
   },
 
   _decoratePageBack() {
-    const legacyIds = ['rec-back','rec-sub-back','notes-back','essay-back','radar-back','radar-article-back','pf-back','rv-back','back-home','practice-back','fc-back','fc-session-back'];
+    const legacyIds = ['rec-back','rec-sub-back','notes-back','essay-back','pf-back','rv-back','back-home','practice-back','fc-back','fc-session-back'];
     legacyIds.forEach(id => document.getElementById(id)?.classList.add('legacy-page-back'));
     if (this.currentView !== 'home' && this.currentView !== 'simuladoRunning') {
       const main = document.getElementById('main-view');
@@ -2092,7 +1965,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
           return;
         }
         this.dataset.fallbackApplied = '1';
-        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.6';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.7';
         this.classList.add('doctor-avatar-fallback-image');
       });
     });
@@ -2105,269 +1978,10 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
 
 
 /* ===== DOCTOR CORE V1 SERVICES ===== */
-const RadarDoctor = {
-  _refreshing:false,
-  items:[],
-  catalog:[],
-  currentProductUuid:null,
-
-  _escape(v){
-    return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  },
-  _cfg(){ return window.DOCTOR_PRODUCTION_CONFIG?.integrations?.supabase || {}; },
-  _headers(){
-    const c=this._cfg();
-    return c.publishableKey ? {'apikey':c.publishableKey,'Content-Type':'application/json'} : {};
-  },
-  async _fetch(path,options={}){
-    const c=this._cfg();
-    if(!c.enabled||!c.url||!c.publishableKey) throw Object.assign(new Error('Central Radar não configurado.'),{code:'central-disabled'});
-    const res=await fetch(c.url.replace(/\/$/,'')+'/rest/v1/'+path,{...options,headers:{...this._headers(),...(options.headers||{})}});
-    const text=await res.text(); let data=null; try{data=text?JSON.parse(text):null;}catch(_){data=text;}
-    if(!res.ok) throw Object.assign(new Error((data&&data.message)||('HTTP '+res.status)),{status:res.status,data});
-    return data;
-  },
-  async _resolveCurrentProduct(){
-    const bridge=window.DOCTOR_PLATFORM_BRIDGE;
-    try{
-      const bridgeProduct=bridge?.getProductCatalog?.();
-      if(Array.isArray(bridgeProduct)){
-        const found=bridgeProduct.find(x=>x?.productId===EXAM_CONFIG.productId||x?.appId===EXAM_CONFIG.appId);
-        if(found?.uuid||/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(String(found?.productId||''))) return String(found.uuid||found.productId);
-      }
-    }catch(_){}
-    const slug=encodeURIComponent(String(EXAM_CONFIG.productId||'').trim());
-    const rows=await this._fetch('products?select=id,slug,status&slug=eq.'+slug+'&status=eq.published&limit=1');
-    const id=Array.isArray(rows)&&rows[0]?.id?String(rows[0].id):null;
-    this.currentProductUuid=id;
-    return id;
-  },
-  async _loadCatalog(){
-    const rows=await this._fetch('products?select=id,name,slug,description,cover_url,status,sort_order,product_apps(app_id,apps(name,slug,app_url,status))&status=eq.published&order=sort_order.asc');
-    const currentSlug=String(EXAM_CONFIG.productId||'');
-    this.catalog=(Array.isArray(rows)?rows:[]).filter(p=>p&&p.status==='published').map(p=>{
-      const app=(p.product_apps||[]).map(x=>x.apps).find(x=>x&&x.status==='active')||(p.product_apps||[])[0]?.apps||null;
-      return {productId:p.id,slug:p.slug,name:p.name,description:p.description||'',url:app?.app_url||'',appId:app?.slug||'',current:p.slug===currentSlug};
-    });
-    return this.catalog;
-  },
-  async _centralNews(productUuid,limit=14){
-    const c=this._cfg();
-    const res=await fetch(c.url.replace(/\/$/,'')+'/rest/v1/rpc/get_radar_feed',{method:'POST',headers:this._headers(),body:JSON.stringify({p_product_id:productUuid,p_limit:limit})});
-    const text=await res.text(); let data=null; try{data=text?JSON.parse(text):null;}catch(_){data=text;}
-    if(!res.ok) throw Object.assign(new Error((data&&data.message)||('HTTP '+res.status)),{status:res.status,data});
-    return Array.isArray(data)?data:[];
-  },
-  async loadCentral(){
-    const productUuid=await this._resolveCurrentProduct();
-    if(!productUuid) return {ok:false,reason:'catalog-pending',items:[]};
-    this.currentProductUuid=productUuid;
-
-    // A RPC central aplica a regra 70/30 e o fallback:
-    // até 70% do lote para o produto atual + até 30% para outros
-    // produtos publicados. Se faltar conteúdo secundário, ela completa
-    // com conteúdo primário — nunca com promoção fabricada no app.
-    const news=await this._centralNews(productUuid,14);
-    const primary=news.filter(x=>x.is_primary===true);
-    const secondary=news.filter(x=>x.is_primary===false);
-    const mapped=news.slice(0,14).map(x=>({
-      id:'central-radar-'+x.id,
-      tag:'CONCURSO '+(x.is_primary?'ATUAL':'OUTRO PRODUTO'),
-      title:String(x.title||'Atualização do Radar Doctor').slice(0,180),
-      text:String(x.summary||'').slice(0,700),
-      body:String(x.summary||'').slice(0,2600),
-      source:String(x.source_name||'Fonte oficial').slice(0,140),
-      sourceUrl:String(x.source_url||''),
-      url:String(x.content_url||''),
-      imageUrl:String(x.image_url||''),
-      videoUrl:String(x.video_url||''),
-      date:x.published_at?new Date(x.published_at).toLocaleDateString('pt-BR'):'',
-      publishedAt:x.published_at||null,
-      priority:'high',
-      official:true,
-      contestRelated:Boolean(x.is_primary),
-      isPromotion:false,
-      productId:x.product_id||null
-    }));
-    return {
-      ok:true,
-      items:mapped,
-      contestCount:primary.length,
-      promotionCount:secondary.length
-    };
-  },
-  relevant(){
-    const stored=Store.state.radar?.items;
-    if(Array.isArray(stored))this.items=stored;
-    return [...this.items];
-  },
-  ticker(){
-    const arr=this.relevant();
-    if(!arr.length) return '<div class="radar-ticker" aria-label="Radar Doctor"><div class="radar-label">📡 RADAR DOCTOR <span>• CENTRAL</span></div><div class="radar-track"><div class="radar-move" style="animation:none;transform:none;padding-left:22px"><span class="radar-item">Radar central aguardando conteúdo oficial publicado na Plataforma.</span></div></div></div>';
-    const doubled=[...arr,...arr];
-    return '<div class="radar-ticker" aria-label="Radar Doctor"><div class="radar-label">📡 RADAR DOCTOR <span>• CENTRAL</span></div><div class="radar-track"><div class="radar-move">'+doubled.map(n=>'<span class="radar-item" data-radar-id="'+this._escape(n.id)+'">['+this._escape(n.tag||'RADAR')+'] <b>'+this._escape(n.title||'')+'</b></span>').join('')+'</div></div></div>';
-  },
-  card(){
-    const n=this.relevant()[0];
-    return '<div class="section-title">📡 Radar Doctor</div><div class="card radar-card"><div class="radar-preview"><div><span class="tag">RADAR CENTRAL</span><h3>'+this._escape(n?.title||'Radar Doctor centralizado')+'</h3><p>'+this._escape(n?.text||'O conteúdo vem da base central do Radar Doctor no Supabase.')+'</p></div></div><div class="subj-row" style="margin-top:10px"><span class="muted">'+this._escape(n?.source||'Supabase · Radar Doctor')+'</span><button class="btn btn-outline btn-sm" id="open-radar">Ver notícias</button></div></div>';
-  },
-  _timeLabel(){const t=Store.state.radar?.lastSyncAt;return t?new Date(t).toLocaleString('pt-BR'):'Ainda não sincronizado';},
-  page(){
-    const arr=this.relevant(), contest=arr.filter(x=>!x.isPromotion), promos=arr.filter(x=>x.isPromotion);
-    const fresh=!!Store.state.radar?.lastSyncAt&&(Date.now()-new Date(Store.state.radar.lastSyncAt).getTime()<6*60*60*1000);
-    return '<div class="tool-page radar-page"><div class="tool-hero radar-hero"><div class="radar-live"><i></i> RADAR DOCTOR · CENTRAL</div><h2>📡 Notícias do seu concurso</h2><p><b>70%</b> do lote é priorizado para o produto/concurso atual e <b>30%</b> para notícias/oportunidades dos demais produtos publicados na grade Doctor.</p><div class="radar-mix"><span>70% · seu concurso</span><span>30% · grade Doctor</span><span>🛡️ somente fonte oficial</span><span>☁️ fonte central Supabase</span></div><div class="tool-hero-actions"><button class="btn btn-outline" id="radar-back">← Voltar aos estudos</button><button class="btn btn-primary" id="radar-refresh">🔄 '+(fresh?'Sincronizar Radar':'Atualizar Radar')+'</button></div><div class="muted" style="margin-top:8px;font-size:10px">Última sincronização: '+this._escape(this._timeLabel())+'</div></div><div class="tool-kpis"><div class="tool-kpi"><strong>'+contest.length+'</strong><span>itens do concurso</span></div><div class="tool-kpi"><strong>'+promos.length+'</strong><span>oportunidades da grade</span></div><div class="tool-kpi"><strong>'+((Store.state.radar?.refreshCount)||0)+'</strong><span>sincronizações</span></div></div><div class="card" style="margin-top:14px;padding:13px"><strong>🎯 Nova arquitetura</strong><p class="muted" style="margin:5px 0 0">O aplicativo não faz scraping nem pesquisa web própria. Ele consome a base central do Radar Doctor, que identifica produto, fonte oficial e conteúdo. Notícias duplicadas são controladas pelo <b>content_url</b>.</p></div><div class="section-title">Últimas atualizações</div>'+ (arr.length?'<div class="radar-grid-v17">'+arr.map(n=>n.isPromotion?'<article class="card radar-news-v17" tabindex="0" role="button" data-radar-id="'+this._escape(n.id)+'"><span class="radar-source-badge">🚀 OUTRO PRODUTO DOCTOR</span><div class="badge" style="margin-top:8px">'+this._escape(n.tag)+'</div><h3>'+this._escape(n.title)+'</h3><p class="muted">'+this._escape(n.text)+'</p><div class="radar-source-line"><span>'+this._escape(n.source)+'</span><span>Grade Doctor</span></div><span class="radar-read">Conhecer produto →</span></article>':'<article class="card radar-news-v17" tabindex="0" role="button" data-radar-id="'+this._escape(n.id)+'"><span class="radar-source-badge">✓ FONTE OFICIAL</span><div class="badge" style="margin-top:8px">'+this._escape(n.tag)+'</div><h3>'+this._escape(n.title)+'</h3><p class="muted">'+this._escape(n.text)+'</p><div class="radar-source-line"><span>'+this._escape(n.source)+'</span><span>'+this._escape(n.date)+'</span></div><span class="radar-read">Ler no Radar →</span></article>').join('')+'</div>':'<div class="card" style="padding:18px;text-align:center"><strong>☁️ O Radar central ainda não tem conteúdo publicado para este produto.</strong><p class="muted" style="margin:7px 0 0">O aplicativo já está preparado para consumir a nova estrutura. Quando o produto estiver publicado no catálogo central e houver itens oficiais associados, eles aparecerão aqui automaticamente.</p></div>')+'</div>';
-  },
-  article(id){
-    const n=this.items.find(x=>x.id===id);if(!n)return this.page();
-    const safeUrl=this._escape(n.url||'');
-    if(n.isPromotion) return '<div class="tool-page radar-article"><button class="btn btn-ghost btn-sm" id="radar-article-back">← Voltar ao Radar</button><div class="card" style="margin-top:12px;padding:18px"><span class="radar-source-badge">🚀 OUTRO PRODUTO DOCTOR</span><div class="badge" style="margin-top:10px">'+this._escape(n.tag)+'</div><h2 style="margin:10px 0 6px">'+this._escape(n.title)+'</h2><div class="muted">'+this._escape(n.source)+'</div><div class="radar-article-source"><strong>Sobre este produto</strong><div class="radar-article-body" style="margin-top:9px">'+this._escape(n.body||n.text)+'</div></div>'+(safeUrl?'<div class="tool-hero-actions"><a class="btn btn-primary" href="'+safeUrl+'" target="_blank" rel="noopener noreferrer">🚀 Conhecer aplicativo</a></div>':'')+'</div></div>';
-    return '<div class="tool-page radar-article"><button class="btn btn-ghost btn-sm" id="radar-article-back">← Voltar ao Radar</button><div class="card" style="margin-top:12px;padding:18px"><span class="radar-source-badge">✓ FONTE OFICIAL</span><div class="badge" style="margin-top:10px">'+this._escape(n.tag)+'</div><h2 style="margin:10px 0 6px">'+this._escape(n.title)+'</h2><div class="muted" style="font-size:11px">'+this._escape(n.source)+' · '+this._escape(n.date)+'</div><div class="radar-article-source"><strong>Conteúdo</strong><div class="radar-article-body" style="margin-top:9px">'+this._escape(n.body||n.text)+'</div></div>'+(safeUrl?'<div class="tool-hero-actions"><a class="btn btn-outline" href="'+safeUrl+'" target="_blank" rel="noopener noreferrer">Abrir publicação oficial</a></div>':'')+'</div></div>';
-  },
-  async refreshRadar(force=false){
-    const now=Date.now(), TTL=6*60*60*1000, COOLDOWN=10*60*1000, state=Store.state.radar||{};
-    const last=state.lastSyncAt?new Date(state.lastSyncAt).getTime():0, attempt=state.lastAttemptAt?new Date(state.lastAttemptAt).getTime():0;
-    if(!force&&last&&now-last<TTL)return {ok:true,items:this.relevant(),cached:true};
-    if(force&&attempt&&now-attempt<COOLDOWN)return {ok:false,reason:'cooldown',nextAllowedAt:attempt+COOLDOWN,items:this.relevant()};
-    if(!navigator.onLine)return {ok:false,reason:'offline',items:this.relevant()};
-    if(this._refreshing)return {ok:false,reason:'busy',items:this.relevant()};
-    const cfg=this._cfg();
-    if(!cfg.enabled||!cfg.url||!cfg.publishableKey)return {ok:false,reason:'central-disabled',items:this.relevant()};
-    this._refreshing=true; state.lastAttemptAt=new Date(now).toISOString(); state.nextAllowedAt=new Date(now+COOLDOWN).toISOString(); Store.save();
-    try{
-      const r=await this.loadCentral();
-      if(!r.ok)return {...r,items:this.relevant()};
-      this.items=r.items; state.items=r.items; state.seenIds=r.items.map(x=>x.id); state.lastSyncAt=new Date().toISOString(); state.nextAllowedAt=new Date(now+COOLDOWN).toISOString(); state.refreshCount=(state.refreshCount||0)+1; state.source='supabase-central-radar'; Store.state.radar=state; Store.save();
-      return {ok:true,items:r.items,central:true,contestCount:r.contestCount,promotionCount:r.promotionCount};
-    }catch(e){ return {ok:false,reason:e?.code||'central-error',status:e?.status,error:String(e?.message||e),items:this.relevant()}; }
-    finally{this._refreshing=false;}
-  }
-};
-
-const AudioDB = {
-  db:null,
-  async open(){
-    if(this.db)return this.db;
-    this.db=await new Promise((resolve,reject)=>{const r=indexedDB.open('doctor-audio-v1',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('blobs'))r.result.createObjectStore('blobs');};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
-    return this.db;
-  },
-  async put(id,blob){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction('blobs','readwrite');tx.objectStore('blobs').put(blob,id);tx.oncomplete=()=>res(true);tx.onerror=()=>rej(tx.error);});},
-  async get(id){const db=await this.open();return new Promise((res,rej)=>{const r=db.transaction('blobs').objectStore('blobs').get(id);r.onsuccess=()=>res(r.result||null);r.onerror=()=>rej(r.error);});},
-  async remove(id){try{const db=await this.open();db.transaction('blobs','readwrite').objectStore('blobs').delete(id);}catch(e){}}
-};
-const CoreRecorder = {
-  mediaRecorder:null, chunks:[], stream:null, startedAt:null, stopping:false, stopPromise:null, mimeType:'', lastError:null,
-  isRecording(){ return !!this.mediaRecorder && this.mediaRecorder.state === 'recording'; },
-  _cleanup(){
-    try{ this.stream?.getTracks?.().forEach(t=>{try{t.stop();}catch(e){}}); }catch(e){}
-    this.stream=null; this.mediaRecorder=null; this.startedAt=null; this.stopping=false;
-  },
-  _errorMessage(err){
-    const n=err?.name||'';
-    if(n==='NotAllowedError'||n==='SecurityError') return 'Permissão do microfone negada. Autorize o microfone para este aplicativo e tente novamente.';
-    if(n==='NotFoundError') return 'Nenhum microfone disponível foi encontrado neste dispositivo.';
-    if(n==='NotReadableError'||n==='TrackStartError') return 'O microfone está ocupado por outro aplicativo. Feche o outro uso do microfone e tente novamente.';
-    if(n==='OverconstrainedError') return 'O microfone deste dispositivo não aceitou as configurações solicitadas.';
-    if(n==='AbortError') return 'O acesso ao microfone foi interrompido. Tente novamente.';
-    return err?.message || 'Não foi possível iniciar a gravação neste dispositivo.';
-  },
-  async start(){
-    if(this.isRecording()) return;
-    if(this.stopping) throw new Error('O gravador ainda está finalizando a gravação anterior. Aguarde um instante.');
-    if(!window.isSecureContext) throw new Error('O microfone só pode ser usado em uma conexão segura (HTTPS).');
-    if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) throw new Error('Gravação de áudio não é suportada neste navegador.');
-    this.lastError=null; this.chunks=[]; this.mimeType='';
-    let stream=null;
-    try{
-      // Compatibilidade ampla: começamos com áudio simples e aplicamos melhorias quando o navegador aceitar.
-      try{
-        stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
-      }catch(firstErr){
-        stream=await navigator.mediaDevices.getUserMedia({audio:true});
-      }
-      this.stream=stream;
-      const candidates=[
-        'audio/webm;codecs=opus','audio/webm','audio/mp4;codecs=mp4a.40.2','audio/mp4','audio/ogg;codecs=opus'
-      ];
-      const supported=candidates.filter(x=>{try{return typeof MediaRecorder.isTypeSupported==='function'?MediaRecorder.isTypeSupported(x):true;}catch(e){return false;}});
-      const attempts=[...supported,''];
-      let recorder=null, chosen='';
-      let lastCtorError=null;
-      for(const mime of attempts){
-        try{
-          recorder=mime?new MediaRecorder(stream,{mimeType:mime,audioBitsPerSecond:128000}):new MediaRecorder(stream,{audioBitsPerSecond:128000});
-          chosen=recorder.mimeType||mime||'';
-          break;
-        }catch(e){lastCtorError=e;}
-      }
-      if(!recorder) throw lastCtorError||new Error('Este dispositivo não encontrou um formato de gravação compatível.');
-      this.mediaRecorder=recorder; this.mimeType=chosen||'audio/webm'; this.chunks=[];
-      recorder.ondataavailable=e=>{ if(e?.data?.size) this.chunks.push(e.data); };
-      recorder.onerror=e=>{ this.lastError=e?.error||new Error('O navegador interrompeu a gravação.'); };
-      try{ recorder.start(250); }catch(e){ this._cleanup(); throw e; }
-      this.startedAt=Date.now();
-      return {mimeType:this.mimeType};
-    }catch(err){
-      this._cleanup();
-      const e=new Error(this._errorMessage(err)); e.name=err?.name||'RecorderStartError'; throw e;
-    }
-  },
-  stop(){
-    if(this.stopPromise) return this.stopPromise;
-    const r=this.mediaRecorder;
-    if(!r){ this._cleanup(); return Promise.resolve(null); }
-    this.stopping=true;
-    this.stopPromise=new Promise(resolve=>{
-      let settled=false;
-      const finish=()=>{
-        if(settled)return; settled=true;
-        const type=r.mimeType||this.mimeType||'audio/webm';
-        const parts=this.chunks.slice();
-        const blob=parts.length?new Blob(parts,{type}):null;
-        this._cleanup(); this.chunks=[]; this.stopPromise=null;
-        resolve(blob);
-      };
-      const watchdog=setTimeout(finish,5000);
-      const done=()=>{clearTimeout(watchdog);finish();};
-      r.addEventListener?.('stop',done,{once:true});
-      r.addEventListener?.('error',done,{once:true});
-      try{
-        if(r.state==='recording'){
-          try{r.requestData?.();}catch(e){}
-          r.stop();
-        }else done();
-      }catch(e){done();}
-    });
-    return this.stopPromise;
-  }
-};
-const CoreEssay = {
-  save(title,body,editingId=null){const now=new Date().toISOString();if(editingId){const e=Store.state.essays.find(x=>x.id===editingId);if(!e)return null;Object.assign(e,{title:title.trim()||'Redação',body:body.trim(),updatedAt:now});Store.save();return e;}const e={id:'essay-'+Date.now(),title:title.trim()||'Redação',body:body.trim(),createdAt:now,updatedAt:now};Store.state.essays.unshift(e);Store.state.syncQueue.push({type:'upsert',entity:'essay',id:e.id,at:now});Store.save();return e;},
-  remove(id){Store.state.essays=Store.state.essays.filter(e=>e.id!==id);Store.save();},
-  draft(title,body,audioId=null){Store.state.essayDraft={title:String(title||''),body:String(body||''),audioId:audioId||Store.state.essayDraft?.audioId||null,updatedAt:new Date().toISOString()};Store.save();},
-  clearDraft(){Store.state.essayDraft={title:'',body:'',updatedAt:null,audioId:null};Store.save();},
-  attachAudio(audioId){Store.state.essayDraft.audioId=audioId||null;Store.save();},
-  countLines(text, charsPerLine=70){const t=String(text||'').replace(/\r/g,'').trim();if(!t)return 0;return t.split('\n').reduce((sum,line)=>sum+Math.max(1,Math.ceil(line.trim().length/charsPerLine)),0);},
-  async transcribeAudio(recordingId){
-    const rec=Store.state.recordings.find(r=>r.id===recordingId); if(!rec) return {ok:false,error:'Gravação não encontrada.'};
-    const blob=await AudioDB.get(rec.audioId); if(!blob) return {ok:false,error:'Áudio não encontrado neste dispositivo.'};
-    if(blob.size>25*1024*1024) return {ok:false,error:'Este áudio ultrapassa 25 MB, limite do nível gratuito para envio direto.'};
-    const key=GroqAI.getKey(); if(!key) return {ok:false,reason:'no-key'};
-    const fd=new FormData(); fd.append('file',blob,`${rec.name||'rascunho'}.${(blob.type||'audio/webm').includes('mp4')?'mp4':'webm'}`); fd.append('model','whisper-large-v3-turbo'); fd.append('language','pt'); fd.append('response_format','json'); fd.append('temperature','0');
-    try{
-      const controller=new AbortController(); const timeout=setTimeout(()=>controller.abort(),90000);
-      const res=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',signal:controller.signal,headers:{'Authorization':`Bearer ${key}`},body:fd}); clearTimeout(timeout);
-      let data=null; try{data=await res.json();}catch{}
-      if(!res.ok) return {ok:false,status:res.status,error:data?.error?.message||'A GROQ não conseguiu transcrever este áudio.'};
-      const text=String(data?.text||'').trim(); if(!text)return {ok:false,error:'A transcrição retornou vazia.'};
-      rec.transcript=text; rec.transcribedAt=new Date().toISOString(); Store.state.essayDraft.audioId=rec.audioId; Store.state.essayDraft.body=text; Store.state.essayDraft.title=Store.state.essayDraft.title||`Rascunho falado — ${new Date(rec.createdAt).toLocaleDateString('pt-BR')}`; Store.save();
-      return {ok:true,text,recording:rec};
-    }catch(e){return {ok:false,error:e?.name==='AbortError'?'A transcrição demorou demais. Tente novamente.':'Não foi possível conectar à GROQ para transcrever o áudio.'};}
-  }
-};
 const CoreSync = {
   deviceId(){ if(!Store.state.deviceSession.id){ Store.state.deviceSession.id='device-'+crypto.randomUUID(); Store.state.deviceSession.createdAt=new Date().toISOString(); Store.save(); } return Store.state.deviceSession.id; },
   markLocalChange(entity,id,op='upsert'){ const key=`${entity}:${id}`; const now=new Date().toISOString(); const q=Store.state.syncQueue.find(x=>x.key===key); if(q){q.at=now;q.op=op;q.version=now;} else Store.state.syncQueue.push({key,type:'mutation',entity,id,op,at:now,version:now}); Store.save(); },
-  status(){ return {online:navigator.onLine,queued:Store.state.syncQueue?.length||0,last:Store.state.radar?.lastSyncAt||null,deviceId:this.deviceId(),remoteConfigured:!!window.DOCTOR_PLATFORM_BRIDGE}; },
+  status(){ return {online:navigator.onLine,queued:Store.state.syncQueue?.length||0,last:null,deviceId:this.deviceId(),remoteConfigured:!!window.DOCTOR_PLATFORM_BRIDGE}; },
   async flush(){ if(!navigator.onLine)return {ok:false,reason:'offline'}; const bridge=window.DOCTOR_PLATFORM_BRIDGE; if(!bridge||typeof bridge.sync!=='function')return {ok:false,reason:'platform-not-connected',queued:Store.state.syncQueue.length}; try{const r=await bridge.sync({deviceId:this.deviceId(),userId:bridge.userId||null,productId:EXAM_CONFIG.productId,mutations:Store.state.syncQueue.slice()}); if(r?.ok){Store.state.syncQueue=[];Store.state.deviceSession.lastSeenAt=new Date().toISOString();Store.save();} return r||{ok:false,reason:'empty-response'};}catch(e){return {ok:false,reason:'sync-error',error:String(e?.message||e)};} },
   async claimSession(){ const bridge=window.DOCTOR_PLATFORM_BRIDGE; const deviceId=this.deviceId(); if(!bridge||typeof bridge.claimDeviceSession!=='function')return {ok:false,reason:'platform-not-connected',deviceId}; try{const r=await bridge.claimDeviceSession({userId:bridge.userId||null,productId:EXAM_CONFIG.productId,deviceId}); if(r?.ok){Store.state.deviceSession.lastSeenAt=new Date().toISOString();Store.save();} return r||{ok:false,reason:'empty-response'};}catch(e){return {ok:false,reason:'session-error',error:String(e?.message||e)};} }
 };
@@ -2490,8 +2104,7 @@ Views.bind.home = function(){
   document.getElementById('home-notes')?.addEventListener('click',()=>UI.render('notes'));
   document.getElementById('home-recorder')?.addEventListener('click',()=>UI.render('recorderPick'));
   document.getElementById('home-essay')?.addEventListener('click',()=>UI.render('essay'));
-  document.getElementById('home-radar')?.addEventListener('click',()=>UI.render('radar'));
-  document.getElementById('open-radar')?.addEventListener('click',()=>UI.render('radar'));
+
 };
 
 // Card de Evolução do Doctor — usa somente o asset oficial do nível atual. O nível e a barra de progresso já são 100% reais, calculados
@@ -2504,7 +2117,7 @@ Views.doctorCard = function () {
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
         ${p.level.imageUri
-          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.6&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.7&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
@@ -2563,8 +2176,6 @@ Views.bind.home = function () {
   document.getElementById('home-notes')?.addEventListener('click', () => UI.render('notes'));
   document.getElementById('home-recorder')?.addEventListener('click', () => UI.render('recorderPick'));
   document.getElementById('home-essay')?.addEventListener('click', () => UI.render('essay'));
-  document.getElementById('home-radar')?.addEventListener('click', () => UI.render('radar'));
-  document.getElementById('open-radar')?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); UI.render('radar'); });
 
   document.querySelectorAll('[data-plan-item]').forEach(el => {
     el.addEventListener('click', () => {
@@ -3244,29 +2855,7 @@ Views.bind.simuladoResult = function () {
 };
 
 
-// ---------------- RADAR / CADERNO / GRAVADOR / REDAÇÃO ----------------
-Views.radar = function(){ return RadarDoctor.page(); };
-Views.bind.radar = function(){
-  document.getElementById('radar-back')?.addEventListener('click',()=>UI.back());
-  document.getElementById('radar-refresh')?.addEventListener('click',async e=>{
-    if(!window.DOCTOR_PRODUCTION_CONFIG?.integrations?.supabase?.enabled){UI.toast('O Radar central ainda não está conectado à Plataforma.','warn');return;}
-    if(!navigator.onLine){UI.toast('Sem internet. O Radar está mostrando o último conteúdo salvo.','warn');return;}
-    e.currentTarget.disabled=true;e.currentTarget.textContent='🔎 Pesquisando novidades...';
-    const r=await RadarDoctor.refreshRadar(true);
-    if(r.reason==='cooldown'){const t=r.nextAllowedAt?new Date(r.nextAllowedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'em breve';UI.toast(`Radar protegido contra buscas repetidas. Próxima pesquisa após ${t}.`,'warn');}
-    else if(r.ok){UI.toast(`${r.items.filter(x=>!x.isPromotion).length} notícia(s) verificadas.`,'success');}
-    else if(r.reason==='offline'){UI.toast('Sem internet. O Radar continua mostrando o último conteúdo salvo.','warn');}
-    else if(r.reason==='no-key'){UI.toast('Configure sua chave GROQ para atualizar o Radar.','warn');}
-    else if(r.reason==='rate-limit'){const t=r.nextAllowedAt?new Date(r.nextAllowedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'em alguns instantes';UI.toast(`A GROQ está temporariamente limitada. O Radar não fará novas tentativas até ${t}.`,'warn');}
-    else{UI.toast(`Radar: ${r.status?`erro HTTP ${r.status}`:(r.reason||'falha na pesquisa web')}. O conteúdo salvo continua disponível.`,'warn');}
-    UI.render('radar');
-  });
-  document.querySelectorAll('.radar-news-v17').forEach(el=>{const open=()=>{UI._radarArticleId=el.dataset.radarId;UI.render('radarArticle');};el.addEventListener('click',open);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});});
-};
-
-Views.radarArticle=function(){ return RadarDoctor.article(UI._radarArticleId); };
-Views.bind.radarArticle=function(){ document.getElementById('radar-article-back')?.addEventListener('click',()=>UI.back()); document.getElementById('radar-article-study')?.addEventListener('click',()=>UI.goHome()); };
-
+// ---------------- CADERNO / GRAVADOR / REDAÇÃO ----------------
 Views.notes = function(){
   const folders=CoreNotes.folders();
   const active=UI._notesFolderId||'all';
@@ -3528,7 +3117,7 @@ Views.settings = function () {
     <div class="card"><h3>📱 Sessão e dispositivo</h3><p class="muted">Arquitetura preparada para uma sessão ativa por vez. A autoridade final de acesso e sessão será integrada à plataforma principal.</p><div class="subj-row"><span>Dispositivo atual</span><strong>Ativo</strong></div></div>
     <div class="card"><h3>🎨 Aparência</h3><button class="btn btn-outline btn-block" id="toggle-theme-btn">Alternar tema (${s.theme === 'dark' ? 'escuro' : 'claro'})</button></div>
     <div class="card"><h3>💾 Dados e sincronização</h3><p class="muted">O estudo continua disponível offline. ${CoreSync.status().queued?`Há <strong>${CoreSync.status().queued}</strong> alteração(ões) aguardando sincronização.`:'Nenhuma alteração aguardando sincronização.'}</p><button class="btn btn-outline btn-block" id="sync-now">🔄 Sincronizar informações</button><button class="btn btn-danger btn-block" id="reset-progress">Zerar progresso</button></div>
-    <div class="card"><h3>🧠 Doctor AI Core</h3><p class="muted">Motor de IA ${DoctorAICore.VERSION}. Geração, revisão, redação e Radar usam o perfil deste concurso. Questões e flashcards passam por revisão automática antes de serem entregues.</p></div><div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>`;
+    <div class="card"><h3>🧠 Doctor AI Core</h3><p class="muted">Motor de IA ${DoctorAICore.VERSION}. Geração, revisão e redação usam o perfil deste concurso. Questões e flashcards passam por revisão automática antes de serem entregues.</p></div><div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>`;
 };
 
 Views.bind.settings = function () {
@@ -3565,109 +3154,13 @@ if (document.getElementById('splash-logo')) document.getElementById('splash-logo
 if (document.getElementById('splash-text')) document.getElementById('splash-text').textContent = EXAM_CONFIG.productName;
 if (document.getElementById('footer-year')) document.getElementById('footer-year').textContent = '© ' + new Date().getFullYear();
 if (document.getElementById('settings-toggle')) document.getElementById('settings-toggle').innerHTML = ICONS.gear;
-window.DOCTOR_CORE_RUNTIME = { Store, Quiz, DoctorQuestionIntegrity, DoctorAICore, RadarDoctor, CoreSync, CoreRecorder, CoreEssay };
+window.DOCTOR_CORE_RUNTIME = { Store, Quiz, DoctorQuestionIntegrity, DoctorAICore, CoreSync, CoreRecorder, CoreEssay };
 UI.init();
 
 </script>
+<script src="./doctor-core-quality.js?v=1.12.7" defer></script>
 
-<script>
-/* Compatibilidade histórica desativada: o Radar foi removido do produto. */
-(function(){
-  const mount = document.getElementById('radar-ticker-mount');
-  const footer = document.querySelector('.app-footer');
-  const mainView = document.getElementById('main-view');
-  if(!mount || !footer || !mainView) return;
 
-  let docked = false;
-  let ticking = false;
-  const GAP = 12;
-
-  function radarHeight(){
-    return Math.max(40, Math.ceil(mount.getBoundingClientRect().height || 40));
-  }
-
-  // Reserva espaço real para o Radar em TODA página. Isso impede que
-  // conteúdo de Caderno, Gravador, Redação, Configurações etc. fique
-  // escondido atrás do letreiro.
-  function reserveRadarSpace(){
-    const h = radarHeight();
-    document.documentElement.style.setProperty('--radar-reserve', `${h + GAP}px`);
-    mainView.style.paddingBottom = `${h + GAP + 16}px`;
-  }
-
-  function updateRadarDock(){
-    ticking = false;
-    reserveRadarSpace();
-    const h = radarHeight();
-    const footerTopViewport = footer.getBoundingClientRect().top;
-    const footerTopDocument = footerTopViewport + window.scrollY;
-    const trigger = window.innerHeight + 8;
-
-    if(!docked && footerTopViewport <= trigger){
-      // No final do conteúdo o Radar deixa de flutuar e passa a fazer
-      // parte do fluxo da página, imediatamente antes do rodapé.
-      docked = true;
-      mount.classList.add('radar-at-footer');
-      mount.style.position = 'absolute';
-      mount.style.left = '0';
-      mount.style.right = '0';
-      mount.style.bottom = 'auto';
-      mount.style.top = `${Math.max(0, footerTopDocument - h)}px`;
-    } else if(docked && footerTopViewport > window.innerHeight + h + 32){
-      // Voltou a existir bastante conteúdo abaixo: Radar volta a ficar
-      // fixo, sempre disponível, sem sobrepor o conteúdo.
-      docked = false;
-      mount.classList.remove('radar-at-footer');
-      mount.style.position = 'fixed';
-      mount.style.top = '';
-      mount.style.bottom = '0px';
-      mount.style.left = '0';
-      mount.style.right = '0';
-    } else if(docked){
-      mount.style.top = `${Math.max(0, footerTopDocument - h)}px`;
-    }
-  }
-
-  function schedule(){
-    if(!ticking){
-      ticking = true;
-      requestAnimationFrame(updateRadarDock);
-    }
-  }
-
-  window.addEventListener('scroll', schedule, {passive:true});
-  window.addEventListener('resize', schedule);
-  window.addEventListener('load', schedule);
-  document.addEventListener('visibilitychange', schedule);
-
-  if(window.ResizeObserver){
-    const ro = new ResizeObserver(schedule);
-    ro.observe(footer);
-    ro.observe(mount);
-    ro.observe(mainView);
-  }
-
-  // UI.render troca o conteúdo de #main-view dinamicamente.
-  // Um pequeno observador garante que TODAS as páginas recebam a mesma
-  // reserva de espaço sem precisar adicionar código em cada View.
-  if(window.MutationObserver){
-    new MutationObserver(schedule).observe(mainView, {childList:true, subtree:true});
-  }
-
-  reserveRadarSpace();
-  schedule();
-})();
-</script>
-<script src="./doctor-core-quality.js?v=1.12.6" defer></script>
-
-<script id="doctor-radar-removal-runtime">
-/* Limpeza de compatibilidade: remove os nós legados do Radar. */
-(function(){
-  document.getElementById('radar-ticker-mount')?.remove();
-  document.getElementById('home-radar')?.remove();
-  document.getElementById('open-radar')?.remove();
-})();
-</script>
 
 </body>
 </html>

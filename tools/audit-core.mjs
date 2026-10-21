@@ -32,7 +32,7 @@ for(const forbidden of ['Ipameri','Motorista Legislativo','Instituto Verbena','C
 // Travas críticas contra regressões já identificadas.
 if(!index.includes("if(phase!=='review')")) errors.push('Integridade: revisão pode sobrescrever evidência original.');
 if(!index.includes("subjectId === 'todas' ? QUESTIONS.filter")) errors.push('Elegibilidade: modo Todas não está filtrando quarentena/IA não revisada.');
-if(!index.includes("get_radar_feed")) errors.push('Radar: consumo central não encontrado.');
+if(index.includes('RadarDoctor') || index.includes('get_radar_feed') || index.includes('Views.radar') || context.includes('radarSources') || context.includes('radarAllowedHosts') || context.includes('platformCatalog')) errors.push('Radar: referências funcionais residuais encontradas no app.');
 if(!index.includes("reviewedByDoctor===true")) errors.push('IA: gate de revisão independente ausente.');
 if(!index.includes("questionFingerprint")) errors.push('Integridade: fingerprint de questão ausente.');
 
