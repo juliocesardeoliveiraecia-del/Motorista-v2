@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — configuração pública de produção; sem segredos. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.7',
+  version: '1.12.8',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,18 +17,18 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
-<script src="product-context.js?v=1.12.7"></script>
-<script src="product-content.js?v=1.12.7"></script>
+<script src="product-context.js?v=1.12.8"></script>
+<script src="product-content.js?v=1.12.8"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.7">
+<meta name="doctor-core-version" content="1.12.8">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.12.7">
-<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.7">
+<link rel="manifest" href="manifest.json?v=1.12.8">
+<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.8">
 
-<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.7">
+<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Doctor Core">
 <style>
@@ -609,8 +609,15 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
     if (reason) console.error('[Doctor Core boot watchdog]', reason);
   }
   window.__DOCTOR_BOOT_WATCHDOG__ = setTimeout(function () {
-    if (document.getElementById('splash')) showBootFailure('boot-timeout-after-15000ms');
-  }, 15000);
+    var splash = document.getElementById('splash');
+    if (!splash) return;
+    console.error('[Doctor Core] Boot excedeu o limite; ativando recuperação do Core.');
+    try { if (window.DOCTOR_CORE_UI && typeof window.DOCTOR_CORE_UI.render === 'function') window.DOCTOR_CORE_UI.render('home', { replaceHistory: true, fromHistory: true }); } catch (e) { console.error('[Doctor Core] Recuperação da Home falhou', e); }
+    // A splash nunca pode bloquear a interface indefinidamente. O shell do app
+    // fica acessível mesmo se uma integração opcional falhar no boot.
+    splash.classList.add('is-hiding');
+    setTimeout(function () { if (splash.parentNode) splash.parentNode.removeChild(splash); }, 400);
+  }, 10000);
   window.addEventListener('error', function (event) {
     if (event && event.error && document.getElementById('splash')) {
       setTimeout(function () {
@@ -627,7 +634,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   });
 })();
 </script>
-<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.7</div><div id="splash-progress" aria-hidden="true"></div></div>
+<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.8</div><div id="splash-progress" aria-hidden="true"></div></div>
 <div id="toast-container"></div>
 <header class="topbar">
   <button type="button" class="topbar-brand" id="topbar-home" aria-label="Voltar para a página inicial do Doctor Concursos" title="Voltar para o início">
@@ -1804,7 +1811,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.12.7', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.12.8', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
@@ -1820,7 +1827,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
       setTimeout(() => sessionStorage.removeItem('doctor-core-sw-reloaded'), 12000);
       // Se uma instalação antiga conseguir abrir uma cópia stale do HTML,
       // consulta o marcador de build sem usar cache e força a versão atual.
-      fetch('./version.json?v=1.12.7-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+      fetch('./version.json?v=1.12.8-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
         if (v?.version && v.version !== DOCTOR_CORE_BUILD) window.location.reload();
       }).catch(() => {});
     }
@@ -1965,7 +1972,7 @@ document.getElementById('theme-toggle').addEventListener('click', () => this.tog
           return;
         }
         this.dataset.fallbackApplied = '1';
-        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.7';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.8';
         this.classList.add('doctor-avatar-fallback-image');
       });
     });
@@ -2117,7 +2124,7 @@ Views.doctorCard = function () {
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
         ${p.level.imageUri
-          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.7&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.8&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
@@ -3155,10 +3162,23 @@ if (document.getElementById('splash-text')) document.getElementById('splash-text
 if (document.getElementById('footer-year')) document.getElementById('footer-year').textContent = '© ' + new Date().getFullYear();
 if (document.getElementById('settings-toggle')) document.getElementById('settings-toggle').innerHTML = ICONS.gear;
 window.DOCTOR_CORE_RUNTIME = { Store, Quiz, DoctorQuestionIntegrity, DoctorAICore, CoreSync, CoreRecorder, CoreEssay };
-UI.init();
+window.DOCTOR_CORE_UI = UI;
+try {
+  UI.init();
+} catch (bootError) {
+  console.error('[Doctor Core] Inicialização principal falhou; tentando abrir a Home em modo de recuperação.', bootError);
+  try { Store.load(); } catch (e) { console.warn('[Doctor Core] Dados locais indisponíveis; o app seguirá em modo limitado.', e); }
+  try { UI.render('home', { replaceHistory: true, fromHistory: true }); } catch (recoveryError) {
+    console.error('[Doctor Core] Renderização de recuperação falhou.', recoveryError);
+    const main = document.getElementById('main-view');
+    if (main) main.innerHTML = '<section class="card"><h2>Doctor Core em modo de recuperação</h2><p>O aplicativo abriu, mas um módulo não carregou. Seus dados locais foram preservados. Atualize a página quando houver conexão.</p></section>';
+  }
+  const splash = document.getElementById('splash');
+  if (splash) { splash.classList.add('is-hiding'); setTimeout(() => splash.remove(), 400); }
+}
 
 </script>
-<script src="./doctor-core-quality.js?v=1.12.7" defer></script>
+<script src="./doctor-core-quality.js?v=1.12.8" defer></script>
 
 
 
