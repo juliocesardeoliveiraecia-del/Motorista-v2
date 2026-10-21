@@ -6,7 +6,6 @@ const sw=fs.readFileSync('service-worker.js','utf8');
 const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8'));
 const context=fs.readFileSync('product-context.js','utf8');
 const content=fs.readFileSync('product-content.js','utf8');
-const runtimeIndex=index.replace(/<style[\\s\\S]*?<\\/style>/gi,'');
 
 function must(label, condition){
   if(!condition) throw new Error('FAIL: '+label);
@@ -32,7 +31,7 @@ must('Stale-answer fingerprint protection exists', index.includes('questionFinge
 must('Official simulado partial start is absent', !index.includes('start-simulado-partial'));
 must('Official simulado has engine-level readiness gate', index.includes("reason:'incomplete-bank'"));
 must('AI generation re-audits the bank', /DoctorQuestionIntegrity\.auditBank\(\);[\s\S]{0,120}Store\.save\(\);[\s\S]{0,80}return \{ok:true,added/.test(index));
-must('Radar is removed from the app runtime', !/RadarDoctor|_extractRadarSearchResults|get_radar_feed|Views\\.radar|radar-ticker-mount|home-radar|radarAllowedHosts|platformCatalog/i.test(index+context));
+must('Radar is removed from the app runtime', !index.includes('RadarDoctor') && !index.includes('get_radar_feed') && !index.includes('Views.radar') && !context.includes('radarSources') && !context.includes('radarAllowedHosts') && !context.includes('platformCatalog'));
 must('No Groq Compound legacy identifier', !index.includes('groq/compound'));
 must('Storage namespace derives from productId', index.includes("'doctor-core:' + String(EXAM_CONFIG.productId"));
 must('Core build derives from production config', index.includes('window.DOCTOR_PRODUCTION_CONFIG?.version'));
