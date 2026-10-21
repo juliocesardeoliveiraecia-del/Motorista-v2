@@ -42,7 +42,6 @@ const EXAM_CONFIG = {
   appTitle: 'Motorista Legislativo',
   heroImage: 'https://camaraipameri.go.gov.br/camara/storage/app/resources/resize/960_540_0_0_crop/img_4c40354850a52fa37fa0d4931da319c2.jpg',
   organizationImageUrl: 'https://camaraipameri.go.gov.br/camara/storage/app/resources/resize/960_540_0_0_crop/img_4c40354850a52fa37fa0d4931da319c2.jpg',
-  radarAllowedHosts: ['institutoverbena.ufg.br', 'camaraipameri.go.gov.br'],
 
   // Ícone temático do cargo (chave de icons.js) — troque para outro cargo
   themeIcon: 'car',
@@ -57,7 +56,7 @@ const EXAM_CONFIG = {
   // Doctor Core V1 — identidade estável do produto e versão de conteúdo
   appId: 'doctor-motorista-legislativo',
   productId: 'motorista-legislativo',
-  coreVersion: '1.12.5-core',
+  coreVersion: '1.12.7-core',
   contentVersion: '2026.1',
   editorialMode: 'edital-plus-banca',
   // Perfil operacional da IA: muda com o concurso/banca, não com o Core.
@@ -66,16 +65,8 @@ const EXAM_CONFIG = {
     answerPolicy: 'single-correct',
     revisionRequired: true,
     currentFactsNeedSource: true,
-    radar: { contestShare: 0.70, promotionShare: 0.30, discoveryShare: 0.00, officialFirst: true },
     essay: { enabled: true, teachStructure: true, analyzeText: true }
   },
-  radarShareRatio: { contest: 0.70, promotion: 0.30, discovery: 0.00 },
-  // Fontes oficiais prioritárias do Radar. São referências de pesquisa, não conteúdo congelado.
-  // O agente continua fazendo busca em tempo real; estas URLs apenas garantem que ele comece no lugar certo.
-  radarSources: [
-    'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/',
-    'https://institutoverbena.ufg.br/'
-  ],
   sync: { enabled: true, provider: 'supabase-adapter-pending' },
   sessionPolicy: 'single-active-device',
   // Identidade visual — os mesmos valores que já estavam fixos no CSS.
