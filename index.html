@@ -567,93 +567,30 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 (function () {
   var started = Date.now();
   function showBootFailure(reason) {
-    var splash = document.getElementById('splash');
-    if (!splash || !document.body) return;
-    if (splash.dataset.bootFailureShown === '1') return;
-    splash.dataset.bootFailureShown = '1';
-    var title = document.getElementById('splash-text');
-    var subtitle = document.getElementById('splash-subtitle');
-    var progress = document.getElementById('splash-progress');
-    if (title) title.textContent = 'Não foi possível abrir o Doctor Core';
-    if (subtitle) subtitle.textContent = 'A inicialização demorou mais que o esperado. Seus dados locais foram preservados.';
-    if (progress) progress.style.display = 'none';
-    var old = document.getElementById('doctor-boot-recovery');
-    if (!old) {
-      var box = document.createElement('div');
-      box.id = 'doctor-boot-recovery';
-      box.style.cssText = 'margin:18px 20px 0;display:flex;gap:10px;flex-wrap:wrap;justify-content:center';
-      var retry = document.createElement('button');
-      retry.type = 'button';
-      retry.textContent = 'Tentar abrir novamente';
-      retry.style.cssText = 'padding:12px 18px;border:0;border-radius:10px;font-weight:800;background:#F5A623;color:#0A192F';
-      retry.onclick = function () { window.location.reload(); };
-      var safe = document.createElement('button');
-      safe.type = 'button';
-      safe.textContent = 'Abrir sem cache';
-      safe.style.cssText = 'padding:12px 18px;border:1px solid rgba(255,255,255,.55);border-radius:10px;font-weight:700;background:transparent;color:white';
-      safe.onclick = async function () {
-        try {
-          if ('serviceWorker' in navigator) {
-            var regs = await navigator.serviceWorker.getRegistrations();
-            await Promise.all(regs.map(function (r) { return r.unregister(); }));
-          }
-          if ('caches' in window) {
-            var keys = await caches.keys();
-            await Promise.all(keys.filter(function (k) { return k.indexOf('motorista-ipameri-') === 0; }).map(function (k) { return caches.delete(k); }));
-          }
-        } catch (_) {}
-        window.location.reload();
-      };
-      box.appendChild(retry); box.appendChild(safe); splash.appendChild(box);
-    }
-    if (reason) console.error('[Doctor Core boot watchdog]', reason);
-  }
-  window.__DOCTOR_BOOT_WATCHDOG__ = setTimeout(function () {
-    var splash = document.getElementById('splash');
+    // Never replace the splash copy with an error message. Recovery belongs in
+    // the application content area, and the splash is always dismissed.
     var main = document.getElementById('main-view');
-    if (!splash) return;
-    function hasRenderedHome() {
-      return !!(main && main.children.length > 0 && (main.textContent || '').trim().length > 0);
-    }
-    // Never remove the splash just because the timer elapsed: first require a
-    // real rendered view. Retry the actual Core initializer before recovery UI.
-    if (!hasRenderedHome()) {
-      console.error('[Doctor Core] Home vazia após timeout; repetindo inicialização controlada.');
-      try {
-        if (window.DOCTOR_CORE_UI && typeof window.DOCTOR_CORE_UI.init === 'function') {
-          window.DOCTOR_CORE_UI.init();
-        }
-      } catch (e) { console.error('[Doctor Core] Segunda inicialização falhou.', e); }
-    }
-    if (!hasRenderedHome()) {
+    if (reason) console.error('[Doctor Core boot watchdog]', reason);
+    if (main && (!main.textContent || !main.textContent.trim())) {
       try {
         if (window.DOCTOR_CORE_UI && typeof window.DOCTOR_CORE_UI.render === 'function') {
           window.DOCTOR_CORE_UI.render('home', { replaceHistory: true, fromHistory: true });
         }
-      } catch (e) { console.error('[Doctor Core] Segunda renderização da Home falhou.', e); }
+      } catch (e) { console.error('[Doctor Core] watchdog render failed', e); }
+      if ((!main.textContent || !main.textContent.trim()) && typeof window.DOCTOR_CORE_BOOT_RECOVERY === 'function') {
+        main.innerHTML = window.DOCTOR_CORE_BOOT_RECOVERY(window.__DOCTOR_LAST_RENDER_ERROR__ || reason);
+      }
     }
-    if (!hasRenderedHome() && main) {
-      // Last-resort visible and actionable recovery; never leave header/footer
-      // around an empty content region. Local data is not cleared or rewritten.
-      main.innerHTML = '<section class="card" role="alert"><h2>Doctor Core — recuperação</h2><p>A Home principal não conseguiu renderizar. Seus dados locais foram preservados. Tente recarregar o aplicativo; se o problema persistir, será necessário corrigir o módulo que falhou.</p><button type="button" class="btn btn-primary btn-block" id="doctor-core-retry-boot">Tentar inicializar novamente</button></section>';
-      var retry = document.getElementById('doctor-core-retry-boot');
-      if (retry) retry.addEventListener('click', function () {
-        retry.disabled = true;
-        try { window.DOCTOR_CORE_UI.init(); } catch (e) { console.error('[Doctor Core] Retry manual falhou.', e); }
-        if (hasRenderedHome()) { splash.classList.add('is-hiding'); setTimeout(function () { if (splash.parentNode) splash.parentNode.removeChild(splash); }, 400); }
-        else { retry.disabled = false; retry.textContent = 'Falha ao iniciar — tentar novamente'; }
-      });
-    }
-    if (hasRenderedHome()) {
-      splash.classList.add('is-hiding');
-      setTimeout(function () { if (splash.parentNode) splash.parentNode.removeChild(splash); }, 400);
-    } else {
-      // Keep the failure visible; never pretend the app loaded successfully.
-      var title = document.getElementById('splash-text');
-      if (title) title.textContent = 'Recuperação do Doctor Core necessária';
-      var subtitle = document.getElementById('splash-subtitle');
-      if (subtitle) subtitle.textContent = 'A Home não carregou. Seus dados foram preservados; use a opção de recuperação abaixo.';
-      splash.classList.add('boot-recovery-needed');
+    var splash = document.getElementById('splash');
+    if (splash) { splash.classList.add('is-hiding'); setTimeout(function () { if (splash.parentNode) splash.parentNode.removeChild(splash); }, 400); }
+  }
+  window.__DOCTOR_BOOT_WATCHDOG__ = setTimeout(function () {
+    var main = document.getElementById('main-view');
+    if (!main) return;
+    if (!main.textContent || !main.textContent.trim()) showBootFailure('boot-timeout');
+    else {
+      var splash = document.getElementById('splash');
+      if (splash) { splash.classList.add('is-hiding'); setTimeout(function () { if (splash.parentNode) splash.parentNode.removeChild(splash); }, 400); }
     }
   }, 10000);
   window.addEventListener('error', function (event) {
@@ -3219,6 +3156,7 @@ Views.bootRecovery = function (detail) {
   const safeDetail = String(detail || 'Falha na inicialização principal.').replace(/[<>]/g, '').slice(0, 240);
   return '<section class="card" role="alert" aria-live="polite"><h2>Doctor Core</h2><p>A Home principal encontrou uma falha. Seus dados locais foram preservados. Você ainda pode acessar as ferramentas abaixo.</p><div class="feature-grid" style="margin-top:14px"><button class="btn btn-primary" type="button" data-core-view="pickSubject">Praticar questões</button><button class="btn btn-orange" type="button" data-core-view="simuladoSetup">Iniciar simulado</button><button class="btn btn-outline" type="button" data-core-view="flashcardsPickSubject">Flashcards</button><button class="btn btn-outline" type="button" data-core-view="notes">Caderno Doctor</button><button class="btn btn-outline" type="button" data-core-view="recorderPick">Gravador Doctor</button><button class="btn btn-outline" type="button" data-core-view="essay">Redação Doctor</button><button class="btn btn-outline" type="button" data-core-view="settings">Configurações</button></div><details style="margin-top:12px"><summary>Detalhe técnico</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px">' + safeDetail + '</pre></details></section>';
 };
+window.DOCTOR_CORE_BOOT_RECOVERY = (detail) => Views.bootRecovery(detail);
 window.DOCTOR_CORE_RUNTIME = { Store, Quiz, DoctorQuestionIntegrity, DoctorAICore, CoreSync, CoreRecorder, CoreEssay };
 window.DOCTOR_CORE_UI = UI;
 try {
