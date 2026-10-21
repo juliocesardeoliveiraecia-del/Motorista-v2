@@ -1663,7 +1663,7 @@ const DoctorAICore = {
             const data=await res.json(); const content=data.choices?.[0]?.message?.content||'';
             const executed=data?.choices?.[0]?.message?.executed_tools;
             // Compound pode concluir uma pesquisa web com o conteúdo final vazio,
-            // mas ainda assim entregar os resultados em executed_tools. Para o Radar,
+            // mas ainda assim entregar os resultados em executed_tools. Para uma chamada com busca,
             // isso é uma resposta válida: nunca descarte a busca real por falta de texto.
             if(!content && !(searchSettings && Array.isArray(executed) && executed.length)){last={ok:false,reason:'empty-response',model:candidate}; continue;}
             Store.state.aiCore.activeModel=candidate; Store.state.aiCore.lastSuccessfulModelAt=new Date().toISOString(); Store.save();
@@ -1914,7 +1914,7 @@ document.getElementById('theme-toggle').addEventListener('click', () => this.tog
   },
 
   _decoratePageBack() {
-    const legacyIds = ['rec-back','rec-sub-back','notes-back','essay-back','radar-back','radar-article-back','pf-back','rv-back','back-home','practice-back','fc-back','fc-session-back'];
+    const legacyIds = ['rec-back','rec-sub-back','notes-back','essay-back','pf-back','rv-back','back-home','practice-back','fc-back','fc-session-back'];
     legacyIds.forEach(id => document.getElementById(id)?.classList.add('legacy-page-back'));
     if (this.currentView !== 'home' && this.currentView !== 'simuladoRunning') {
       const main = document.getElementById('main-view');
@@ -2855,7 +2855,7 @@ Views.bind.simuladoResult = function () {
 };
 
 
-// ---------------- RADAR / CADERNO / GRAVADOR / REDAÇÃO ----------------
+// ---------------- CADERNO / GRAVADOR / REDAÇÃO ----------------
 Views.notes = function(){
   const folders=CoreNotes.folders();
   const active=UI._notesFolderId||'all';
