@@ -428,7 +428,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 
 <style id="doctor-tools-v17">
 /* V1.7 — revisão profissional das Ferramentas Doctor */
-.notes-page .tool-hero,.recorder-page .tool-hero,.essay-page .tool-hero,.radar-page .tool-hero{margin-bottom:14px}
+.notes-page .tool-hero,.recorder-page .tool-hero,.essay-page .tool-hero{margin-bottom:14px}
 .notes-workspace{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;align-items:start}
 .notes-sidebar{position:sticky;top:12px;padding:12px}.notes-sidebar-title{display:flex;align-items:center;justify-content:space-between;font-weight:900;margin-bottom:8px}.notes-sidebar-sub{font-size:10px;color:var(--text-muted);margin-bottom:10px}
 .folder-btn{width:100%;display:flex;align-items:center;gap:8px;border:0;background:transparent;color:var(--text);padding:9px 10px;border-radius:10px;text-align:left;cursor:pointer}.folder-btn:hover,.folder-btn.active{background:rgba(22,135,255,.09)}.folder-btn b{margin-left:auto;font-size:10px;color:var(--text-muted)}.folder-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}.folder-row{display:flex;align-items:center;gap:3px}.folder-row .folder-btn{min-width:0}.folder-more{border:0;background:transparent;color:var(--text-muted);cursor:pointer;border-radius:8px;padding:7px}.folder-more:hover{background:rgba(0,0,0,.06)}
@@ -439,7 +439,6 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .tool-empty-action{padding:30px;text-align:center}.tool-empty-action h3{margin:7px 0}.tool-empty-action p{max-width:520px;margin:0 auto 12px;color:var(--text-muted)}
 .recorder-hub{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:14px}.recorder-console-v17{padding:20px;text-align:center}.record-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.record-main-v17{width:150px;height:150px;border-radius:50%;border:0;background:#1687ff;color:#fff;box-shadow:0 12px 30px rgba(22,135,255,.25);cursor:pointer;font-size:13px;font-weight:900}.record-main-v17.recording{background:#d93b3b;box-shadow:0 12px 30px rgba(217,59,59,.25)}.record-main-v17 span{display:block;font-size:30px;margin-bottom:5px}.record-main-v17 small{display:block;font-weight:700;opacity:.8}.rec-help{padding:14px}.record-card-v17{padding:13px;margin-top:9px}.record-card-v17 .record-card-head{align-items:flex-start}.record-actions-v17{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.record-label{vertical-align:middle}
 .essay-layout-v17{display:grid;grid-template-columns:270px minmax(0,1fr);gap:14px;align-items:start}.essay-guide-v17{position:sticky;top:12px;padding:15px}.essay-editor-v17{padding:18px}.essay-textarea-v17{min-height:520px;line-height:1.85;font-size:14px}.essay-toolbar-v17{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.essay-stats-v17{display:flex;gap:12px;flex-wrap:wrap}.essay-stat-v17{min-width:70px}.essay-stat-v17 strong{display:block;font-size:17px}.essay-stat-v17 small{font-size:9px;color:var(--text-muted)}.essay-history-v17{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.essay-card-v17{padding:14px}.essay-card-v17 .essay-actions-v17{display:flex;gap:5px;margin-top:9px}.essay-audio-panel-v17{margin-bottom:14px}.transcript-box-v17{max-height:180px;overflow:auto;padding:10px;border-radius:10px;background:rgba(22,135,255,.05);font-size:11px;line-height:1.6;margin-top:8px}.transcript-box-v17 small{display:block;margin-top:6px;color:var(--text-muted)}
-.radar-news-v17:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(0,0,0,.09);border-color:rgba(255,212,0,.55)}.radar-news-v17 h3{margin:9px 0 5px}.radar-news-v17 p{line-height:1.55}
 @media(max-width:800px){.notes-workspace,.recorder-hub,.essay-layout-v17{grid-template-columns:1fr}.notes-sidebar,.essay-guide-v17{position:static}.notes-grid-v17,.essay-history-v17,.record-main-v17{width:132px;height:132px}.essay-textarea-v17{min-height:420px}}
 </style>
 <style id="doctor-audit-v18-css">.audit-health-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.audit-health-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px}.audit-health-item strong{display:block;font-size:13px}.audit-health-item span{display:block;font-size:11px;color:var(--text-muted);margin-top:4px}.audit-health-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#f5c400}.audit-health-dot.ok{background:#20b86b}.audit-health-dot.bad{background:#e53935}.audit-source-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.audit-source-pill{padding:5px 8px;border:1px solid var(--border);border-radius:999px;font-size:10px;color:var(--text-muted)}@media(max-width:700px){.audit-health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -790,10 +789,9 @@ function defaultState() {
     recordings: [],
     essays: [],
     essayDraft: {title:'',body:'',updatedAt:null,audioId:null},
-    radar: { seenIds: [], interests: {}, lastSyncAt: null, items: [], lastAttemptAt: null, nextAllowedAt: null, refreshCount: 0 },
     syncQueue: [],
     deviceSession: { id: null, lastSeenAt: null },
-    aiCore: { version: '1.2.0', lastReviewAt: null, lastRadarAt: null, reviewStats: { approved: 0, rejected: 0, repaired: 0 } }
+    aiCore: { version: '1.2.0', lastReviewAt: null, reviewStats: { approved: 0, rejected: 0, repaired: 0 } }
   };
 }
 
@@ -889,14 +887,9 @@ const Store = {
       if (!this.state.essayDraft || typeof this.state.essayDraft !== 'object') this.state.essayDraft = {title:'',body:'',updatedAt:null,audioId:null};
       if (this.state.essayDraft.audioId === undefined) this.state.essayDraft.audioId = null;
       this.state.recordings.forEach(r => { if (r.isEssayDraft === undefined) r.isEssayDraft = false; });
-      if (!this.state.radar) this.state.radar = { seenIds: [], interests: {}, lastSyncAt: null, items: [], lastAttemptAt: null, nextAllowedAt: null, refreshCount: 0 };
-      if (this.state.radar.lastAttemptAt === undefined) this.state.radar.lastAttemptAt = null;
-      if (this.state.radar.nextAllowedAt === undefined) this.state.radar.nextAllowedAt = null;
-      if (typeof this.state.radar.refreshCount !== 'number') this.state.radar.refreshCount = 0;
-      if (!Array.isArray(this.state.radar.items)) this.state.radar.items = [];
       if (!Array.isArray(this.state.syncQueue)) this.state.syncQueue = [];
       if (!this.state.deviceSession) this.state.deviceSession = { id: null, lastSeenAt: null };
-      if (!this.state.aiCore) this.state.aiCore = { version: '1.2.0', lastReviewAt: null, lastRadarAt: null, reviewStats: { approved: 0, rejected: 0, repaired: 0 } };
+      if (!this.state.aiCore) this.state.aiCore = { version: '1.2.0', lastReviewAt: null, reviewStats: { approved: 0, rejected: 0, repaired: 0 } };
       if (!this.state.aiCore.version) this.state.aiCore.version='1.2.0';
       if (!this.state.aiCore.reviewStats) this.state.aiCore.reviewStats = { approved: 0, rejected: 0, repaired: 0 };
       if (this.state.dailyPlan === undefined) this.state.dailyPlan = null;
@@ -1658,7 +1651,7 @@ const DoctorAICore = {
           if(responseFormat)body.response_format=responseFormat;
           if(searchSettings){
             body.search_settings=searchSettings;
-            // Groq desativou Compound em 21/09/2026. O Radar usa o
+            // Groq desativou Compound em 21/09/2026. A busca web usa o
             // Browser Search nativo do GPT-OSS, que permanece suportado.
             body.tools=[{type:'browser_search'}];
             body.tool_choice='required';
@@ -1681,7 +1674,7 @@ const DoctorAICore = {
           last={ok:false,status:res.status,error:text.slice(0,500),model:candidate,reason:GroqAI._friendlyReason(res.status),retryAfterMs};
           if(res.status===401||res.status===403)return last;
           if(res.status===429){
-            // Para chamadas do Radar, nunca repetir automaticamente: protege a
+            // Para chamadas com busca, nunca repetir automaticamente: protege a
             // cota da GROQ e evita tempestade de requisições.
             if(searchSettings)return last;
             if(attempt===1){ await GroqAI._sleep(GroqAI._retryAfterMs(res,900)); continue; }
@@ -3124,7 +3117,7 @@ Views.settings = function () {
     <div class="card"><h3>📱 Sessão e dispositivo</h3><p class="muted">Arquitetura preparada para uma sessão ativa por vez. A autoridade final de acesso e sessão será integrada à plataforma principal.</p><div class="subj-row"><span>Dispositivo atual</span><strong>Ativo</strong></div></div>
     <div class="card"><h3>🎨 Aparência</h3><button class="btn btn-outline btn-block" id="toggle-theme-btn">Alternar tema (${s.theme === 'dark' ? 'escuro' : 'claro'})</button></div>
     <div class="card"><h3>💾 Dados e sincronização</h3><p class="muted">O estudo continua disponível offline. ${CoreSync.status().queued?`Há <strong>${CoreSync.status().queued}</strong> alteração(ões) aguardando sincronização.`:'Nenhuma alteração aguardando sincronização.'}</p><button class="btn btn-outline btn-block" id="sync-now">🔄 Sincronizar informações</button><button class="btn btn-danger btn-block" id="reset-progress">Zerar progresso</button></div>
-    <div class="card"><h3>🧠 Doctor AI Core</h3><p class="muted">Motor de IA ${DoctorAICore.VERSION}. Geração, revisão, redação e Radar usam o perfil deste concurso. Questões e flashcards passam por revisão automática antes de serem entregues.</p></div><div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>`;
+    <div class="card"><h3>🧠 Doctor AI Core</h3><p class="muted">Motor de IA ${DoctorAICore.VERSION}. Geração, revisão e redação usam o perfil deste concurso. Questões e flashcards passam por revisão automática antes de serem entregues.</p></div><div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>`;
 };
 
 Views.bind.settings = function () {
