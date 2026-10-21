@@ -11,6 +11,7 @@ const config=read('production-config.js');
 const sw=read('service-worker.js');
 const manifest=read('manifest.json');
 const context=read('product-context.js');
+const runtimeIndex=index.replace(/<style[\\s\\S]*?<\\/style>/gi,'');
 
 const errors=[];
 const version=config.match(/version:\s*'([^']+)'/)?.[1];
