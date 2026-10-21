@@ -6,6 +6,7 @@ const sw=fs.readFileSync('service-worker.js','utf8');
 const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8'));
 const context=fs.readFileSync('product-context.js','utf8');
 const content=fs.readFileSync('product-content.js','utf8');
+const runtimeIndex=index.replace(/<style[\\s\\S]*?<\\/style>/gi,'');
 
 function must(label, condition){
   if(!condition) throw new Error('FAIL: '+label);
