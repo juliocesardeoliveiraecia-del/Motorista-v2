@@ -3444,6 +3444,8 @@ if (document.getElementById('footer-year')) document.getElementById('footer-year
 if (document.getElementById('settings-toggle')) document.getElementById('settings-toggle').innerHTML = ICONS.gear;
 window.DOCTOR_CORE_RUNTIME = { Store, Quiz, DoctorQuestionIntegrity, DoctorAICore, RadarDoctor, CoreSync, CoreRecorder, CoreEssay };
 UI.init();
+// Carrega o Radar central uma vez no boot; não bloqueia a abertura do app.
+if(navigator.onLine){setTimeout(()=>RadarDoctor.refreshRadar(false).then(r=>{if(r.ok){UI.refreshGlobalChrome();if(UI.currentView==='home')UI.render('home');}}).catch(()=>{}),350);}
 
 </script>
 
