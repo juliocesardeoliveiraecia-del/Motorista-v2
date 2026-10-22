@@ -2,7 +2,7 @@
 
 ## Estado auditado
 
-- **Core:** V1.13.1
+- **Core:** V1.13.2
 - **Concurso:** Câmara Municipal de Ipameri/GO
 - **Cargo:** Agente Legislativo — Motorista Legislativo
 - **Banca:** Instituto Verbena / UFG
