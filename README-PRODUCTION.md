@@ -1,65 +1,50 @@
 # Doctor Core — Motorista Legislativo
 
-## Estado auditado
+## Estado desta branch de auditoria
 
-- **Core:** V1.12.3
-- **Concurso:** Câmara Municipal de Ipameri/GO
-- **Cargo:** Agente Legislativo — Motorista Legislativo
-- **Banca:** Instituto Verbena / UFG
-- **Edital:** nº 02/2026
-- **PWA/offline:** ativo
-- **Radar:** infraestrutura central Supabase + RPC `get_radar_feed`
-- **IA:** GROQ; geração de questões passa por validação estrutural, quarentena de conteúdo inválido e revisão independente antes da entrega ao aluno
-- **Pagamentos:** checkout e concessão de acesso pertencem à Plataforma Doctor; integração do app permanece desativada até a ponte central ser homologada
-- **Plataforma:** bridge preparada; sem inventar RPC/RLS/migrações no Core
+- **Release candidata:** V1.13.1 — branch de auditoria; não é produção até homologação e aprovação.
+- **Produto piloto:** Motorista Legislativo — Câmara Municipal de Ipameri/GO.
+- **Banca:** Instituto Verbena / UFG.
+- **Core, Product Context e conteúdo:** separados em arquivos distintos.
+- **Radar:** cliente da RPC central `public.get_radar_feed(p_product_id, p_limit)`; sem scraping local e sem usar a chave GROQ do aluno.
+- **Pagamentos e acesso:** responsabilidade da Plataforma Doctor; a integração comercial do app permanece desativada até homologação.
 
-## Regra de publicação
+## Separação industrial
 
-O código de produção deve entrar em `main`. O Vercel conectado ao GitHub publica automaticamente o que estiver em `main`.
+- **Core:** navegação, renderização, avaliação, simulado, progresso, offline, ferramentas, IA, QA e adapters.
+- **Product Context:** concurso, cargo, órgão, banca, edital/versão, datas, matérias, tópicos, etapas, distribuição, alternativas, pesos, duração e regras.
+- **Conteúdo versionado:** enunciados, alternativas, gabaritos, explicações, fontes, hash imutável e estado de revisão.
+- **Infraestrutura central:** auth, catálogo, entitlement, pagamentos, sessão de dispositivo, sync e Radar.
+
+Para criar um app novo, a meta é trocar Product Context + pacote de conteúdo + assets, sem editar a lógica do Core.
+
+## QA de questões
+
+Validação estrutural não comprova correção factual do gabarito. Cada questão deve ter:
+1. estrutura válida e alternativas únicas;
+2. gabarito conferido contra fonte;
+3. explicações coerentes com todas as alternativas;
+4. referência e versão de contexto rastreáveis;
+5. revisão independente registrada;
+6. identidade/hash imutável por versão;
+7. bloqueio de publicação até aprovação;
+8. testes A/B/C/D → feedback imediato → histórico → revisão → resultado final, inclusive após reload.
+
+A auditoria anterior encontrou 32 questões estáticas para uma prova de 40 (distribuição 10/3/2/25), sem metadados de aprovação editorial/fonte. Portanto, o Core ainda **não pode ser declarado pronto para produção em massa**. O relatório automatizado distingue estrutura válida de aprovação factual e editorial.
 
 ## Radar central
 
-O app não deve fazer scraping independente para montar o feed público. O Radar central fornece os itens por produto, fonte e classificação primária/secundária. A RPC central aplica a regra aproximada 70/30 e o fallback para conteúdo primário quando não houver conteúdo secundário suficiente.
+O app consome a RPC central e não recalcula a proporção 70/30. O Main precisa publicar o produto/app/concurso, associar fontes e itens oficiais e manter a ingestão central. Enquanto catálogo/fontes/itens estiverem vazios, o app apresenta estado vazio explícito; não inventa notícias.
 
-Somente itens publicados e oficiais entram no feed público do app. A deduplicação central usa `content_url`.
+## Publicação e rollback
 
-## Qualidade de questões
+Esta branch não altera o deployment de produção. Validar preview em desktop/Android, instalação/upgrade PWA, offline, prática, simulado, histórico, Caderno, Gravador, Redação e Radar antes de promover.
 
-A seleção da alternativa é determinística: o índice selecionado é comparado ao gabarito da própria questão. Portanto, uma divergência do tipo “marcou a correta e apareceu errada” é tratada como problema de conteúdo/gabarito, não como algo que deve ser mascarado pela interface.
+## Gates críticos restantes
 
-Antes da produção em massa, o Core precisa ter uma esteira formal de QA de conteúdo:
-1. validação estrutural;
-2. validação de uma única alternativa correta;
-3. coerência entre gabarito e explicações;
-4. checagem de duplicidade;
-5. rastreabilidade de fonte/contexto;
-6. revisão independente;
-7. bloqueio de publicação para conteúdo não aprovado.
-
-O banco estático atual contém 32 questões embutidas no app (8 Português, 6 RLM, 6 Realidade, 12 Específicos), enquanto o simulado oficial exige 40 (10/3/2/25). O Core agora bloqueia o simulado oficial quando a distribuição estiver incompleta; questões inválidas/quarentenadas também não entram no pool. Para produção em massa, cada pacote de conteúdo ainda precisa passar pela esteira de QA factual e de fontes.
-
-## Produção em massa
-
-A arquitetura-alvo é separar claramente:
-- **Core:** motor, navegação, armazenamento local, offline, sincronização, sessão de dispositivo, IA, QA, UI e ferramentas;
-- **Configuração do produto:** concurso, cargo, banca, edital, datas, distribuição da prova, identidade;
-- **Conteúdo:** matérias, tópicos, questões, flashcards, fontes e rastreabilidade.
-
-A meta é que um novo aplicativo seja produzido por troca de configuração/conteúdo, sem copiar e alterar a lógica do Core.
-
-## Segurança
-
-Nunca versionar GROQ API key, Supabase service-role key, tokens de pagamento ou outros segredos. O repositório pode conter somente configuração pública necessária ao cliente.
-
-## Rollback
-
-O deployment Drop histórico permanece como referência de recuperação enquanto a linha GitHub → Vercel é homologada.
-
-## Auditoria Core V1.11.0
-
-- Resposta do aluno é registrada por fingerprint da questão; alteração posterior do conteúdo não transforma uma resposta originalmente correta em erro.
-- Questões estruturalmente inválidas ou duplicadas entram em quarentena e não são entregues.
-- Questões geradas por IA só entram no pool depois da revisão independente do Doctor.
-- Simulado oficial não pode mais ser iniciado parcialmente.
-- O banco é reauditado depois da inclusão de conteúdo gerado por IA.
-- O próximo estágio para produção em massa é a homologação da camada central do Radar e a revisão factual/fontes do conteúdo de cada produto; o Core não inventa aprovação factual.
+- banco oficial completo e conteúdo factual/editorialmente aprovado com rastreabilidade;
+- testes E2E de alternativa/gabarito/persistência/revisão;
+- catálogo e Radar centrais com dados reais;
+- auth, entitlement, sessão única e sincronização homologados;
+- checkout/webhook/pagamentos homologados pela Plataforma;
+- segundo Product Context demonstrando reutilização do Core sem mudanças no motor.

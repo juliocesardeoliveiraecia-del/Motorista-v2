@@ -20,6 +20,8 @@ const EXAM_CONFIG = {
   totalPoints: 100,
   passingScore: 60,
   alternativesPerQuestion: 4,
+  questionPolicy: { mode: 'approved-only' },
+
   examRules: {
     questionCount: 40,
     durationSeconds: 4 * 60 * 60,
@@ -57,7 +59,7 @@ const EXAM_CONFIG = {
   // Doctor Core V1 — identidade estável do produto e versão de conteúdo
   appId: 'doctor-motorista-legislativo',
   productId: 'motorista-legislativo',
-  coreVersion: '1.12.5-core',
+  coreVersion: '1.13.1-core',
   contentVersion: '2026.1',
   editorialMode: 'edital-plus-banca',
   // Perfil operacional da IA: muda com o concurso/banca, não com o Core.
