@@ -1,34 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<script>
-/* Doctor Core — Radar central. Public Supabase config only; no secrets. */
-window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.6',
-  environment: 'production',
-  integrations: {
-    supabase: {
-      enabled: true,
-      url: 'https://rouuppeosmizzqnubhgs.supabase.co',
-      publishableKey: 'sb_publishable_nm9slmAVYcgzoXs-m1gLuw_8K317SbN'
-    },
-    payments: { enabled: false, provider: 'doctor-platform', checkoutUrl: '' },
-    platform: { bridgeEnabled: false }
-  }
-});
-</script>
-<script src="product-context.js?v=1.12.6"></script>
-<script src="product-content.js?v=1.12.6"></script>
+<script src="production-config.js?v=1.13.1"></script>
+<script src="product-context.js?v=1.13.1"></script>
+<script src="product-content.js?v=1.13.1"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.6">
+<meta name="doctor-core-version" content="1.13.1">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.12.6">
-<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.6">
+<link rel="manifest" href="manifest.json?v=1.13.1">
+<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.13.1">
 
-<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.6">
+<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.13.1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Doctor Core">
 <style>
@@ -452,126 +437,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .radar-grid-v17{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.radar-news-v17{cursor:pointer;position:relative;transition:.16s}.radar-news-v17:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(0,0,0,.09);border-color:rgba(255,212,0,.55)}.radar-news-v17 h3{margin:9px 0 5px}.radar-news-v17 p{line-height:1.55}.radar-read{display:inline-flex;margin-top:8px;font-size:10px;font-weight:900;color:#b88f00}.radar-source-line{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:8px;font-size:9px;color:var(--text-muted)}
 @media(max-width:800px){.notes-workspace,.recorder-hub,.essay-layout-v17{grid-template-columns:1fr}.notes-sidebar,.essay-guide-v17{position:static}.notes-grid-v17,.essay-history-v17,.radar-grid-v17{grid-template-columns:1fr}.record-main-v17{width:132px;height:132px}.essay-textarea-v17{min-height:420px}}
 </style>
-<style id="doctor-audit-v18-css">.audit-health-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.audit-health-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px}.audit-health-item strong{display:block;font-size:13px}.audit-health-item span{display:block;font-size:11px;color:var(--text-muted);margin-top:4px}.audit-health-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#f5c400}.audit-health-dot.ok{background:#20b86b}.audit-health-dot.bad{background:#e53935}.audit-source-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.audit-source-pill{padding:5px 8px;border:1px solid var(--border);border-radius:999px;font-size:10px;color:var(--text-muted)}@media(max-width:700px){.audit-health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-
-/* ============================================================
-   BANNER DO CONCURSO — CÂMARA MUNICIPAL DE IPAMERI
-   V1.8.1 · foto real + transição suave para os livros
-   ============================================================ */
-.exam-hero {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(145px, 3fr);
-  min-height: 176px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: var(--radius);
-  background: #07111f;
-  color: #fff;
-  box-shadow: 0 10px 28px rgba(0,0,0,.16);
-}
-.exam-hero-photo { position: relative; min-width: 0; overflow: hidden; }
-.exam-hero-chamber {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; object-position: center 58%;
-  transform: scale(1.015);
-}
-.exam-hero-overlay {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(90deg, rgba(3,12,24,.84) 0%, rgba(3,12,24,.55) 44%, rgba(3,12,24,.20) 78%, rgba(3,12,24,.08) 100%),
-    linear-gradient(0deg, rgba(3,12,24,.32), transparent 48%);
-}
-.exam-hero-content {
-  position: relative; z-index: 2;
-  height: 100%; box-sizing: border-box;
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 20px 22px;
-  max-width: 560px;
-}
-.exam-hero .hero-label { color: rgba(255,255,255,.82); padding-right: 0; font-weight: 700; }
-.exam-hero .hero-days { color: #fff; padding-right: 0; font-size: clamp(30px, 5vw, 42px); line-height: 1; text-shadow: 0 3px 14px rgba(0,0,0,.45); }
-.exam-hero .hero-sub { color: rgba(255,255,255,.90); padding-right: 0; max-width: 520px; text-shadow: 0 2px 8px rgba(0,0,0,.5); }
-.exam-hero-books {
-  position: relative; min-width: 0; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #0b2341 0%, #0b315e 52%, #071a31 100%);
-}
-.exam-hero-books::before {
-  content: ''; position: absolute; z-index: 3; left: -2px; top: 0; bottom: 0; width: 34%;
-  background: linear-gradient(90deg, rgba(7,17,31,0) 0%, rgba(7,17,31,.18) 35%, rgba(7,17,31,.62) 78%, rgba(7,17,31,.82) 100%);
-  pointer-events: none;
-}
-.exam-hero-books::after {
-  content: ''; position: absolute; z-index: 3; left: 0; top: 0; bottom: 0; width: 48%;
-  background: linear-gradient(90deg, rgba(7,17,31,.18), rgba(7,17,31,0));
-  pointer-events: none;
-}
-.exam-hero-books-glow {
-  position: absolute; inset: 10% -10% -20% 10%;
-  background: radial-gradient(circle, rgba(45,135,255,.24), transparent 62%);
-  filter: blur(4px);
-}
-.exam-hero-books img {
-  position: relative; z-index: 2; width: 100%; max-width: 100%; height: 100%;
-  object-fit: contain; object-position: center;
-  filter: drop-shadow(0 10px 18px rgba(0,0,0,.36));
-  transform: translateX(4%);
-}
-@media (max-width: 520px) {
-  .exam-hero { grid-template-columns: minmax(0, 68fr) minmax(98px, 32fr); min-height: 158px; }
-  .exam-hero-content { padding: 15px 14px; }
-  .exam-hero .hero-label { font-size: 11px; }
-  .exam-hero .hero-days { font-size: 30px; }
-  .exam-hero .hero-sub { font-size: 10px; line-height: 1.35; }
-  .exam-hero-books::before { left: 0; width: 42%; }
-  .exam-hero-books::after { width: 52%; }
-  .exam-hero-books img { width: 100%; height: 100%; transform: none; }
-}
-
-/* ===== V1.8.4 — MARCA DOCTOR = HOME ===== */
-.topbar-brand{
-  grid-column:1; grid-row:1; appearance:none; -webkit-appearance:none; border:0; margin:0; padding:0;
-  background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer;
-  border-radius:12px; transition:background .18s ease, transform .18s ease;
-}
-.topbar-brand:hover{background:transparent;}
-.topbar-brand:focus-visible{outline:2px solid #ffd21a; outline-offset:3px;}
-.topbar-brand:active{transform:scale(.985);}
-.page-back-bottom{display:flex;justify-content:center;align-items:center;padding:28px 0 10px}.page-back-button{width:min(240px,100%);margin:0;min-height:46px;font-weight:900}.legacy-page-back{display:inline-flex!important}.record-main{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}.record-main.recording{touch-action:none}.rec-essay-banner{margin:12px auto 0;max-width:560px;padding:11px 13px;border-radius:12px;background:rgba(245,166,35,.10);border:1px solid rgba(245,166,35,.28);text-align:left;font-size:12px;line-height:1.5}.page-back-bottom .page-back-button:active{transform:translateY(1px)}
-.ai-indicator{grid-column:3;grid-row:1;margin:0;justify-self:end;display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:30px;height:30px;padding:0 6px;border:1px solid rgba(32,184,107,.35);border-radius:12px;background:rgba(32,184,107,.08);color:var(--text);font:inherit;cursor:pointer;transition:.18s ease;}
-.ai-indicator:hover{transform:translateY(-1px);background:rgba(32,184,107,.13)}
-.ai-indicator .ai-mini-dot{width:7px;height:7px;border-radius:50%;background:#20b86b;box-shadow:0 0 0 4px rgba(32,184,107,.12)}
-.ai-indicator.off .ai-mini-dot{background:#f1c40f;box-shadow:0 0 0 4px rgba(241,196,15,.12)}
-.ai-indicator .ai-mini-text{font-size:9px;font-weight:900;white-space:nowrap}
-@media(max-width:600px){
-  .topbar{grid-template-columns:minmax(0,1fr) auto;row-gap:4px;padding:9px 12px 7px;min-height:0;}
-  .topbar-brand{grid-column:1;grid-row:1;}
-  .topbar-actions{grid-column:2;grid-row:1;gap:6px;}
-  .ai-indicator{grid-column:1 / -1;grid-row:2;justify-self:end;width:auto;min-width:0;height:24px;margin:0 2px 0 0;padding:0 4px;border:0;background:transparent;}
-  .ai-indicator .ai-mini-text{font-size:8px;}
-  .ai-indicator .ai-mini-dot{width:6px;height:6px;box-shadow:0 0 0 3px rgba(32,184,107,.10);}
-}
-
-
-/* Avatar Doctor: fallback visual com escala por nível quando o PNG individual estiver ausente. */
-.doctor-avatar-box img.doctor-avatar-level-1{max-height:150px;max-width:34%}
-.doctor-avatar-box img.doctor-avatar-level-2{max-height:190px;max-width:44%}
-.doctor-avatar-box img.doctor-avatar-level-3{max-height:240px;max-width:54%}
-.doctor-avatar-box img.doctor-avatar-level-4{max-height:285px;max-width:62%}
-.doctor-avatar-box img.doctor-avatar-level-5,.doctor-avatar-box img.doctor-avatar-level-6{max-height:330px;max-width:70%}
-.doctor-avatar-box img.doctor-avatar-level-7,.doctor-avatar-box img.doctor-avatar-level-8,.doctor-avatar-box img.doctor-avatar-level-9,.doctor-avatar-box img.doctor-avatar-level-10{max-height:350px;max-width:80%}
-.doctor-avatar-box img.doctor-avatar-fallback-image{object-fit:contain;background:transparent;border-radius:12px}
-@media(max-width:640px){.doctor-avatar-box img.doctor-avatar-level-1{max-height:120px;max-width:32%}.doctor-avatar-box img.doctor-avatar-level-2{max-height:160px}.doctor-avatar-box img.doctor-avatar-level-3{max-height:210px}.doctor-avatar-box img.doctor-avatar-level-4{max-height:250px}.doctor-avatar-box img.doctor-avatar-level-5,.doctor-avatar-box img.doctor-avatar-level-6{max-height:285px}.doctor-avatar-box img.doctor-avatar-level-7,.doctor-avatar-box img.doctor-avatar-level-8,.doctor-avatar-box img.doctor-avatar-level-9,.doctor-avatar-box img.doctor-avatar-level-10{max-height:295px}}
-</style>
-
-/* Doctor Core 1.12.6 — Radar removido por decisão de produto. */
-<style id="doctor-radar-removal">
-  #radar-ticker-mount, #home-radar, .radar-page, [data-tool="radar"], #open-radar, #radar-back, #radar-refresh, #radar-article-back, [data-radar], .radar-ticker, .radar-hero { display:none !important; }
-  #main-view { padding-bottom: 12px !important; --radar-reserve: 0px; }
-  body { scroll-padding-bottom: 0 !important; }
-</style>
+<!-- Radar Doctor visível: feed exclusivamente central via public.get_radar_feed. -->
 
 </head>
 <body>
@@ -642,7 +508,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   });
 })();
 </script>
-<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.6</div><div id="splash-progress" aria-hidden="true"></div></div>
+<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.13.1</div><div id="splash-progress" aria-hidden="true"></div></div>
 <div id="toast-container"></div>
 <header class="topbar">
   <button type="button" class="topbar-brand" id="topbar-home" aria-label="Voltar para a página inicial do Doctor Concursos" title="Voltar para o início">
@@ -662,6 +528,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 </header>
 <main id="main-view"></main>
 
+<div id="radar-ticker-mount" aria-label="Radar Doctor central"></div>
 <footer class="app-footer">
   <img class="footer-logo" src="data:image/png;base64,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" alt="JCO Company">
   <div class="footer-text">
@@ -696,6 +563,7 @@ const ExamRules = Object.freeze({
 
 window.SUBJECTS = SUBJECTS;
 window.QUESTIONS = QUESTIONS;
+window.ExamRules = ExamRules;
 
 
 /* ===== icons.js ===== */
@@ -1916,7 +1784,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.12.6', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.13.1', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
@@ -1932,7 +1800,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
       setTimeout(() => sessionStorage.removeItem('doctor-core-sw-reloaded'), 12000);
       // Se uma instalação antiga conseguir abrir uma cópia stale do HTML,
       // consulta o marcador de build sem usar cache e força a versão atual.
-      fetch('./version.json?v=1.12.6-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+      fetch('./version.json?v=1.13.1-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
         if (v?.version && v.version !== DOCTOR_CORE_BUILD) window.location.reload();
       }).catch(() => {});
     }
@@ -2092,7 +1960,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
           return;
         }
         this.dataset.fallbackApplied = '1';
-        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.6';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.13.1';
         this.classList.add('doctor-avatar-fallback-image');
       });
     });
@@ -2186,6 +2054,7 @@ const RadarDoctor = {
       priority:'high',
       official:true,
       contestRelated:Boolean(x.is_primary),
+      isPrimary:Boolean(x.is_primary),
       isPromotion:false,
       productId:x.product_id||null
     }));
@@ -2213,7 +2082,7 @@ const RadarDoctor = {
   },
   _timeLabel(){const t=Store.state.radar?.lastSyncAt;return t?new Date(t).toLocaleString('pt-BR'):'Ainda não sincronizado';},
   page(){
-    const arr=this.relevant(), contest=arr.filter(x=>!x.isPromotion), promos=arr.filter(x=>x.isPromotion);
+    const arr=this.relevant(), contest=arr.filter(x=>x.isPrimary!==false), promos=arr.filter(x=>x.isPrimary===false);
     const fresh=!!Store.state.radar?.lastSyncAt&&(Date.now()-new Date(Store.state.radar.lastSyncAt).getTime()<6*60*60*1000);
     return '<div class="tool-page radar-page"><div class="tool-hero radar-hero"><div class="radar-live"><i></i> RADAR DOCTOR · CENTRAL</div><h2>📡 Notícias do seu concurso</h2><p><b>70%</b> do lote é priorizado para o produto/concurso atual e <b>30%</b> para notícias/oportunidades dos demais produtos publicados na grade Doctor.</p><div class="radar-mix"><span>70% · seu concurso</span><span>30% · grade Doctor</span><span>🛡️ somente fonte oficial</span><span>☁️ fonte central Supabase</span></div><div class="tool-hero-actions"><button class="btn btn-outline" id="radar-back">← Voltar aos estudos</button><button class="btn btn-primary" id="radar-refresh">🔄 '+(fresh?'Sincronizar Radar':'Atualizar Radar')+'</button></div><div class="muted" style="margin-top:8px;font-size:10px">Última sincronização: '+this._escape(this._timeLabel())+'</div></div><div class="tool-kpis"><div class="tool-kpi"><strong>'+contest.length+'</strong><span>itens do concurso</span></div><div class="tool-kpi"><strong>'+promos.length+'</strong><span>oportunidades da grade</span></div><div class="tool-kpi"><strong>'+((Store.state.radar?.refreshCount)||0)+'</strong><span>sincronizações</span></div></div><div class="card" style="margin-top:14px;padding:13px"><strong>🎯 Nova arquitetura</strong><p class="muted" style="margin:5px 0 0">O aplicativo não faz scraping nem pesquisa web própria. Ele consome a base central do Radar Doctor, que identifica produto, fonte oficial e conteúdo. Notícias duplicadas são controladas pelo <b>content_url</b>.</p></div><div class="section-title">Últimas atualizações</div>'+ (arr.length?'<div class="radar-grid-v17">'+arr.map(n=>n.isPromotion?'<article class="card radar-news-v17" tabindex="0" role="button" data-radar-id="'+this._escape(n.id)+'"><span class="radar-source-badge">🚀 OUTRO PRODUTO DOCTOR</span><div class="badge" style="margin-top:8px">'+this._escape(n.tag)+'</div><h3>'+this._escape(n.title)+'</h3><p class="muted">'+this._escape(n.text)+'</p><div class="radar-source-line"><span>'+this._escape(n.source)+'</span><span>Grade Doctor</span></div><span class="radar-read">Conhecer produto →</span></article>':'<article class="card radar-news-v17" tabindex="0" role="button" data-radar-id="'+this._escape(n.id)+'"><span class="radar-source-badge">✓ FONTE OFICIAL</span><div class="badge" style="margin-top:8px">'+this._escape(n.tag)+'</div><h3>'+this._escape(n.title)+'</h3><p class="muted">'+this._escape(n.text)+'</p><div class="radar-source-line"><span>'+this._escape(n.source)+'</span><span>'+this._escape(n.date)+'</span></div><span class="radar-read">Ler no Radar →</span></article>').join('')+'</div>':'<div class="card" style="padding:18px;text-align:center"><strong>☁️ O Radar central ainda não tem conteúdo publicado para este produto.</strong><p class="muted" style="margin:7px 0 0">O aplicativo já está preparado para consumir a nova estrutura. Quando o produto estiver publicado no catálogo central e houver itens oficiais associados, eles aparecerão aqui automaticamente.</p></div>')+'</div>';
   },
@@ -2474,11 +2343,14 @@ Views.home = function () {
 
     ${Views.doctorCard()}
 
+    <div id="home-radar">${RadarDoctor.card()}</div>
+
     <div class="section-title">Ferramentas Doctor</div>
     <div class="feature-grid">
       <button type="button" class="card feature-card" id="home-notes" title="Abrir Caderno Doctor" aria-label="Abrir Caderno Doctor"><div class="feature-icon">📓</div><h3>Caderno Doctor</h3><p>Anotações organizadas por matéria.</p></button>
       <button type="button" class="card feature-card" id="home-recorder" title="Abrir Gravador Doctor" aria-label="Abrir Gravador Doctor"><div class="feature-icon">🎙️</div><h3>Gravador Doctor</h3><p>Grave e organize áudios dentro da matéria.</p></button>
       <button type="button" class="card feature-card" id="home-essay" title="Abrir Redação Doctor" aria-label="Abrir Redação Doctor"><div class="feature-icon">✍️</div><h3>Redação Doctor</h3><p>Área preparada para treinar redação.</p></button>
+      <button type="button" class="card feature-card" id="home-radar-tool" title="Abrir Radar Doctor" aria-label="Abrir Radar Doctor"><div class="feature-icon">📡</div><h3>Radar Doctor</h3><p>Notícias oficiais do seu concurso e da grade Doctor.</p></button>
       
     </div>
 
@@ -2490,6 +2362,7 @@ Views.bind.home = function(){
   document.getElementById('home-notes')?.addEventListener('click',()=>UI.render('notes'));
   document.getElementById('home-recorder')?.addEventListener('click',()=>UI.render('recorderPick'));
   document.getElementById('home-essay')?.addEventListener('click',()=>UI.render('essay'));
+  document.getElementById('home-radar-tool')?.addEventListener('click',()=>UI.render('radar'));
   document.getElementById('home-radar')?.addEventListener('click',()=>UI.render('radar'));
   document.getElementById('open-radar')?.addEventListener('click',()=>UI.render('radar'));
 };
@@ -2504,7 +2377,7 @@ Views.doctorCard = function () {
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
         ${p.level.imageUri
-          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.6&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.13.1&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
@@ -3658,16 +3531,9 @@ UI.init();
   schedule();
 })();
 </script>
-<script src="./doctor-core-quality.js?v=1.12.6" defer></script>
+<script src="./doctor-core-quality.js?v=1.13.1" defer></script>
 
-<script id="doctor-radar-removal-runtime">
-/* Limpeza de compatibilidade: remove os nós legados do Radar. */
-(function(){
-  document.getElementById('radar-ticker-mount')?.remove();
-  document.getElementById('home-radar')?.remove();
-  document.getElementById('open-radar')?.remove();
-})();
-</script>
+
 
 </body>
 </html>
