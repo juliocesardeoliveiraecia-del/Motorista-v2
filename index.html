@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.11',
+  version: '1.12.12',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,18 +17,18 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
-<script src="product-context.js?v=1.12.11"></script>
-<script src="product-content.js?v=1.12.11"></script>
+<script src="product-context.js?v=1.12.12"></script>
+<script src="product-content.js?v=1.12.12"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.11">
+<meta name="doctor-core-version" content="1.12.12">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.12.11">
-<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.11">
+<link rel="manifest" href="manifest.json?v=1.12.12">
+<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.12">
 
-<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.11">
+<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.12">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Doctor Core">
 <style>
@@ -609,7 +609,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 
 
 <style id="doctor-calculator-scientific-v2">.calculator-page{max-width:760px;margin:0 auto;padding:4px 0 24px}.calculator-expression-label{display:block;font-size:12px;font-weight:800;color:var(--text-muted);margin:2px 0 7px}.calculator-expression{width:100%;box-sizing:border-box;min-height:48px;border:1px solid var(--border);border-radius:13px;padding:12px 14px;background:var(--bg);color:var(--text);font-size:16px;font-weight:650;margin-bottom:12px}.calculator-error{min-height:18px;color:#ff9b8f;font-size:12px;margin-top:7px}.scientific-keys{grid-template-columns:repeat(5,minmax(0,1fr))}.calc-key.science{background:rgba(22,135,255,.11);font-size:15px;color:var(--text)}.calculator-memory{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;color:var(--text-muted);font-size:12px}.calc-memory{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:9px;padding:8px 12px;font-weight:800}#calculator-memory-label{margin-left:auto}.calculator-history{margin-top:18px;border-top:1px solid var(--border);padding-top:12px}.calculator-history h3{font-size:13px;margin:0 0 8px}.calculator-history-item{width:100%;display:flex;justify-content:space-between;gap:12px;text-align:left;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:10px;padding:10px;margin:5px 0;font-size:12px}.calculator-history-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:440px){.scientific-keys{gap:6px}.scientific-keys .calc-key{min-height:48px;border-radius:11px;font-size:14px}.calculator-expression{font-size:15px}}
-/* V1.12.11 — cores semânticas preservadas; azul apenas nos botões de Praticar Questões. */
+/* V1.12.12 — cores semânticas preservadas; azul apenas nos botões de Praticar Questões. */
 #home-primary-actions #home-practice,
 #home-practice {
   background: var(--green) !important;
@@ -733,7 +733,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   });
 })();
 </script>
-<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.11</div><div id="splash-progress" aria-hidden="true"></div></div>
+<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.12</div><div id="splash-progress" aria-hidden="true"></div></div>
 <div id="toast-container"></div>
 <header class="topbar">
   <button type="button" class="topbar-brand" id="topbar-home" aria-label="Voltar para a página inicial do Doctor Concursos" title="Voltar para o início">
@@ -2007,7 +2007,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.12.11', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.12.12', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
@@ -2023,7 +2023,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
       setTimeout(() => sessionStorage.removeItem('doctor-core-sw-reloaded'), 12000);
       // Se uma instalação antiga conseguir abrir uma cópia stale do HTML,
       // consulta o marcador de build sem usar cache e força a versão atual.
-      fetch('./version.json?v=1.12.11-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+      fetch('./version.json?v=1.12.12-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
         if (v?.version && v.version !== DOCTOR_CORE_BUILD) window.location.reload();
       }).catch(() => {});
     }
@@ -2184,7 +2184,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
           return;
         }
         this.dataset.fallbackApplied = '1';
-        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.11';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.12';
         this.classList.add('doctor-avatar-fallback-image');
       });
     });
@@ -2599,7 +2599,7 @@ Views.doctorCard = function () {
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
         ${p.level.imageUri
-          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.11&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.12&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
@@ -3869,7 +3869,7 @@ UI.init();
   schedule();
 })();
 </script>
-<script src="./doctor-core-quality.js?v=1.12.11" defer></script>
+<script src="./doctor-core-quality.js?v=1.12.12" defer></script>
 
 <script id="doctor-radar-removal-runtime">
 /* Limpeza de compatibilidade: remove os nós legados do Radar. */
@@ -3880,7 +3880,7 @@ UI.init();
 })();
 </script>
 
-<script src="./calculator-scientific.js?v=1.12.11"></script>
+<script src="./calculator-scientific.js?v=1.12.12"></script>
 
 <script id="doctor-remove-radar-header-notice-v11210">
 /* Remove somente avisos legados que mencionem Radar e apareçam antes do cabeçalho. */
