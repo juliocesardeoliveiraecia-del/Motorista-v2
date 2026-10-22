@@ -20,6 +20,8 @@ const EXAM_CONFIG = {
   totalPoints: 100,
   passingScore: 60,
   alternativesPerQuestion: 4,
+  questionPolicy: { mode: 'approved-only' },
+
   examRules: {
     questionCount: 40,
     durationSeconds: 4 * 60 * 60,
