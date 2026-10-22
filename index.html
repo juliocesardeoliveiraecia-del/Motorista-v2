@@ -2097,6 +2097,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
   },
 
   render(view, opts = {}) {
+    if (this._calculatorKeyCleanup) { this._calculatorKeyCleanup(); this._calculatorKeyCleanup = null; }
     // Home é a raiz da navegação: ir para Home limpa a pilha interna.
     if (view === 'home' && !opts.fromHistory && this.currentView !== 'home' && this._navIndex > 0) {
       this.goHome();
