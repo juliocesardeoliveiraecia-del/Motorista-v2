@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 440" role="img" aria-labelledby="title">
+<title id="title">Avatar Doctor Concursos</title>
+<defs>
+  <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#cbd9e8"/></linearGradient>
+  <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7c59b"/><stop offset="1" stop-color="#d88b62"/></linearGradient>
+  <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#163d70"/><stop offset="1" stop-color="#07172c"/></linearGradient>
+  <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity=".25"/></filter>
+</defs>
+<ellipse cx="180" cy="410" rx="112" ry="15" fill="#000" opacity=".25"/>
+<g filter="url(#shadow)">
+  <path d="M116 254 Q80 272 74 337 L65 396 Q64 410 80 410 L128 410 L144 330 L216 330 L232 410 L280 410 Q296 410 295 396 L286 337 Q280 272 244 254Z" fill="url(#blue)" stroke="#071322" stroke-width="4"/>
+  <path d="M111 238 Q86 252 77 294 L56 365 Q53 380 69 386 L101 396 L133 315 L150 276Z" fill="url(#coat)" stroke="#9aafc5" stroke-width="4"/>
+  <path d="M249 238 Q274 252 283 294 L304 365 Q307 380 291 386 L259 396 L227 315 L210 276Z" fill="url(#coat)" stroke="#9aafc5" stroke-width="4"/>
+  <path d="M123 226 L107 255 L142 315 L180 282 L218 315 L253 255 L237 226Z" fill="url(#coat)" stroke="#9aafc5" stroke-width="4"/>
+  <path d="M151 236 L180 275 L209 236 L197 217 L163 217Z" fill="#f7f9fc"/>
+  <path d="M164 232 L180 250 L196 232 L189 282 L180 294 L171 282Z" fill="#1e4268"/>
+  <path d="M140 262 L164 289 L147 339 L121 278Z" fill="#fff" stroke="#a5b7c9" stroke-width="3"/>
+  <path d="M220 262 L196 289 L213 339 L239 278Z" fill="#fff" stroke="#a5b7c9" stroke-width="3"/>
+  <path d="M157 258 L180 276 L203 258 L197 304 L180 323 L163 304Z" fill="#142b49"/>
+  <path d="M164 256 L180 273 L196 256 L190 300 L180 311 L170 300Z" fill="#f5c400"/>
+  <path d="M143 123 Q139 70 180 66 Q225 68 218 125 L213 178 Q206 207 180 211 Q153 207 146 178Z" fill="url(#skin)" stroke="#9d6348" stroke-width="3"/>
+  <path d="M140 129 Q119 93 139 70 Q154 42 190 49 Q222 49 230 83 Q234 103 219 132 L213 99 Q195 93 181 79 Q164 101 140 102Z" fill="#111a27" stroke="#090f18" stroke-width="4"/>
+  <path d="M146 126 Q137 115 131 129 Q128 147 146 151" fill="url(#skin)" stroke="#9d6348" stroke-width="3"/>
+  <path d="M214 126 Q223 115 229 129 Q232 147 214 151" fill="url(#skin)" stroke="#9d6348" stroke-width="3"/>
+  <path d="M150 124 Q164 116 175 124 M185 124 Q198 116 210 124" fill="none" stroke="#182438" stroke-width="6" stroke-linecap="round"/>
+  <rect x="148" y="126" width="30" height="22" rx="8" fill="#f5f8ff" stroke="#111a27" stroke-width="5"/>
+  <rect x="182" y="126" width="30" height="22" rx="8" fill="#f5f8ff" stroke="#111a27" stroke-width="5"/>
+  <path d="M178 135 H182" stroke="#111a27" stroke-width="5"/>
+  <circle cx="163" cy="137" r="4" fill="#142238"/><circle cx="197" cy="137" r="4" fill="#142238"/>
+  <path d="M180 140 L174 160 L184 162" fill="none" stroke="#b77355" stroke-width="3" stroke-linecap="round"/>
+  <path d="M160 177 Q180 192 201 176" fill="none" stroke="#8b3f38" stroke-width="4" stroke-linecap="round"/>
+  <path d="M140 106 Q155 91 172 104 M188 104 Q207 91 220 106" fill="none" stroke="#111a27" stroke-width="6" stroke-linecap="round"/>
+  <path d="M145 245 Q151 267 164 277 M215 245 Q209 267 196 277" fill="none" stroke="#31b5b1" stroke-width="6" stroke-linecap="round"/>
+  <path d="M145 245 Q135 280 157 294 Q180 307 203 294 Q225 280 215 245" fill="none" stroke="#31b5b1" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="157" cy="294" r="7" fill="#31b5b1" stroke="#d5fff8" stroke-width="2"/>
+  <path d="M111 279 L127 287 L117 306 L101 298Z" fill="#fff" stroke="#b8c9d9" stroke-width="3"/>
+  <path d="M249 279 L233 287 L243 306 L259 298Z" fill="#fff" stroke="#b8c9d9" stroke-width="3"/>
+  <path d="M247 282 L267 282 L267 305 L247 305Z" fill="#f5c400" stroke="#8c6d00" stroke-width="2"/>
+  <text x="257" y="298" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="900" fill="#071322">DC</text>
+</g>
+<g><circle cx="300" cy="58" r="29" fill="#0755a4" stroke="#f2c94c" stroke-width="4"/><text x="300" y="68" font-family="Arial,sans-serif" font-size="27" font-weight="700" text-anchor="middle" fill="#ffffff">1</text></g></svg>
