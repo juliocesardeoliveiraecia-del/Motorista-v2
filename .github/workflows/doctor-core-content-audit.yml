@@ -1,0 +1,25 @@
+name: Doctor Core content quality gate
+on:
+  pull_request:
+    paths:
+      - 'product-content.js'
+      - 'scripts/qa-core-content.mjs'
+      - '.github/workflows/doctor-core-content-audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'product-content.js'
+      - 'scripts/qa-core-content.mjs'
+      - '.github/workflows/doctor-core-content-audit.yml'
+permissions:
+  contents: read
+jobs:
+  content-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate question structure and answer/explanation alignment
+        run: node scripts/qa-core-content.mjs
