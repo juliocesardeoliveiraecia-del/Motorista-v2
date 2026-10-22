@@ -47,7 +47,7 @@ C.evaluate=function(input){
  const re=/\s*(?:(\d+(?:\.\d*)?|\.\d+)([eE][+-]?\d+)?|([A-Za-zπ]+)|(\*\*|[+\-*/^()%!,]))/gy;
  const ts=[];let p=0;
  while(p<src.length){re.lastIndex=p;const m=re.exec(src);if(!m)throw new Error('Expressão inválida perto de: '+src.slice(p,p+10));p=re.lastIndex;
-  if(m[1]!==undefined)ts.push({t:'n',v:Number(m[1]+(m[2]||'')});
+  if(m[1]!==undefined)ts.push({t:'n',v:Number(m[1]+(m[2]||''))});
   else if(m[3])ts.push({t:'id',v:m[3].toLowerCase()});else ts.push({t:'op',v:m[4]});
   if(ts.length>180)throw new Error('Expressão muito complexa.');
  }
