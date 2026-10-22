@@ -2660,6 +2660,7 @@ Views.bind.home = function () {
   document.getElementById('home-notes')?.addEventListener('click', () => UI.render('notes'));
   document.getElementById('home-recorder')?.addEventListener('click', () => UI.render('recorderPick'));
   document.getElementById('home-essay')?.addEventListener('click', () => UI.render('essay'));
+  document.getElementById('home-timer')?.addEventListener('click', () => UI.render('timer'));
   document.getElementById('home-calculator')?.addEventListener('click', () => UI.render('calculator'));
   document.getElementById('home-radar')?.addEventListener('click', () => UI.render('radar'));
   document.getElementById('open-radar')?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); UI.render('radar'); });
