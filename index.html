@@ -2764,7 +2764,7 @@ Views.pickSubject = function () {
             <div class="name">${s.name} ${inProgress ? '<span class="badge badge-live">continuar</span>' : ''}</div>
             <div class="meta">${p.answered} respondidas · ${have} no banco</div>
           </div>
-          <div class="chev">${iconEl('chevronRight')}</div>
+          <button type="button" class="plan-start" aria-label="Começar ${s.name}">Começar</button>
         </div>
       `;
     }).join('')}
@@ -2774,7 +2774,7 @@ Views.pickSubject = function () {
         <div class="name">Todas (mix ponderado)</div>
         <div class="meta">${QUESTIONS.length} questões no total</div>
       </div>
-      <div class="chev">${iconEl('chevronRight')}</div>
+      <button type="button" class="plan-start" aria-label="Começar todas as matérias">Começar</button>
     </div>
   `;
 };
