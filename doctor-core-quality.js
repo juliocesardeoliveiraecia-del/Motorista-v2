@@ -6,6 +6,7 @@
   const subjects=window.SUBJECTS||[];
   const questions=window.QUESTIONS||[];
   const rules=window.ExamRules||{};
+  const integrity=runtime.DoctorQuestionIntegrity||null;
 
   function norm(v){return String(v==null?'':v).trim().replace(/\s+/g,' ').toLowerCase();}
   function fingerprint(q){return [q?.text,...(Array.isArray(q?.options)?q.options:[]),q?.correct,...(Array.isArray(q?.explanations)?q.explanations:[])].map(norm).join('¦');}
@@ -54,11 +55,25 @@
   function auditSimulado(){
     const session=runtime.Quiz?.session;
     if(!session||session.type!=='simulado')return {ok:true,skipped:true};
+    const qs=session.questions||[];
+    const errors=[];
+    if(Number(rules.questionCount||0) && qs.length!==Number(rules.questionCount)) errors.push('quantidade de questões diferente da regra oficial');
+    const ids=new Set(),fps=new Set();
+    qs.forEach(q=>{
+      if(!q||!q.id) errors.push('questão sem ID na sessão');
+      if(q?.id&&ids.has(q.id)) errors.push('ID duplicado na sessão: '+q.id);
+      if(q?.id) ids.add(q.id);
+      const fp=fingerprint(q);
+      if(fps.has(fp)) errors.push('conteúdo duplicado na sessão');
+      fps.add(fp);
+      const v=integrity?.validate?.(q);
+      if(v&&!v.ok) errors.push('questão estruturalmente inválida: '+(q?.id||'sem ID'));
+    });
     const expected=(session.questions||[]).reduce((sum,q)=>{
       const s=subjects.find(x=>x.id===q?.subjectId);
       return sum+(rules.scoring?.correct==='subject-weight'?Number(s?.points||0):Number(rules.scoring?.correct||0));
     },0);
-    return {ok:true,expectedTotal:expected};
+    return {ok:errors.length===0,errors,expectedTotal:expected,questionCount:qs.length,distribution:subjects.map(s=>({id:s.id,name:s.name,count:qs.filter(q=>q?.subjectId===s.id).length,expected:Number(s.officialQuestions||0)}))};
   }
 
   const report=auditBank();
