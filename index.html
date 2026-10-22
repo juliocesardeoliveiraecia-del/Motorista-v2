@@ -2472,8 +2472,6 @@ Views.home = function () {
     <button class="btn btn-orange btn-block" id="home-flashcards">${iconEl('cards')} Flashcards</button>
     <button class="btn btn-danger btn-block" id="home-simulado">${iconEl('clipboard')} Simulado Oficial (${ExamRules.questionCount} questões · ${EXAM_CONFIG.durationHours}h)</button>
 
-    ${Views.doctorCard()}
-
     <div class="section-title">Ferramentas Doctor</div>
     <div class="feature-grid">
       <button type="button" class="card feature-card" id="home-notes" title="Abrir Caderno Doctor" aria-label="Abrir Caderno Doctor"><div class="feature-icon">📓</div><h3>Caderno Doctor</h3><p>Anotações organizadas por matéria.</p></button>
@@ -2481,6 +2479,8 @@ Views.home = function () {
       <button type="button" class="card feature-card" id="home-essay" title="Abrir Redação Doctor" aria-label="Abrir Redação Doctor"><div class="feature-icon">✍️</div><h3>Redação Doctor</h3><p>Área preparada para treinar redação.</p></button>
       
     </div>
+
+    ${Views.doctorCard()}
 
     ${Views.editalFooter()}
   `;
