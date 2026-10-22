@@ -1,7 +1,7 @@
-/* Doctor Core Quality Gate — V1.0 */
+/* Doctor Core Quality Gate — V1.1 */
 (function(){
   'use strict';
-  const VERSION='1.0.0';
+  const VERSION='1.1.0';
   const runtime=window.DOCTOR_CORE_RUNTIME||{};
   const subjects=window.SUBJECTS||[];
   const questions=window.QUESTIONS||[];
