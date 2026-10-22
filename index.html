@@ -3478,6 +3478,73 @@ Views.bind.radar = function(){
 Views.radarArticle=function(){ return RadarDoctor.article(UI._radarArticleId); };
 Views.bind.radarArticle=function(){ document.getElementById('radar-article-back')?.addEventListener('click',()=>UI.back()); document.getElementById('radar-article-study')?.addEventListener('click',()=>UI.goHome()); };
 
+/* ===== CADERNO DOCTOR — serviço local de notas =====
+   V1.12.12 hotfix: a interface chamava CoreNotes, mas o serviço não
+   estava definido no bundle. Mantém dados no Store existente.
+*/
+const CoreNotes = {
+  _id() {
+    try { if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID(); } catch (_) {}
+    return 'note-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  },
+  _ensure() {
+    if (!Store.state) Store.state = {};
+    if (!Array.isArray(Store.state.notes)) Store.state.notes = [];
+    if (!Array.isArray(Store.state.noteFolders)) {
+      Store.state.noteFolders = [{id:'folder-general',name:'Geral',color:'#1687ff',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}];
+    }
+    if (!Store.state.noteFolders.some(f => f && f.id === 'folder-general')) {
+      Store.state.noteFolders.unshift({id:'folder-general',name:'Geral',color:'#1687ff',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
+    }
+    Store.state.notes = Store.state.notes.filter(n => n && typeof n === 'object').map(n => ({
+      id: n.id || this._id(), title: String(n.title || ''), body: String(n.body || ''),
+      subjectId: String(n.subjectId || ''), folderId: n.folderId || 'folder-general',
+      tags: Array.isArray(n.tags) ? n.tags : [], favorite: !!n.favorite, pinned: !!n.pinned,
+      deletedAt: n.deletedAt || null, createdAt: n.createdAt || new Date().toISOString(),
+      updatedAt: n.updatedAt || n.createdAt || new Date().toISOString()
+    }));
+    return Store.state;
+  },
+  list() { return this._ensure().notes; },
+  folders() { return this._ensure().noteFolders; },
+  getFolder(id) { return this.folders().find(f => f.id === id) || null; },
+  createFolder(name, color) {
+    const clean = String(name || '').trim();
+    if (!clean) throw new Error('Informe um nome para a pasta.');
+    const now = new Date().toISOString();
+    const folder = {id:'folder-' + this._id(), name:clean.slice(0,80), color:color || '#1687ff', createdAt:now, updatedAt:now};
+    this.folders().push(folder); Store.save(); return folder;
+  },
+  renameFolder(id, name) {
+    const folder = this.getFolder(id); const clean = String(name || '').trim();
+    if (!folder || id === 'folder-general' || !clean) return false;
+    folder.name = clean.slice(0,80); folder.updatedAt = new Date().toISOString(); Store.save(); return true;
+  },
+  deleteFolder(id) {
+    const folder = this.getFolder(id);
+    if (!folder || id === 'folder-general') return false;
+    this.list().forEach(n => { if (n.folderId === id) n.folderId = 'folder-general'; });
+    Store.state.noteFolders = this.folders().filter(f => f.id !== id); Store.save(); return true;
+  },
+  save(title, body, subjectId, folderId, tags, noteId) {
+    const state = this._ensure(); const now = new Date().toISOString();
+    const parsedTags = Array.isArray(tags) ? tags : String(tags || '').split(',').map(t => t.trim()).filter(Boolean).slice(0,30);
+    let note = noteId ? state.notes.find(n => n.id === noteId && !n.deletedAt) : null;
+    if (note) {
+      Object.assign(note, {title:String(title || '').trim() || 'Anotação sem título', body:String(body || ''), subjectId:String(subjectId || ''), folderId:this.getFolder(folderId)?.id || 'folder-general', tags:parsedTags, updatedAt:now});
+    } else {
+      note = {id:this._id(), title:String(title || '').trim() || 'Anotação sem título', body:String(body || ''), subjectId:String(subjectId || ''), folderId:this.getFolder(folderId)?.id || 'folder-general', tags:parsedTags, favorite:false, pinned:false, deletedAt:null, createdAt:now, updatedAt:now};
+      state.notes.unshift(note);
+    }
+    Store.save(); return note;
+  },
+  clearDraft() { this._ensure(); Store.state.noteDraft = {title:'',body:'',subjectId:SUBJECTS[0]?.id||'',folderId:'folder-general',tags:''}; Store.save(); },
+  trash(id) { const n=this.list().find(x=>x.id===id); if(!n)return false; n.deletedAt=new Date().toISOString(); n.updatedAt=n.deletedAt; Store.save(); return true; },
+  restore(id) { const n=this.list().find(x=>x.id===id); if(!n)return false; n.deletedAt=null; n.updatedAt=new Date().toISOString(); Store.save(); return true; },
+  toggleFavorite(id) { const n=this.list().find(x=>x.id===id&&!x.deletedAt); if(!n)return false; n.favorite=!n.favorite; n.updatedAt=new Date().toISOString(); Store.save(); return n.favorite; },
+  togglePinned(id) { const n=this.list().find(x=>x.id===id&&!x.deletedAt); if(!n)return false; n.pinned=!n.pinned; n.updatedAt=new Date().toISOString(); Store.save(); return n.pinned; }
+};
+
 Views.notes = function(){
   const folders=CoreNotes.folders();
   const active=UI._notesFolderId||'all';
