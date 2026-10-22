@@ -8,7 +8,7 @@
   const rules=window.ExamRules||{};
 
   function norm(v){return String(v==null?'':v).trim().replace(/\s+/g,' ').toLowerCase();}
-  function fingerprint(q){return [q?.id,q?.subjectId,q?.text,...(Array.isArray(q?.options)?q.options:[]),q?.correct,...(Array.isArray(q?.explanations)?q.explanations:[])].map(norm).join('¦');}
+  function fingerprint(q){return [q?.text,...(Array.isArray(q?.options)?q.options:[]),q?.correct,...(Array.isArray(q?.explanations)?q.explanations:[])].map(norm).join('¦');}
 
   function auditBank(){
     const invalid=[],ids=new Set(),fps=new Set(),duplicateIds=[],duplicateFingerprints=[];
