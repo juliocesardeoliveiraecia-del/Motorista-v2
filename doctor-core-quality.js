@@ -49,9 +49,9 @@
       completeForOfficialSimulado:subjects.length>0 && Number(rules.questionCount||0)>0 && questions.length>=Number(rules.questionCount) && distribution.every(x=>x.missing===0),
       distribution,invalid,duplicateIds,duplicateFingerprints,
       structuralOk:!invalid.length&&!duplicateIds.length&&!duplicateFingerprints.length,
-      editoriallyApproved:questions.filter(q=>q?.reviewStatus==='approved' && !!q?.sourceReference).length,
-      unapprovedQuestions:questions.filter(q=>q?.reviewStatus!=='approved' || !q?.sourceReference).length,
-      readyForMassProduction:!invalid.length&&!duplicateIds.length&&!duplicateFingerprints.length && questions.length>=Number(rules.questionCount||Infinity) && questions.every(q=>q?.reviewStatus==='approved' && !!q?.sourceReference)
+      editoriallyApproved:questions.filter(q=>q?.reviewStatus==='approved' && !!q?.sourceReference && !!q?.contentHash).length,
+      unapprovedQuestions:questions.filter(q=>q?.reviewStatus!=='approved' || !q?.sourceReference || !q?.contentHash).length,
+      readyForMassProduction:!invalid.length&&!duplicateIds.length&&!duplicateFingerprints.length && questions.length>=Number(rules.questionCount||Infinity) && questions.every(q=>q?.reviewStatus==='approved' && !!q?.sourceReference && !!q?.contentHash)
     };
   }
 
