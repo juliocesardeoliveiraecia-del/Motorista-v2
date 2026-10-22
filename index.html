@@ -948,6 +948,16 @@ const Quiz = {
   // Retorna false se não há nenhuma questão nova disponível (banco esgotado).
   ensureCurrent(subjectId) {
     const feed = this.getFeed(subjectId);
+    const currentId=feed.order[feed.position];
+    const current=currentId?QUESTIONS.find(q=>q.id===currentId):null;
+    if(current && !DoctorQuestionIntegrity.assertDeliverable(current).ok){
+      // Remove IDs from legacy feeds if the question no longer passes the publication gate.
+      feed.order=[];
+      feed.position=0;
+    } else if(currentId && !current){
+      feed.order=[];
+      feed.position=0;
+    }
     if (feed.order.length === 0) {
       const q = this.pickFreshQuestion(subjectId);
       if (!q) return false;
