@@ -1294,6 +1294,34 @@ const Quiz = {
     return this.session;
   },
 
+  startSimuladoFromQuestions(questions) {
+    if(!Array.isArray(questions) || questions.length!==ExamRules.questionCount) {
+      return {ok:false,reason:'invalid-count'};
+    }
+    const seenIds=new Set(), seenFingerprints=new Set();
+    for(const subject of SUBJECTS) {
+      const list=questions.filter(q=>q.subjectId===subject.id);
+      if(list.length!==Number(subject.officialQuestions)) return {ok:false,reason:'invalid-subject-distribution',subjectId:subject.id};
+    }
+    for(const q of questions) {
+      const gate=DoctorQuestionIntegrity.assertDeliverable(q);
+      if(!gate.ok || q.aiGenerated!==true || q.reviewedByDoctor!==true) return {ok:false,reason:'question-not-approved',questionId:q&&q.id,errors:gate.errors||[]};
+      const fp=DoctorQuestionIntegrity.fingerprint(q);
+      if(seenIds.has(q.id) || seenFingerprints.has(fp)) return {ok:false,reason:'duplicate-question',questionId:q.id};
+      seenIds.add(q.id); seenFingerprints.add(fp);
+    }
+    this.session={
+      type:'simulado',
+      questions:this.shuffle([...questions]),
+      index:0,
+      answers:[],
+      startedAt:Date.now(),
+      timeLimitSeconds:ExamRules.durationSeconds
+    };
+    this.persist();
+    return {ok:true,count:questions.length};
+  },
+
   simuladoReadiness() {
     return SUBJECTS.map(s => ({
       subject: s,
@@ -3159,32 +3187,22 @@ Views.simuladoSetup = function () {
       </div>
     `;
   }
-
-  const readiness = Quiz.simuladoReadiness();
-  const allReady = readiness.every(r => r.missing === 0);
-
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
     <h2>${iconEl('clipboard')} Simulado Oficial</h2>
-    <p class="muted">Reproduz exatamente a estrutura do ${EXAM_CONFIG.editalNumber}: ${ExamRules.questionCount} questões, ${ExamRules.optionCount} alternativas, ${EXAM_CONFIG.totalPoints} pontos, mínimo ${EXAM_CONFIG.passingScore} para aprovação, ${EXAM_CONFIG.durationHours} horas de duração.</p>
+    <p class="muted">Simulado completo gerado para este edital, com a distribuição oficial de questões, alternativas no padrão da banca e revisão automática independente antes de liberar o conteúdo.</p>
     <div class="card">
-      ${readiness.map(r => `
+      ${SUBJECTS.map(s => `
         <div class="subj-row">
-          <div class="subj-name">${r.subject.icon} ${r.subject.name}</div>
-          <div class="subj-pct">${r.have}/${r.need}</div>
+          <div class="subj-name">${s.icon} ${s.name}</div>
+          <div class="subj-pct">${s.officialQuestions} questões</div>
         </div>
       `).join('')}
+      <div class="divider"></div>
+      <div class="subj-row"><strong>Total da prova</strong><strong>${ExamRules.questionCount} questões</strong></div>
     </div>
-    ${allReady ? `
-      <button class="btn btn-primary btn-block" id="start-simulado">Iniciar Simulado (4h)</button>
-    ` : `
-      <div class="card warn-card">
-        <p><strong>Faltam questões para montar o simulado oficial completo.</strong></p>
-        <p class="muted">Posso gerar as que faltam agora com IA (usa sua chave da Groq).</p>
-        <button class="btn btn-primary btn-block" id="fill-missing">${iconEl('bot')} Gerar questões faltantes</button>
-      </div>
-      <div class="card warn-card"><strong>O simulado oficial permanece bloqueado até completar o banco.</strong><p class="muted">Isso evita entregar uma prova que não reproduza a distribuição real do edital.</p></div>
-    `}
+    <button class="btn btn-primary btn-block" id="generate-full-simulado">${iconEl('bot')} Gerar simulado</button>
+    <p class="muted center">A IA gera a prova completa e revisa cada questão. Se alguma não passar na validação, o simulado não será liberado incompleto.</p>
   `;
 };
 
@@ -3201,26 +3219,68 @@ Views.bind.simuladoSetup = function () {
       UI.render('simuladoSetup');
     }
   });
-  document.getElementById('start-simulado')?.addEventListener('click', () => {
-    const result=Quiz.startSimulado();
-    if(!result || result.ok===false){
-      UI.toast('O simulado continua bloqueado até o banco estar completo e íntegro.','warn');
-      UI.render('simuladoSetup');
+  document.getElementById('generate-full-simulado')?.addEventListener('click', async (e) => {
+    const btn=e.currentTarget;
+    if (!GroqAI.hasKey()) {
+      UI.toast('Configure sua chave GROQ em Configurações para gerar o simulado.', 'warn');
+      UI.render('settings');
       return;
     }
-    UI.render('simuladoRunning');
-  });
-  document.getElementById('fill-missing')?.addEventListener('click', async (e) => {
-    if (!GroqAI.hasKey()) { UI.toast('Cadastre sua chave da Groq em Configurações.', 'warn'); UI.render('settings'); return; }
-    const btn = e.target;
-    btn.disabled = true;
-    const readiness = Quiz.simuladoReadiness().filter(r => r.missing > 0);
-    for (const r of readiness) {
-      btn.innerHTML = iconEl('bot') + ' Gerando ' + r.subject.name + '...';
-      await GroqAI.fillSubjectTo(r.subject.id, r.need);
+    btn.disabled=true;
+    const batch=[];
+    const errors=[];
+    try {
+      for (const subject of SUBJECTS) {
+        const target=Number(subject.officialQuestions);
+        let attempts=0;
+        let subjectQuestions=[];
+        while(subjectQuestions.length<target && attempts<2) {
+          attempts++;
+          btn.innerHTML=iconEl('bot') + ' Gerando ' + subject.name + ' (' + subjectQuestions.length + '/' + target + ')...';
+          const before=new Set(QUESTIONS.map(q=>q.id));
+          const need=target-subjectQuestions.length;
+          const result=await GroqAI.generateQuestions(subject.id,need);
+          if(!result?.ok) {
+            errors.push(subject.name + ': ' + (result?.reason||'falha de geração/revisão'));
+            break;
+          }
+          const added=QUESTIONS.filter(q=>!before.has(q.id) && q.subjectId===subject.id && q.aiGenerated===true && q.reviewedByDoctor===true);
+          const known=new Set(subjectQuestions.map(q=>DoctorQuestionIntegrity.fingerprint(q)));
+          for(const q of added) {
+            const fp=DoctorQuestionIntegrity.fingerprint(q);
+            if(!known.has(fp) && DoctorQuestionIntegrity.validate(q).ok) {
+              subjectQuestions.push(q); known.add(fp);
+            }
+          }
+        }
+        if(subjectQuestions.length!==target) {
+          errors.push(subject.name + ': aprovadas ' + subjectQuestions.length + '/' + target);
+          break;
+        }
+        batch.push(...subjectQuestions.slice(0,target));
+      }
+      if(errors.length || batch.length!==ExamRules.questionCount) {
+        UI.toast('O simulado não foi liberado: a revisão não aprovou todas as questões. Tente gerar novamente.','warn');
+        console.warn('Doctor full simulado quality gate', {errors, generated:batch.length, expected:ExamRules.questionCount});
+        btn.disabled=false;
+        btn.innerHTML=iconEl('bot') + ' Gerar simulado';
+        return;
+      }
+      const result=Quiz.startSimuladoFromQuestions(batch);
+      if(!result?.ok) {
+        UI.toast('O simulado foi bloqueado pela checagem final de integridade. Nenhuma prova incompleta será iniciada.','warn');
+        btn.disabled=false;
+        btn.innerHTML=iconEl('bot') + ' Gerar simulado';
+        return;
+      }
+      UI.toast('Simulado completo revisado e pronto. Boa prova!','success');
+      UI.render('simuladoRunning');
+    } catch(err) {
+      console.error('Falha segura ao gerar simulado completo',err);
+      UI.toast('Não foi possível concluir a geração com segurança. Nenhuma prova incompleta foi liberada.','warn');
+      btn.disabled=false;
+      btn.innerHTML=iconEl('bot') + ' Gerar simulado';
     }
-    UI.toast('Banco de questões atualizado!', 'success');
-    UI.render('simuladoSetup');
   });
 };
 
