@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.6',
+  version: '1.12.7',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,18 +17,18 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
-<script src="product-context.js?v=1.12.6"></script>
-<script src="product-content.js?v=1.12.6"></script>
+<script src="product-context.js?v=1.12.7"></script>
+<script src="product-content.js?v=1.12.7"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.6">
+<meta name="doctor-core-version" content="1.12.7">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.12.6">
-<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.6">
+<link rel="manifest" href="manifest.json?v=1.12.7">
+<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.7">
 
-<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.6">
+<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Doctor Core">
 <style>
@@ -566,11 +566,39 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 @media(max-width:640px){.doctor-avatar-box img.doctor-avatar-level-1{max-height:120px;max-width:32%}.doctor-avatar-box img.doctor-avatar-level-2{max-height:160px}.doctor-avatar-box img.doctor-avatar-level-3{max-height:210px}.doctor-avatar-box img.doctor-avatar-level-4{max-height:250px}.doctor-avatar-box img.doctor-avatar-level-5,.doctor-avatar-box img.doctor-avatar-level-6{max-height:285px}.doctor-avatar-box img.doctor-avatar-level-7,.doctor-avatar-box img.doctor-avatar-level-8,.doctor-avatar-box img.doctor-avatar-level-9,.doctor-avatar-box img.doctor-avatar-level-10{max-height:295px}}
 </style>
 
-/* Doctor Core 1.12.6 — Radar removido por decisão de produto. */
+/* Doctor Core 1.12.7 — Radar removido por decisão de produto. */
 <style id="doctor-radar-removal">
   #radar-ticker-mount, #home-radar, .radar-page, [data-tool="radar"], #open-radar, #radar-back, #radar-refresh, #radar-article-back, [data-radar], .radar-ticker, .radar-hero { display:none !important; }
   #main-view { padding-bottom: 12px !important; --radar-reserve: 0px; }
   body { scroll-padding-bottom: 0 !important; }
+</style>
+
+
+<style id="doctor-calculator-v1">
+.calculator-page{max-width:560px;margin:0 auto;padding:4px 0 24px}
+.calculator-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:20px}
+.calculator-badge{font-size:10px;font-weight:900;letter-spacing:.13em;color:var(--blue-mid);border:1px solid var(--border);border-radius:999px;padding:7px 10px}
+.calculator-intro{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.calculator-mark{width:60px;height:60px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#f5c400,#e5a900);box-shadow:0 10px 24px rgba(245,196,0,.2);font-size:30px;flex:0 0 auto}
+.calculator-intro h2{margin:3px 0 5px;font-size:clamp(23px,5vw,30px)}
+.calculator-intro p{color:var(--text-muted);font-size:13px;line-height:1.5}
+.calculator-shell{padding:16px;border-radius:26px;border:1px solid var(--border);background:linear-gradient(155deg,var(--surface),var(--bg));box-shadow:0 18px 42px rgba(0,0,0,.13)}
+.calculator-screen{min-height:122px;padding:18px 14px 20px;border-radius:19px;background:linear-gradient(140deg,#071322,#102b4c);color:#fff;display:flex;flex-direction:column;justify-content:flex-end;text-align:right;overflow:hidden;margin-bottom:14px}
+.calculator-context{height:22px;color:#a9bfd7;font-size:13px;letter-spacing:.04em}
+.calculator-display{font-size:clamp(30px,8vw,48px);font-weight:750;letter-spacing:-.045em;line-height:1.2;white-space:nowrap;overflow-x:auto;scrollbar-width:none;font-variant-numeric:tabular-nums}
+.calculator-display.is-error{font-size:clamp(19px,5vw,28px);color:#ffd166}
+.calculator-keys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.calc-key{min-height:60px;border:1px solid var(--border);border-radius:17px;background:var(--surface);color:var(--text);font-size:21px;font-weight:700;box-shadow:0 3px 0 rgba(0,0,0,.08);transition:transform .12s,filter .12s,border-color .12s}
+.calc-key:hover{filter:brightness(1.06);border-color:var(--blue-mid)}
+.calc-key:active{transform:translateY(2px);box-shadow:none}
+.calc-key.utility{background:rgba(22,135,255,.10);color:var(--text);font-size:18px}
+.calc-key.operator{background:linear-gradient(145deg,#1687ff,#0757c9);border-color:#1687ff;color:#fff;font-size:24px}
+.calc-key.equals{background:linear-gradient(145deg,#f5c400,#e4a900);border-color:#f5c400;color:#111;font-size:24px}
+.calc-key.zero{grid-column:span 1}
+.calculator-footnote{display:flex;justify-content:center;align-items:center;gap:7px;margin:15px 0 1px;font-size:11px;color:var(--text-muted);text-align:center}
+.calc-status-dot{width:7px;height:7px;border-radius:50%;background:#21b36b;box-shadow:0 0 0 4px rgba(33,179,107,.12)}
+.calculator-feature-icon{background:linear-gradient(145deg,#f5c400,#e5a900)!important;border-radius:14px;color:#111}
+@media(max-width:420px){.calculator-shell{padding:11px;border-radius:22px}.calculator-keys{gap:7px}.calc-key{min-height:56px;border-radius:14px}.calculator-screen{min-height:112px;padding:15px 12px 17px}}
 </style>
 
 </head>
@@ -642,7 +670,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   });
 })();
 </script>
-<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.6</div><div id="splash-progress" aria-hidden="true"></div></div>
+<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.7</div><div id="splash-progress" aria-hidden="true"></div></div>
 <div id="toast-container"></div>
 <header class="topbar">
   <button type="button" class="topbar-brand" id="topbar-home" aria-label="Voltar para a página inicial do Doctor Concursos" title="Voltar para o início">
@@ -1916,7 +1944,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.12.6', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.12.7', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
@@ -1932,7 +1960,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
       setTimeout(() => sessionStorage.removeItem('doctor-core-sw-reloaded'), 12000);
       // Se uma instalação antiga conseguir abrir uma cópia stale do HTML,
       // consulta o marcador de build sem usar cache e força a versão atual.
-      fetch('./version.json?v=1.12.6-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+      fetch('./version.json?v=1.12.7-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
         if (v?.version && v.version !== DOCTOR_CORE_BUILD) window.location.reload();
       }).catch(() => {});
     }
@@ -2092,7 +2120,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
           return;
         }
         this.dataset.fallbackApplied = '1';
-        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.6';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.7';
         this.classList.add('doctor-avatar-fallback-image');
       });
     });
@@ -2478,6 +2506,8 @@ Views.home = function () {
       <button type="button" class="card feature-card" id="home-recorder" title="Abrir Gravador Doctor" aria-label="Abrir Gravador Doctor"><div class="feature-icon">🎙️</div><h3>Gravador Doctor</h3><p>Grave e organize áudios dentro da matéria.</p></button>
       <button type="button" class="card feature-card" id="home-essay" title="Abrir Redação Doctor" aria-label="Abrir Redação Doctor"><div class="feature-icon">✍️</div><h3>Redação Doctor</h3><p>Área preparada para treinar redação.</p></button>
       
+      <button type="button" class="card feature-card calculator-feature-card" id="home-calculator" title="Abrir Calculadora Doctor" aria-label="Abrir Calculadora Doctor"><div class="feature-icon calculator-feature-icon">🧮</div><h3>Calculadora Doctor</h3><p>Contas rápidas durante seus estudos.</p></button>
+      
     </div>
 
     ${Views.doctorCard()}
@@ -2504,7 +2534,7 @@ Views.doctorCard = function () {
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
         ${p.level.imageUri
-          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.6&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.7&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
@@ -2563,6 +2593,7 @@ Views.bind.home = function () {
   document.getElementById('home-notes')?.addEventListener('click', () => UI.render('notes'));
   document.getElementById('home-recorder')?.addEventListener('click', () => UI.render('recorderPick'));
   document.getElementById('home-essay')?.addEventListener('click', () => UI.render('essay'));
+  document.getElementById('home-calculator')?.addEventListener('click', () => UI.render('calculator'));
   document.getElementById('home-radar')?.addEventListener('click', () => UI.render('radar'));
   document.getElementById('open-radar')?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); UI.render('radar'); });
 
@@ -3244,6 +3275,121 @@ Views.bind.simuladoResult = function () {
 };
 
 
+
+/* ---------------- CALCULADORA DOCTOR ----------------
+   Calculadora local, sem rede e sem eval. Operações encadeadas com
+   validação explícita, teclado físico e tratamento de divisão por zero.
+*/
+const DoctorCalculator = {
+  reset(){ this.display='0'; this.stored=null; this.operator=null; this.waiting=true; this.error=false; },
+  display:'0', stored:null, operator:null, waiting:true, error:false,
+  format(n){
+    if(!Number.isFinite(n)) return 'Erro';
+    if(Object.is(n,-0)) n=0;
+    const rounded=Number.parseFloat(n.toPrecision(12));
+    return String(rounded);
+  },
+  inputDigit(d){
+    if(this.error)this.reset();
+    if(this.waiting){this.display=d;this.waiting=false;}
+    else if(this.display.replace('-','').replace('.','').length<14)this.display=this.display==='0'?d:this.display+d;
+  },
+  decimal(){
+    if(this.error)this.reset();
+    if(this.waiting){this.display='0.';this.waiting=false;}
+    else if(!this.display.includes('.'))this.display+='.';
+  },
+  compute(a,b,op){
+    if(op==='+')return a+b;
+    if(op==='−')return a-b;
+    if(op==='×')return a*b;
+    if(op==='÷')return b===0?null:a/b;
+    return b;
+  },
+  choose(op){
+    if(this.error)this.reset();
+    const n=Number(this.display);
+    if(this.operator&&!this.waiting){
+      const result=this.compute(this.stored,n,this.operator);
+      if(result===null||!Number.isFinite(result)){this.fail();return;}
+      this.display=this.format(result);this.stored=result;
+    }else this.stored=n;
+    this.operator=op;this.waiting=true;
+  },
+  equals(){
+    if(!this.operator||this.stored===null||this.error)return;
+    const result=this.compute(this.stored,Number(this.display),this.operator);
+    if(result===null||!Number.isFinite(result)){this.fail();return;}
+    this.display=this.format(result);this.stored=null;this.operator=null;this.waiting=true;
+  },
+  fail(){this.display='Não é possível';this.stored=null;this.operator=null;this.waiting=true;this.error=true;},
+  action(key){
+    if(/^\d$/.test(key)){this.inputDigit(key);return;}
+    if(key==='.')return this.decimal();
+    if(key==='AC'){this.reset();return;}
+    if(key==='⌫'){
+      if(this.error){this.reset();return;}
+      if(!this.waiting)this.display=this.display.length>1?this.display.slice(0,-1):'0';
+      return;
+    }
+    if(key==='±'){
+      if(!this.error&&Number(this.display)!==0)this.display=this.display.startsWith('-')?this.display.slice(1):'-'+this.display;
+      return;
+    }
+    if(key==='%'){
+      if(!this.error)this.display=this.format(Number(this.display)/100);
+      return;
+    }
+    if(['+','−','×','÷'].includes(key)){this.choose(key);return;}
+    if(key==='=')this.equals();
+  }
+};
+DoctorCalculator.reset();
+Views.calculator=function(){
+  const keys=[
+    {k:'AC',c:'calc-key utility'},{k:'±',c:'calc-key utility'},{k:'%',c:'calc-key utility'},{k:'÷',c:'calc-key operator'},
+    {k:'7',c:'calc-key'},{k:'8',c:'calc-key'},{k:'9',c:'calc-key'},{k:'×',c:'calc-key operator'},
+    {k:'4',c:'calc-key'},{k:'5',c:'calc-key'},{k:'6',c:'calc-key'},{k:'−',c:'calc-key operator'},
+    {k:'1',c:'calc-key'},{k:'2',c:'calc-key'},{k:'3',c:'calc-key'},{k:'+',c:'calc-key operator'},
+    {k:'⌫',c:'calc-key utility'},{k:'0',c:'calc-key zero'},{k:'.',c:'calc-key'},{k:'=',c:'calc-key equals'}
+  ];
+  const value=DoctorCalculator.display;
+  return `<section class="calculator-page">
+    <div class="calculator-heading"><button class="btn btn-ghost btn-sm" id="calculator-back">← Voltar aos estudos</button><span class="calculator-badge">DOCTOR TOOLS</span></div>
+    <div class="calculator-intro"><div class="calculator-mark">🧮</div><div><span class="eyebrow">FERRAMENTA DE ESTUDO</span><h2>Calculadora Doctor</h2><p>Rápida, simples e pronta para acompanhar seus estudos.</p></div></div>
+    <div class="calculator-shell card">
+      <div class="calculator-screen"><div class="calculator-context" id="calculator-context">${DoctorCalculator.stored!==null&&DoctorCalculator.operator?DoctorCalculator.format(DoctorCalculator.stored)+' '+DoctorCalculator.operator:''}</div><output class="calculator-display" id="calculator-display" aria-live="polite" aria-atomic="true">${value}</output></div>
+      <div class="calculator-keys" role="group" aria-label="Teclado da calculadora">
+      ${keys.map(x=>`<button type="button" class="${x.c}" data-calc-key="${x.k}" aria-label="${({'AC':'Limpar tudo','±':'Trocar sinal','%':'Por cento','÷':'Dividir','×':'Multiplicar','−':'Subtrair','+':'Somar','⌫':'Apagar último dígito','=':'Resultado'}[x.k]||x.k)}">${x.k}</button>`).join('')}
+      </div>
+      <div class="calculator-footnote"><span class="calc-status-dot"></span> Cálculos feitos no próprio dispositivo · sem internet</div>
+    </div>
+  </section>`;
+};
+Views.bind.calculator=function(){
+  document.getElementById('calculator-back')?.addEventListener('click',()=>UI.back());
+  const refresh=()=>{
+    const display=document.getElementById('calculator-display');
+    const context=document.getElementById('calculator-context');
+    if(display)display.textContent=DoctorCalculator.display;
+    if(context)context.textContent=DoctorCalculator.stored!==null&&DoctorCalculator.operator?DoctorCalculator.format(DoctorCalculator.stored)+' '+DoctorCalculator.operator:'';
+    display?.classList.toggle('is-error',DoctorCalculator.error);
+  };
+  document.querySelectorAll('[data-calc-key]').forEach(btn=>btn.addEventListener('click',()=>{
+    DoctorCalculator.action(btn.dataset.calcKey);refresh();
+  }));
+  const onKey=e=>{
+    if(UI.currentView!=='calculator')return;
+    const map={'*':'×','x':'×','X':'×','/':'÷','-':'−','Enter':'=','=':'=','Backspace':'⌫','Escape':'AC','Delete':'AC','%':'%'};
+    const key=map[e.key]||e.key;
+    if(/^\d$/.test(key)||['.','AC','±','%','⌫','+','−','×','÷','='].includes(key)){
+      e.preventDefault();DoctorCalculator.action(key);refresh();
+    }
+  };
+  window.addEventListener('keydown',onKey);
+  UI._calculatorKeyCleanup=()=>window.removeEventListener('keydown',onKey);
+};
+
 // ---------------- RADAR / CADERNO / GRAVADOR / REDAÇÃO ----------------
 Views.radar = function(){ return RadarDoctor.page(); };
 Views.bind.radar = function(){
@@ -3658,7 +3804,7 @@ UI.init();
   schedule();
 })();
 </script>
-<script src="./doctor-core-quality.js?v=1.12.6" defer></script>
+<script src="./doctor-core-quality.js?v=1.12.7" defer></script>
 
 <script id="doctor-radar-removal-runtime">
 /* Limpeza de compatibilidade: remove os nós legados do Radar. */
