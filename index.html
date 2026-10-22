@@ -2636,6 +2636,19 @@ Views.practice = function () {
   const hasCurrent = Quiz.ensureCurrent(subjectId);
   if (!hasCurrent) {
     const subject = SUBJECTS.find(x => x.id === subjectId);
+    const approvedAvailable = subjectId === 'todas'
+      ? QUESTIONS.some(q => DoctorQuestionIntegrity.assertDeliverable(q).ok)
+      : Quiz.poolFor(subjectId).some(q => DoctorQuestionIntegrity.assertDeliverable(q).ok);
+    if(EXAM_CONFIG.questionPolicy?.mode==='approved-only' && !approvedAvailable){
+      return `
+        <button class="btn btn-ghost btn-sm" id="practice-back">${iconEl('arrowLeft')} Voltar</button>
+        <div class="card center warn-card">
+          <div class="big-icon">${iconEl('shield')}</div>
+          <h2>Questões em revisão de qualidade</h2>
+          <p class="muted">Para proteger seu estudo, o Doctor só libera questões com gabarito aprovado, fonte rastreável e hash imutável. Este pacote ainda está passando por essa revisão. Nenhuma questão pendente será apresentada como válida.</p>
+        </div>
+      `;
+    }
     return `
       <button class="btn btn-ghost btn-sm" id="practice-back">${iconEl('arrowLeft')} Voltar</button>
       <div class="card center">
