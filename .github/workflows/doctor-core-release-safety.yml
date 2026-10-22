@@ -1,0 +1,118 @@
+name: Doctor Core - Release Safety Checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, "safety/**", "hotfix/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: doctor-core-release-safety-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-safety:
+    name: Validate version contract and startup essentials
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout reviewed source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Validate app version contract
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, re, sys
+
+          root = pathlib.Path(".")
+          required = [
+              "index.html", "version.json", "manifest.json",
+              "service-worker.js", "production-config.js",
+              "product-context.js", "product-content.js"
+          ]
+          missing = [p for p in required if not (root / p).is_file()]
+          if missing:
+              print("FAIL: arquivos essenciais ausentes: " + ", ".join(missing))
+              sys.exit(1)
+
+          html = (root / "index.html").read_text(encoding="utf-8")
+          sw = (root / "service-worker.js").read_text(encoding="utf-8")
+          config = (root / "production-config.js").read_text(encoding="utf-8")
+          context = (root / "product-context.js").read_text(encoding="utf-8")
+          version_data = json.loads((root / "version.json").read_text(encoding="utf-8"))
+          manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+
+          version = str(version_data.get("version", "")).strip()
+          errors = []
+          if not version:
+              errors.append("version.json não define version")
+          if manifest.get("version") != version:
+              errors.append(f"manifest.json ({manifest.get('version')}) diverge de version.json ({version})")
+          if not re.search(r'<meta\\s+name=["\\']doctor-core-version["\\']\\s+content=["\\']' + re.escape(version) + r'["\\']', html, re.I):
+              errors.append("meta doctor-core-version em index.html diverge da versão central")
+          if not re.search(r"version\\s*:\\s*['\\"]" + re.escape(version) + r"['\\"]", config):
+              errors.append("production-config.js diverge da versão central")
+          if not re.search(r"coreVersion\\s*:\\s*['\\"]" + re.escape(version) + r"-core['\\"]", context):
+              errors.append("product-context.js coreVersion diverge da versão central")
+          cache_match = re.search(r"CACHE_NAME\\s*=\\s*['\\"]([^'\\"]+)['\\"]", sw)
+          if not cache_match or version not in cache_match.group(1):
+              errors.append("CACHE_NAME do Service Worker não contém a versão central")
+          if not re.search(r"service-worker\\.js\\?v=" + re.escape(version), html):
+              errors.append("registro do Service Worker em index.html não usa a versão central")
+          for asset in ["product-context.js", "product-content.js", "manifest.json"]:
+              if not re.search(re.escape(asset) + r"\\?v=" + re.escape(version), html):
+                  errors.append(f"index.html não versiona {asset} com a versão central")
+          if "UI.init();" not in html:
+              errors.append("inicialização UI.init() não encontrada em index.html")
+          if 'id="splash"' not in html or 'id="main-view"' not in html:
+              errors.append("elementos essenciais de splash/main-view não encontrados")
+
+          if errors:
+              print("RELEASE BLOCKED — contrato de versão/inicialização inconsistente:")
+              for error in errors:
+                  print(" - " + error)
+              sys.exit(1)
+
+          print(f"PASS: contrato de versão consistente ({version}); arquivos essenciais presentes.")
+          PY
+
+      - name: Check inline JavaScript syntax
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+          html = pathlib.Path("index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script(?![^>]*\\bsrc=)[^>]*>(.*?)</script\\s*>", html, re.I | re.S)
+          if not scripts:
+              print("FAIL: nenhum script inline encontrado")
+              sys.exit(1)
+          pathlib.Path("/tmp/doctor-core-inline-check.js").write_text(
+              "\\n;\\n".join(scripts), encoding="utf-8"
+          )
+          print(f"Found {len(scripts)} inline script blocks for syntax validation.")
+          PY
+          node --check /tmp/doctor-core-inline-check.js
+
+      - name: Confirm no accidental empty app shell
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib, sys
+          html = pathlib.Path("index.html").read_text(encoding="utf-8")
+          required_signals = [
+              "Views.home", "Views.bind", "UI.render", "UI.init();",
+              "Store", "Quiz", "settings", "main-view"
+          ]
+          missing = [signal for signal in required_signals if signal not in html]
+          if missing:
+              print("FAIL: possível regressão no app; sinais ausentes: " + ", ".join(missing))
+              sys.exit(1)
+          print("PASS: estrutura essencial do aplicativo encontrada.")
+          PY
