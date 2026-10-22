@@ -195,6 +195,10 @@ main { padding: 16px; max-width: 640px; margin: 0 auto; }
 .plan-item-text { flex: 1; min-width: 0; }
 .plan-item-label { font-size: 13.5px; font-weight: 700; }
 .plan-item-sub { font-size: 11px; color: var(--text-muted); }
+.plan-item .plan-start { flex: 0 0 auto; min-width: 94px; padding: 8px 12px; border: 0; border-radius: 10px; background: var(--blue-mid); color: #fff; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 6px rgba(10,25,47,.14); }
+.plan-item .plan-start:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.plan-item .plan-start:disabled { background: var(--gray-200); color: var(--gray-600); cursor: default; box-shadow: none; }
+[data-theme="dark"] .plan-item .plan-start:disabled { background: #26364a; color: #b6c2d2; }
 
 /* ---------- Evolução do Doctor — V1.9.2 visual hardening ---------- */
 .doctor-card { text-align: center; }
@@ -2467,6 +2471,12 @@ Views.home = function () {
       }).join('')}
     </div>
 
+    <div class="home-primary-actions" aria-label="Ações principais de estudo">
+      <button class="btn btn-primary btn-block" id="home-practice">${iconEl('target')} Praticar Questões</button>
+      <button class="btn btn-orange btn-block" id="home-flashcards">${iconEl('cards')} Flashcards</button>
+      <button class="btn btn-danger btn-block" id="home-simulado">${iconEl('clipboard')} Simulado Oficial (${ExamRules.questionCount} questões · ${EXAM_CONFIG.durationHours}h)</button>
+    </div>
+
     <div class="section-title">Plano de Hoje</div>
     <div class="card plan-card">
       <div class="plan-header">
@@ -2482,13 +2492,11 @@ Views.home = function () {
               <div class="plan-item-label">${item.label}</div>
               <div class="plan-item-sub">${item.sublabel} · ${Math.round(item.minutes)} min${!status.done ? ` · ${status.doneCount}/${status.target}` : ''}</div>
             </div>
-            <span class="chev">${iconEl('chevronRight')}</span>
+            <button type="button" class="plan-start" ${status.done ? 'disabled' : ''} aria-label="${status.done ? 'Atividade concluída' : (item.type === 'review' ? 'Começar revisão' : 'Começar atividade')}" tabindex="${status.done ? '-1' : '0'}">${status.done ? 'Concluído' : (item.type === 'review' ? 'Começar revisão' : 'Começar')}</button>
           </div>
         `;
       }).join('')}
     </div>
-
-    <button class="btn btn-primary btn-block" id="home-practice">Praticar Questões</button>
 
     <div class="section-title">Revisão de Hoje</div>
     <div class="card">
@@ -2499,9 +2507,6 @@ Views.home = function () {
       </button>
       ${wrongCount > 0 ? `<button class="btn btn-ghost btn-sm" id="home-pontos-fracos">Ver pontos fracos</button>` : ''}
     </div>
-
-    <button class="btn btn-orange btn-block" id="home-flashcards">${iconEl('cards')} Flashcards</button>
-    <button class="btn btn-danger btn-block" id="home-simulado">${iconEl('clipboard')} Simulado Oficial (${ExamRules.questionCount} questões · ${EXAM_CONFIG.durationHours}h)</button>
 
     <div class="section-title">Ferramentas Doctor</div>
     <div class="feature-grid">
