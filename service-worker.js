@@ -1,9 +1,9 @@
 // service-worker.js — network-first (sempre busca a versão mais nova primeiro)
-const CACHE_NAME = 'motorista-ipameri-v1.12.7';
+const CACHE_NAME = 'motorista-ipameri-v1.12.8';
 const ASSETS = [
   './', './index.html', './manifest.json', './version.json',
   './production-config.js', './product-context.js', './product-content.js',
-  './doctor-core-quality.js', './doctor-core-icon.svg',
+  './doctor-core-quality.js', './calculator-scientific.js', './doctor-core-icon.svg',
   './assets/doctor/evolution/doctor-avatar-fallback.svg'
 ];
 const NETWORK_TIMEOUT_MS = 3500;
