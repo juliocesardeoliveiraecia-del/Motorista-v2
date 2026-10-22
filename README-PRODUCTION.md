@@ -2,7 +2,9 @@
 
 ## Estado auditado
 
-- **Core:** V1.12.3
+- **Simulado completo (candidata V1.13.2):** botão único “Gerar simulado”; exibe somente o total oficial por matéria; geração integral com revisão independente; bloqueio final se a distribuição, a aprovação editorial ou a integridade não forem completas. A homologação de conteúdo e testes manuais continuam obrigatórios.
+
+- **Core:** V1.13.2 (candidata)
 - **Concurso:** Câmara Municipal de Ipameri/GO
 - **Cargo:** Agente Legislativo — Motorista Legislativo
 - **Banca:** Instituto Verbena / UFG
