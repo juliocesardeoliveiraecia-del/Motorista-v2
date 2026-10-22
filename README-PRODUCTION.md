@@ -2,7 +2,7 @@
 
 ## Estado auditado
 
-- **Core:** V1.12.3
+- **Core:** V1.13.0
 - **Concurso:** Câmara Municipal de Ipameri/GO
 - **Cargo:** Agente Legislativo — Motorista Legislativo
 - **Banca:** Instituto Verbena / UFG
@@ -63,3 +63,14 @@ O deployment Drop histórico permanece como referência de recuperação enquant
 - Simulado oficial não pode mais ser iniciado parcialmente.
 - O banco é reauditado depois da inclusão de conteúdo gerado por IA.
 - O próximo estágio para produção em massa é a homologação da camada central do Radar e a revisão factual/fontes do conteúdo de cada produto; o Core não inventa aprovação factual.
+
+
+## Simulado Oficial com IA — V1.13.0
+
+- A preparação mostra a distribuição oficial por matéria e a ação **Gerar simulado com IA**.
+- A geração exige internet e chave GROQ; antes de gerar, tenta pesquisar o edital oficial e provas anteriores/padrões documentáveis da banca com Browser Search.
+- Se a pesquisa não produzir evidência suficiente, ou se alguma matéria não alcançar a quantidade exata de questões revisadas, a prova não é liberada.
+- As questões são geradas em lotes por matéria e passam por validação estrutural e revisão independente do Revisor Doctor. A liberação exige quantidade, distribuição e revisão completas.
+- Após a geração, o aluno pode iniciar a prova no app ou imprimir/Salvar como PDF, com instruções e folha de respostas. A versão impressa não inclui gabarito nem explicações.
+- A pesquisa de provas anteriores orienta o estilo; não garante identidade com uma prova futura. A impressão identifica o material como simulado original de treino, não como prova oficial.
+- A validação funcional real da pesquisa GROQ, impressão Android e interação em dispositivo precisa ser homologada com chave válida e teste manual. Falhas de pesquisa/revisão bloqueiam a prova em vez de liberar uma prova parcial.
