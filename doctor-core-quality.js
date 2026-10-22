@@ -46,9 +46,12 @@
       totalQuestions:questions.length,
       expectedExamQuestions:Number(rules.questionCount||0),
       minimumBank:distribution.reduce((a,x)=>a+x.need,0),
-      completeForOfficialSimulado:distribution.every(x=>x.missing===0),
+      completeForOfficialSimulado:subjects.length>0 && Number(rules.questionCount||0)>0 && questions.length>=Number(rules.questionCount) && distribution.every(x=>x.missing===0),
       distribution,invalid,duplicateIds,duplicateFingerprints,
-      structuralOk:!invalid.length&&!duplicateIds.length&&!duplicateFingerprints.length
+      structuralOk:!invalid.length&&!duplicateIds.length&&!duplicateFingerprints.length,
+      editoriallyApproved:questions.filter(q=>q?.reviewStatus==='approved' && !!q?.sourceReference).length,
+      unapprovedQuestions:questions.filter(q=>q?.reviewStatus!=='approved' || !q?.sourceReference).length,
+      readyForMassProduction:!invalid.length&&!duplicateIds.length&&!duplicateFingerprints.length && questions.length>=Number(rules.questionCount||Infinity) && questions.every(q=>q?.reviewStatus==='approved' && !!q?.sourceReference)
     };
   }
 
