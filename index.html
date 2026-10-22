@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.6',
+  version: '1.12.7',
   environment: 'production',
   integrations: {
     supabase: {
@@ -2092,7 +2092,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
           return;
         }
         this.dataset.fallbackApplied = '1';
-        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.6';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.7';
         this.classList.add('doctor-avatar-fallback-image');
       });
     });
@@ -2472,15 +2472,14 @@ Views.home = function () {
     <button class="btn btn-orange btn-block" id="home-flashcards">${iconEl('cards')} Flashcards</button>
     <button class="btn btn-danger btn-block" id="home-simulado">${iconEl('clipboard')} Simulado Oficial (${ExamRules.questionCount} questões · ${EXAM_CONFIG.durationHours}h)</button>
 
-    ${Views.doctorCard()}
-
     <div class="section-title">Ferramentas Doctor</div>
     <div class="feature-grid">
       <button type="button" class="card feature-card" id="home-notes" title="Abrir Caderno Doctor" aria-label="Abrir Caderno Doctor"><div class="feature-icon">📓</div><h3>Caderno Doctor</h3><p>Anotações organizadas por matéria.</p></button>
       <button type="button" class="card feature-card" id="home-recorder" title="Abrir Gravador Doctor" aria-label="Abrir Gravador Doctor"><div class="feature-icon">🎙️</div><h3>Gravador Doctor</h3><p>Grave e organize áudios dentro da matéria.</p></button>
       <button type="button" class="card feature-card" id="home-essay" title="Abrir Redação Doctor" aria-label="Abrir Redação Doctor"><div class="feature-icon">✍️</div><h3>Redação Doctor</h3><p>Área preparada para treinar redação.</p></button>
-      
     </div>
+
+    ${Views.doctorCard()}
 
     ${Views.editalFooter()}
   `;
@@ -2506,7 +2505,6 @@ Views.doctorCard = function () {
         ${p.level.imageUri
           ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.6&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
-        <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
       </div>
       <div class="doctor-level-name">Nível ${p.level.level} · ${p.level.name}</div>
