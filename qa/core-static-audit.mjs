@@ -39,4 +39,10 @@ must('Core build derives from production config', index.includes('window.DOCTOR_
 must('Product asset paths are context-driven', !index.includes('assets/concurso/camara-ipameri.webp') && !index.includes('camaraipameri.go.gov.br'));
 must('Radar allowlist is context-driven', !index.includes("host==='institutoverbena.ufg.br'"));
 must('No obvious private secret patterns in source', !/(service[-_ ]role|sk_live_|gsk_[A-Za-z0-9_-]{20,})/i.test(index+prod+context+content));
+must('Simulado setup only offers AI generation instead of old fill-missing flow', index.includes('Gerar simulado com IA') && !index.includes('Gerar questões faltantes'));
+must('Simulado performs a web research phase before generation', index.includes('researchExamPattern') && index.includes('browser_search') && index.includes('hasSearchEvidence'));
+must('Prepared AI exam requires all questions independently reviewed', index.includes('startPreparedSimulado') && index.includes("reason:'unreviewed-question'") && index.includes("reason:'distribution-gate'"));
+must('Simulado print/PDF path and answer sheet exist', index.includes('Views.simuladoPrint') && index.includes('window.print()') && index.includes('Folha de respostas'));
+must('Exam mode withholds correctness feedback until completion', index.includes('O gabarito e os comentários serão exibidos após finalizar a prova.'));
+must('Post-exam answer review is available', index.includes('Views.simuladoAnswerReview') && index.includes('Conferir gabarito comentado'));
 console.log('CORE STATIC QA: OK');

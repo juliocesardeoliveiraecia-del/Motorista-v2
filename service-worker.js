@@ -1,5 +1,5 @@
 // service-worker.js — network-first (sempre busca a versão mais nova primeiro)
-const CACHE_NAME = 'motorista-ipameri-v1.12.12';
+const CACHE_NAME = 'motorista-ipameri-v1.13.0';
 const ASSETS = [
   './', './index.html', './manifest.json', './version.json',
   './production-config.js', './product-context.js', './product-content.js',
