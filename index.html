@@ -722,10 +722,15 @@ const DoctorQuestionIntegrity = {
     const ids=Store.state.questionIntegrity?.quarantinedIds||[];
     return !!q && ids.includes(q.id);
   },
+  isApproved(q){
+    if(EXAM_CONFIG.questionPolicy?.mode!=='approved-only') return true;
+    return !!q && q.reviewStatus==='approved' && !!q.sourceReference && !!q.contentHash;
+  },
   assertDeliverable(q){
     const v=this.validate(q);
     if(!v.ok)return {ok:false,reason:'question-integrity',errors:v.errors};
     if(this.isQuarantined(q))return {ok:false,reason:'question-quarantined',errors:['questão em quarentena']};
+    if(!this.isApproved(q))return {ok:false,reason:'question-not-approved',errors:['questão sem aprovação editorial, fonte rastreável e hash imutável']};
     if(q.aiGenerated && q.reviewedByDoctor!==true)return {ok:false,reason:'question-not-reviewed',errors:['questão gerada por IA sem revisão independente']};
     return {ok:true};
   },
@@ -933,7 +938,7 @@ const Quiz = {
   // pedida ou, no modo "todas", do conjunto inteiro.
   pickFreshQuestion(subjectId) {
     const blocked=new Set(Store.state.questionIntegrity?.quarantinedIds||[]);
-    const pool = subjectId === 'todas' ? QUESTIONS.filter(q => !blocked.has(q.id) && (!q.aiGenerated || q.reviewedByDoctor===true)) : this.poolFor(subjectId);
+    const pool = subjectId === 'todas' ? QUESTIONS.filter(q => !blocked.has(q.id) && DoctorQuestionIntegrity.isApproved(q) && (!q.aiGenerated || q.reviewedByDoctor===true)) : this.poolFor(subjectId);
     const candidates = pool.filter(q => !this.isAnsweredAnywhere(q.id));
     if (candidates.length === 0) return null;
     return this.shuffle(candidates)[0];
@@ -956,7 +961,8 @@ const Quiz = {
   currentQuestion(subjectId) {
     const feed = this.getFeed(subjectId);
     const id = feed.order[feed.position];
-    return QUESTIONS.find(q => q.id === id) || null;
+    const q=QUESTIONS.find(q => q.id === id) || null;
+    return q && DoctorQuestionIntegrity.assertDeliverable(q).ok ? q : null;
   },
 
   // Registra a resposta da questão atual do feed (não usado no simulado, que tem seu próprio fluxo)
@@ -1020,6 +1026,7 @@ const Quiz = {
     return QUESTIONS.filter(q =>
       q.subjectId === subjectId &&
       !blocked.has(q.id) &&
+      DoctorQuestionIntegrity.isApproved(q) &&
       (!q.aiGenerated || q.reviewedByDoctor===true)
     );
   },
@@ -1039,9 +1046,10 @@ const Quiz = {
 
   resumableSimulado() {
     const saved = Store.state.activeSession;
-    if (saved && saved.type === 'simulado' && saved.index < saved.questions.length) {
+    if (saved && saved.type === 'simulado' && saved.index < saved.questions.length && saved.questions.every(q=>DoctorQuestionIntegrity.assertDeliverable(q).ok)) {
       return saved;
     }
+    if(saved && saved.type==='simulado') this.clearPersisted();
     return null;
   },
 
