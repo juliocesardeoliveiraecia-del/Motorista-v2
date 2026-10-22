@@ -2096,7 +2096,7 @@ const RadarDoctor = {
     const now=Date.now(), TTL=6*60*60*1000, COOLDOWN=10*60*1000, state=Store.state.radar||{};
     const last=state.lastSyncAt?new Date(state.lastSyncAt).getTime():0, attempt=state.lastAttemptAt?new Date(state.lastAttemptAt).getTime():0;
     if(!force&&last&&now-last<TTL)return {ok:true,items:this.relevant(),cached:true};
-    if(force&&attempt&&now-attempt<COOLDOWN)return {ok:false,reason:'cooldown',nextAllowedAt:attempt+COOLDOWN,items:this.relevant()};
+    if(attempt&&now-attempt<COOLDOWN)return {ok:false,reason:'cooldown',nextAllowedAt:attempt+COOLDOWN,items:this.relevant()};
     if(!navigator.onLine)return {ok:false,reason:'offline',items:this.relevant()};
     if(this._refreshing)return {ok:false,reason:'busy',items:this.relevant()};
     const cfg=this._cfg();
@@ -3135,6 +3135,10 @@ Views.bind.radar = function(){
     UI.render('radar');
   });
   document.querySelectorAll('.radar-news-v17').forEach(el=>{const open=()=>{UI._radarArticleId=el.dataset.radarId;UI.render('radarArticle');};el.addEventListener('click',open);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});});
+  const lastSync=Store.state.radar?.lastSyncAt?new Date(Store.state.radar.lastSyncAt).getTime():0;
+  if(navigator.onLine && (!lastSync || Date.now()-lastSync>6*60*60*1000)){
+    RadarDoctor.refreshRadar(false).then(r=>{if(r.ok)UI.render('radar');});
+  }
 };
 
 Views.radarArticle=function(){ return RadarDoctor.article(UI._radarArticleId); };
