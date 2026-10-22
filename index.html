@@ -1800,7 +1800,8 @@ const DoctorAICore = {
     if(!r.ok)return {ok:false,reason:'research-unavailable',status:r.status||null};
     const tools=r.data?.choices?.[0]?.message?.executed_tools||[];
     const notes=[String(r.content||''),tools.length?'Resultados de ferramentas de busca: '+JSON.stringify(tools):''].filter(Boolean).join('\\n\\n');
-    if(notes.length<120||!/(https?:\\/\\/|fonte|edital|prova anterior)/i.test(notes))return {ok:false,reason:'research-insufficient'};
+    const hasSearchEvidence=tools.length>0||/https?:\\/\\//i.test(String(r.content||''));
+    if(notes.length<120||!hasSearchEvidence)return {ok:false,reason:'research-insufficient'};
     return {ok:true,notes,model:r.model};
   },
   async call({model=null,messages,responseFormat=null,temperature=0.2,timeout=45000,searchSettings=null,maxTokens=null}) {
