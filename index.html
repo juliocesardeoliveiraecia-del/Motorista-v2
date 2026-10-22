@@ -3626,6 +3626,57 @@ Views.bind.radar = function(){
 Views.radarArticle=function(){ return RadarDoctor.article(UI._radarArticleId); };
 Views.bind.radarArticle=function(){ document.getElementById('radar-article-back')?.addEventListener('click',()=>UI.back()); document.getElementById('radar-article-study')?.addEventListener('click',()=>UI.goHome()); };
 
+/* ===== CoreNotes — módulo do Caderno Doctor (reparo de runtime) =====
+   O estado é isolado pela STORAGE_KEY do produto e persistido pelo Store.
+   Sem dependência de serviço remoto para abrir/editar notas offline. */
+const CoreNotes = {
+  _id(){ return 'note-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,9); },
+  folders(){
+    if(!Array.isArray(Store.state.noteFolders) || !Store.state.noteFolders.length){
+      Store.state.noteFolders=[{id:'folder-general',name:'Geral',color:'#1687ff',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}];
+      Store.save();
+    }
+    return Store.state.noteFolders;
+  },
+  list(){ if(!Array.isArray(Store.state.notes)) Store.state.notes=[]; return Store.state.notes; },
+  getFolder(id){ return this.folders().find(f=>f.id===id) || null; },
+  createFolder(name,color){
+    const clean=String(name||'').trim().slice(0,80);
+    if(!clean) throw new Error('O nome da pasta é obrigatório.');
+    const now=new Date().toISOString();
+    const folder={id:this._id(),name:clean,color:color||'#1687ff',createdAt:now,updatedAt:now};
+    this.folders().push(folder); Store.save(); return folder;
+  },
+  renameFolder(id,name){
+    const f=this.getFolder(id),clean=String(name||'').trim().slice(0,80);
+    if(!f||id==='folder-general'||!clean) return false;
+    f.name=clean; f.updatedAt=new Date().toISOString(); Store.save(); return true;
+  },
+  deleteFolder(id){
+    if(id==='folder-general') return false;
+    const f=this.getFolder(id); if(!f) return false;
+    const now=new Date().toISOString();
+    this.list().forEach(n=>{if(n.folderId===id){n.folderId='folder-general';n.updatedAt=now;}});
+    Store.state.noteFolders=this.folders().filter(x=>x.id!==id); Store.save(); return true;
+  },
+  save(title,body,subjectId,folderId,tags,editingId=null){
+    const cleanTitle=String(title||'').trim().slice(0,180);
+    const cleanBody=String(body||'').trim();
+    if(!cleanBody) throw new Error('Escreva uma anotação antes de salvar.');
+    const now=new Date().toISOString();
+    const note=editingId?this.list().find(n=>n.id===editingId&&!n.deletedAt):null;
+    const tagList=String(tags||'').split(',').map(t=>t.trim().slice(0,40)).filter(Boolean).slice(0,12);
+    if(note){Object.assign(note,{title:cleanTitle||'Anotação sem título',body:cleanBody,subjectId:subjectId||'',folderId:this.getFolder(folderId)?folderId:'folder-general',tags:tagList,updatedAt:now});}
+    else {this.list().push({id:this._id(),title:cleanTitle||'Anotação sem título',body:cleanBody,subjectId:subjectId||'',folderId:this.getFolder(folderId)?folderId:'folder-general',tags:tagList,favorite:false,pinned:false,createdAt:now,updatedAt:now,deletedAt:null});}
+    Store.save(); return note||this.list()[this.list().length-1];
+  },
+  clearDraft(){ if(Store.state) {Store.state.noteDraft={title:'',body:'',subjectId:SUBJECTS[0]?.id||'',folderId:'folder-general',tags:''};Store.save();} },
+  trash(id){const n=this.list().find(x=>x.id===id);if(!n)return false;n.deletedAt=new Date().toISOString();n.updatedAt=n.deletedAt;Store.save();return true;},
+  restore(id){const n=this.list().find(x=>x.id===id);if(!n)return false;n.deletedAt=null;n.updatedAt=new Date().toISOString();Store.save();return true;},
+  toggleFavorite(id){const n=this.list().find(x=>x.id===id&&!x.deletedAt);if(!n)return false;n.favorite=!n.favorite;n.updatedAt=new Date().toISOString();Store.save();return n.favorite;},
+  togglePinned(id){const n=this.list().find(x=>x.id===id&&!x.deletedAt);if(!n)return false;n.pinned=!n.pinned;n.updatedAt=new Date().toISOString();Store.save();return n.pinned;}
+};
+
 Views.notes = function(){
   const folders=CoreNotes.folders();
   const active=UI._notesFolderId||'all';
