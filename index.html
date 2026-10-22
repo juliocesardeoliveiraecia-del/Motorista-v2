@@ -1796,7 +1796,7 @@ const DoctorAICore = {
     const officialUrl=c.officialEditalUrl||'';
     const sourceUrls=(Array.isArray(c.radarSources)?c.radarSources:[]).join('\\n');
     const prompt=`Pesquise na web antes de elaborar este simulado. Concurso: ${c.productName}; cargo: ${c.cargo}; banca: ${c.banca}; edital: ${c.editalNumber}.\n1) Priorize o edital oficial e documentos oficiais da banca. Edital oficial: ${officialUrl||'(não configurado)'}\n2) Procure provas anteriores da mesma banca, primeiro para o mesmo cargo; se não encontrar, para cargos de motorista/área administrativa de nível semelhante.\n3) Identifique padrões observáveis: comando do enunciado, extensão, dificuldade, tipos de distratores, distribuição por tópicos e formato das alternativas.\n4) Separe claramente o que foi confirmado em fonte oficial do que é apenas padrão inferido.\n5) Não invente provas, questões, datas, leis ou fontes. Não reproduza questões protegidas literalmente; descreva o estilo e crie itens originais.\nFontes oficiais para começar:\\n${sourceUrls}\nResponda em português, de forma concisa, incluindo URLs e uma seção explícita “LACUNAS DE EVIDÊNCIA” quando não conseguir confirmar algum dado. Se não encontrar prova anterior, diga isso claramente.`;
-    const r=await this.call({messages:[{role:'system',content:'Você é o pesquisador documental do Doctor. Pesquise fontes reais; nunca invente citações.'},{role:'user',content:prompt}],searchSettings:{},temperature:0.1,timeout:60000,maxTokens:1800});
+    const r=await this.call({model:'openai/gpt-oss-120b',messages:[{role:'system',content:'Você é o pesquisador documental do Doctor. Pesquise fontes reais; nunca invente citações.'},{role:'user',content:prompt}],searchSettings:{},temperature:0.1,timeout:60000,maxTokens:1800});
     if(!r.ok)return {ok:false,reason:'research-unavailable',status:r.status||null};
     const tools=r.data?.choices?.[0]?.message?.executed_tools||[];
     const notes=[String(r.content||''),tools.length?'Resultados de ferramentas de busca: '+JSON.stringify(tools):''].filter(Boolean).join('\\n\\n');
@@ -3373,16 +3373,13 @@ Views.simuladoRunning = function () {
       <p class="q-text">${q.text}</p>
       ${q.options.map((opt, i) => {
         let cls = 'q-option';
-        if (answered && !integrityMismatch) {
-          if (i === last.selected && last.correct) cls += ' correct';
-          else if (i === last.selected && !last.correct) cls += ' wrong';
-          else if (i === q.correct) cls += ' correct';
-        }
+        // Em prova oficial simulada, não revelar gabarito nem acerto durante a execução.
+        if (answered) cls += ' answered-locked';
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
       }).join('')}
       ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Questão bloqueada para revisão</strong><p>A questão mudou depois da resposta. O Core preservou a resposta original e bloqueou a correção automática para impedir um falso “erro”.</p></div>` : ''}
       ${answered && !integrityMismatch ? `
-        <div class="explanation"><p>${q.explanations[last.selected]}</p></div>
+        <div class="explanation"><p>Resposta registrada. O gabarito e os comentários serão exibidos após finalizar a prova.</p></div>
         <button class="btn btn-primary btn-block" id="sim-next">${s.index + 1 < s.questions.length ? 'Próxima' : 'Finalizar'}</button>
       ` : ''}
     </div>
@@ -3453,12 +3450,40 @@ Views.simuladoResult = function () {
         </div>
       `;
     }).join('')}
+    <button class="btn btn-primary btn-block" id="result-review">Conferir gabarito comentado</button>
     <button class="btn btn-primary btn-block" id="result-home">Voltar ao início</button>
   `;
 };
 
 Views.bind.simuladoResult = function () {
-  document.getElementById('result-home')?.addEventListener('click', () => { Quiz.session = null; UI.render('home'); });
+  document.getElementById('result-review')?.addEventListener('click',()=>UI.render('simuladoAnswerReview'));
+  document.getElementById('result-home')?.addEventListener('click', () => { Quiz.session = null; UI._pendingAIGeneratedExam=null; UI.render('home'); });
+};
+
+Views.simuladoAnswerReview = function(){
+  const s=Quiz.session;
+  if(!s||s.type!=='simulado'||!Array.isArray(s.questions))return '<div class="card">O gabarito comentado não está disponível nesta sessão.</div>';
+  const answers=new Map((s.answers||[]).map(a=>[a.questionId,a]));
+  return `
+    <button class="btn btn-ghost btn-sm" id="answer-review-back">${iconEl('arrowLeft')} Voltar ao resultado</button>
+    <h2>Gabarito comentado</h2>
+    <p class="muted">Conferência após a conclusão. Se encontrar uma questão duvidosa, ela deve ser sinalizada para revisão editorial.</p>
+    ${s.questions.map((q,i)=>{
+      const a=answers.get(q.id);
+      const selected=a?String.fromCharCode(65+a.selected):'Em branco';
+      const correct=String.fromCharCode(65+q.correct);
+      return `<article class="card"><h3>${i+1}. ${q.text}</h3>
+        <p><strong>Sua resposta:</strong> ${selected} · <strong>Gabarito:</strong> ${correct}</p>
+        <p>${q.explanations[q.correct]}</p>
+        ${a&&!a.correct?'<p class="text-orange"><strong>Revise este tópico antes de avançar.</strong></p>':''}
+      </article>`;
+    }).join('')}
+    <button class="btn btn-primary btn-block" id="answer-review-done">Voltar ao início</button>
+  `;
+};
+Views.bind.simuladoAnswerReview=function(){
+  document.getElementById('answer-review-back')?.addEventListener('click',()=>UI.render('simuladoResult'));
+  document.getElementById('answer-review-done')?.addEventListener('click',()=>{Quiz.session=null;UI._pendingAIGeneratedExam=null;UI.render('home');});
 };
 
 
