@@ -2,7 +2,7 @@
 
 ## Estado auditado
 
-- **Core:** V1.13.0
+- **Core:** V1.13.1
 - **Concurso:** Câmara Municipal de Ipameri/GO
 - **Cargo:** Agente Legislativo — Motorista Legislativo
 - **Banca:** Instituto Verbena / UFG
@@ -65,7 +65,7 @@ O deployment Drop histórico permanece como referência de recuperação enquant
 - O próximo estágio para produção em massa é a homologação da camada central do Radar e a revisão factual/fontes do conteúdo de cada produto; o Core não inventa aprovação factual.
 
 
-## Simulado Oficial com IA — V1.13.0
+## Simulado Oficial com IA — V1.13.1
 
 - A preparação mostra a distribuição oficial por matéria e a ação **Gerar simulado com IA**.
 - A geração exige internet e chave GROQ; antes de gerar, tenta pesquisar o edital oficial e provas anteriores/padrões documentáveis da banca com Browser Search.
@@ -74,3 +74,9 @@ O deployment Drop histórico permanece como referência de recuperação enquant
 - Após a geração, o aluno pode iniciar a prova no app ou imprimir/Salvar como PDF, com instruções e folha de respostas. A versão impressa não inclui gabarito nem explicações.
 - A pesquisa de provas anteriores orienta o estilo; não garante identidade com uma prova futura. A impressão identifica o material como simulado original de treino, não como prova oficial.
 - A validação funcional real da pesquisa GROQ, impressão Android e interação em dispositivo precisa ser homologada com chave válida e teste manual. Falhas de pesquisa/revisão bloqueiam a prova em vez de liberar uma prova parcial.
+
+
+## Core industrial — simulado independente da banca (V1.13.1)
+
+- Rótulos das alternativas na execução, no gabarito comentado e no PDF vêm de `ExamRules.optionLabels`, com fallback para A/B/C/D/E. Isso evita fixar o Core em quatro alternativas e permite contextos com cinco opções ou rótulos como Certo/Errado.
+- A pesquisa de provas semelhantes não presume mais que todo produto seja para motorista; usa cargo, nível e atribuições definidos no Product Context.

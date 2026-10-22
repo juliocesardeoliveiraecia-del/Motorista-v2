@@ -45,4 +45,6 @@ must('Prepared AI exam requires all questions independently reviewed', index.inc
 must('Simulado print/PDF path and answer sheet exist', index.includes('Views.simuladoPrint') && index.includes('window.print()') && index.includes('Folha de respostas'));
 must('Exam mode withholds correctness feedback until completion', index.includes('O gabarito e os comentários serão exibidos após finalizar a prova.'));
 must('Post-exam answer review is available', index.includes('Views.simuladoAnswerReview') && index.includes('Conferir gabarito comentado'));
+must('Simulado labels derive from ExamRules for non-ABCD formats', index.includes('ExamRules.optionLabels?.[i]') && index.includes('ExamRules.optionLabels?.[j]') && index.includes('ExamRules.optionLabels?.[a.selected]'));
+must('Exam research fallback is product-generic, not driver-specific', !index.includes('cargos de motorista/área administrativa de nível semelhante'));
 console.log('CORE STATIC QA: OK');
