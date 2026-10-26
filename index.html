@@ -778,6 +778,11 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 }
 @media(max-width:560px){.doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock{width:min(86vw,48dvh)}.doctor-clock-page .doctor-clock-layouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+/* Orientação resiliente do Relógio Doctor: recalcula o layout também em PWAs móveis. */
+@media (orientation:landscape){
+ .doctor-clock-page[data-device-orientation="landscape"]:fullscreen .doctor-clock-stage,.doctor-clock-page[data-device-orientation="landscape"].doctor-clock-immersive .doctor-clock-stage{min-height:calc(100dvh - 24px)}
+ .doctor-clock-page[data-device-orientation="landscape"]:fullscreen .doctor-clock,.doctor-clock-page[data-device-orientation="landscape"].doctor-clock-immersive .doctor-clock{max-height:88dvh}
+}
 </style>
 </head>
 <body>
@@ -3580,6 +3585,11 @@ Views.bind.clock=function(){
   layoutButtons.forEach(btn=>btn.addEventListener('click',()=>applyLayout(btn.dataset.clockLayout)));
 
   let active=true;
+  // Recalcula o modo visual sempre que o aparelho muda de orientação ou tamanho.
+  const syncOrientation=()=>{if(!page)return;page.setAttribute('data-device-orientation',window.innerWidth>window.innerHeight?'landscape':'portrait');};
+  syncOrientation();
+  window.addEventListener('orientationchange',syncOrientation,{passive:true});
+  window.addEventListener('resize',syncOrientation,{passive:true});
   const update=()=>{if(!active)return;const now=new Date(),s=now.getSeconds()+now.getMilliseconds()/1000,m=now.getMinutes()+s/60,h=(now.getHours()%12)+m/60;
     if(hour)hour.style.transform=`translateX(-50%) rotate(${h*30}deg)`;
     if(minute)minute.style.transform=`translateX(-50%) rotate(${m*6}deg)`;
@@ -3595,7 +3605,7 @@ Views.bind.clock=function(){
   const refreshButton=()=>{if(full)full.textContent=document.fullscreenElement?'⤢ Sair da tela inteira':'⛶ Tela inteira · modo foco'};
   full?.addEventListener('click',async()=>{try{if(document.fullscreenElement){await document.exitFullscreen()}else if(page?.requestFullscreen){await page.requestFullscreen()}else{page?.classList.toggle('doctor-clock-immersive');}refreshButton()}catch(e){page?.classList.toggle('doctor-clock-immersive');refreshButton()}});
   document.addEventListener('fullscreenchange',refreshButton);
-  const cleanup=()=>{active=false;clearInterval(timer);document.removeEventListener('fullscreenchange',refreshButton);};
+  const cleanup=()=>{active=false;clearInterval(timer);document.removeEventListener('fullscreenchange',refreshButton);window.removeEventListener('orientationchange',syncOrientation);window.removeEventListener('resize',syncOrientation);};
   // Keep page lifecycle tidy when navigating away through the app's renderer.
   const originalRender=UI.render;
   UI.render=function(view){if(view!=='clock'){cleanup();UI.render=originalRender;}return originalRender.call(this,view)};
