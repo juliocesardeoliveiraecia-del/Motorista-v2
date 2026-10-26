@@ -783,6 +783,33 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
  .doctor-clock-page[data-device-orientation="landscape"]:fullscreen .doctor-clock-stage,.doctor-clock-page[data-device-orientation="landscape"].doctor-clock-immersive .doctor-clock-stage{min-height:calc(100dvh - 24px)}
  .doctor-clock-page[data-device-orientation="landscape"]:fullscreen .doctor-clock,.doctor-clock-page[data-device-orientation="landscape"].doctor-clock-immersive .doctor-clock{max-height:88dvh}
 }
+
+/* Layout horizontal do aplicativo e ajuste geométrico do mostrador em telas móveis. */
+@media (orientation:landscape) and (max-height:600px){
+  #main-view{min-width:0;width:100%;max-width:100%;}
+  #main-view .tool-page,#main-view .calculator-page,#main-view .timer-page,#main-view .doctor-clock-page{box-sizing:border-box;max-width:100%;}
+  #main-view .tool-page{padding-left:clamp(10px,2vw,24px);padding-right:clamp(10px,2vw,24px);}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock-stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:clamp(10px,3vw,32px);align-items:center;justify-items:center;padding:8px 0;}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock-caption{grid-column:1/3;margin:0 0 8px;}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock{grid-column:1;grid-row:2/5;width:min(42vw,64dvh);}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock-digital,#main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock-flip{grid-column:2;grid-row:2;align-self:end;margin:0;}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock-date{grid-column:2;grid-row:3;margin:8px 0;}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock-actions{grid-column:2;grid-row:4;margin:8px 0;}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock-hint{grid-column:1/3;margin:8px auto 0;}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive)[data-clock-layout="digital"] .doctor-clock{grid-column:1/3;grid-row:2/5;width:min(88vw,1200px);}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive)[data-clock-layout="digital"] .doctor-clock-digital{grid-column:1/3;grid-row:2;z-index:2;margin:0;pointer-events:none;font-size:clamp(2rem,7vw,4rem);}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive)[data-clock-layout="flip"] .doctor-clock-flip{grid-column:1/3;grid-row:2;align-self:center;width:94vw;}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive)[data-clock-layout="flip"] .doctor-clock-date{grid-column:1/3;grid-row:3;}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive)[data-clock-layout="flip"] .doctor-clock-actions{grid-column:1/3;grid-row:4;}
+}
+@media (orientation:landscape) and (max-height:480px){
+  #main-view .doctor-clock-page{padding:8px;}
+  #main-view .doctor-clock-customize{margin-top:6px;}
+  #main-view .doctor-clock-layout{min-height:54px;padding:5px;}
+  #main-view .doctor-clock-layout>span{font-size:1rem;}
+  #main-view .doctor-clock-layout small{display:none;}
+  #main-view .doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock-number{font-size:clamp(12px,2.5vh,20px);}
+}
 </style>
 </head>
 <body>
@@ -3577,6 +3604,7 @@ Views.bind.clock=function(){
   const applyLayout=(layout,save=true)=>{
     const allowed=['analog','bedside','digital','flip'];if(!allowed.includes(layout))layout='analog';
     page?.setAttribute('data-clock-layout',layout);
+    requestAnimationFrame(syncDialGeometry);
     layoutButtons.forEach(btn=>{const selected=btn.dataset.clockLayout===layout;btn.classList.toggle('is-selected',selected);btn.setAttribute('aria-pressed',String(selected));});
     if(save){try{localStorage.setItem('doctor-clock-layout',layout)}catch(e){}}
   };
@@ -3587,9 +3615,12 @@ Views.bind.clock=function(){
   let active=true;
   // Recalcula o modo visual sempre que o aparelho muda de orientação ou tamanho.
   const syncOrientation=()=>{if(!page)return;page.setAttribute('data-device-orientation',window.innerWidth>window.innerHeight?'landscape':'portrait');};
-  syncOrientation();
-  window.addEventListener('orientationchange',syncOrientation,{passive:true});
-  window.addEventListener('resize',syncOrientation,{passive:true});
+  // Posiciona números e marcações pela medida real do mostrador, não por valores fixos de viewport.
+  const syncDialGeometry=()=>{const dial=document.getElementById('doctor-clock-dial');if(!dial)return;const radius=Math.max(0,Math.round(dial.clientWidth*.39));dial.querySelectorAll('.doctor-clock-number').forEach(el=>{el.style.transform=`rotate(var(--a)) translateY(-${radius}px) rotate(calc(var(--a) * -1))`;});dial.querySelectorAll('.doctor-clock-tick').forEach(el=>{el.style.transformOrigin=`50% -${radius}px`;});};
+  const syncDisplay=()=>{syncOrientation();syncDialGeometry();};
+  syncDisplay();
+  window.addEventListener('orientationchange',syncDisplay,{passive:true});
+  window.addEventListener('resize',syncDisplay,{passive:true});
   const update=()=>{if(!active)return;const now=new Date(),s=now.getSeconds()+now.getMilliseconds()/1000,m=now.getMinutes()+s/60,h=(now.getHours()%12)+m/60;
     if(hour)hour.style.transform=`translateX(-50%) rotate(${h*30}deg)`;
     if(minute)minute.style.transform=`translateX(-50%) rotate(${m*6}deg)`;
@@ -3602,10 +3633,10 @@ Views.bind.clock=function(){
   update();const timer=setInterval(update,200);
   const back=document.getElementById('doctor-clock-back');
   back?.addEventListener('click',async()=>{active=false;clearInterval(timer);if(document.fullscreenElement){try{await document.exitFullscreen()}catch(e){}}UI.render('home')});
-  const refreshButton=()=>{if(full)full.textContent=document.fullscreenElement?'⤢ Sair da tela inteira':'⛶ Tela inteira · modo foco'};
+  const refreshButton=()=>{if(full)full.textContent=document.fullscreenElement?'⤢ Sair da tela inteira':'⛶ Tela inteira · modo foco';requestAnimationFrame(syncDisplay);};
   full?.addEventListener('click',async()=>{try{if(document.fullscreenElement){await document.exitFullscreen()}else if(page?.requestFullscreen){await page.requestFullscreen()}else{page?.classList.toggle('doctor-clock-immersive');}refreshButton()}catch(e){page?.classList.toggle('doctor-clock-immersive');refreshButton()}});
   document.addEventListener('fullscreenchange',refreshButton);
-  const cleanup=()=>{active=false;clearInterval(timer);document.removeEventListener('fullscreenchange',refreshButton);window.removeEventListener('orientationchange',syncOrientation);window.removeEventListener('resize',syncOrientation);};
+  const cleanup=()=>{active=false;clearInterval(timer);document.removeEventListener('fullscreenchange',refreshButton);window.removeEventListener('orientationchange',syncDisplay);window.removeEventListener('resize',syncDisplay);};
   // Keep page lifecycle tidy when navigating away through the app's renderer.
   const originalRender=UI.render;
   UI.render=function(view){if(view!=='clock'){cleanup();UI.render=originalRender;}return originalRender.call(this,view)};
