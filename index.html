@@ -689,6 +689,42 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .doctor-clock-page:fullscreen .doctor-clock-stage,.doctor-clock-page.doctor-clock-immersive .doctor-clock-stage{padding:12px 0}
 @media(max-width:480px){.doctor-clock{width:min(82vw,360px)}.doctor-clock-number{transform:rotate(var(--a)) translateY(calc(min(39vw, 140px) * -0.78)) rotate(calc(var(--a) * -1))}.doctor-clock-tick{transform-origin:50% calc(min(39vw, 140px) * -0.78)}.doctor-clock-page{padding:12px}.doctor-clock-hint{font-size:.78rem}}
 
+
+/* Personalização do Relógio Doctor: escolhas simples, locais e persistentes. */
+.doctor-clock-customize{width:100%;max-width:900px;margin:18px auto 0;text-align:center}
+.doctor-clock-customize-label{display:block;font-size:.68rem;letter-spacing:.18em;font-weight:800;color:#c5d0de;margin-bottom:10px}
+.doctor-clock-layouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.doctor-clock-layout{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:12px 7px;border:1px solid #38516d;border-radius:12px;background:#0c1b2d;color:#eaf0f7;cursor:pointer;transition:border-color .18s,background .18s,transform .18s}
+.doctor-clock-layout>span{font-size:1.35rem}.doctor-clock-layout strong{font-size:.76rem;line-height:1.2}.doctor-clock-layout small{font-size:.67rem;color:#aab9cb;line-height:1.2}
+.doctor-clock-layout.is-selected{border-color:#e4bd68;background:linear-gradient(145deg,#25334a,#102239);box-shadow:0 0 0 1px #e4bd6844,0 0 18px #e4bd6818}
+.doctor-clock-layout:focus-visible{outline:2px solid #f1ce7a;outline-offset:3px}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock{background:linear-gradient(135deg,#a7a7a7,#292929 24%,#777 48%,#181818 72%,#aaa);padding:14px;box-shadow:0 0 0 2px #111,0 18px 44px #000b,inset 0 0 0 2px #ccc}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock-rim{background:linear-gradient(135deg,#eee,#333 40%,#999 70%,#222)}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock-dial{background:radial-gradient(circle at 35% 25%,#fff,#e4e4e4 68%,#bbb)}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock-dial:after,.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-dial:after{content:"";position:absolute;inset:0;pointer-events:none}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock-number{font-family:Arial,sans-serif;font-weight:900}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock-dial:before{content:"DOCTOR";position:absolute;top:31%;left:0;width:100%;text-align:center;font-size:clamp(8px,2vw,11px);font-weight:900;letter-spacing:.18em;color:#777}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock{background:#111;padding:10px;border:3px solid #4c5663;box-shadow:0 0 0 3px #080b0e,0 18px 44px #000a,inset 0 0 12px #000}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-rim{display:none}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-dial{inset:8%;border-radius:10%;background:#080d0c;box-shadow:inset 0 0 22px #000;border:1px solid #333}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-number,.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-tick,.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-hand,.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-pin{display:none}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-dial:after{content:attr(data-digital);inset:0;display:flex;align-items:center;justify-content:center}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-digital{font-family:ui-monospace,monospace;color:#ff4b3e;text-shadow:0 0 8px #ff3529,0 0 22px #ff352977;font-size:clamp(1.9rem,7vw,3rem);letter-spacing:.08em}
+.doctor-clock-page[data-clock-layout="flip"] .doctor-clock{display:none}
+.doctor-clock-page[data-clock-layout="flip"] .doctor-clock-digital{display:none}
+.doctor-clock-flip{display:none;align-items:center;justify-content:center;gap:clamp(5px,2vw,14px);margin-top:clamp(28px,7vh,60px);font-family:Georgia,'Times New Roman',serif;font-variant-numeric:tabular-nums}
+.doctor-clock-flip span{display:inline-flex;align-items:center;justify-content:center;min-width:clamp(55px,16vw,100px);height:clamp(70px,20vw,124px);padding:8px;border-radius:9px;background:linear-gradient(#252525 0 49%,#111 50% 100%);border:1px solid #555;color:#f4e9d0;font-size:clamp(2rem,9vw,4.2rem);font-weight:700;box-shadow:0 7px 0 #050505,0 12px 20px #0006;position:relative}
+.doctor-clock-flip span:after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid #0009}
+.doctor-clock-flip b{font-size:clamp(1.5rem,5vw,2.5rem);color:#d8b96e}
+.doctor-clock-page[data-clock-layout="flip"] .doctor-clock-flip{display:flex}
+.doctor-clock-page[data-clock-layout="flip"] .doctor-clock-date{margin-top:25px}
+.doctor-clock-page:fullscreen .doctor-clock-customize,.doctor-clock-page.doctor-clock-immersive .doctor-clock-customize{display:none}
+.doctor-clock-page:fullscreen .doctor-clock-header,.doctor-clock-page.doctor-clock-immersive .doctor-clock-header{display:none}
+.doctor-clock-page:fullscreen .doctor-clock-page,.doctor-clock-page.doctor-clock-immersive .doctor-clock-page{border-radius:0}
+.doctor-clock-page:fullscreen .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive .doctor-clock-digital{margin-top:clamp(12px,3vh,24px)}
+.doctor-clock-page:fullscreen .doctor-clock-flip,.doctor-clock-page.doctor-clock-immersive .doctor-clock-flip{margin-top:0}
+@media(max-width:560px){.doctor-clock-layouts{grid-template-columns:repeat(2,minmax(0,1fr))}.doctor-clock-layout{padding:10px 6px}.doctor-clock-layout strong{font-size:.74rem}.doctor-clock-customize{margin-top:12px}}
+
 </style>
 </head>
 <body>
@@ -3448,6 +3484,15 @@ Views.bind.timer=function(){DoctorTimer.tick();document.getElementById('doctor-t
 // RELÓGIO DOCTOR — mostrador analógico retrô e modo de foco em tela inteira.
 Views.clock=function(){return `<section class="doctor-clock-page" id="doctor-clock-page">
   <header class="doctor-clock-header"><button type="button" class="btn btn-ghost btn-sm" id="doctor-clock-back">← Voltar às ferramentas</button><span class="doctor-clock-brand">DOCTOR · FOCO</span></header>
+  <div class="doctor-clock-customize" aria-label="Escolha o estilo do relógio">
+    <span class="doctor-clock-customize-label">ESCOLHA SEU ESTILO</span>
+    <div class="doctor-clock-layouts">
+      <button type="button" class="doctor-clock-layout is-selected" data-clock-layout="analog" aria-pressed="true"><span>🕰️</span><strong>Analógico retrô</strong><small>Ponteiros clássicos</small></button>
+      <button type="button" class="doctor-clock-layout" data-clock-layout="bedside" aria-pressed="false"><span>⏰</span><strong>Despertador</strong><small>Relógio de cabeceira</small></button>
+      <button type="button" class="doctor-clock-layout" data-clock-layout="digital" aria-pressed="false"><span>🔴</span><strong>Digital retrô</strong><small>Números luminosos</small></button>
+      <button type="button" class="doctor-clock-layout" data-clock-layout="flip" aria-pressed="false"><span>🔢</span><strong>Flip clock</strong><small>Números em cartões</small></button>
+    </div>
+  </div>
   <div class="doctor-clock-stage">
     <div class="doctor-clock-caption">SEU TEMPO. SEU RITMO.</div>
     <div class="doctor-clock" id="doctor-clock-face" role="img" aria-label="Relógio analógico mostrando a hora atual">
@@ -3458,6 +3503,7 @@ Views.clock=function(){return `<section class="doctor-clock-page" id="doctor-clo
       </div>
     </div>
     <output class="doctor-clock-digital" id="doctor-clock-digital" aria-live="off">00:00:00</output>
+    <output class="doctor-clock-flip" id="doctor-clock-flip" aria-label="Hora atual"><span>00</span><b>:</b><span>00</span><b>:</b><span>00</span></output>
     <div class="doctor-clock-date" id="doctor-clock-date"></div>
     <div class="doctor-clock-actions"><button type="button" class="btn btn-primary" id="doctor-clock-fullscreen">⛶ Tela inteira · modo foco</button></div>
     <p class="doctor-clock-hint">Um relógio, só isso. Respire, acompanhe o tempo e continue estudando.</p>
@@ -3468,12 +3514,25 @@ Views.bind.clock=function(){
   const face=document.getElementById('doctor-clock-face');
   const hour=document.getElementById('doctor-clock-hour'),minute=document.getElementById('doctor-clock-minute'),second=document.getElementById('doctor-clock-second');
   const digital=document.getElementById('doctor-clock-digital'),date=document.getElementById('doctor-clock-date'),full=document.getElementById('doctor-clock-fullscreen');
+  const flip=document.getElementById('doctor-clock-flip');
+  const layoutButtons=Array.from(page?.querySelectorAll('[data-clock-layout]')||[]);
+  const applyLayout=(layout,save=true)=>{
+    const allowed=['analog','bedside','digital','flip'];if(!allowed.includes(layout))layout='analog';
+    page?.setAttribute('data-clock-layout',layout);
+    layoutButtons.forEach(btn=>{const selected=btn.dataset.clockLayout===layout;btn.classList.toggle('is-selected',selected);btn.setAttribute('aria-pressed',String(selected));});
+    if(save){try{localStorage.setItem('doctor-clock-layout',layout)}catch(e){}}
+  };
+  let savedLayout='analog';try{savedLayout=localStorage.getItem('doctor-clock-layout')||'analog'}catch(e){}
+  applyLayout(savedLayout,false);
+  layoutButtons.forEach(btn=>btn.addEventListener('click',()=>applyLayout(btn.dataset.clockLayout)));
+
   let active=true;
   const update=()=>{if(!active)return;const now=new Date(),s=now.getSeconds()+now.getMilliseconds()/1000,m=now.getMinutes()+s/60,h=(now.getHours()%12)+m/60;
     if(hour)hour.style.transform=`translateX(-50%) rotate(${h*30}deg)`;
     if(minute)minute.style.transform=`translateX(-50%) rotate(${m*6}deg)`;
     if(second)second.style.transform=`translateX(-50%) rotate(${s*6}deg)`;
     if(digital)digital.textContent=now.toLocaleTimeString('pt-BR',{hour12:false});
+    if(flip){const parts=now.toLocaleTimeString('pt-BR',{hour12:false}).split(':');flip.innerHTML=parts.map((part,i)=>`<span>${part}</span>${i<2?'<b>:</b>':''}`).join('');}
     if(date)date.textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
   };
   update();const timer=setInterval(update,200);
