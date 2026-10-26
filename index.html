@@ -663,6 +663,32 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .ai-banner, #radar-notice, #radar-banner, .radar-notice, .radar-banner,
 [data-radar-notice], [data-radar-banner] { display: none !important; }
 
+
+/* Relógio Doctor — estética retrô, madeira escura, latão e mostrador marfim. */
+.doctor-clock-page{min-height:calc(100dvh - 72px);padding:clamp(12px,3vw,28px);background:radial-gradient(ellipse at 50% 40%,#17365a 0,#09172b 58%,#050b14 100%);color:#f7ebd0;border-radius:18px;display:flex;flex-direction:column;align-items:stretch}
+.doctor-clock-header{display:flex;justify-content:space-between;align-items:center;gap:12px}.doctor-clock-brand{font-size:.75rem;letter-spacing:.2em;color:#d5b875;font-weight:800}
+.doctor-clock-stage{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:clamp(18px,4vh,42px) 0}.doctor-clock-caption{font-size:.75rem;letter-spacing:.22em;color:#d9bd7a;margin-bottom:22px;text-align:center;font-weight:800}
+.doctor-clock{width:min(72vw, min(390px, 42vh));aspect-ratio:1;position:relative;border-radius:50%;padding:clamp(8px,2vw,14px);background:repeating-conic-gradient(from 0deg,#77502c 0deg 2deg,#3b2416 2deg 4deg,#986b3b 4deg 6deg);box-shadow:0 0 0 2px #bd9454,0 0 0 7px #291a13,0 18px 44px #0009,inset 0 0 0 2px #e0bd77}
+.doctor-clock-rim{position:absolute;inset:5%;border-radius:50%;background:linear-gradient(135deg,#f6d994,#75502b 38%,#e3bd6e 62%,#5b3b20);box-shadow:inset 0 0 0 2px #4a2b16}
+.doctor-clock-dial{position:absolute;inset:8%;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 35% 25%,#fff8e6,#f0dfb7 62%,#d4bb88);box-shadow:inset 0 2px 12px #533b1e55,inset 0 0 0 2px #a37a43}
+.doctor-clock-number{position:absolute;left:50%;top:50%;width:2em;height:2em;margin:-1em 0 0 -1em;display:flex;align-items:center;justify-content:center;font-family:Georgia,'Times New Roman',serif;font-size:clamp(17px,4.4vw,25px);font-weight:bold;color:#302219;transform:rotate(var(--a)) translateY(calc(min(34vw, 145px) * -0.78)) rotate(calc(var(--a) * -1));z-index:2}
+.doctor-clock-tick{position:absolute;left:50%;top:50%;width:1px;height:5%;background:#73512d;transform-origin:50% calc(min(34vw, 145px) * -0.78);transform:rotate(var(--a));opacity:.68}
+.doctor-clock-tick.major{width:3px;height:8%;background:#3a291a;opacity:1}
+.doctor-clock-hand{position:absolute;left:50%;bottom:50%;z-index:4;transform-origin:50% 100%;border-radius:8px 8px 2px 2px}
+.doctor-clock-hand.hour{height:27%;width:5px;background:linear-gradient(90deg,#332219,#725234,#24170f);box-shadow:0 0 1px #fff8}
+.doctor-clock-hand.minute{height:37%;width:3px;background:linear-gradient(90deg,#332219,#725234,#24170f)}
+.doctor-clock-hand.second{height:40%;width:1.5px;background:#a23d2d;z-index:5}
+.doctor-clock-pin{position:absolute;left:50%;top:50%;width:13px;height:13px;transform:translate(-50%,-50%);border-radius:50%;z-index:6;background:radial-gradient(circle at 30% 25%,#fff0b0,#b17a35 55%,#4b2d18);border:2px solid #58391e}
+.doctor-clock-digital{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:clamp(1.6rem,5vw,2.3rem);letter-spacing:.12em;color:#f4dfae;margin-top:24px;font-variant-numeric:tabular-nums}
+.doctor-clock-date{font-size:.85rem;color:#c5d0de;text-align:center;margin-top:8px;text-transform:capitalize}
+.doctor-clock-actions{margin-top:24px}.doctor-clock-actions .btn{min-height:46px}.doctor-clock-hint{color:#aab9cb;font-size:.85rem;text-align:center;margin-top:18px;max-width:420px;line-height:1.6}
+.doctor-clock-page:fullscreen,.doctor-clock-page.doctor-clock-immersive{position:fixed;inset:0;z-index:99999;width:100%;height:100%;min-height:100dvh;border-radius:0;padding:clamp(12px,3vw,30px);overflow:auto;background:radial-gradient(ellipse at center,#15375d 0,#081529 62%,#02060d 100%)}
+.doctor-clock-page:fullscreen .doctor-clock,.doctor-clock-page.doctor-clock-immersive .doctor-clock{width:min(76vmin,520px)}
+.doctor-clock-page:fullscreen .doctor-clock-number,.doctor-clock-page.doctor-clock-immersive .doctor-clock-number{transform:rotate(var(--a)) translateY(calc(min(38vmin, 190px) * -0.78)) rotate(calc(var(--a) * -1))}
+.doctor-clock-page:fullscreen .doctor-clock-tick,.doctor-clock-page.doctor-clock-immersive .doctor-clock-tick{transform-origin:50% calc(min(38vmin, 190px) * -0.78)}
+.doctor-clock-page:fullscreen .doctor-clock-stage,.doctor-clock-page.doctor-clock-immersive .doctor-clock-stage{padding:12px 0}
+@media(max-width:480px){.doctor-clock{width:min(82vw,360px)}.doctor-clock-number{transform:rotate(var(--a)) translateY(calc(min(39vw, 140px) * -0.78)) rotate(calc(var(--a) * -1))}.doctor-clock-tick{transform-origin:50% calc(min(39vw, 140px) * -0.78)}.doctor-clock-page{padding:12px}.doctor-clock-hint{font-size:.78rem}}
+
 </style>
 </head>
 <body>
@@ -2572,6 +2598,7 @@ Views.home = function () {
       <button type="button" class="card feature-card" id="home-essay" title="Abrir Redação Doctor" aria-label="Abrir Redação Doctor"><div class="feature-icon">✍️</div><h3>Redação Doctor</h3><p>Área preparada para treinar redação.</p></button>
       
       <button type="button" class="card feature-card" id="home-timer" title="Abrir Cronômetro Doctor" aria-label="Abrir Cronômetro Doctor"><div class="feature-icon">⏱️</div><h3>Cronômetro Doctor</h3><p>Controle seu tempo de foco e descanso.</p></button>
+      <button type="button" class="card feature-card" id="home-clock" title="Abrir Relógio Doctor" aria-label="Abrir Relógio Doctor"><div class="feature-icon">🕰️</div><h3>Relógio Doctor</h3><p>Relógio analógico retrô, com modo tela inteira.</p></button>
       <button type="button" class="card feature-card calculator-feature-card" id="home-calculator" title="Abrir Calculadora Doctor" aria-label="Abrir Calculadora Doctor"><div class="feature-icon calculator-feature-icon">🧮</div><h3>Calculadora Doctor</h3><p>Contas rápidas durante seus estudos.</p></button>
       
     </div>
@@ -2661,6 +2688,7 @@ Views.bind.home = function () {
   document.getElementById('home-recorder')?.addEventListener('click', () => UI.render('recorderPick'));
   document.getElementById('home-essay')?.addEventListener('click', () => UI.render('essay'));
   document.getElementById('home-timer')?.addEventListener('click', () => UI.render('timer'));
+  document.getElementById('home-clock')?.addEventListener('click', () => UI.render('clock'));
   document.getElementById('home-calculator')?.addEventListener('click', () => UI.render('calculator'));
   document.getElementById('home-radar')?.addEventListener('click', () => UI.render('radar'));
   document.getElementById('open-radar')?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); UI.render('radar'); });
@@ -3416,6 +3444,49 @@ DoctorCalculator.reset();
 const DoctorTimer={startedAt:0,elapsedBefore:0,running:false,interval:null,format(ms){const t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return [h,m,s].map(n=>String(n).padStart(2,'0')).join(':')},elapsed(){return this.elapsedBefore+(this.running?Date.now()-this.startedAt:0)},start(){if(this.running)return;this.startedAt=Date.now();this.running=true;this.tick();this.interval=setInterval(()=>this.tick(),250)},pause(){if(!this.running)return;this.elapsedBefore+=Date.now()-this.startedAt;this.running=false;clearInterval(this.interval);this.interval=null;this.tick()},reset(){this.pause();this.elapsedBefore=0;this.startedAt=0;this.tick()},tick(){const o=document.getElementById('doctor-timer-display');if(o)o.textContent=this.format(this.elapsed());const b=document.getElementById('doctor-timer-toggle');if(b)b.textContent=this.running?'Ⅱ Pausar':'▶ Iniciar foco';const s=document.getElementById('doctor-timer-state');if(s)s.textContent=this.running?'SESSÃO EM ANDAMENTO':'PRONTO PARA COMEÇAR'}};
 Views.timer=function(){return `<section class="timer-page"><div class="timer-top"><button class="btn btn-ghost btn-sm" id="doctor-timer-back">← Voltar aos estudos</button><span class="timer-badge">DOCTOR TOOLS</span></div><div class="timer-hero"><div class="timer-orb">⏱</div><span class="timer-eyebrow">SEU TEMPO, SUA EVOLUÇÃO</span><h2>Cronômetro Doctor</h2><p>Concentre-se em uma tarefa de cada vez. Cada minuto conta.</p></div><div class="timer-panel card"><div class="timer-ring"><div class="timer-ring-inner"><span class="timer-caption">TEMPO DE FOCO</span><output id="doctor-timer-display">00:00:00</output><span id="doctor-timer-state">PRONTO PARA COMEÇAR</span></div></div><div class="timer-actions"><button class="btn btn-primary" id="doctor-timer-toggle">▶ Iniciar foco</button><button class="btn btn-outline" id="doctor-timer-reset">↻ Zerar</button></div><div class="timer-tip">💡 Dica Doctor: escolha uma matéria, afaste as distrações e mantenha o foco até concluir sua sessão.</div></div></section>`};
 Views.bind.timer=function(){DoctorTimer.tick();document.getElementById('doctor-timer-back')?.addEventListener('click',()=>{DoctorTimer.pause();UI.render('home')});document.getElementById('doctor-timer-toggle')?.addEventListener('click',()=>DoctorTimer.running?DoctorTimer.pause():DoctorTimer.start());document.getElementById('doctor-timer-reset')?.addEventListener('click',()=>DoctorTimer.reset())};
+
+// RELÓGIO DOCTOR — mostrador analógico retrô e modo de foco em tela inteira.
+Views.clock=function(){return `<section class="doctor-clock-page" id="doctor-clock-page">
+  <header class="doctor-clock-header"><button type="button" class="btn btn-ghost btn-sm" id="doctor-clock-back">← Voltar às ferramentas</button><span class="doctor-clock-brand">DOCTOR · FOCO</span></header>
+  <div class="doctor-clock-stage">
+    <div class="doctor-clock-caption">SEU TEMPO. SEU RITMO.</div>
+    <div class="doctor-clock" id="doctor-clock-face" role="img" aria-label="Relógio analógico mostrando a hora atual">
+      <div class="doctor-clock-rim"></div><div class="doctor-clock-dial" id="doctor-clock-dial">
+        ${Array.from({length:12},(_,i)=>{const a=i*30;return `<span class="doctor-clock-number" style="--a:${a}deg">${i===0?12:i}</span>`}).join('')}
+        ${Array.from({length:60},(_,i)=>`<span class="doctor-clock-tick ${i%5===0?'major':''}" style="--a:${i*6}deg"></span>`).join('')}
+        <div class="doctor-clock-hand hour" id="doctor-clock-hour"></div><div class="doctor-clock-hand minute" id="doctor-clock-minute"></div><div class="doctor-clock-hand second" id="doctor-clock-second"></div><div class="doctor-clock-pin"></div>
+      </div>
+    </div>
+    <output class="doctor-clock-digital" id="doctor-clock-digital" aria-live="off">00:00:00</output>
+    <div class="doctor-clock-date" id="doctor-clock-date"></div>
+    <div class="doctor-clock-actions"><button type="button" class="btn btn-primary" id="doctor-clock-fullscreen">⛶ Tela inteira · modo foco</button></div>
+    <p class="doctor-clock-hint">Um relógio, só isso. Respire, acompanhe o tempo e continue estudando.</p>
+  </div>
+</section>`};
+Views.bind.clock=function(){
+  const page=document.getElementById('doctor-clock-page');
+  const face=document.getElementById('doctor-clock-face');
+  const hour=document.getElementById('doctor-clock-hour'),minute=document.getElementById('doctor-clock-minute'),second=document.getElementById('doctor-clock-second');
+  const digital=document.getElementById('doctor-clock-digital'),date=document.getElementById('doctor-clock-date'),full=document.getElementById('doctor-clock-fullscreen');
+  let active=true;
+  const update=()=>{if(!active)return;const now=new Date(),s=now.getSeconds()+now.getMilliseconds()/1000,m=now.getMinutes()+s/60,h=(now.getHours()%12)+m/60;
+    if(hour)hour.style.transform=`translateX(-50%) rotate(${h*30}deg)`;
+    if(minute)minute.style.transform=`translateX(-50%) rotate(${m*6}deg)`;
+    if(second)second.style.transform=`translateX(-50%) rotate(${s*6}deg)`;
+    if(digital)digital.textContent=now.toLocaleTimeString('pt-BR',{hour12:false});
+    if(date)date.textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  };
+  update();const timer=setInterval(update,200);
+  const back=document.getElementById('doctor-clock-back');
+  back?.addEventListener('click',async()=>{active=false;clearInterval(timer);if(document.fullscreenElement){try{await document.exitFullscreen()}catch(e){}}UI.render('home')});
+  const refreshButton=()=>{if(full)full.textContent=document.fullscreenElement?'⤢ Sair da tela inteira':'⛶ Tela inteira · modo foco'};
+  full?.addEventListener('click',async()=>{try{if(document.fullscreenElement){await document.exitFullscreen()}else if(page?.requestFullscreen){await page.requestFullscreen()}else{page?.classList.toggle('doctor-clock-immersive');}refreshButton()}catch(e){page?.classList.toggle('doctor-clock-immersive');refreshButton()}});
+  document.addEventListener('fullscreenchange',refreshButton);
+  const cleanup=()=>{active=false;clearInterval(timer);document.removeEventListener('fullscreenchange',refreshButton);};
+  // Keep page lifecycle tidy when navigating away through the app's renderer.
+  const originalRender=UI.render;
+  UI.render=function(view){if(view!=='clock'){cleanup();UI.render=originalRender;}return originalRender.call(this,view)};
+};
 Views.calculator=function(){
   const keys=[
     {k:'AC',c:'calc-key utility'},{k:'±',c:'calc-key utility'},{k:'%',c:'calc-key utility'},{k:'÷',c:'calc-key operator'},
