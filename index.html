@@ -725,6 +725,59 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .doctor-clock-page:fullscreen .doctor-clock-flip,.doctor-clock-page.doctor-clock-immersive .doctor-clock-flip{margin-top:0}
 @media(max-width:560px){.doctor-clock-layouts{grid-template-columns:repeat(2,minmax(0,1fr))}.doctor-clock-layout{padding:10px 6px}.doctor-clock-layout strong{font-size:.74rem}.doctor-clock-customize{margin-top:12px}}
 
+
+/* Commercial polish pass: large, responsive, landscape-first fullscreen clocks. */
+.doctor-clock-page{min-height:calc(100dvh - 56px);padding:clamp(10px,2vw,22px)}
+.doctor-clock-page .doctor-clock-header{flex:0 0 auto}
+.doctor-clock-customize{max-width:1000px;margin:12px auto 0}
+.doctor-clock-layouts{gap:8px}
+.doctor-clock-layout{min-height:88px;padding:12px 8px}
+.doctor-clock-stage{min-height:0;padding:clamp(10px,2vh,22px) 0;gap:0}
+.doctor-clock-page .doctor-clock{width:min(78vw, min(520px, 48dvh));max-width:100%;flex:0 0 auto}
+.doctor-clock-page .doctor-clock-number{transform:rotate(var(--a)) translateY(calc(min(35vw, 190px) * -0.78)) rotate(calc(var(--a) * -1))}
+.doctor-clock-page .doctor-clock-tick{transform-origin:50% calc(min(35vw, 190px) * -0.78)}
+.doctor-clock-page .doctor-clock-digital{font-size:clamp(2rem,6vw,3.5rem);margin-top:clamp(12px,2.5vh,24px);letter-spacing:.1em}
+.doctor-clock-page .doctor-clock-date{font-size:clamp(.8rem,1.6vw,1rem)}
+.doctor-clock-page .doctor-clock-flip{gap:clamp(8px,2vw,20px)}
+.doctor-clock-page .doctor-clock-flip span{min-width:clamp(76px,16vw,150px);height:clamp(90px,18vw,170px);font-size:clamp(3rem,10vw,6.5rem)}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-dial:after{font-size:clamp(2rem,11vw,6.5rem);font-weight:800;letter-spacing:.06em}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-digital{font-size:clamp(2.5rem,7vw,4rem)}
+.doctor-clock-page:fullscreen,.doctor-clock-page.doctor-clock-immersive{width:100vw;height:100dvh;min-height:100dvh;max-height:100dvh;box-sizing:border-box;padding:clamp(8px,2vw,22px);overflow:hidden;display:flex;flex-direction:column}
+.doctor-clock-page:fullscreen .doctor-clock-stage,.doctor-clock-page.doctor-clock-immersive .doctor-clock-stage{flex:1;min-height:0;width:100%;padding:0;justify-content:center;overflow:hidden}
+.doctor-clock-page:fullscreen .doctor-clock,.doctor-clock-page.doctor-clock-immersive .doctor-clock{width:min(82vmin, min(78vw, 76dvh));max-width:100%;max-height:76dvh}
+.doctor-clock-page:fullscreen .doctor-clock-number,.doctor-clock-page.doctor-clock-immersive .doctor-clock-number{transform:rotate(var(--a)) translateY(calc(min(38vmin, 260px) * -0.78)) rotate(calc(var(--a) * -1))}
+.doctor-clock-page:fullscreen .doctor-clock-tick,.doctor-clock-page.doctor-clock-immersive .doctor-clock-tick{transform-origin:50% calc(min(38vmin, 260px) * -0.78)}
+.doctor-clock-page:fullscreen .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive .doctor-clock-digital{font-size:clamp(2.6rem,9vw,6.5rem);margin-top:clamp(8px,2vh,22px);letter-spacing:.08em}
+.doctor-clock-page:fullscreen .doctor-clock-date,.doctor-clock-page.doctor-clock-immersive .doctor-clock-date{font-size:clamp(.85rem,2vw,1.25rem);margin-top:8px}
+.doctor-clock-page:fullscreen .doctor-clock-actions,.doctor-clock-page.doctor-clock-immersive .doctor-clock-actions{margin-top:clamp(8px,2vh,18px)}
+.doctor-clock-page:fullscreen .doctor-clock-hint,.doctor-clock-page.doctor-clock-immersive .doctor-clock-hint{display:none}
+.doctor-clock-page:fullscreen .doctor-clock-flip,.doctor-clock-page.doctor-clock-immersive .doctor-clock-flip{width:min(96vw,1300px);margin:auto;gap:clamp(8px,3vw,36px)}
+.doctor-clock-page:fullscreen .doctor-clock-flip span,.doctor-clock-page.doctor-clock-immersive .doctor-clock-flip span{flex:1;min-width:0;max-width:360px;height:min(45vh,32vw);font-size:clamp(4rem,18vw,13rem);border-radius:clamp(8px,2vw,24px)}
+.doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock{width:min(94vw,1400px);height:min(64vh,62vw);aspect-ratio:auto;border-radius:clamp(16px,3vw,38px);padding:clamp(10px,2vw,26px)}
+.doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock-dial,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock-dial{inset:5%;border-radius:clamp(10px,2vw,28px)}
+.doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock-dial:after,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock-dial:after{font-size:clamp(4rem,20vw,15rem)}
+.doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock-digital{font-size:clamp(3rem,8vw,6rem)}
+@media(orientation:landscape){
+ .doctor-clock-page:fullscreen .doctor-clock-stage,.doctor-clock-page.doctor-clock-immersive .doctor-clock-stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:1fr auto auto;column-gap:clamp(14px,4vw,64px);align-items:center;justify-items:center}
+ .doctor-clock-page:fullscreen .doctor-clock,.doctor-clock-page.doctor-clock-immersive .doctor-clock{grid-column:1;grid-row:1/4;width:min(76vh,44vw);max-height:88dvh}
+ .doctor-clock-page:fullscreen .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive .doctor-clock-digital{grid-column:2;grid-row:1;align-self:end;font-size:clamp(2.8rem,7vw,7rem);text-align:center}
+ .doctor-clock-page:fullscreen .doctor-clock-date,.doctor-clock-page.doctor-clock-immersive .doctor-clock-date{grid-column:2;grid-row:2;align-self:center;text-align:center}
+ .doctor-clock-page:fullscreen .doctor-clock-actions,.doctor-clock-page.doctor-clock-immersive .doctor-clock-actions{grid-column:2;grid-row:3;align-self:start}
+ .doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock{grid-column:1/3;grid-row:1/4;width:92vw;height:80dvh;max-height:80dvh}
+ .doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock-digital{grid-column:1/3;grid-row:1/4;align-self:center;z-index:3;margin:0;font-size:clamp(5rem,17vw,15rem);pointer-events:none}
+ .doctor-clock-page:fullscreen[data-clock-layout="flip"] .doctor-clock-flip,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="flip"] .doctor-clock-flip{grid-column:1/3;grid-row:1/3;align-self:center;width:96vw}
+ .doctor-clock-page:fullscreen[data-clock-layout="flip"] .doctor-clock-date,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="flip"] .doctor-clock-date{grid-column:1/3;grid-row:3}
+}
+@media(orientation:portrait){
+ .doctor-clock-page:fullscreen .doctor-clock-stage,.doctor-clock-page.doctor-clock-immersive .doctor-clock-stage{display:flex;justify-content:center;align-items:center}
+ .doctor-clock-page:fullscreen .doctor-clock,.doctor-clock-page.doctor-clock-immersive .doctor-clock{width:min(88vw,76dvh);max-height:70dvh}
+ .doctor-clock-page:fullscreen .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive .doctor-clock-digital{font-size:clamp(3rem,12vw,7rem)}
+ .doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock{width:94vw;height:min(45vh,90vw)}
+ .doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock-digital{font-size:clamp(3.5rem,15vw,8rem)}
+ .doctor-clock-page:fullscreen .doctor-clock-flip span,.doctor-clock-page.doctor-clock-immersive .doctor-clock-flip span{height:min(22vw,18vh);font-size:clamp(3rem,13vw,7rem)}
+}
+@media(max-width:560px){.doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock{width:min(86vw,48dvh)}.doctor-clock-page .doctor-clock-layouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
