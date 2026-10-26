@@ -3604,13 +3604,12 @@ Views.bind.clock=function(){
   const applyLayout=(layout,save=true)=>{
     const allowed=['analog','bedside','digital','flip'];if(!allowed.includes(layout))layout='analog';
     page?.setAttribute('data-clock-layout',layout);
-    requestAnimationFrame(syncDialGeometry);
     layoutButtons.forEach(btn=>{const selected=btn.dataset.clockLayout===layout;btn.classList.toggle('is-selected',selected);btn.setAttribute('aria-pressed',String(selected));});
     if(save){try{localStorage.setItem('doctor-clock-layout',layout)}catch(e){}}
   };
   let savedLayout='analog';try{savedLayout=localStorage.getItem('doctor-clock-layout')||'analog'}catch(e){}
   applyLayout(savedLayout,false);
-  layoutButtons.forEach(btn=>btn.addEventListener('click',()=>applyLayout(btn.dataset.clockLayout)));
+  layoutButtons.forEach(btn=>btn.addEventListener('click',()=>{applyLayout(btn.dataset.clockLayout);requestAnimationFrame(syncDialGeometry);}));
 
   let active=true;
   // Recalcula o modo visual sempre que o aparelho muda de orientação ou tamanho.
