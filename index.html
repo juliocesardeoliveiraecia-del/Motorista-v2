@@ -3532,6 +3532,7 @@ Views.bind.clock=function(){
     if(minute)minute.style.transform=`translateX(-50%) rotate(${m*6}deg)`;
     if(second)second.style.transform=`translateX(-50%) rotate(${s*6}deg)`;
     if(digital)digital.textContent=now.toLocaleTimeString('pt-BR',{hour12:false});
+    const dial=document.getElementById('doctor-clock-dial');if(dial)dial.setAttribute('data-digital',now.toLocaleTimeString('pt-BR',{hour12:false}).slice(0,5));
     if(flip){const parts=now.toLocaleTimeString('pt-BR',{hour12:false}).split(':');flip.innerHTML=parts.map((part,i)=>`<span>${part}</span>${i<2?'<b>:</b>':''}`).join('');}
     if(date)date.textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
   };
