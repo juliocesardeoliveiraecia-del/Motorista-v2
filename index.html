@@ -537,6 +537,14 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   .exam-hero-books img { width: 100%; height: 100%; transform: none; }
 }
 
+/* Mensagem de impacto acima do banner do concurso; mantém a identidade azul e dourada. */
+.home-impact-message{margin:0 0 10px;padding:12px 15px;border-left:4px solid #ffd21a;border-radius:0 10px 10px 0;background:linear-gradient(90deg,rgba(10,25,47,.07),rgba(22,52,94,.025));}
+.home-impact-kicker{font-size:clamp(11px,2.5vw,13px);font-weight:800;letter-spacing:.025em;color:var(--text-muted);margin-bottom:3px;}
+.home-impact-title{font-size:clamp(18px,4vw,24px);font-weight:950;line-height:1.15;color:var(--blue-dark);}
+[data-theme="dark"] .home-impact-title{color:#fff;}
+.home-impact-sub{margin-top:4px;font-size:11px;line-height:1.4;color:var(--text-muted);}
+.exam-hero .hero-days{font-size:clamp(24px,4vw,38px);overflow-wrap:anywhere;}
+@media(max-width:520px){.home-impact-message{padding:10px 12px}.home-impact-sub{font-size:10px}.exam-hero .hero-days{font-size:clamp(19px,5vw,27px);line-height:1.12}}
 /* ===== V1.8.4 — MARCA DOCTOR = HOME ===== */
 .topbar-brand{
   grid-column:1; grid-row:1; appearance:none; -webkit-appearance:none; border:0; margin:0; padding:0;
@@ -2629,6 +2637,39 @@ Views.home = function () {
   Object.values(Store.state.progress).forEach(p => totalAnswered += p.answered);
   const examDate = new Date(EXAM_CONFIG.examDateISO);
   const examDateShort = examDate.toLocaleDateString('pt-BR');
+  const today = new Date();
+  const civilDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const elapsedDays = (start, end) => Math.max(0, Math.floor((civilDay(end) - civilDay(start)) / 86400000));
+  const editalDate = EXAM_CONFIG.editalPublishDate ? new Date(EXAM_CONFIG.editalPublishDate + 'T00:00:00') : null;
+  const hasPublishedEdital = !!editalDate && !Number.isNaN(editalDate.getTime()) && civilDay(today) >= civilDay(editalDate);
+  const examHasPassed = !Number.isNaN(examDate.getTime()) && civilDay(today) > civilDay(examDate);
+  let heroLabel, heroCount, heroSub;
+  if (examHasPassed) {
+    const elapsed = elapsedDays(examDate, today);
+    const years = Math.floor(elapsed / 365), months = Math.floor((elapsed % 365) / 30);
+    const remainingDays = elapsed - years * 365 - months * 30;
+    heroLabel = 'Desde a última prova';
+    heroCount = [years ? years + (years === 1 ? ' ano' : ' anos') : '', months ? months + (months === 1 ? ' mês' : ' meses') : '', remainingDays + (remainingDays === 1 ? ' dia' : ' dias')].filter(Boolean).join(', ');
+    heroSub = 'O próximo ciclo começa com a sua preparação.';
+  } else if (hasPublishedEdital) {
+    heroLabel = 'Contagem regressiva para a prova';
+    heroCount = days + (days === 1 ? ' dia' : ' dias');
+    heroSub = EXAM_CONFIG.examDateLabel || (examDateShort + ' · ' + EXAM_CONFIG.cargo);
+  } else {
+    const lastExam = EXAM_CONFIG.lastExamDateISO ? new Date(EXAM_CONFIG.lastExamDateISO + 'T00:00:00') : null;
+    if (lastExam && !Number.isNaN(lastExam.getTime())) {
+      const elapsed = elapsedDays(lastExam, today);
+      const years = Math.floor(elapsed / 365), months = Math.floor((elapsed % 365) / 30);
+      const remainingDays = elapsed - years * 365 - months * 30;
+      heroLabel = 'Pré-edital · desde a última prova';
+      heroCount = [years ? years + (years === 1 ? ' ano' : ' anos') : '', months ? months + (months === 1 ? ' mês' : ' meses') : '', remainingDays + (remainingDays === 1 ? ' dia' : ' dias')].filter(Boolean).join(', ');
+      heroSub = 'Não espere o edital. Comece a estudar agora.';
+    } else {
+      heroLabel = 'Pré-edital · preparação antecipada';
+      heroCount = 'Comece hoje';
+      heroSub = 'Data da última prova ainda não cadastrada.';
+    }
+  }
   const plan = DailyPlan.getOrGenerate();
   const planMinutes = DailyPlan.totalMinutes(plan);
   const planDone = DailyPlan.completedCount(plan);
@@ -2637,14 +2678,19 @@ Views.home = function () {
   Object.values(Store.state.flashcards).forEach(list => totalFlashcards += list.length);
 
   return `
-    <section class="exam-hero" aria-label="Contagem regressiva para a prova">
+    <section class="home-impact-message" aria-label="Mensagem de incentivo">
+      <div class="home-impact-kicker">A aprovação não acontece por acaso.</div>
+      <div class="home-impact-title">Quer passar? É só estudar.</div>
+      <div class="home-impact-sub">Pare de adiar hoje o resultado que você quer conquistar amanhã.</div>
+    </section>
+    <section class="exam-hero" aria-label="Painel de fase e contagem do concurso">
       <div class="exam-hero-photo">
         <img class="exam-hero-chamber" src="${EXAM_CONFIG.heroImage || ''}" alt="${EXAM_CONFIG.orgName || 'Concurso'}" loading="eager" onerror="this.style.display='none';">
         <div class="exam-hero-overlay" aria-hidden="true"></div>
         <div class="exam-hero-content">
-          <div class="hero-label">Faltam para a prova</div>
-          <div class="hero-days">${days} dias</div>
-          <div class="hero-sub">${examDateShort} · ${EXAM_CONFIG.cargo}</div>
+          <div class="hero-label">${heroLabel}</div>
+          <div class="hero-days">${heroCount}</div>
+          <div class="hero-sub">${heroSub}</div>
         </div>
       </div>
       <div class="exam-hero-books" aria-hidden="true">
