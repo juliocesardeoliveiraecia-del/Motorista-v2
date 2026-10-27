@@ -784,6 +784,15 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
  .doctor-clock-page[data-device-orientation="landscape"]:fullscreen .doctor-clock,.doctor-clock-page[data-device-orientation="landscape"].doctor-clock-immersive .doctor-clock{max-height:88dvh}
 }
 </style>
+
+<style>
+/* Fix definitivo: marcações do relógio calculadas em relação ao diâmetro real do mostrador. */
+#doctor-clock-dial{--clock-number-radius:38%;--clock-tick-radius:45%;}
+#doctor-clock-dial .doctor-clock-number{transform:rotate(var(--a)) translateY(calc(var(--clock-number-radius) * -1)) rotate(calc(var(--a) * -1));}
+#doctor-clock-dial .doctor-clock-tick{transform-origin:50% calc(var(--clock-tick-radius) * -1);}
+.doctor-clock-page:fullscreen #doctor-clock-dial .doctor-clock-number,.doctor-clock-page.doctor-clock-immersive #doctor-clock-dial .doctor-clock-number{transform:rotate(var(--a)) translateY(calc(var(--clock-number-radius) * -1)) rotate(calc(var(--a) * -1));}
+.doctor-clock-page:fullscreen #doctor-clock-dial .doctor-clock-tick,.doctor-clock-page.doctor-clock-immersive #doctor-clock-dial .doctor-clock-tick{transform-origin:50% calc(var(--clock-tick-radius) * -1);}
+</style>
 </head>
 <body>
 <div id="splash" aria-label="Carregando Doctor Concursos"><img class="logo" id="splash-logo" alt="Doctor Concursos"><div id="splash-text"></div>
@@ -3573,6 +3582,24 @@ Views.bind.clock=function(){
   const hour=document.getElementById('doctor-clock-hour'),minute=document.getElementById('doctor-clock-minute'),second=document.getElementById('doctor-clock-second');
   const digital=document.getElementById('doctor-clock-digital'),date=document.getElementById('doctor-clock-date'),full=document.getElementById('doctor-clock-fullscreen');
   const flip=document.getElementById('doctor-clock-flip');
+    // Alinha os índices e traços ao tamanho REAL do mostrador interno, não ao tamanho da janela.
+  const dial=document.getElementById('doctor-clock-dial');
+  const syncDialGeometry=()=>{
+    if(!dial)return;
+    const size=Math.min(dial.clientWidth||0,dial.clientHeight||0);
+    if(!size)return;
+    // Números centrados no anel interno; traços na mesma circunferência em todos os tamanhos.
+    dial.style.setProperty('--clock-number-radius',(size*0.385)+'px');
+    dial.style.setProperty('--clock-tick-radius',(size*0.455)+'px');
+  };
+  syncDialGeometry();
+  let dialResizeObserver=null;
+  if(dial&&typeof ResizeObserver!=='undefined'){
+    dialResizeObserver=new ResizeObserver(syncDialGeometry);
+    dialResizeObserver.observe(dial);
+  }
+  window.addEventListener('resize',syncDialGeometry,{passive:true});
+
   const layoutButtons=Array.from(page?.querySelectorAll('[data-clock-layout]')||[]);
   const applyLayout=(layout,save=true)=>{
     const allowed=['analog','bedside','digital','flip'];if(!allowed.includes(layout))layout='analog';
