@@ -4,7 +4,7 @@
 <script>
 /* Doctor Core — Radar central. Public Supabase config only; no secrets. */
 window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
-  version: '1.12.11',
+  version: '1.12.12',
   environment: 'production',
   integrations: {
     supabase: {
@@ -17,18 +17,18 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
   }
 });
 </script>
-<script src="product-context.js?v=1.12.11"></script>
-<script src="product-content.js?v=1.12.11"></script>
+<script src="product-context.js?v=1.12.12"></script>
+<script src="product-content.js?v=1.12.12"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.11">
+<meta name="doctor-core-version" content="1.12.12">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
-<link rel="manifest" href="manifest.json?v=1.12.11">
-<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.11">
+<link rel="manifest" href="manifest.json?v=1.12.12">
+<link rel="icon" type="image/svg+xml" href="doctor-core-icon.svg?v=1.12.12">
 
-<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.11">
+<link rel="apple-touch-icon" href="doctor-core-icon.svg?v=1.12.12">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Doctor Core">
 <style>
@@ -441,7 +441,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .essay-audio-panel{padding:14px;margin-bottom:14px;border:1px solid rgba(22,135,255,.22);background:rgba(22,135,255,.05);border-radius:14px}.essay-audio-panel h3{margin:0 0 5px}.essay-audio-list{display:grid;gap:9px;margin-top:10px}.essay-audio-card{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:11px}.essay-audio-card h4{margin:0 0 3px}.essay-audio-card p{margin:0;color:var(--text-muted);font-size:10px}.essay-audio-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.essay-line-meter{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.essay-line-meter .line-stat{border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:8px 10px;text-align:center;min-width:82px}.essay-line-meter .line-stat strong{display:block;font-size:16px}.essay-line-meter .line-stat small{font-size:9px;color:var(--text-muted)}.rec-essay-banner{margin:12px auto 0;max-width:420px;padding:10px 12px;border:1px dashed rgba(245,196,0,.65);background:rgba(245,196,0,.08);border-radius:12px;text-align:left;font-size:11px}.record-card.essay-draft{border-color:rgba(245,196,0,.55)}.record-card .record-label{display:inline-flex;padding:3px 7px;border-radius:20px;background:rgba(245,196,0,.12);color:#b48a00;font-size:9px;font-weight:900;margin-left:6px}.transcript-box{margin-top:10px;padding:11px;border-radius:10px;background:rgba(32,184,107,.07);border:1px solid rgba(32,184,107,.2);font-size:12px;line-height:1.55;white-space:pre-wrap}.transcript-box small{display:block;color:var(--text-muted);margin-top:8px}
 @media(max-width:800px){.notes-layout,.essay-grid{grid-template-columns:1fr}.notes-sidebar,.essay-guide{position:static}.notes-grid,.rec-grid{grid-template-columns:1fr}.tool-head{flex-direction:column}.tool-head .btn,.tool-head .tool-stat,.tool-head .essay-stat{align-self:flex-start}.essay-textarea{min-height:330px}}
 @media(max-width:520px){.notes-toolbar{align-items:stretch;flex-direction:column}.search-box{max-width:none}.editor-title-row{align-items:flex-start}.essay-actions .btn{flex:1 1 45%}.record-main{min-height:58px}.recorder-console{padding:18px 12px}}
-</style>
+.timer-page{max-width:760px;margin:0 auto;padding:8px 0 26px}.timer-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:24px}.timer-badge{font-size:10px;letter-spacing:.14em;font-weight:900;color:#b48a00;border:1px solid rgba(245,196,0,.45);background:rgba(245,196,0,.10);border-radius:999px;padding:7px 11px}.timer-hero{text-align:center;padding:10px 14px 22px}.timer-orb{width:68px;height:68px;margin:0 auto 14px;display:grid;place-items:center;border-radius:22px;background:linear-gradient(145deg,#173b69,#0a192f);border:1px solid #f5c400;box-shadow:0 12px 32px #0a192f2e;font-size:32px}.timer-eyebrow{font-size:10px;letter-spacing:.16em;font-weight:900;color:#b48a00}.timer-hero h2{font-size:clamp(25px,5vw,34px);font-weight:900;margin:8px 0}.timer-hero p{color:var(--text-muted);font-size:13px}.timer-panel{padding:clamp(18px,5vw,34px);border-radius:24px;background:var(--surface);border:1px solid var(--border);box-shadow:0 18px 50px #0a192f17}.timer-ring{width:min(72vw,310px);aspect-ratio:1;border-radius:50%;padding:10px;margin:0 auto 24px;background:conic-gradient(#f5c400,#16345e,#f5c400);box-shadow:0 8px 28px #0a192f1f}.timer-ring-inner{height:100%;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:1px solid var(--border)}.timer-caption{font-size:10px;font-weight:900;letter-spacing:.16em;color:var(--text-muted)}#doctor-timer-display{font-size:clamp(34px,8vw,52px);font-variant-numeric:tabular-nums;letter-spacing:-.045em;font-weight:900;color:var(--text)}#doctor-timer-state{font-size:9px;font-weight:900;letter-spacing:.1em;color:#b48a00}.timer-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.timer-actions .btn{min-width:145px;min-height:46px}.timer-tip{margin-top:24px;padding:13px 15px;border-radius:14px;background:#f5c40017;border:1px solid #f5c40040;font-size:12px;line-height:1.6;color:var(--text-muted)}@media(max-width:520px){.timer-actions{display:grid;grid-template-columns:1fr}.timer-actions .btn{width:100%}}</style>
 
 <style id="doctor-tools-v17">
 /* V1.7 — revisão profissional das Ferramentas Doctor */
@@ -573,8 +573,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 @media(max-width:640px){.doctor-avatar-box img.doctor-avatar-level-1{max-height:120px;max-width:32%}.doctor-avatar-box img.doctor-avatar-level-2{max-height:160px}.doctor-avatar-box img.doctor-avatar-level-3{max-height:210px}.doctor-avatar-box img.doctor-avatar-level-4{max-height:250px}.doctor-avatar-box img.doctor-avatar-level-5,.doctor-avatar-box img.doctor-avatar-level-6{max-height:285px}.doctor-avatar-box img.doctor-avatar-level-7,.doctor-avatar-box img.doctor-avatar-level-8,.doctor-avatar-box img.doctor-avatar-level-9,.doctor-avatar-box img.doctor-avatar-level-10{max-height:295px}}
 </style>
 
-/* Doctor Core 1.12.11 — Radar removido por decisão de produto. */
-<style id="doctor-radar-removal">
+<style id="doctor-hidden-feature-suppression">
   #radar-ticker-mount, #home-radar, .radar-page, [data-tool="radar"], #open-radar, #radar-back, #radar-refresh, #radar-article-back, [data-radar], .radar-ticker, .radar-hero { display:none !important; }
   #main-view { padding-bottom: 12px !important; --radar-reserve: 0px; }
   body { scroll-padding-bottom: 0 !important; }
@@ -610,7 +609,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 
 
 <style id="doctor-calculator-scientific-v2">.calculator-page{max-width:760px;margin:0 auto;padding:4px 0 24px}.calculator-expression-label{display:block;font-size:12px;font-weight:800;color:var(--text-muted);margin:2px 0 7px}.calculator-expression{width:100%;box-sizing:border-box;min-height:48px;border:1px solid var(--border);border-radius:13px;padding:12px 14px;background:var(--bg);color:var(--text);font-size:16px;font-weight:650;margin-bottom:12px}.calculator-error{min-height:18px;color:#ff9b8f;font-size:12px;margin-top:7px}.scientific-keys{grid-template-columns:repeat(5,minmax(0,1fr))}.calc-key.science{background:rgba(22,135,255,.11);font-size:15px;color:var(--text)}.calculator-memory{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;color:var(--text-muted);font-size:12px}.calc-memory{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:9px;padding:8px 12px;font-weight:800}#calculator-memory-label{margin-left:auto}.calculator-history{margin-top:18px;border-top:1px solid var(--border);padding-top:12px}.calculator-history h3{font-size:13px;margin:0 0 8px}.calculator-history-item{width:100%;display:flex;justify-content:space-between;gap:12px;text-align:left;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:10px;padding:10px;margin:5px 0;font-size:12px}.calculator-history-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:440px){.scientific-keys{gap:6px}.scientific-keys .calc-key{min-height:48px;border-radius:11px;font-size:14px}.calculator-expression{font-size:15px}}
-/* V1.12.11 — cores semânticas preservadas; azul apenas nos botões de Praticar Questões. */
+/* V1.12.12 — cores semânticas preservadas; azul apenas nos botões de Praticar Questões. */
 #home-primary-actions #home-practice,
 #home-practice {
   background: var(--green) !important;
@@ -664,6 +663,126 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .ai-banner, #radar-notice, #radar-banner, .radar-notice, .radar-banner,
 [data-radar-notice], [data-radar-banner] { display: none !important; }
 
+
+/* Relógio Doctor — estética retrô, madeira escura, latão e mostrador marfim. */
+.doctor-clock-page{min-height:calc(100dvh - 72px);padding:clamp(12px,3vw,28px);background:radial-gradient(ellipse at 50% 40%,#17365a 0,#09172b 58%,#050b14 100%);color:#f7ebd0;border-radius:18px;display:flex;flex-direction:column;align-items:stretch}
+.doctor-clock-header{display:flex;justify-content:space-between;align-items:center;gap:12px}.doctor-clock-brand{font-size:.75rem;letter-spacing:.2em;color:#d5b875;font-weight:800}
+.doctor-clock-stage{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:clamp(18px,4vh,42px) 0}.doctor-clock-caption{font-size:.75rem;letter-spacing:.22em;color:#d9bd7a;margin-bottom:22px;text-align:center;font-weight:800}
+.doctor-clock{width:min(72vw, min(390px, 42vh));aspect-ratio:1;position:relative;border-radius:50%;padding:clamp(8px,2vw,14px);background:repeating-conic-gradient(from 0deg,#77502c 0deg 2deg,#3b2416 2deg 4deg,#986b3b 4deg 6deg);box-shadow:0 0 0 2px #bd9454,0 0 0 7px #291a13,0 18px 44px #0009,inset 0 0 0 2px #e0bd77}
+.doctor-clock-rim{position:absolute;inset:5%;border-radius:50%;background:linear-gradient(135deg,#f6d994,#75502b 38%,#e3bd6e 62%,#5b3b20);box-shadow:inset 0 0 0 2px #4a2b16}
+.doctor-clock-dial{position:absolute;inset:8%;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 35% 25%,#fff8e6,#f0dfb7 62%,#d4bb88);box-shadow:inset 0 2px 12px #533b1e55,inset 0 0 0 2px #a37a43}
+.doctor-clock-number{position:absolute;left:50%;top:50%;width:2em;height:2em;margin:-1em 0 0 -1em;display:flex;align-items:center;justify-content:center;font-family:Georgia,'Times New Roman',serif;font-size:clamp(17px,4.4vw,25px);font-weight:bold;color:#302219;transform:rotate(var(--a)) translateY(calc(min(34vw, 145px) * -0.78)) rotate(calc(var(--a) * -1));z-index:2}
+.doctor-clock-tick{position:absolute;left:50%;top:50%;width:1px;height:5%;background:#73512d;transform-origin:50% calc(min(34vw, 145px) * -0.78);transform:rotate(var(--a));opacity:.68}
+.doctor-clock-tick.major{width:3px;height:8%;background:#3a291a;opacity:1}
+.doctor-clock-hand{position:absolute;left:50%;bottom:50%;z-index:4;transform-origin:50% 100%;border-radius:8px 8px 2px 2px}
+.doctor-clock-hand.hour{height:27%;width:5px;background:linear-gradient(90deg,#332219,#725234,#24170f);box-shadow:0 0 1px #fff8}
+.doctor-clock-hand.minute{height:37%;width:3px;background:linear-gradient(90deg,#332219,#725234,#24170f)}
+.doctor-clock-hand.second{height:40%;width:1.5px;background:#a23d2d;z-index:5}
+.doctor-clock-pin{position:absolute;left:50%;top:50%;width:13px;height:13px;transform:translate(-50%,-50%);border-radius:50%;z-index:6;background:radial-gradient(circle at 30% 25%,#fff0b0,#b17a35 55%,#4b2d18);border:2px solid #58391e}
+.doctor-clock-digital{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:clamp(1.6rem,5vw,2.3rem);letter-spacing:.12em;color:#f4dfae;margin-top:24px;font-variant-numeric:tabular-nums}
+.doctor-clock-date{font-size:.85rem;color:#c5d0de;text-align:center;margin-top:8px;text-transform:capitalize}
+.doctor-clock-actions{margin-top:24px}.doctor-clock-actions .btn{min-height:46px}.doctor-clock-hint{color:#aab9cb;font-size:.85rem;text-align:center;margin-top:18px;max-width:420px;line-height:1.6}
+.doctor-clock-page:fullscreen,.doctor-clock-page.doctor-clock-immersive{position:fixed;inset:0;z-index:99999;width:100%;height:100%;min-height:100dvh;border-radius:0;padding:clamp(12px,3vw,30px);overflow:auto;background:radial-gradient(ellipse at center,#15375d 0,#081529 62%,#02060d 100%)}
+.doctor-clock-page:fullscreen .doctor-clock,.doctor-clock-page.doctor-clock-immersive .doctor-clock{width:min(76vmin,520px)}
+.doctor-clock-page:fullscreen .doctor-clock-number,.doctor-clock-page.doctor-clock-immersive .doctor-clock-number{transform:rotate(var(--a)) translateY(calc(min(38vmin, 190px) * -0.78)) rotate(calc(var(--a) * -1))}
+.doctor-clock-page:fullscreen .doctor-clock-tick,.doctor-clock-page.doctor-clock-immersive .doctor-clock-tick{transform-origin:50% calc(min(38vmin, 190px) * -0.78)}
+.doctor-clock-page:fullscreen .doctor-clock-stage,.doctor-clock-page.doctor-clock-immersive .doctor-clock-stage{padding:12px 0}
+@media(max-width:480px){.doctor-clock{width:min(82vw,360px)}.doctor-clock-number{transform:rotate(var(--a)) translateY(calc(min(39vw, 140px) * -0.78)) rotate(calc(var(--a) * -1))}.doctor-clock-tick{transform-origin:50% calc(min(39vw, 140px) * -0.78)}.doctor-clock-page{padding:12px}.doctor-clock-hint{font-size:.78rem}}
+
+
+/* Personalização do Relógio Doctor: escolhas simples, locais e persistentes. */
+.doctor-clock-customize{width:100%;max-width:900px;margin:18px auto 0;text-align:center}
+.doctor-clock-customize-label{display:block;font-size:.68rem;letter-spacing:.18em;font-weight:800;color:#c5d0de;margin-bottom:10px}
+.doctor-clock-layouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.doctor-clock-layout{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:12px 7px;border:1px solid #38516d;border-radius:12px;background:#0c1b2d;color:#eaf0f7;cursor:pointer;transition:border-color .18s,background .18s,transform .18s}
+.doctor-clock-layout>span{font-size:1.35rem}.doctor-clock-layout strong{font-size:.76rem;line-height:1.2}.doctor-clock-layout small{font-size:.67rem;color:#aab9cb;line-height:1.2}
+.doctor-clock-layout.is-selected{border-color:#e4bd68;background:linear-gradient(145deg,#25334a,#102239);box-shadow:0 0 0 1px #e4bd6844,0 0 18px #e4bd6818}
+.doctor-clock-layout:focus-visible{outline:2px solid #f1ce7a;outline-offset:3px}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock{background:linear-gradient(135deg,#a7a7a7,#292929 24%,#777 48%,#181818 72%,#aaa);padding:14px;box-shadow:0 0 0 2px #111,0 18px 44px #000b,inset 0 0 0 2px #ccc}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock-rim{background:linear-gradient(135deg,#eee,#333 40%,#999 70%,#222)}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock-dial{background:radial-gradient(circle at 35% 25%,#fff,#e4e4e4 68%,#bbb)}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock-dial:after,.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-dial:after{content:"";position:absolute;inset:0;pointer-events:none}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock-number{font-family:Arial,sans-serif;font-weight:900}
+.doctor-clock-page[data-clock-layout="bedside"] .doctor-clock-dial:before{content:"DOCTOR";position:absolute;top:31%;left:0;width:100%;text-align:center;font-size:clamp(8px,2vw,11px);font-weight:900;letter-spacing:.18em;color:#777}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock{background:#111;padding:10px;border:3px solid #4c5663;box-shadow:0 0 0 3px #080b0e,0 18px 44px #000a,inset 0 0 12px #000}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-rim{display:none}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-dial{inset:8%;border-radius:10%;background:#080d0c;box-shadow:inset 0 0 22px #000;border:1px solid #333}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-number,.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-tick,.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-hand,.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-pin{display:none}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-dial:after{content:attr(data-digital);inset:0;display:flex;align-items:center;justify-content:center}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-digital{font-family:ui-monospace,monospace;color:#ff4b3e;text-shadow:0 0 8px #ff3529,0 0 22px #ff352977;font-size:clamp(1.9rem,7vw,3rem);letter-spacing:.08em}
+.doctor-clock-page[data-clock-layout="flip"] .doctor-clock{display:none}
+.doctor-clock-page[data-clock-layout="flip"] .doctor-clock-digital{display:none}
+.doctor-clock-flip{display:none;align-items:center;justify-content:center;gap:clamp(5px,2vw,14px);margin-top:clamp(28px,7vh,60px);font-family:Georgia,'Times New Roman',serif;font-variant-numeric:tabular-nums}
+.doctor-clock-flip span{display:inline-flex;align-items:center;justify-content:center;min-width:clamp(55px,16vw,100px);height:clamp(70px,20vw,124px);padding:8px;border-radius:9px;background:linear-gradient(#252525 0 49%,#111 50% 100%);border:1px solid #555;color:#f4e9d0;font-size:clamp(2rem,9vw,4.2rem);font-weight:700;box-shadow:0 7px 0 #050505,0 12px 20px #0006;position:relative}
+.doctor-clock-flip span:after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid #0009}
+.doctor-clock-flip b{font-size:clamp(1.5rem,5vw,2.5rem);color:#d8b96e}
+.doctor-clock-page[data-clock-layout="flip"] .doctor-clock-flip{display:flex}
+.doctor-clock-page[data-clock-layout="flip"] .doctor-clock-date{margin-top:25px}
+.doctor-clock-page:fullscreen .doctor-clock-customize,.doctor-clock-page.doctor-clock-immersive .doctor-clock-customize{display:none}
+.doctor-clock-page:fullscreen .doctor-clock-header,.doctor-clock-page.doctor-clock-immersive .doctor-clock-header{display:none}
+.doctor-clock-page:fullscreen .doctor-clock-page,.doctor-clock-page.doctor-clock-immersive .doctor-clock-page{border-radius:0}
+.doctor-clock-page:fullscreen .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive .doctor-clock-digital{margin-top:clamp(12px,3vh,24px)}
+.doctor-clock-page:fullscreen .doctor-clock-flip,.doctor-clock-page.doctor-clock-immersive .doctor-clock-flip{margin-top:0}
+@media(max-width:560px){.doctor-clock-layouts{grid-template-columns:repeat(2,minmax(0,1fr))}.doctor-clock-layout{padding:10px 6px}.doctor-clock-layout strong{font-size:.74rem}.doctor-clock-customize{margin-top:12px}}
+
+
+/* Commercial polish pass: large, responsive, landscape-first fullscreen clocks. */
+.doctor-clock-page{min-height:calc(100dvh - 56px);padding:clamp(10px,2vw,22px)}
+.doctor-clock-page .doctor-clock-header{flex:0 0 auto}
+.doctor-clock-customize{max-width:1000px;margin:12px auto 0}
+.doctor-clock-layouts{gap:8px}
+.doctor-clock-layout{min-height:88px;padding:12px 8px}
+.doctor-clock-stage{min-height:0;padding:clamp(10px,2vh,22px) 0;gap:0}
+.doctor-clock-page .doctor-clock{width:min(78vw, min(520px, 48dvh));max-width:100%;flex:0 0 auto}
+.doctor-clock-page .doctor-clock-number{transform:rotate(var(--a)) translateY(calc(min(35vw, 190px) * -0.78)) rotate(calc(var(--a) * -1))}
+.doctor-clock-page .doctor-clock-tick{transform-origin:50% calc(min(35vw, 190px) * -0.78)}
+.doctor-clock-page .doctor-clock-digital{font-size:clamp(2rem,6vw,3.5rem);margin-top:clamp(12px,2.5vh,24px);letter-spacing:.1em}
+.doctor-clock-page .doctor-clock-date{font-size:clamp(.8rem,1.6vw,1rem)}
+.doctor-clock-page .doctor-clock-flip{gap:clamp(8px,2vw,20px)}
+.doctor-clock-page .doctor-clock-flip span{min-width:clamp(76px,16vw,150px);height:clamp(90px,18vw,170px);font-size:clamp(3rem,10vw,6.5rem)}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-dial:after{font-size:clamp(2rem,11vw,6.5rem);font-weight:800;letter-spacing:.06em}
+.doctor-clock-page[data-clock-layout="digital"] .doctor-clock-digital{font-size:clamp(2.5rem,7vw,4rem)}
+.doctor-clock-page:fullscreen,.doctor-clock-page.doctor-clock-immersive{width:100vw;height:100dvh;min-height:100dvh;max-height:100dvh;box-sizing:border-box;padding:clamp(8px,2vw,22px);overflow:hidden;display:flex;flex-direction:column}
+.doctor-clock-page:fullscreen .doctor-clock-stage,.doctor-clock-page.doctor-clock-immersive .doctor-clock-stage{flex:1;min-height:0;width:100%;padding:0;justify-content:center;overflow:hidden}
+.doctor-clock-page:fullscreen .doctor-clock,.doctor-clock-page.doctor-clock-immersive .doctor-clock{width:min(82vmin, min(78vw, 76dvh));max-width:100%;max-height:76dvh}
+.doctor-clock-page:fullscreen .doctor-clock-number,.doctor-clock-page.doctor-clock-immersive .doctor-clock-number{transform:rotate(var(--a)) translateY(calc(min(38vmin, 260px) * -0.78)) rotate(calc(var(--a) * -1))}
+.doctor-clock-page:fullscreen .doctor-clock-tick,.doctor-clock-page.doctor-clock-immersive .doctor-clock-tick{transform-origin:50% calc(min(38vmin, 260px) * -0.78)}
+.doctor-clock-page:fullscreen .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive .doctor-clock-digital{font-size:clamp(2.6rem,9vw,6.5rem);margin-top:clamp(8px,2vh,22px);letter-spacing:.08em}
+.doctor-clock-page:fullscreen .doctor-clock-date,.doctor-clock-page.doctor-clock-immersive .doctor-clock-date{font-size:clamp(.85rem,2vw,1.25rem);margin-top:8px}
+.doctor-clock-page:fullscreen .doctor-clock-actions,.doctor-clock-page.doctor-clock-immersive .doctor-clock-actions{margin-top:clamp(8px,2vh,18px)}
+.doctor-clock-page:fullscreen .doctor-clock-hint,.doctor-clock-page.doctor-clock-immersive .doctor-clock-hint{display:none}
+.doctor-clock-page:fullscreen .doctor-clock-flip,.doctor-clock-page.doctor-clock-immersive .doctor-clock-flip{width:min(96vw,1300px);margin:auto;gap:clamp(8px,3vw,36px)}
+.doctor-clock-page:fullscreen .doctor-clock-flip span,.doctor-clock-page.doctor-clock-immersive .doctor-clock-flip span{flex:1;min-width:0;max-width:360px;height:min(45vh,32vw);font-size:clamp(4rem,18vw,13rem);border-radius:clamp(8px,2vw,24px)}
+.doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock{width:min(94vw,1400px);height:min(64vh,62vw);aspect-ratio:auto;border-radius:clamp(16px,3vw,38px);padding:clamp(10px,2vw,26px)}
+.doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock-dial,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock-dial{inset:5%;border-radius:clamp(10px,2vw,28px)}
+.doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock-dial:after,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock-dial:after{font-size:clamp(4rem,20vw,15rem)}
+.doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock-digital{font-size:clamp(3rem,8vw,6rem)}
+@media(orientation:landscape){
+ .doctor-clock-page:fullscreen .doctor-clock-stage,.doctor-clock-page.doctor-clock-immersive .doctor-clock-stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:1fr auto auto;column-gap:clamp(14px,4vw,64px);align-items:center;justify-items:center}
+ .doctor-clock-page:fullscreen .doctor-clock,.doctor-clock-page.doctor-clock-immersive .doctor-clock{grid-column:1;grid-row:1/4;width:min(76vh,44vw);max-height:88dvh}
+ .doctor-clock-page:fullscreen .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive .doctor-clock-digital{grid-column:2;grid-row:1;align-self:end;font-size:clamp(2.8rem,7vw,7rem);text-align:center}
+ .doctor-clock-page:fullscreen .doctor-clock-date,.doctor-clock-page.doctor-clock-immersive .doctor-clock-date{grid-column:2;grid-row:2;align-self:center;text-align:center}
+ .doctor-clock-page:fullscreen .doctor-clock-actions,.doctor-clock-page.doctor-clock-immersive .doctor-clock-actions{grid-column:2;grid-row:3;align-self:start}
+ .doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock{grid-column:1/3;grid-row:1/4;width:92vw;height:80dvh;max-height:80dvh}
+ .doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock-digital{grid-column:1/3;grid-row:1/4;align-self:center;z-index:3;margin:0;font-size:clamp(5rem,17vw,15rem);pointer-events:none}
+ .doctor-clock-page:fullscreen[data-clock-layout="flip"] .doctor-clock-flip,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="flip"] .doctor-clock-flip{grid-column:1/3;grid-row:1/3;align-self:center;width:96vw}
+ .doctor-clock-page:fullscreen[data-clock-layout="flip"] .doctor-clock-date,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="flip"] .doctor-clock-date{grid-column:1/3;grid-row:3}
+}
+@media(orientation:portrait){
+ .doctor-clock-page:fullscreen .doctor-clock-stage,.doctor-clock-page.doctor-clock-immersive .doctor-clock-stage{display:flex;justify-content:center;align-items:center}
+ .doctor-clock-page:fullscreen .doctor-clock,.doctor-clock-page.doctor-clock-immersive .doctor-clock{width:min(88vw,76dvh);max-height:70dvh}
+ .doctor-clock-page:fullscreen .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive .doctor-clock-digital{font-size:clamp(3rem,12vw,7rem)}
+ .doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock{width:94vw;height:min(45vh,90vw)}
+ .doctor-clock-page:fullscreen[data-clock-layout="digital"] .doctor-clock-digital,.doctor-clock-page.doctor-clock-immersive[data-clock-layout="digital"] .doctor-clock-digital{font-size:clamp(3.5rem,15vw,8rem)}
+ .doctor-clock-page:fullscreen .doctor-clock-flip span,.doctor-clock-page.doctor-clock-immersive .doctor-clock-flip span{height:min(22vw,18vh);font-size:clamp(3rem,13vw,7rem)}
+}
+@media(max-width:560px){.doctor-clock-page:not(:fullscreen):not(.doctor-clock-immersive) .doctor-clock{width:min(86vw,48dvh)}.doctor-clock-page .doctor-clock-layouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Orientação resiliente do Relógio Doctor: recalcula o layout também em PWAs móveis. */
+@media (orientation:landscape){
+ .doctor-clock-page[data-device-orientation="landscape"]:fullscreen .doctor-clock-stage,.doctor-clock-page[data-device-orientation="landscape"].doctor-clock-immersive .doctor-clock-stage{min-height:calc(100dvh - 24px)}
+ .doctor-clock-page[data-device-orientation="landscape"]:fullscreen .doctor-clock,.doctor-clock-page[data-device-orientation="landscape"].doctor-clock-immersive .doctor-clock{max-height:88dvh}
+}
 </style>
 </head>
 <body>
@@ -734,7 +853,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   });
 })();
 </script>
-<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.11</div><div id="splash-progress" aria-hidden="true"></div></div>
+<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.12</div><div id="splash-progress" aria-hidden="true"></div></div>
 <div id="toast-container"></div>
 <header class="topbar">
   <button type="button" class="topbar-brand" id="topbar-home" aria-label="Voltar para a página inicial do Doctor Concursos" title="Voltar para o início">
@@ -2008,7 +2127,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.12.11', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.12.12', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
@@ -2024,7 +2143,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
       setTimeout(() => sessionStorage.removeItem('doctor-core-sw-reloaded'), 12000);
       // Se uma instalação antiga conseguir abrir uma cópia stale do HTML,
       // consulta o marcador de build sem usar cache e força a versão atual.
-      fetch('./version.json?v=1.12.11-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+      fetch('./version.json?v=1.12.12-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
         if (v?.version && v.version !== DOCTOR_CORE_BUILD) window.location.reload();
       }).catch(() => {});
     }
@@ -2185,7 +2304,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
           return;
         }
         this.dataset.fallbackApplied = '1';
-        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.11';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.12';
         this.classList.add('doctor-avatar-fallback-image');
       });
     });
@@ -2572,6 +2691,8 @@ Views.home = function () {
       <button type="button" class="card feature-card" id="home-recorder" title="Abrir Gravador Doctor" aria-label="Abrir Gravador Doctor"><div class="feature-icon">🎙️</div><h3>Gravador Doctor</h3><p>Grave e organize áudios dentro da matéria.</p></button>
       <button type="button" class="card feature-card" id="home-essay" title="Abrir Redação Doctor" aria-label="Abrir Redação Doctor"><div class="feature-icon">✍️</div><h3>Redação Doctor</h3><p>Área preparada para treinar redação.</p></button>
       
+      <button type="button" class="card feature-card" id="home-timer" title="Abrir Cronômetro Doctor" aria-label="Abrir Cronômetro Doctor"><div class="feature-icon">⏱️</div><h3>Cronômetro Doctor</h3><p>Controle seu tempo de foco e descanso.</p></button>
+      <button type="button" class="card feature-card" id="home-clock" title="Abrir Relógio Doctor" aria-label="Abrir Relógio Doctor"><div class="feature-icon">🕰️</div><h3>Relógio Doctor</h3><p>Relógio analógico retrô, com modo tela inteira.</p></button>
       <button type="button" class="card feature-card calculator-feature-card" id="home-calculator" title="Abrir Calculadora Doctor" aria-label="Abrir Calculadora Doctor"><div class="feature-icon calculator-feature-icon">🧮</div><h3>Calculadora Doctor</h3><p>Contas rápidas durante seus estudos.</p></button>
       
     </div>
@@ -2583,6 +2704,7 @@ Views.home = function () {
 };
 
 Views.bind.home = function(){
+  document.getElementById('home-timer')?.addEventListener('click',()=>UI.render('timer'));
   document.getElementById('home-notes')?.addEventListener('click',()=>UI.render('notes'));
   document.getElementById('home-recorder')?.addEventListener('click',()=>UI.render('recorderPick'));
   document.getElementById('home-essay')?.addEventListener('click',()=>UI.render('essay'));
@@ -2600,7 +2722,7 @@ Views.doctorCard = function () {
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
         ${p.level.imageUri
-          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.11&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.12&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
@@ -2659,6 +2781,8 @@ Views.bind.home = function () {
   document.getElementById('home-notes')?.addEventListener('click', () => UI.render('notes'));
   document.getElementById('home-recorder')?.addEventListener('click', () => UI.render('recorderPick'));
   document.getElementById('home-essay')?.addEventListener('click', () => UI.render('essay'));
+  document.getElementById('home-timer')?.addEventListener('click', () => UI.render('timer'));
+  document.getElementById('home-clock')?.addEventListener('click', () => UI.render('clock'));
   document.getElementById('home-calculator')?.addEventListener('click', () => UI.render('calculator'));
   document.getElementById('home-radar')?.addEventListener('click', () => UI.render('radar'));
   document.getElementById('open-radar')?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); UI.render('radar'); });
@@ -3411,6 +3535,81 @@ const DoctorCalculator = {
   }
 };
 DoctorCalculator.reset();
+const DoctorTimer={startedAt:0,elapsedBefore:0,running:false,interval:null,format(ms){const t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return [h,m,s].map(n=>String(n).padStart(2,'0')).join(':')},elapsed(){return this.elapsedBefore+(this.running?Date.now()-this.startedAt:0)},start(){if(this.running)return;this.startedAt=Date.now();this.running=true;this.tick();this.interval=setInterval(()=>this.tick(),250)},pause(){if(!this.running)return;this.elapsedBefore+=Date.now()-this.startedAt;this.running=false;clearInterval(this.interval);this.interval=null;this.tick()},reset(){this.pause();this.elapsedBefore=0;this.startedAt=0;this.tick()},tick(){const o=document.getElementById('doctor-timer-display');if(o)o.textContent=this.format(this.elapsed());const b=document.getElementById('doctor-timer-toggle');if(b)b.textContent=this.running?'Ⅱ Pausar':'▶ Iniciar foco';const s=document.getElementById('doctor-timer-state');if(s)s.textContent=this.running?'SESSÃO EM ANDAMENTO':'PRONTO PARA COMEÇAR'}};
+Views.timer=function(){return `<section class="timer-page"><div class="timer-top"><button class="btn btn-ghost btn-sm" id="doctor-timer-back">← Voltar aos estudos</button><span class="timer-badge">DOCTOR TOOLS</span></div><div class="timer-hero"><div class="timer-orb">⏱</div><span class="timer-eyebrow">SEU TEMPO, SUA EVOLUÇÃO</span><h2>Cronômetro Doctor</h2><p>Concentre-se em uma tarefa de cada vez. Cada minuto conta.</p></div><div class="timer-panel card"><div class="timer-ring"><div class="timer-ring-inner"><span class="timer-caption">TEMPO DE FOCO</span><output id="doctor-timer-display">00:00:00</output><span id="doctor-timer-state">PRONTO PARA COMEÇAR</span></div></div><div class="timer-actions"><button class="btn btn-primary" id="doctor-timer-toggle">▶ Iniciar foco</button><button class="btn btn-outline" id="doctor-timer-reset">↻ Zerar</button></div><div class="timer-tip">💡 Dica Doctor: escolha uma matéria, afaste as distrações e mantenha o foco até concluir sua sessão.</div></div></section>`};
+Views.bind.timer=function(){DoctorTimer.tick();document.getElementById('doctor-timer-back')?.addEventListener('click',()=>{DoctorTimer.pause();UI.render('home')});document.getElementById('doctor-timer-toggle')?.addEventListener('click',()=>DoctorTimer.running?DoctorTimer.pause():DoctorTimer.start());document.getElementById('doctor-timer-reset')?.addEventListener('click',()=>DoctorTimer.reset())};
+
+// RELÓGIO DOCTOR — mostrador analógico retrô e modo de foco em tela inteira.
+Views.clock=function(){return `<section class="doctor-clock-page" id="doctor-clock-page">
+  <header class="doctor-clock-header"><button type="button" class="btn btn-ghost btn-sm" id="doctor-clock-back">← Voltar às ferramentas</button><span class="doctor-clock-brand">DOCTOR · FOCO</span></header>
+  <div class="doctor-clock-customize" aria-label="Escolha o estilo do relógio">
+    <span class="doctor-clock-customize-label">ESCOLHA SEU ESTILO</span>
+    <div class="doctor-clock-layouts">
+      <button type="button" class="doctor-clock-layout is-selected" data-clock-layout="analog" aria-pressed="true"><span>🕰️</span><strong>Analógico retrô</strong><small>Ponteiros clássicos</small></button>
+      <button type="button" class="doctor-clock-layout" data-clock-layout="bedside" aria-pressed="false"><span>⏰</span><strong>Despertador</strong><small>Relógio de cabeceira</small></button>
+      <button type="button" class="doctor-clock-layout" data-clock-layout="digital" aria-pressed="false"><span>🔴</span><strong>Digital retrô</strong><small>Números luminosos</small></button>
+      <button type="button" class="doctor-clock-layout" data-clock-layout="flip" aria-pressed="false"><span>🔢</span><strong>Flip clock</strong><small>Números em cartões</small></button>
+    </div>
+  </div>
+  <div class="doctor-clock-stage">
+    <div class="doctor-clock-caption">SEU TEMPO. SEU RITMO.</div>
+    <div class="doctor-clock" id="doctor-clock-face" role="img" aria-label="Relógio analógico mostrando a hora atual">
+      <div class="doctor-clock-rim"></div><div class="doctor-clock-dial" id="doctor-clock-dial">
+        ${Array.from({length:12},(_,i)=>{const a=i*30;return `<span class="doctor-clock-number" style="--a:${a}deg">${i===0?12:i}</span>`}).join('')}
+        ${Array.from({length:60},(_,i)=>`<span class="doctor-clock-tick ${i%5===0?'major':''}" style="--a:${i*6}deg"></span>`).join('')}
+        <div class="doctor-clock-hand hour" id="doctor-clock-hour"></div><div class="doctor-clock-hand minute" id="doctor-clock-minute"></div><div class="doctor-clock-hand second" id="doctor-clock-second"></div><div class="doctor-clock-pin"></div>
+      </div>
+    </div>
+    <output class="doctor-clock-digital" id="doctor-clock-digital" aria-live="off">00:00:00</output>
+    <output class="doctor-clock-flip" id="doctor-clock-flip" aria-label="Hora atual"><span>00</span><b>:</b><span>00</span><b>:</b><span>00</span></output>
+    <div class="doctor-clock-date" id="doctor-clock-date"></div>
+    <div class="doctor-clock-actions"><button type="button" class="btn btn-primary" id="doctor-clock-fullscreen">⛶ Tela inteira · modo foco</button></div>
+    <p class="doctor-clock-hint">Um relógio, só isso. Respire, acompanhe o tempo e continue estudando.</p>
+  </div>
+</section>`};
+Views.bind.clock=function(){
+  const page=document.getElementById('doctor-clock-page');
+  const face=document.getElementById('doctor-clock-face');
+  const hour=document.getElementById('doctor-clock-hour'),minute=document.getElementById('doctor-clock-minute'),second=document.getElementById('doctor-clock-second');
+  const digital=document.getElementById('doctor-clock-digital'),date=document.getElementById('doctor-clock-date'),full=document.getElementById('doctor-clock-fullscreen');
+  const flip=document.getElementById('doctor-clock-flip');
+  const layoutButtons=Array.from(page?.querySelectorAll('[data-clock-layout]')||[]);
+  const applyLayout=(layout,save=true)=>{
+    const allowed=['analog','bedside','digital','flip'];if(!allowed.includes(layout))layout='analog';
+    page?.setAttribute('data-clock-layout',layout);
+    layoutButtons.forEach(btn=>{const selected=btn.dataset.clockLayout===layout;btn.classList.toggle('is-selected',selected);btn.setAttribute('aria-pressed',String(selected));});
+    if(save){try{localStorage.setItem('doctor-clock-layout',layout)}catch(e){}}
+  };
+  let savedLayout='analog';try{savedLayout=localStorage.getItem('doctor-clock-layout')||'analog'}catch(e){}
+  applyLayout(savedLayout,false);
+  layoutButtons.forEach(btn=>btn.addEventListener('click',()=>applyLayout(btn.dataset.clockLayout)));
+
+  let active=true;
+  // Recalcula o modo visual sempre que o aparelho muda de orientação ou tamanho.
+  const syncOrientation=()=>{if(!page)return;page.setAttribute('data-device-orientation',window.innerWidth>window.innerHeight?'landscape':'portrait');};
+  syncOrientation();
+  window.addEventListener('orientationchange',syncOrientation,{passive:true});
+  window.addEventListener('resize',syncOrientation,{passive:true});
+  const update=()=>{if(!active)return;const now=new Date(),s=now.getSeconds()+now.getMilliseconds()/1000,m=now.getMinutes()+s/60,h=(now.getHours()%12)+m/60;
+    if(hour)hour.style.transform=`translateX(-50%) rotate(${h*30}deg)`;
+    if(minute)minute.style.transform=`translateX(-50%) rotate(${m*6}deg)`;
+    if(second)second.style.transform=`translateX(-50%) rotate(${s*6}deg)`;
+    if(digital)digital.textContent=now.toLocaleTimeString('pt-BR',{hour12:false});
+    const dial=document.getElementById('doctor-clock-dial');if(dial)dial.setAttribute('data-digital',now.toLocaleTimeString('pt-BR',{hour12:false}).slice(0,5));
+    if(flip){const parts=now.toLocaleTimeString('pt-BR',{hour12:false}).split(':');flip.innerHTML=parts.map((part,i)=>`<span>${part}</span>${i<2?'<b>:</b>':''}`).join('');}
+    if(date)date.textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  };
+  update();const timer=setInterval(update,200);
+  const back=document.getElementById('doctor-clock-back');
+  back?.addEventListener('click',async()=>{active=false;clearInterval(timer);if(document.fullscreenElement){try{await document.exitFullscreen()}catch(e){}}UI.render('home')});
+  const refreshButton=()=>{if(full)full.textContent=document.fullscreenElement?'⤢ Sair da tela inteira':'⛶ Tela inteira · modo foco'};
+  full?.addEventListener('click',async()=>{try{if(document.fullscreenElement){await document.exitFullscreen()}else if(page?.requestFullscreen){await page.requestFullscreen()}else{page?.classList.toggle('doctor-clock-immersive');}refreshButton()}catch(e){page?.classList.toggle('doctor-clock-immersive');refreshButton()}});
+  document.addEventListener('fullscreenchange',refreshButton);
+  const cleanup=()=>{active=false;clearInterval(timer);document.removeEventListener('fullscreenchange',refreshButton);window.removeEventListener('orientationchange',syncOrientation);window.removeEventListener('resize',syncOrientation);};
+  // Keep page lifecycle tidy when navigating away through the app's renderer.
+  const originalRender=UI.render;
+  UI.render=function(view){if(view!=='clock'){cleanup();UI.render=originalRender;}return originalRender.call(this,view)};
+};
 Views.calculator=function(){
   const keys=[
     {k:'AC',c:'calc-key utility'},{k:'±',c:'calc-key utility'},{k:'%',c:'calc-key utility'},{k:'÷',c:'calc-key operator'},
@@ -3478,6 +3677,73 @@ Views.bind.radar = function(){
 
 Views.radarArticle=function(){ return RadarDoctor.article(UI._radarArticleId); };
 Views.bind.radarArticle=function(){ document.getElementById('radar-article-back')?.addEventListener('click',()=>UI.back()); document.getElementById('radar-article-study')?.addEventListener('click',()=>UI.goHome()); };
+
+/* ===== CADERNO DOCTOR — serviço local de notas =====
+   V1.12.12 hotfix: a interface chamava CoreNotes, mas o serviço não
+   estava definido no bundle. Mantém dados no Store existente.
+*/
+const CoreNotes = {
+  _id() {
+    try { if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID(); } catch (_) {}
+    return 'note-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  },
+  _ensure() {
+    if (!Store.state) Store.state = {};
+    if (!Array.isArray(Store.state.notes)) Store.state.notes = [];
+    if (!Array.isArray(Store.state.noteFolders)) {
+      Store.state.noteFolders = [{id:'folder-general',name:'Geral',color:'#1687ff',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}];
+    }
+    if (!Store.state.noteFolders.some(f => f && f.id === 'folder-general')) {
+      Store.state.noteFolders.unshift({id:'folder-general',name:'Geral',color:'#1687ff',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
+    }
+    Store.state.notes = Store.state.notes.filter(n => n && typeof n === 'object').map(n => ({
+      id: n.id || this._id(), title: String(n.title || ''), body: String(n.body || ''),
+      subjectId: String(n.subjectId || ''), folderId: n.folderId || 'folder-general',
+      tags: Array.isArray(n.tags) ? n.tags : [], favorite: !!n.favorite, pinned: !!n.pinned,
+      deletedAt: n.deletedAt || null, createdAt: n.createdAt || new Date().toISOString(),
+      updatedAt: n.updatedAt || n.createdAt || new Date().toISOString()
+    }));
+    return Store.state;
+  },
+  list() { return this._ensure().notes; },
+  folders() { return this._ensure().noteFolders; },
+  getFolder(id) { return this.folders().find(f => f.id === id) || null; },
+  createFolder(name, color) {
+    const clean = String(name || '').trim();
+    if (!clean) throw new Error('Informe um nome para a pasta.');
+    const now = new Date().toISOString();
+    const folder = {id:'folder-' + this._id(), name:clean.slice(0,80), color:color || '#1687ff', createdAt:now, updatedAt:now};
+    this.folders().push(folder); Store.save(); return folder;
+  },
+  renameFolder(id, name) {
+    const folder = this.getFolder(id); const clean = String(name || '').trim();
+    if (!folder || id === 'folder-general' || !clean) return false;
+    folder.name = clean.slice(0,80); folder.updatedAt = new Date().toISOString(); Store.save(); return true;
+  },
+  deleteFolder(id) {
+    const folder = this.getFolder(id);
+    if (!folder || id === 'folder-general') return false;
+    this.list().forEach(n => { if (n.folderId === id) n.folderId = 'folder-general'; });
+    Store.state.noteFolders = this.folders().filter(f => f.id !== id); Store.save(); return true;
+  },
+  save(title, body, subjectId, folderId, tags, noteId) {
+    const state = this._ensure(); const now = new Date().toISOString();
+    const parsedTags = Array.isArray(tags) ? tags : String(tags || '').split(',').map(t => t.trim()).filter(Boolean).slice(0,30);
+    let note = noteId ? state.notes.find(n => n.id === noteId && !n.deletedAt) : null;
+    if (note) {
+      Object.assign(note, {title:String(title || '').trim() || 'Anotação sem título', body:String(body || ''), subjectId:String(subjectId || ''), folderId:this.getFolder(folderId)?.id || 'folder-general', tags:parsedTags, updatedAt:now});
+    } else {
+      note = {id:this._id(), title:String(title || '').trim() || 'Anotação sem título', body:String(body || ''), subjectId:String(subjectId || ''), folderId:this.getFolder(folderId)?.id || 'folder-general', tags:parsedTags, favorite:false, pinned:false, deletedAt:null, createdAt:now, updatedAt:now};
+      state.notes.unshift(note);
+    }
+    Store.save(); return note;
+  },
+  clearDraft() { this._ensure(); Store.state.noteDraft = {title:'',body:'',subjectId:SUBJECTS[0]?.id||'',folderId:'folder-general',tags:''}; Store.save(); },
+  trash(id) { const n=this.list().find(x=>x.id===id); if(!n)return false; n.deletedAt=new Date().toISOString(); n.updatedAt=n.deletedAt; Store.save(); return true; },
+  restore(id) { const n=this.list().find(x=>x.id===id); if(!n)return false; n.deletedAt=null; n.updatedAt=new Date().toISOString(); Store.save(); return true; },
+  toggleFavorite(id) { const n=this.list().find(x=>x.id===id&&!x.deletedAt); if(!n)return false; n.favorite=!n.favorite; n.updatedAt=new Date().toISOString(); Store.save(); return n.favorite; },
+  togglePinned(id) { const n=this.list().find(x=>x.id===id&&!x.deletedAt); if(!n)return false; n.pinned=!n.pinned; n.updatedAt=new Date().toISOString(); Store.save(); return n.pinned; }
+};
 
 Views.notes = function(){
   const folders=CoreNotes.folders();
@@ -3870,7 +4136,7 @@ UI.init();
   schedule();
 })();
 </script>
-<script src="./doctor-core-quality.js?v=1.12.11" defer></script>
+<script src="./doctor-core-quality.js?v=1.12.12" defer></script>
 
 <script id="doctor-radar-removal-runtime">
 /* Limpeza de compatibilidade: remove os nós legados do Radar. */
@@ -3881,7 +4147,7 @@ UI.init();
 })();
 </script>
 
-<script src="./calculator-scientific.js?v=1.12.11"></script>
+<script src="./calculator-scientific.js?v=1.12.12"></script>
 
 <script id="doctor-remove-radar-header-notice-v11210">
 /* Remove somente avisos legados que mencionem Radar e apareçam antes do cabeçalho. */
