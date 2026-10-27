@@ -3549,20 +3549,11 @@ Views.timer=function(){return `<section class="timer-page"><div class="timer-top
 Views.bind.timer=function(){DoctorTimer.tick();document.getElementById('doctor-timer-back')?.addEventListener('click',()=>{DoctorTimer.pause();UI.render('home')});document.getElementById('doctor-timer-toggle')?.addEventListener('click',()=>DoctorTimer.running?DoctorTimer.pause():DoctorTimer.start());document.getElementById('doctor-timer-reset')?.addEventListener('click',()=>DoctorTimer.reset())};
 
 // RELÓGIO DOCTOR — mostrador analógico retrô e modo de foco em tela inteira.
-Views.clock=function(){return `<section class="doctor-clock-page" id="doctor-clock-page">
-  <header class="doctor-clock-header"><button type="button" class="btn btn-ghost btn-sm" id="doctor-clock-back">← Voltar às ferramentas</button><span class="doctor-clock-brand">DOCTOR · FOCO</span></header>
-  <div class="doctor-clock-customize" aria-label="Escolha o estilo do relógio">
-    <span class="doctor-clock-customize-label">ESCOLHA SEU ESTILO</span>
-    <div class="doctor-clock-layouts">
-      <button type="button" class="doctor-clock-layout is-selected" data-clock-layout="analog" aria-pressed="true"><span>🕰️</span><strong>Analógico retrô</strong><small>Ponteiros clássicos</small></button>
-      <button type="button" class="doctor-clock-layout" data-clock-layout="bedside" aria-pressed="false"><span>⏰</span><strong>Despertador</strong><small>Relógio de cabeceira</small></button>
-      <button type="button" class="doctor-clock-layout" data-clock-layout="digital" aria-pressed="false"><span>🔴</span><strong>Digital retrô</strong><small>Números luminosos</small></button>
-      <button type="button" class="doctor-clock-layout" data-clock-layout="flip" aria-pressed="false"><span>🔢</span><strong>Flip clock</strong><small>Números em cartões</small></button>
-    </div>
-  </div>
+Views.clock=function(){return `<section class="doctor-clock-page" id="doctor-clock-page" data-clock-layout="flip">
+  <header class="doctor-clock-header"><button type="button" class="btn btn-ghost btn-sm" id="doctor-clock-back">← Voltar às ferramentas</button><span class="doctor-clock-brand">FLIP COOK · DOCTOR</span></header>
   <div class="doctor-clock-stage">
     <div class="doctor-clock-caption">SEU TEMPO. SEU RITMO.</div>
-    <div class="doctor-clock" id="doctor-clock-face" role="img" aria-label="Relógio analógico mostrando a hora atual">
+    <div class="doctor-clock" id="doctor-clock-face" role="img" aria-label="Relógio Flip Cook mostrando a hora atual">
       <div class="doctor-clock-rim"></div><div class="doctor-clock-dial" id="doctor-clock-dial">
         ${Array.from({length:12},(_,i)=>{const a=i*30;return `<span class="doctor-clock-number" style="--a:${a}deg">${i===0?12:i}</span>`}).join('')}
         ${Array.from({length:60},(_,i)=>`<span class="doctor-clock-tick ${i%5===0?'major':''}" style="--a:${i*6}deg"></span>`).join('')}
@@ -3573,7 +3564,7 @@ Views.clock=function(){return `<section class="doctor-clock-page" id="doctor-clo
     <output class="doctor-clock-flip" id="doctor-clock-flip" aria-label="Hora atual"><span>00</span><b>:</b><span>00</span><b>:</b><span>00</span></output>
     <div class="doctor-clock-date" id="doctor-clock-date"></div>
     <div class="doctor-clock-actions"><button type="button" class="btn btn-primary" id="doctor-clock-fullscreen">⛶ Tela inteira · modo foco</button></div>
-    <p class="doctor-clock-hint">Um relógio, só isso. Respire, acompanhe o tempo e continue estudando.</p>
+    <p class="doctor-clock-hint">Flip Cook: acompanhe o tempo e mantenha o foco nos estudos.</p>
   </div>
 </section>`};
 Views.bind.clock=function(){
@@ -3600,16 +3591,8 @@ Views.bind.clock=function(){
   }
   window.addEventListener('resize',syncDialGeometry,{passive:true});
 
-  const layoutButtons=Array.from(page?.querySelectorAll('[data-clock-layout]')||[]);
-  const applyLayout=(layout,save=true)=>{
-    const allowed=['analog','bedside','digital','flip'];if(!allowed.includes(layout))layout='analog';
-    page?.setAttribute('data-clock-layout',layout);
-    layoutButtons.forEach(btn=>{const selected=btn.dataset.clockLayout===layout;btn.classList.toggle('is-selected',selected);btn.setAttribute('aria-pressed',String(selected));});
-    if(save){try{localStorage.setItem('doctor-clock-layout',layout)}catch(e){}}
-  };
-  let savedLayout='analog';try{savedLayout=localStorage.getItem('doctor-clock-layout')||'analog'}catch(e){}
-  applyLayout(savedLayout,false);
-  layoutButtons.forEach(btn=>btn.addEventListener('click',()=>applyLayout(btn.dataset.clockLayout)));
+  // O Flip Cook é o único modelo disponível nesta versão.
+  page?.setAttribute('data-clock-layout','flip');
 
   let active=true;
   // Recalcula o modo visual sempre que o aparelho muda de orientação ou tamanho.
