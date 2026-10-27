@@ -1,20 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" role="img" aria-label="Doctor Disciplinado, nível 06">
- <defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#0b1e36"/><stop offset="1" stop-color="#020812"/></linearGradient><radialGradient id="glow"><stop stop-color="#22c878" stop-opacity=".34"/><stop offset="1" stop-color="#22c878" stop-opacity="0"/></radialGradient></defs>
- <rect width="400" height="520" rx="24" fill="url(#bg)"/><circle cx="200" cy="235" r="180" fill="url(#glow)"/>
- <rect x="10" y="10" width="380" height="500" rx="18" fill="none" stroke="#22c878" stroke-width="3" opacity=".8"/>
- <path d="M24 70 H74 M24 70 V120 M376 70 H326 M376 70 V120 M24 450 H74 M24 450 V400 M376 450 H326 M376 450 V400" stroke="#22c878" stroke-width="4" fill="none"/>
- <text x="200" y="42" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="900" fill="#fff" letter-spacing="3">DOCTOR</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" role="img" aria-label="Avatar Doctor Disciplinado, nível 06">
+ <defs><radialGradient id="a"><stop stop-color="#22c878" stop-opacity=".28"/><stop offset="1" stop-color="#22c878" stop-opacity="0"/></radialGradient><linearGradient id="coat" x2="0" y2="1"><stop stop-color="#1687ff"/><stop offset="1" stop-color="#07182c"/></linearGradient></defs>
+ <ellipse cx="200" cy="275" rx="176" ry="220" fill="url(#a)"/>
  
- <path d="M150 177 Q145 111 200 111 Q255 111 250 177 L260 225 Q250 263 200 270 Q150 263 140 225Z" fill="#d99b72" stroke="#f5c4a1" stroke-width="3"/>
- <path d="M145 170 Q130 102 194 96 Q257 95 258 160 L245 146 L235 128 Q196 150 155 132Z" fill="#26384b"/>
- <path d="M158 184 Q178 174 190 184 M210 184 Q225 174 240 184" stroke="#172338" stroke-width="7" stroke-linecap="round" fill="none"/>
- <rect x="158" y="176" width="36" height="27" rx="9" fill="none" stroke="#101d30" stroke-width="5"/><rect x="206" y="176" width="36" height="27" rx="9" fill="none" stroke="#101d30" stroke-width="5"/><path d="M194 188 H206" stroke="#101d30" stroke-width="5"/>
- <path d="M200 192 L194 216 L205 218" stroke="#b87554" stroke-width="4" fill="none"/><path d="M178 237 Q200 251 222 237" stroke="#7f3f37" stroke-width="5" stroke-linecap="round" fill="none"/>
- <path d="M165 264 L160 291 L200 320 L240 291 L235 264" fill="#d99b72"/>
- <path d="M140 338 L260 338 L282 440 L118 440Z" fill="#22c878" opacity=".96"/><path d="M168 352 L200 390 L232 352" fill="none" stroke="#fff" stroke-width="8"/>
- <path d="M172 347 L200 386 L228 347" fill="none" stroke="#e9f4ff" stroke-width="5"/>
- <circle cx="200" cy="405" r="17" fill="#22c878" stroke="#fff" stroke-width="3"/><text x="200" y="412" text-anchor="middle" font-family="Arial" font-size="22" font-weight="900" fill="#071525">6</text>
- <path d="M180 245 L200 225 L220 245 L200 267Z" fill="#22c878" stroke="#fff" stroke-width="2"/><path d="M200 234 L203 244 L214 245 L205 251 L208 261 L200 255 L192 261 L195 251 L186 245 L197 244Z" fill="#fff"/>
- <text x="200" y="475" text-anchor="middle" font-family="Arial,sans-serif" font-size="21" font-weight="900" fill="#fff">DISCIPLINADO</text>
- <text x="200" y="496" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="#22c878" letter-spacing="2">NÍVEL 06</text>
+ <path d="M165 260 L160 299 L200 329 L240 299 L235 260Z" fill="#d99b72"/>
+ 
+ <path d="M139 305 Q157 287 175 291 L200 325 L225 291 Q243 287 261 305 L294 500 L106 500Z" fill="url(#coat)" stroke="#22c878" stroke-width="4"/>
+ <path d="M166 311 L200 356 L234 311" fill="none" stroke="#dcefff" stroke-width="7"/>
+ <path d="M200 351 L222 374 L200 397 L178 374Z" fill="#22c878" stroke="#fff" stroke-width="3"/><path d="M200 359 L204 371 L216 374 L206 381 L209 392 L200 385 L191 392 L194 381 L184 374 L196 371Z" fill="#fff"/>
+ <path d="M150 178 Q142 101 200 101 Q258 101 250 178 L259 222 Q250 267 200 276 Q150 267 141 222Z" fill="#d99b72" stroke="#f2bd98" stroke-width="3"/>
+ <path d="M145 177 Q126 101 187 91 Q249 82 259 151 L251 175 L238 132 Q196 154 154 135Z" fill="#27394d"/>
+ <path d="M158 190 Q175 181 190 190 M210 190 Q225 181 242 190" stroke="#172338" stroke-width="7" stroke-linecap="round" fill="none"/>
+ <rect x="155" y="183" width="40" height="30" rx="9" fill="none" stroke="#101d30" stroke-width="6"/><rect x="205" y="183" width="40" height="30" rx="9" fill="none" stroke="#101d30" stroke-width="6"/><path d="M195 195 H205" stroke="#101d30" stroke-width="6"/>
+ <path d="M200 199 L193 224 L205 226" stroke="#b87554" stroke-width="4" fill="none"/><path d="M177 244 Q200 258 223 244" stroke="#7f3f37" stroke-width="5" stroke-linecap="round" fill="none"/>
+ <path d="M143 309 L119 382 L153 405 M257 309 L281 382 L247 405" stroke="#22c878" stroke-width="7" fill="none"/>
+ <circle cx="200" cy="430" r="18" fill="#22c878" stroke="#fff" stroke-width="3"/><text x="200" y="438" text-anchor="middle" font-family="Arial" font-size="22" font-weight="900" fill="#071525">6</text>
  </svg>
