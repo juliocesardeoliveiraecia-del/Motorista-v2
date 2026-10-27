@@ -672,7 +672,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .doctor-clock-rim{position:absolute;inset:5%;border-radius:50%;background:linear-gradient(135deg,#f6d994,#75502b 38%,#e3bd6e 62%,#5b3b20);box-shadow:inset 0 0 0 2px #4a2b16}
 .doctor-clock-dial{position:absolute;inset:8%;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 35% 25%,#fff8e6,#f0dfb7 62%,#d4bb88);box-shadow:inset 0 2px 12px #533b1e55,inset 0 0 0 2px #a37a43}
 .doctor-clock-number{position:absolute;left:50%;top:50%;width:2em;height:2em;margin:-1em 0 0 -1em;display:flex;align-items:center;justify-content:center;font-family:Georgia,'Times New Roman',serif;font-size:clamp(17px,4.4vw,25px);font-weight:bold;color:#302219;transform:rotate(var(--a)) translateY(calc(min(34vw, 145px) * -0.78)) rotate(calc(var(--a) * -1));z-index:2}
-.doctor-clock-tick{position:absolute;left:50%;top:50%;width:1px;height:5%;background:#73512d;transform-origin:50% calc(min(34vw, 145px) * -0.78);transform:rotate(var(--a));opacity:.68}
+.doctor-clock-tick{position:absolute;left:50%;top:50%;width:1px;height:5%;background:#73512d;transform-origin:50% 50%;transform:rotate(var(--a)) translateY(calc(min(34vw, 145px) * -.78));opacity:.68}
 .doctor-clock-tick.major{width:3px;height:8%;background:#3a291a;opacity:1}
 .doctor-clock-hand{position:absolute;left:50%;bottom:50%;z-index:4;transform-origin:50% 100%;border-radius:8px 8px 2px 2px}
 .doctor-clock-hand.hour{height:27%;width:5px;background:linear-gradient(90deg,#332219,#725234,#24170f);box-shadow:0 0 1px #fff8}
@@ -3615,7 +3615,7 @@ Views.bind.clock=function(){
   // Recalcula o modo visual sempre que o aparelho muda de orientação ou tamanho.
   const syncOrientation=()=>{if(!page)return;page.setAttribute('data-device-orientation',window.innerWidth>window.innerHeight?'landscape':'portrait');};
   // Posiciona números e marcações pela medida real do mostrador, não por valores fixos de viewport.
-  const syncDialGeometry=()=>{const dial=document.getElementById('doctor-clock-dial');if(!dial)return;const radius=Math.max(0,Math.round(dial.clientWidth*.39));dial.querySelectorAll('.doctor-clock-number').forEach(el=>{el.style.transform=`rotate(var(--a)) translateY(-${radius}px) rotate(calc(var(--a) * -1))`;});dial.querySelectorAll('.doctor-clock-tick').forEach(el=>{el.style.transformOrigin=`50% -${radius}px`;});};
+  const syncDialGeometry=()=>{const dial=document.getElementById('doctor-clock-dial');if(!dial)return;const radius=Math.max(0,Math.round(dial.clientWidth*.39));dial.querySelectorAll('.doctor-clock-number').forEach(el=>{el.style.transform=`rotate(var(--a)) translateY(-${radius}px) rotate(calc(var(--a) * -1))`;});dial.querySelectorAll('.doctor-clock-tick').forEach(el=>{el.style.transformOrigin='50% 50%';el.style.transform=`rotate(var(--a)) translateY(-${radius}px)`;});};
   const syncDisplay=()=>{syncOrientation();syncDialGeometry();};
   syncDisplay();
   window.addEventListener('orientationchange',syncDisplay,{passive:true});
