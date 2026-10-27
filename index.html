@@ -545,6 +545,28 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .home-impact-sub{margin-top:4px;font-size:11px;line-height:1.4;color:var(--text-muted);}
 .exam-hero .hero-days{font-size:clamp(24px,4vw,38px);overflow-wrap:anywhere;}
 @media(max-width:520px){.home-impact-message{padding:10px 12px}.home-impact-sub{font-size:10px}.exam-hero .hero-days{font-size:clamp(19px,5vw,27px);line-height:1.12}}
+/* Simulado: configuração compacta e moderna, usando a identidade Doctor já aprovada. */
+.simulado-intro{background:linear-gradient(145deg,var(--blue-dark),var(--blue-mid));color:#fff;border:0}
+.simulado-intro .muted,.simulado-intro p{color:#d1dbea}
+.simulado-eyebrow{font-size:10px;font-weight:900;letter-spacing:.12em;color:#f1ce7a;margin-bottom:8px}
+.simulado-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+.simulado-summary>div{padding:10px 6px;border:1px solid #ffffff25;background:#ffffff0d;border-radius:10px;text-align:center;display:flex;flex-direction:column;gap:3px}
+.simulado-summary strong{font-size:22px;line-height:1.1}.simulado-summary span{font-size:10px;color:#d1dbea}
+.simulado-distribution h3{margin-bottom:4px}
+.simulado-subject{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.simulado-subject:last-of-type{border-bottom:0}
+.simulado-subject-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(22,52,94,.1);font-size:20px;flex-shrink:0}
+.simulado-subject-main{min-width:0;flex:1}.simulado-subject-main>strong{font-size:12px;line-height:1.3;display:block}
+.simulado-weight-track{height:5px;border-radius:10px;background:var(--border);overflow:hidden;margin-top:7px}
+.simulado-weight-track span{height:100%;display:block;background:linear-gradient(90deg,#d8b96e,#f1ce7a);border-radius:10px}
+.simulado-subject-metrics{text-align:right;min-width:76px;display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.simulado-subject-metrics strong{font-size:18px}.simulado-subject-metrics span,.simulado-subject-metrics small{font-size:10px;color:var(--text-muted)}
+.simulado-total{display:flex;justify-content:space-between;gap:8px;align-items:center;border-top:1px solid var(--border);padding-top:12px;margin-top:6px;font-size:11px}
+.simulado-total strong{text-align:right}
+.simulado-generation-note{display:flex;flex-direction:column;gap:5px;padding:13px 14px;margin:0 0 12px;border-left:3px solid #d8b96e;background:rgba(22,52,94,.06);border-radius:0 10px 10px 0;font-size:12px;line-height:1.45}
+.simulado-generation-note span,.simulado-footnote{color:var(--text-muted);font-size:11px;line-height:1.45}
+.simulado-generate{min-height:52px;font-size:15px;font-weight:900}
+@media(max-width:380px){.simulado-summary strong{font-size:19px}.simulado-subject-icon{width:32px;height:32px}.simulado-subject-metrics{min-width:65px}.simulado-total{align-items:flex-start;flex-direction:column}}
 /* ===== V1.8.4 — MARCA DOCTOR = HOME ===== */
 .topbar-brand{
   grid-column:1; grid-row:1; appearance:none; -webkit-appearance:none; border:0; margin:0; padding:0;
@@ -3347,40 +3369,45 @@ Views.simuladoSetup = function () {
   if (resumable) {
     return `
       <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
-      <h2>${iconEl('clipboard')} Simulado em andamento</h2>
-      <div class="card">
-        <p>Você tem um simulado começado, na questão <strong>${resumable.index + 1} de ${resumable.questions.length}</strong>.</p>
-        <button class="btn btn-primary btn-block" id="continue-simulado">Continuar de onde parei</button>
-        <button class="btn btn-danger btn-block" id="abandon-simulado">Abandonar e começar um novo</button>
-      </div>
-    `;
+      <section class="card simulado-intro">
+        <div class="simulado-eyebrow">DOCTOR CORE · SIMULADO ADAPTADO À BANCA</div>
+        <h2>${iconEl('clipboard')} Simulado</h2>
+        <p>Você tem um simulado em andamento: questão <strong>${resumable.index + 1} de ${resumable.questions.length}</strong>.</p>
+        <button class="btn btn-primary btn-block" id="continue-simulado">Continuar simulado</button>
+        <button class="btn btn-ghost btn-block" id="abandon-simulado">Descartar e gerar outro</button>
+      </section>`;
   }
-
-  const readiness = Quiz.simuladoReadiness();
-  const allReady = readiness.every(r => r.missing === 0);
-
+  const weights = SUBJECTS.map(s => ({subject:s, count:Number(s.officialQuestions||0), points:Number(s.points||0), total:Number(s.officialQuestions||0)*Number(s.points||0)}));
+  const totalWeight = weights.reduce((n,r)=>n+r.total,0);
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
-    <h2>${iconEl('clipboard')} Simulado Oficial</h2>
-    <p class="muted">Reproduz exatamente a estrutura do ${EXAM_CONFIG.editalNumber}: ${ExamRules.questionCount} questões, ${ExamRules.optionCount} alternativas, ${EXAM_CONFIG.totalPoints} pontos, mínimo ${EXAM_CONFIG.passingScore} para aprovação, ${EXAM_CONFIG.durationHours} horas de duração.</p>
-    <div class="card">
-      ${readiness.map(r => `
-        <div class="subj-row">
-          <div class="subj-name">${r.subject.icon} ${r.subject.name}</div>
-          <div class="subj-pct">${r.have}/${r.need}</div>
-        </div>
-      `).join('')}
-    </div>
-    ${allReady ? `
-      <button class="btn btn-primary btn-block" id="start-simulado">Iniciar Simulado (4h)</button>
-    ` : `
-      <div class="card warn-card">
-        <p><strong>Faltam questões para montar o simulado oficial completo.</strong></p>
-        <p class="muted">Posso gerar as que faltam agora com IA (usa sua chave da Groq).</p>
-        <button class="btn btn-primary btn-block" id="fill-missing">${iconEl('bot')} Gerar questões faltantes</button>
+    <section class="card simulado-intro">
+      <div class="simulado-eyebrow">DOCTOR CORE · SIMULADO PERSONALIZADO</div>
+      <h2>${iconEl('clipboard')} Simulado</h2>
+      <p class="muted">O Core configura automaticamente o formato da prova conforme o edital e a banca. Cada simulado é gerado por IA para este concurso, respeitando matérias, quantidade de questões, alternativas e estilo de cobrança.</p>
+      <div class="simulado-summary">
+        <div><strong>${ExamRules.questionCount}</strong><span>questões</span></div>
+        <div><strong>${ExamRules.optionCount}</strong><span>alternativas</span></div>
+        <div><strong>${EXAM_CONFIG.durationHours}h</strong><span>de prova</span></div>
       </div>
-      <div class="card warn-card"><strong>O simulado oficial permanece bloqueado até completar o banco.</strong><p class="muted">Isso evita entregar uma prova que não reproduza a distribuição real do edital.</p></div>
-    `}
+    </section>
+    <section class="card simulado-distribution">
+      <h3>Distribuição da prova</h3>
+      <p class="muted">Quantidade e peso definidos pelo perfil do concurso.</p>
+      ${weights.map(r=>`
+        <div class="simulado-subject">
+          <div class="simulado-subject-icon">${r.subject.icon||'📚'}</div>
+          <div class="simulado-subject-main">
+            <strong>${r.subject.name}</strong>
+            <div class="simulado-weight-track"><span style="width:${totalWeight?Math.round(r.total/totalWeight*100):0}%"></span></div>
+          </div>
+          <div class="simulado-subject-metrics"><strong>${r.count}</strong><span>questões</span><small>${r.points} ${r.points===1?'ponto':'pontos'} cada</small></div>
+        </div>`).join('')}
+      <div class="simulado-total"><span>Total previsto</span><strong>${ExamRules.questionCount} questões · ${EXAM_CONFIG.totalPoints} pontos</strong></div>
+    </section>
+    <div class="simulado-generation-note"><strong>Questões novas a cada geração.</strong><span>O Doctor usa o edital, o perfil da banca e provas anteriores ou similares como referência quando disponíveis. O conteúdo passa pela revisão automática antes de entrar no simulado.</span></div>
+    <button class="btn btn-primary btn-block simulado-generate" id="generate-simulado">${iconEl('bot')} Gerar simulado completo</button>
+    <p class="muted simulado-footnote">É necessário configurar uma chave GROQ em Configurações para gerar as questões.</p>
   `;
 };
 
@@ -3391,32 +3418,58 @@ Views.bind.simuladoSetup = function () {
     UI.render('simuladoRunning');
   });
   document.getElementById('abandon-simulado')?.addEventListener('click', () => {
-    if (confirm('Abandonar o simulado atual? O progresso dele será perdido.')) {
+    if (confirm('Descartar o simulado atual e gerar outro?')) {
       Quiz.clearPersisted();
       Quiz.session = null;
       UI.render('simuladoSetup');
     }
   });
-  document.getElementById('start-simulado')?.addEventListener('click', () => {
-    const result=Quiz.startSimulado();
-    if(!result || result.ok===false){
-      UI.toast('O simulado continua bloqueado até o banco estar completo e íntegro.','warn');
-      UI.render('simuladoSetup');
+  document.getElementById('generate-simulado')?.addEventListener('click', async (e) => {
+    if (!GroqAI.hasKey()) {
+      UI.toast('Cadastre sua chave GROQ em Configurações para gerar o simulado.', 'warn');
+      UI.render('settings');
       return;
     }
-    UI.render('simuladoRunning');
-  });
-  document.getElementById('fill-missing')?.addEventListener('click', async (e) => {
-    if (!GroqAI.hasKey()) { UI.toast('Cadastre sua chave da Groq em Configurações.', 'warn'); UI.render('settings'); return; }
-    const btn = e.target;
-    btn.disabled = true;
-    const readiness = Quiz.simuladoReadiness().filter(r => r.missing > 0);
-    for (const r of readiness) {
-      btn.innerHTML = iconEl('bot') + ' Gerando ' + r.subject.name + '...';
-      await GroqAI.fillSubjectTo(r.subject.id, r.need);
+    const btn=e.currentTarget;
+    btn.disabled=true;
+    const original=btn.innerHTML;
+    const generated=[];
+    try {
+      for (const subject of SUBJECTS) {
+        const required=Number(subject.officialQuestions||0);
+        let subjectQuestions=[];
+        let attempts=0;
+        while(subjectQuestions.length<required && attempts<Math.ceil(required/5)+2) {
+          attempts++;
+          const count=Math.min(5,required-subjectQuestions.length);
+          btn.innerHTML=iconEl('bot')+' Gerando '+subject.name+' ('+Math.min(required,subjectQuestions.length+count)+'/'+required+')…';
+          const before=new Set(QUESTIONS.map(q=>q.id));
+          const result=await GroqAI.generateQuestions(subject.id,count);
+          if(!result?.ok) throw new Error('Não foi possível gerar questões de '+subject.name+'. Verifique a conexão e tente novamente.');
+          const fresh=QUESTIONS.filter(q=>q.subjectId===subject.id && q.aiGenerated && !before.has(q.id));
+          subjectQuestions=subjectQuestions.concat(fresh);
+        }
+        if(subjectQuestions.length<required) throw new Error('A IA não conseguiu completar a quantidade de questões de '+subject.name+'. Gere novamente para tentar completar.');
+        generated.push(...Quiz.shuffle(subjectQuestions).slice(0,required));
+      }
+      if(generated.length!==ExamRules.questionCount) throw new Error('A distribuição gerada não corresponde à quantidade oficial de questões.');
+      Quiz.session={
+        type:'simulado',
+        questions:Quiz.shuffle(generated),
+        index:0,
+        answers:[],
+        startedAt:Date.now(),
+        timeLimitSeconds:ExamRules.durationSeconds
+      };
+      Quiz.persist();
+      UI.render('simuladoRunning');
+    } catch(err) {
+      UI.toast(err?.message||'Não foi possível gerar o simulado completo. Tente novamente.', 'warn');
+      UI.render('simuladoSetup');
+    } finally {
+      const current=document.getElementById('generate-simulado');
+      if(current){current.disabled=false;current.innerHTML=original;}
     }
-    UI.toast('Banco de questões atualizado!', 'success');
-    UI.render('simuladoSetup');
   });
 };
 
