@@ -1,0 +1,71 @@
+{
+  "$schema": "doctor-core-icon-palette/v1",
+  "matrix": {
+    "asset": "assets/icons/doctor-core-master.svg",
+    "principle": "Preservar o símbolo Doctor (D + livro + seta ascendente); derivar cada produto pela tarjeta de identificação no canto superior direito, sem cobrir o D."
+  },
+  "generatorContract": {
+    "coreOwned": true,
+    "productSpecificOverridesAllowed": false,
+    "requiredProductFields": [
+      "appId",
+      "productId",
+      "appTitle"
+    ],
+    "badgePosition": "top-right",
+    "badgeMustNotObscureLogo": true,
+    "sameMatrixForAllProducts": true
+  },
+  "products": {
+    "motorista-legislativo": {
+      "appId": "motorista-legislativo",
+      "productId": "motorista-legislativo",
+      "label": "ML",
+      "badgeColor": "#F5C400",
+      "badgeTextColor": "#071322",
+      "asset": "doctor-core-icon.svg"
+    }
+  },
+  "palette": [
+    {
+      "id": "yellow",
+      "color": "#F5C400",
+      "textColor": "#071322"
+    },
+    {
+      "id": "green",
+      "color": "#20B86B",
+      "textColor": "#FFFFFF"
+    },
+    {
+      "id": "red",
+      "color": "#E53935",
+      "textColor": "#FFFFFF"
+    },
+    {
+      "id": "purple",
+      "color": "#8B5CF6",
+      "textColor": "#FFFFFF"
+    },
+    {
+      "id": "blue",
+      "color": "#1687FF",
+      "textColor": "#FFFFFF"
+    },
+    {
+      "id": "orange",
+      "color": "#F97316",
+      "textColor": "#FFFFFF"
+    },
+    {
+      "id": "cyan",
+      "color": "#06B6D4",
+      "textColor": "#071322"
+    },
+    {
+      "id": "pink",
+      "color": "#EC4899",
+      "textColor": "#FFFFFF"
+    }
+  ]
+}
