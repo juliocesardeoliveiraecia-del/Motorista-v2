@@ -2809,7 +2809,7 @@ Views.home = function () {
     </section>
     <section class="exam-hero" aria-label="Painel de fase e contagem do concurso">
       <div class="exam-hero-photo">
-        <img class="exam-hero-chamber" src="${EXAM_CONFIG.heroImage || ''}" alt="${EXAM_CONFIG.orgName || 'Concurso'}" loading="eager" onerror="this.style.display='none';">
+        <img class="exam-hero-chamber" src="${EXAM_CONFIG.heroImage || './assets/images/ipameri-chamber-green.svg?v=20261028-2'}" alt="${EXAM_CONFIG.orgName || 'Concurso'}" loading="eager" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='./assets/images/motorista-legislativo-banner.svg?v=20261028-2';}else{this.style.display='none';}">
         <div class="exam-hero-overlay" aria-hidden="true"></div>
         <div class="exam-hero-content">
           <div class="hero-label">${heroLabel}</div>
