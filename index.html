@@ -4152,6 +4152,11 @@ Views.settings = function () {
   const groqState = s.groqValidation === 'ok' ? 'ok' : (s.groqValidation === 'checking' ? 'checking' : 'bad');
   const statusTitle = groqState === 'ok' ? 'GROQ funcionando corretamente' : (groqState === 'checking' ? 'Verificando sua chave…' : (hasKey ? 'Chave salva, mas ainda não validada' : 'IA ainda não configurada'));
   const statusSub = groqState === 'ok' ? 'Sua chave foi validada e a IA Doctor está pronta para uso.' : (groqState === 'checking' ? 'Aguarde alguns segundos.' : (hasKey ? 'Clique em “Salvar chave” para fazer a verificação automática.' : 'Configure sua chave gratuita para liberar os recursos de IA.'));
+  // Identidade obrigatória do produto, resolvida pelo perfil e não digitada pelo usuário.
+  const supportAppName = String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || '').trim();
+  const supportAppId = String(EXAM_CONFIG.appId || '').trim();
+  const supportProductId = String(EXAM_CONFIG.productId || '').trim();
+  const supportIdentityReady = !!(supportAppName && supportAppId && supportProductId);
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">← Voltar para o Doctor</button>
     <h2>⚙️ Configurações</h2>
@@ -4230,8 +4235,9 @@ Views.settings = function () {
       <form id="doctor-support-form">
         <div class="doctor-support-app" style="margin-bottom:14px">
           <span aria-hidden="true" style="font-size:1.4rem">📱</span>
-          <div><strong>Aplicativo identificado automaticamente</strong><span>${String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || 'Doctor Core')}</span><small>${String(EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Doctor Core')} · ID: ${String(EXAM_CONFIG.appId || EXAM_CONFIG.productId || 'doctor-core')}</small></div>
+          <div><strong>Aplicativo identificado automaticamente</strong><span>${supportAppName || 'Identificação obrigatória pendente'}</span><small>${String(EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Produto não configurado')} · ID do app: ${supportAppId || 'NÃO CONFIGURADO'} · ID do produto: ${supportProductId || 'NÃO CONFIGURADO'}</small></div>
         </div>
+        ${supportIdentityReady ? '' : '<p class="doctor-support-note" role="alert">⚠️ O suporte está temporariamente indisponível porque a identidade obrigatória deste aplicativo não foi configurada. Informe appTitle, appId e productId no perfil do produto.</p>'}
         <div class="doctor-support-grid">
           <div>
             <label for="doctor-support-type">Como podemos ajudar?</label>
@@ -4257,7 +4263,7 @@ Views.settings = function () {
           </div>
         </div>
         <div class="doctor-support-actions">
-          <button class="btn btn-primary btn-block" id="doctor-support-email" type="submit">✉️ ENVIAR POR E-MAIL</button>
+          <button class="btn btn-primary btn-block" id="doctor-support-email" type="submit" ${supportIdentityReady ? '' : 'disabled'}>✉️ ENVIAR POR E-MAIL</button>
           <button class="btn btn-outline btn-block" type="button" disabled title="O canal será ativado quando o número oficial for definido">💬 WhatsApp — em breve</button>
         </div>
         <p class="doctor-support-note muted">Ao tocar em “Enviar por e-mail”, o aplicativo abrirá o programa de e-mail do seu dispositivo com a mensagem preenchida para <strong>doctorconcursoschat@gmail.com</strong>. Revise e toque em enviar no seu e-mail. O WhatsApp será ativado quando o número oficial estiver definido.</p>
@@ -4273,6 +4279,10 @@ Views.bind.settings = function () {
     const subject = (document.getElementById('doctor-support-subject')?.value || '').trim();
     const contact = (document.getElementById('doctor-support-contact')?.value || '').trim();
     const message = (document.getElementById('doctor-support-message')?.value || '').trim();
+    const supportAppName = String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || '').trim();
+    const supportAppId = String(EXAM_CONFIG.appId || '').trim();
+    const supportProductId = String(EXAM_CONFIG.productId || '').trim();
+    if (!supportAppName || !supportAppId || !supportProductId) { UI.toast('O perfil deste aplicativo está sem identificação obrigatória. A equipe precisa configurar appTitle, appId e productId antes de enviar o suporte.', 'warn'); return; }
     if (!contact || !document.getElementById('doctor-support-contact')?.checkValidity()) { UI.toast('Informe um e-mail válido para que possamos responder à sua solicitação.', 'warn'); document.getElementById('doctor-support-contact')?.focus(); return; }
     if (!subject || !message) { UI.toast('Preencha o assunto e a descrição para continuar.', 'warn'); return; }
     const body = [
@@ -4281,18 +4291,19 @@ Views.bind.settings = function () {
       'Tipo de solicitação: ' + type,
       'Assunto: ' + subject,
       'E-mail para retorno: ' + contact,
-      'Aplicativo: ' + (EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || 'Doctor Core'),
-      'Produto/concurso: ' + (EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Doctor Core'),
+      'Aplicativo: ' + supportAppName,
+      'ID do aplicativo: ' + supportAppId,
+      'ID do produto: ' + supportProductId,
+      'Produto/concurso: ' + (EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Não informado'),
       'Órgão: ' + (EXAM_CONFIG.orgName || 'Não informado') + (EXAM_CONFIG.orgState ? ' - ' + EXAM_CONFIG.orgState : ''),
       'Cargo: ' + (EXAM_CONFIG.cargo || 'Não informado'),
-      'ID do aplicativo: ' + (EXAM_CONFIG.appId || EXAM_CONFIG.productId || 'doctor-core'),
       'Versão do Core: ' + (EXAM_CONFIG.coreVersion || 'Não informada'),
       '',
       'Descrição:',
       message,
       '',
       'Enviado automaticamente pelo formulário de suporte do aplicativo Doctor Core.'
-    ].join('\\n');
+    ].join('\n');
     const appName = EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || 'Doctor Core';
     const mailto = 'mailto:doctorconcursoschat@gmail.com?subject=' + encodeURIComponent('[' + appName + '] ' + type + ': ' + subject) + '&body=' + encodeURIComponent(body);
     window.location.href = mailto;
