@@ -1,8 +1,10 @@
 {
   "$schema": "doctor-core-icon-palette/v1",
+  "systemVersion": "1.1.0",
   "matrix": {
     "asset": "assets/icons/doctor-core-master.svg",
-    "principle": "Preservar o símbolo Doctor (D + livro + seta ascendente); derivar cada produto pela tarjeta de identificação no canto superior direito, sem cobrir o D."
+    "format": "SVG vetorial 1024×1024",
+    "principle": "Preservar o símbolo Doctor (D + livro + seta ascendente); a tarjeta superior direita diferencia o produto sem encobrir o símbolo."
   },
   "generatorContract": {
     "coreOwned": true,
@@ -14,16 +16,109 @@
     ],
     "badgePosition": "top-right",
     "badgeMustNotObscureLogo": true,
-    "sameMatrixForAllProducts": true
+    "sameMatrixForAllProducts": true,
+    "sourceOfTruth": "assets/icons/icon-palette.json",
+    "generator": "assets/icons/icon-generator.js",
+    "manifestIconPolicy": "versioned-icon-URL-and-manifest-version"
+  },
+  "activeProduct": {
+    "appId": "doctor-motorista-legislativo",
+    "productId": "motorista-legislativo",
+    "appTitle": "Motorista Legislativo",
+    "label": "ML",
+    "badgeColor": "#F5C400",
+    "badgeTextColor": "#071322",
+    "asset": "assets/icons/products/motorista-legislativo.svg",
+    "iconVersion": "1.1.0"
   },
   "products": {
     "motorista-legislativo": {
-      "appId": "motorista-legislativo",
+      "appId": "doctor-motorista-legislativo",
       "productId": "motorista-legislativo",
+      "appTitle": "Motorista Legislativo",
       "label": "ML",
       "badgeColor": "#F5C400",
       "badgeTextColor": "#071322",
-      "asset": "doctor-core-icon.svg"
+      "asset": "assets/icons/products/motorista-legislativo.svg",
+      "iconVersion": "1.0.0",
+      "status": "active"
+    },
+    "policia-penal": {
+      "appId": "doctor-policia-penal",
+      "productId": "policia-penal",
+      "appTitle": "Polícia Penal",
+      "label": "PP",
+      "badgeColor": "#20B86B",
+      "badgeTextColor": "#FFFFFF",
+      "asset": "assets/icons/products/policia-penal.svg",
+      "iconVersion": "1.0.0",
+      "status": "template"
+    },
+    "prf": {
+      "appId": "doctor-prf",
+      "productId": "prf",
+      "appTitle": "Polícia Rodoviária Federal",
+      "label": "PRF",
+      "badgeColor": "#E53935",
+      "badgeTextColor": "#FFFFFF",
+      "asset": "assets/icons/products/prf.svg",
+      "iconVersion": "1.0.0",
+      "status": "template"
+    },
+    "policia-federal": {
+      "appId": "doctor-policia-federal",
+      "productId": "policia-federal",
+      "appTitle": "Polícia Federal",
+      "label": "PF",
+      "badgeColor": "#8B5CF6",
+      "badgeTextColor": "#FFFFFF",
+      "asset": "assets/icons/products/policia-federal.svg",
+      "iconVersion": "1.0.0",
+      "status": "template"
+    },
+    "guarda-municipal": {
+      "appId": "doctor-guarda-municipal",
+      "productId": "guarda-municipal",
+      "appTitle": "Guarda Municipal",
+      "label": "GM",
+      "badgeColor": "#1687FF",
+      "badgeTextColor": "#FFFFFF",
+      "asset": "assets/icons/products/guarda-municipal.svg",
+      "iconVersion": "1.0.0",
+      "status": "template"
+    },
+    "tribunais": {
+      "appId": "doctor-tribunais",
+      "productId": "tribunais",
+      "appTitle": "Tribunais",
+      "label": "TRI",
+      "badgeColor": "#F97316",
+      "badgeTextColor": "#FFFFFF",
+      "asset": "assets/icons/products/tribunais.svg",
+      "iconVersion": "1.0.0",
+      "status": "template"
+    },
+    "administrativo": {
+      "appId": "doctor-administrativo",
+      "productId": "administrativo",
+      "appTitle": "Área Administrativa",
+      "label": "ADM",
+      "badgeColor": "#06B6D4",
+      "badgeTextColor": "#071322",
+      "asset": "assets/icons/products/administrativo.svg",
+      "iconVersion": "1.0.0",
+      "status": "template"
+    },
+    "saude": {
+      "appId": "doctor-saude",
+      "productId": "saude",
+      "appTitle": "Área da Saúde",
+      "label": "SAU",
+      "badgeColor": "#EC4899",
+      "badgeTextColor": "#FFFFFF",
+      "asset": "assets/icons/products/saude.svg",
+      "iconVersion": "1.0.0",
+      "status": "template"
     }
   },
   "palette": [
