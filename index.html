@@ -243,6 +243,11 @@ main { padding: 16px; max-width: 640px; margin: 0 auto; }
 }
 .flashcard-front { background: var(--surface); color: var(--text); }
 .flashcard-back { background: var(--blue-dark); color: #fff; transform: rotateY(180deg); font-weight: 500; }
+.flashcard-face { padding: 20px 18px 62px; }
+.flashcard-flip-button { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 2; display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 38px; max-width: calc(100% - 24px); padding: 9px 15px; border: 2px solid currentColor; border-radius: 999px; background: rgba(0,0,0,.16); color: inherit; font-size: 13px; font-weight: 800; line-height: 1.2; cursor: pointer; white-space: normal; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.flashcard-front .flashcard-flip-button { background: var(--blue-dark); color: #fff; border-color: var(--blue-dark); }
+.flashcard-back .flashcard-flip-button { background: #fff; color: var(--blue-dark); border-color: #fff; }
+.flashcard-flip-button:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
 .flashcard-content { width: 100%; overflow-wrap: anywhere; }
 .flashcard-flip-btn { position: absolute; left: 14px; right: 14px; bottom: 12px; min-height: 40px; border: 2px solid currentColor; border-radius: 10px; background: rgba(0,0,0,.12); color: inherit; font: inherit; font-size: 13px; font-weight: 800; letter-spacing: .02em; cursor: pointer; }
 .flashcard-flip-btn:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
@@ -3343,9 +3348,18 @@ Views.bind.flashcardsSession = function () {
   document.getElementById('fc-session-back')?.addEventListener('click', () => UI.back());
   document.getElementById('fc-session-done')?.addEventListener('click', () => UI.render('flashcardsSubject'));
 
-  document.getElementById('flashcard-el')?.addEventListener('click', () => {
+  const flipFlashcard = () => {
     s.flipped = !s.flipped;
     UI.render('flashcardsSession');
+  };
+  document.getElementById('flashcard-el')?.addEventListener('click', flipFlashcard);
+  document.getElementById('fc-flip-btn')?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    flipFlashcard();
+  });
+  document.getElementById('fc-flip-btn-back')?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    flipFlashcard();
   });
 
   document.getElementById('fc-skip')?.addEventListener('click', () => {
