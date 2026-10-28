@@ -3503,7 +3503,6 @@ Views.bind.simuladoSetup = function () {
         timeLimitSeconds:ExamRules.durationSeconds
       };
       Store.state.simuladoQuota={lastGeneratedAt:new Date(completedAt).toISOString(),nextAllowedAt:completedAt+7*86400000};
-      Store.save();
       Quiz.persist();
       UI.render('simuladoRunning');
     } catch(err) {
