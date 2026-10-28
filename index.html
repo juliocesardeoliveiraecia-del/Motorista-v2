@@ -4250,6 +4250,10 @@ Views.settings = function () {
             </select>
           </div>
           <div>
+            <label for="doctor-support-name">Seu nome completo (obrigatório)</label>
+            <input id="doctor-support-name" type="text" maxlength="120" placeholder="Como podemos chamar você?" autocomplete="name" required>
+          </div>
+          <div>
             <label for="doctor-support-subject">Assunto</label>
             <input id="doctor-support-subject" type="text" maxlength="120" placeholder="Resuma o assunto" required>
           </div>
@@ -4276,6 +4280,7 @@ Views.bind.settings = function () {
   document.getElementById('doctor-support-form')?.addEventListener('submit', (event) => {
     event.preventDefault();
     const type = document.getElementById('doctor-support-type')?.value || 'Outro assunto';
+    const personName = (document.getElementById('doctor-support-name')?.value || '').trim();
     const subject = (document.getElementById('doctor-support-subject')?.value || '').trim();
     const contact = (document.getElementById('doctor-support-contact')?.value || '').trim();
     const message = (document.getElementById('doctor-support-message')?.value || '').trim();
@@ -4283,11 +4288,13 @@ Views.bind.settings = function () {
     const supportAppId = String(EXAM_CONFIG.appId || '').trim();
     const supportProductId = String(EXAM_CONFIG.productId || '').trim();
     if (!supportAppName || !supportAppId || !supportProductId) { UI.toast('O perfil deste aplicativo está sem identificação obrigatória. A equipe precisa configurar appTitle, appId e productId antes de enviar o suporte.', 'warn'); return; }
+    if (!personName) { UI.toast('Informe seu nome para identificarmos sua solicitação.', 'warn'); document.getElementById('doctor-support-name')?.focus(); return; }
     if (!contact || !document.getElementById('doctor-support-contact')?.checkValidity()) { UI.toast('Informe um e-mail válido para que possamos responder à sua solicitação.', 'warn'); document.getElementById('doctor-support-contact')?.focus(); return; }
     if (!subject || !message) { UI.toast('Preencha o assunto e a descrição para continuar.', 'warn'); return; }
     const body = [
       'Central de Suporte Doctor Core',
       '',
+      'Nome do solicitante: ' + personName,
       'Tipo de solicitação: ' + type,
       'Assunto: ' + subject,
       'E-mail para retorno: ' + contact,
