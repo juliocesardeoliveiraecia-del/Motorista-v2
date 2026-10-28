@@ -3065,6 +3065,28 @@ Views.pickSubject = function () {
 
 Views.bind.pickSubject = function () {
   document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
+  document.getElementById('doctor-support-form')?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const type = document.getElementById('doctor-support-type')?.value || 'Outro assunto';
+    const subject = (document.getElementById('doctor-support-subject')?.value || '').trim();
+    const contact = (document.getElementById('doctor-support-contact')?.value || '').trim();
+    const message = (document.getElementById('doctor-support-message')?.value || '').trim();
+    if (!subject || !message) { UI.toast('Preencha o assunto e a descrição para continuar.', 'warn'); return; }
+    const body = [
+      'Central de Suporte Doctor Core',
+      '',
+      'Tipo de solicitação: ' + type,
+      'Assunto: ' + subject,
+      'E-mail para retorno: ' + (contact || 'Não informado'),
+      '',
+      'Descrição:',
+      message,
+      '',
+      'Enviado pelo aplicativo Doctor Core.'
+    ].join('\\n');
+    const mailto = 'mailto:doctorconcursoschat@gmail.com?subject=' + encodeURIComponent('[Doctor Core] ' + type + ': ' + subject) + '&body=' + encodeURIComponent(body);
+    window.location.href = mailto;
+  });
   document.querySelectorAll('.pick-card').forEach(el => {
     el.addEventListener('click', () => {
       UI.practiceSubject = el.dataset.subject;
@@ -4154,6 +4176,62 @@ Views.settings = function () {
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">← Voltar para o Doctor</button>
     <h2>⚙️ Configurações</h2>
+    <section class="card doctor-support-card" aria-labelledby="doctor-support-title">
+      <style>
+        .doctor-support-card{border:1px solid rgba(245,190,35,.55);background:linear-gradient(145deg,rgba(245,190,35,.09),transparent 58%);padding:clamp(16px,4vw,24px)}
+        .doctor-support-kicker{display:inline-flex;align-items:center;gap:7px;font-size:.76rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent,#f5be23);margin-bottom:8px}
+        .doctor-support-card h3{margin:0 0 8px;font-size:1.3rem}
+        .doctor-support-intro{margin:0 0 16px;line-height:1.55}
+        .doctor-support-promise{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:12px;background:rgba(245,190,35,.12);margin:14px 0 18px}
+        .doctor-support-promise strong{display:block;margin-bottom:3px}
+        .doctor-support-grid{display:grid;grid-template-columns:1fr;gap:12px}
+        .doctor-support-grid label{display:block;font-weight:700;font-size:.9rem;margin-bottom:6px}
+        .doctor-support-grid input,.doctor-support-grid select,.doctor-support-grid textarea{width:100%;box-sizing:border-box;border:1px solid var(--border,#7775);border-radius:10px;padding:12px;background:var(--surface,#fff);color:var(--text,inherit);font:inherit}
+        .doctor-support-grid textarea{min-height:112px;resize:vertical}
+        .doctor-support-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
+        .doctor-support-actions .btn{min-height:46px;white-space:normal}
+        .doctor-support-note{font-size:.82rem;line-height:1.45;margin:12px 0 0}
+        @media(min-width:560px){.doctor-support-grid .support-two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.doctor-support-actions{grid-template-columns:1fr 1fr}}
+      </style>
+      <div class="doctor-support-kicker">✦ Atendimento Doctor</div>
+      <h3 id="doctor-support-title">🛟 Central de Suporte</h3>
+      <p class="doctor-support-intro">Encontrou um erro, quer fazer uma reclamação ou tem uma ideia para melhorar o aplicativo? Conte para nossa equipe. Sua mensagem nos ajuda a tornar o Doctor Core cada vez melhor.</p>
+      <div class="doctor-support-promise">
+        <span aria-hidden="true" style="font-size:1.45rem">⏱️</span>
+        <div><strong>Nosso compromisso é responder em até 5 horas</strong><span class="muted">Faremos o possível para responder nesse prazo. Solicitações que precisem de uma análise mais detalhada podem levar mais tempo.</span></div>
+      </div>
+      <form id="doctor-support-form">
+        <div class="doctor-support-grid">
+          <div>
+            <label for="doctor-support-type">Como podemos ajudar?</label>
+            <select id="doctor-support-type" required>
+              <option value="Dúvida">Tenho uma dúvida</option>
+              <option value="Reclamação">Quero fazer uma reclamação</option>
+              <option value="Sugestão">Quero enviar uma sugestão</option>
+              <option value="Relato de bug">Encontrei um erro (bug)</option>
+              <option value="Outro assunto">Outro assunto</option>
+            </select>
+          </div>
+          <div>
+            <label for="doctor-support-subject">Assunto</label>
+            <input id="doctor-support-subject" type="text" maxlength="120" placeholder="Resuma o assunto" required>
+          </div>
+          <div>
+            <label for="doctor-support-contact">Seu e-mail para retorno (opcional)</label>
+            <input id="doctor-support-contact" type="email" maxlength="160" placeholder="voce@exemplo.com" autocomplete="email">
+          </div>
+          <div>
+            <label for="doctor-support-message">Conte o que aconteceu</label>
+            <textarea id="doctor-support-message" maxlength="5000" placeholder="Descreva sua dúvida, reclamação, sugestão ou o erro encontrado. Se puder, diga em qual tela aconteceu." required></textarea>
+          </div>
+        </div>
+        <div class="doctor-support-actions">
+          <button class="btn btn-primary btn-block" id="doctor-support-email" type="submit">✉️ ENVIAR POR E-MAIL</button>
+          <button class="btn btn-outline btn-block" type="button" disabled title="O canal será ativado quando o número oficial for definido">💬 WhatsApp — em breve</button>
+        </div>
+        <p class="doctor-support-note muted">Ao tocar em “Enviar por e-mail”, o aplicativo abrirá o programa de e-mail do seu dispositivo com a mensagem preenchida para <strong>doctorconcursoschat@gmail.com</strong>. Revise e toque em enviar no seu e-mail. O WhatsApp será ativado quando o número oficial estiver definido.</p>
+      </form>
+    </section>
     <div class="card groq-setup-card">
       <div class="groq-hero">
         <h3>🤖 Ative a IA Doctor com sua chave GROQ</h3>
