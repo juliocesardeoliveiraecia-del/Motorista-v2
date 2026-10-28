@@ -54,10 +54,13 @@ const EXAM_CONFIG = {
 
   // Identidade visual PWA — padrão compartilhado por todos os aplicativos Doctor.
   // Para um novo concurso, o Core permanece igual; altere somente appIconBadge.
-  appIconSystemVersion: '1.0',
-  appIconBadge: 'MOTORISTA LEGISLATIVO',
-  appIconBase: 'assets/icons/doctor-core-master-base.png',
-  appIconSizes: [48, 72, 96, 128, 144, 192, 256, 512],
+  appIconSystemVersion: '1.1.0',
+  appIconAsset: 'assets/icons/products/motorista-legislativo.svg',
+  appIconBadgeColor: '#F5C400',
+  appIconBadgeTextColor: '#071322',
+  appIconBadge: 'ML',
+  appIconBase: 'assets/icons/doctor-core-master.svg',
+  appIconSizes: [48, 72, 96, 128, 144, 192, 256, 512, 1024],
 
   // Doctor Core V1 — identidade estável do produto e versão de conteúdo
   appId: 'doctor-motorista-legislativo',
