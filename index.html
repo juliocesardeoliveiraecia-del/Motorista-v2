@@ -563,8 +563,9 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .simulado-subject-metrics strong{font-size:18px}.simulado-subject-metrics span,.simulado-subject-metrics small{font-size:10px;color:var(--text-muted)}
 .simulado-total{display:flex;justify-content:space-between;gap:8px;align-items:center;border-top:1px solid var(--border);padding-top:12px;margin-top:6px;font-size:11px}
 .simulado-total strong{text-align:right}
-.simulado-generation-note{display:flex;flex-direction:column;gap:5px;padding:13px 14px;margin:0 0 12px;border-left:3px solid #d8b96e;background:rgba(22,52,94,.06);border-radius:0 10px 10px 0;font-size:12px;line-height:1.45}
-.simulado-generation-note span,.simulado-footnote{color:var(--text-muted);font-size:11px;line-height:1.45}
+.simulado-generation-note{display:flex;flex-direction:column;gap:7px;padding:15px 15px;margin:0 0 12px;border:2px solid #d8b96e;border-left:6px solid #d8b96e;background:linear-gradient(110deg,rgba(216,185,110,.22),rgba(22,52,94,.08));border-radius:10px;font-size:13px;line-height:1.45;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.simulado-generation-note strong{display:block;font-size:14px;font-weight:950;line-height:1.35;color:var(--text);letter-spacing:.015em}
+.simulado-generation-note span,.simulado-footnote{color:var(--text-muted);font-size:11px;line-height:1.5}
 .simulado-generate{min-height:52px;font-size:15px;font-weight:900}
 @media(max-width:380px){.simulado-summary strong{font-size:19px}.simulado-subject-icon{width:32px;height:32px}.simulado-subject-metrics{min-width:65px}.simulado-total{align-items:flex-start;flex-direction:column}}
 /* ===== V1.8.4 — MARCA DOCTOR = HOME ===== */
@@ -3414,7 +3415,7 @@ Views.simuladoSetup = function () {
         </div>`).join('')}
       <div class="simulado-total"><span>Total previsto</span><strong>${ExamRules.questionCount} questões · ${EXAM_CONFIG.totalPoints} pontos</strong></div>
     </section>
-    <div class="simulado-generation-note"><strong>Um simulado a cada sete dias.</strong><span>Recomendamos fazer seu simulado aos domingos para criar uma rotina semanal, mas você pode escolher qualquer dia. ${quotaMessage} As questões só serão contabilizadas quando o simulado completo estiver pronto.</span></div>
+    <div class="simulado-generation-note"><strong>⚠️ ATENÇÃO: LIMITE DE 1 SIMULADO A CADA 7 DIAS</strong><span>Depois de gerar um simulado completo, você deverá aguardar 7 dias para gerar o próximo. Fazer o simulado aos domingos é apenas uma recomendação — você pode escolher qualquer dia. ${quotaMessage} O prazo só começa quando o simulado completo estiver pronto.</span></div>
     <button class="btn btn-primary btn-block simulado-generate" id="generate-simulado" ${remainingMs > 0 ? 'disabled' : ''}>${iconEl('bot')} ${remainingMs > 0 ? 'Simulado semanal indisponível' : 'Gerar simulado completo'}</button>
     <p class="muted simulado-footnote">É necessário configurar uma chave GROQ em Configurações para gerar as questões.</p>
   `;
