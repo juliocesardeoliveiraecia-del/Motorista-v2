@@ -16,5 +16,5 @@
 <path d="M408 572 C476 514 559 483 654 472 L754 435 L707 515 C597 552 493 630 408 815 Z" fill="url(#white)" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
 <path d="M408 815 C365 755 292 722 182 708 L182 444 C279 462 350 507 408 572" fill="none" stroke="#fff" stroke-width="10" stroke-linejoin="round"/>
 <path d="M400 808 C459 704 529 651 617 612 C690 579 744 528 796 450 L748 425 L854 352 L835 475 L811 453 C757 548 697 610 615 654 C539 695 483 744 444 818 Z" fill="url(#white)" stroke="#dff6ff" stroke-width="7" stroke-linejoin="round"/>
-<g id="product-badge"><rect x="812" y="58" width="150" height="108" rx="28" fill="#06B6D4" stroke="#ffffff" stroke-opacity=".82" stroke-width="7"/><text x="887" y="126" font-family="Arial,Helvetica,sans-serif" font-size="48" font-weight="900" text-anchor="middle" fill="#071322" letter-spacing="-1">ADM</text></g>
+<g id="product-badge"><path d="M824 0 H1024 V208 H956 Z" fill="#06B6D4" stroke="#ffffff" stroke-opacity=".9" stroke-width="7" stroke-linejoin="round"/><path d="M824 0 L956 208" fill="none" stroke="#ffffff" stroke-opacity=".24" stroke-width="5"/></g>
 </svg>
