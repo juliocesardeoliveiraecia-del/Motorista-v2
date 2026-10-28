@@ -39,6 +39,10 @@ window.DOCTOR_PRODUCTION_CONFIG = Object.freeze({
 #doctor-install-app.is-visible{display:inline-flex}
 #doctor-install-app:focus-visible{outline:3px solid #f5c400;outline-offset:3px}
 #doctor-install-app .install-symbol{font-size:18px;line-height:1}
+/* Botão fixo de instalação nas Configurações: mesma identidade visual do flutuante, sem depender do estado de instalação. */
+.doctor-install-settings-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:48px;padding:13px 17px;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:linear-gradient(135deg,#087cf4,#0a3d91);color:#fff;font-size:13px;font-weight:850;box-shadow:0 10px 28px rgba(0,0,0,.22);cursor:pointer}
+.doctor-install-settings-btn:focus-visible{outline:3px solid #f5c400;outline-offset:3px}
+.doctor-install-settings-btn .install-symbol{font-size:18px;line-height:1}
 @media(min-width:700px){#doctor-install-app{right:22px;bottom:78px}}
 :root {
   --blue-dark: #0A192F;
@@ -3151,11 +3155,6 @@ Views.pickSubject = function () {
 
 Views.bind.pickSubject = function () {
   document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
-  document.getElementById('doctor-install-settings')?.addEventListener('click', () => {
-    if (window.DoctorInstall?.requestInstall) window.DoctorInstall.requestInstall();
-    else UI.toast('Para instalar, abra o menu do navegador e procure “Instalar aplicativo” ou “Adicionar à tela inicial”.', 'info');
-  });
-
   document.querySelectorAll('.pick-card').forEach(el => {
     el.addEventListener('click', () => {
       UI.practiceSubject = el.dataset.subject;
@@ -4292,7 +4291,7 @@ Views.settings = function () {
       <p class="muted center" style="margin-top:14px">Nesta versão, sua chave fica armazenada localmente neste dispositivo. Nunca coloque sua chave em código público.</p>
     </div>
     <div class="card"><h3>📱 Sessão e dispositivo</h3><p class="muted">Arquitetura preparada para uma sessão ativa por vez. A autoridade final de acesso e sessão será integrada à plataforma principal.</p><div class="subj-row"><span>Dispositivo atual</span><strong>Ativo</strong></div></div>
-    <div class="card" id="doctor-install-settings-card"><h3>📲 Instalar o aplicativo</h3><p class="muted">Instale o Doctor Core na tela inicial do celular ou como aplicativo no computador. Esta opção permanece disponível aqui nas Configurações, mesmo depois da instalação.</p><button class="btn btn-primary btn-block" id="doctor-install-settings" type="button">⬇️ INSTALAR / VER OPÇÕES DE INSTALAÇÃO</button><p class="muted" style="font-size:.82rem;margin:10px 0 0">Se o navegador não abrir a instalação automaticamente, mostraremos como instalar pelo menu do navegador.</p></div>
+    <div class="card" id="doctor-install-settings-card"><h3>📲 Instalar o aplicativo</h3><p class="muted">Instale o Doctor Core na tela inicial do celular ou como aplicativo no computador. Esta opção permanece disponível aqui nas Configurações, mesmo depois da instalação.</p><button class="doctor-install-settings-btn" id="doctor-install-settings" type="button" aria-label="Instalar aplicativo Doctor ou ver opções de instalação"><span class="install-symbol" aria-hidden="true">⬇</span><span>Instalar aplicativo</span></button><p class="muted" style="font-size:.82rem;margin:10px 0 0">Se o navegador não abrir a instalação automaticamente, mostraremos como instalar pelo menu do navegador.</p></div>
     <div class="card"><h3>🎨 Aparência</h3><button class="btn btn-outline btn-block" id="toggle-theme-btn">Alternar tema (${s.theme === 'dark' ? 'escuro' : 'claro'})</button></div>
     <div class="card"><h3>💾 Dados e sincronização</h3><p class="muted">O estudo continua disponível offline. ${CoreSync.status().queued?`Há <strong>${CoreSync.status().queued}</strong> alteração(ões) aguardando sincronização.`:'Nenhuma alteração aguardando sincronização.'}</p><button class="btn btn-outline btn-block" id="sync-now">🔄 Sincronizar informações</button><button class="btn btn-danger btn-block" id="reset-progress">Zerar progresso</button></div>
     <div class="card"><h3>🧠 Doctor AI Core</h3><p class="muted">Motor de IA ${DoctorAICore.VERSION}. Geração, revisão, redação e Radar usam o perfil deste concurso. Questões e flashcards passam por revisão automática antes de serem entregues.</p></div><div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>
@@ -4368,6 +4367,16 @@ Views.settings = function () {
 
 Views.bind.settings = function () {
   document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
+  // O botão fixo nas Configurações usa o mesmo fluxo PWA do botão flutuante da tela inicial.
+  document.getElementById('doctor-install-settings')?.addEventListener('click', async (event) => {
+    event.preventDefault();
+    const button = event.currentTarget;
+    if (window.DoctorInstall?.requestInstall) {
+      await window.DoctorInstall.requestInstall();
+    } else {
+      UI.toast('A instalação ainda está sendo preparada. Aguarde alguns segundos ou use o menu do navegador: “Instalar aplicativo” / “Adicionar à tela inicial”.', 'info');
+    }
+  });
   document.getElementById('doctor-support-form')?.addEventListener('submit', (event) => {
     event.preventDefault();
     const type = document.getElementById('doctor-support-type')?.value || 'Outro assunto';
