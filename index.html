@@ -950,11 +950,10 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   <span class="install-symbol" aria-hidden="true">⬇</span><span>Instalar aplicativo</span>
 </button>
 <script>
-/* Botão de instalação do Core. Não aparece quando o app já está instalado,
-   nem em navegadores que ainda não disponibilizaram o fluxo de instalação. */
+/* Instalação PWA centralizada no Core: botão flutuante antes da instalação
+   e opção permanente em Configurações, inclusive em navegadores desktop. */
 (function(){
   const button = document.getElementById('doctor-install-app');
-  if (!button) return;
   let installPrompt = null;
   const isInstalled = () => {
     try {
@@ -964,16 +963,51 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
     } catch (_) { return window.navigator.standalone === true; }
   };
   const hide = () => {
+    if (!button) return;
     button.classList.remove('is-visible');
     button.setAttribute('aria-hidden','true');
   };
   const show = () => {
-    if (isInstalled()) { hide(); return; }
+    if (!button || isInstalled()) { hide(); return; }
     button.classList.add('is-visible');
     button.setAttribute('aria-hidden','false');
   };
+  const requestInstall = async () => {
+    if (isInstalled()) {
+      if (typeof UI !== 'undefined' && UI.toast) UI.toast('O Doctor Core já está instalado neste dispositivo.', 'success');
+      hide();
+      return {ok:true,alreadyInstalled:true};
+    }
+    if (installPrompt) {
+      const promptEvent = installPrompt;
+      installPrompt = null;
+      hide();
+      try {
+        await promptEvent.prompt();
+        const choice = await promptEvent.userChoice;
+        if (choice && choice.outcome === 'accepted') {
+          if (typeof UI !== 'undefined' && UI.toast) UI.toast('Instalação solicitada. Aguarde a confirmação do navegador.', 'success');
+          return {ok:true,accepted:true};
+        }
+        if (!isInstalled()) show();
+        return {ok:false,dismissed:true};
+      } catch (error) {
+        console.warn('[Doctor Core] Não foi possível abrir a instalação PWA.', error);
+        if (!isInstalled()) show();
+        return {ok:false,error};
+      }
+    }
+    const instructions = /android/i.test(navigator.userAgent)
+      ? 'Para instalar no Android: abra este site no Chrome, toque no menu ⋮ e escolha “Instalar aplicativo” ou “Adicionar à tela inicial”.'
+      : /iphone|ipad|ipod/i.test(navigator.userAgent)
+        ? 'Para instalar no iPhone/iPad: abra este site no Safari, toque em Compartilhar e escolha “Adicionar à Tela de Início”.'
+        : 'Para instalar no computador: use Chrome ou Edge, abra o menu do navegador e escolha “Instalar Doctor Core” (ou “Instalar este site como aplicativo”). Se essa opção não aparecer, verifique se o navegador permite instalar este site como app.';
+    if (typeof UI !== 'undefined' && UI.toast) UI.toast(instructions, 'info');
+    else window.alert(instructions);
+    return {ok:false,manual:true};
+  };
+  window.DoctorInstall = {isInstalled,requestInstall};
   hide();
-  if (isInstalled()) return;
   window.addEventListener('beforeinstallprompt', event => {
     if (isInstalled()) return;
     event.preventDefault();
@@ -984,22 +1018,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
     installPrompt = null;
     hide();
   });
-  button.addEventListener('click', async () => {
-    if (isInstalled()) { hide(); return; }
-    if (!installPrompt) return;
-    const promptEvent = installPrompt;
-    installPrompt = null;
-    hide();
-    try {
-      await promptEvent.prompt();
-      const choice = await promptEvent.userChoice;
-      if (choice && choice.outcome === 'dismissed' && !isInstalled()) {
-        installPrompt = null;
-      }
-    } catch (error) {
-      console.warn('[Doctor Core] Não foi possível abrir a instalação PWA.', error);
-    }
-  });
+  button?.addEventListener('click', requestInstall);
   window.addEventListener('pageshow', () => { if (isInstalled()) hide(); });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && isInstalled()) hide(); });
 })();
@@ -3132,6 +3151,10 @@ Views.pickSubject = function () {
 
 Views.bind.pickSubject = function () {
   document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
+  document.getElementById('doctor-install-settings')?.addEventListener('click', () => {
+    if (window.DoctorInstall?.requestInstall) window.DoctorInstall.requestInstall();
+    else UI.toast('Para instalar, abra o menu do navegador e procure “Instalar aplicativo” ou “Adicionar à tela inicial”.', 'info');
+  });
 
   document.querySelectorAll('.pick-card').forEach(el => {
     el.addEventListener('click', () => {
@@ -4269,6 +4292,7 @@ Views.settings = function () {
       <p class="muted center" style="margin-top:14px">Nesta versão, sua chave fica armazenada localmente neste dispositivo. Nunca coloque sua chave em código público.</p>
     </div>
     <div class="card"><h3>📱 Sessão e dispositivo</h3><p class="muted">Arquitetura preparada para uma sessão ativa por vez. A autoridade final de acesso e sessão será integrada à plataforma principal.</p><div class="subj-row"><span>Dispositivo atual</span><strong>Ativo</strong></div></div>
+    <div class="card" id="doctor-install-settings-card"><h3>📲 Instalar o aplicativo</h3><p class="muted">Instale o Doctor Core na tela inicial do celular ou como aplicativo no computador. Esta opção permanece disponível aqui nas Configurações, mesmo depois da instalação.</p><button class="btn btn-primary btn-block" id="doctor-install-settings" type="button">⬇️ INSTALAR / VER OPÇÕES DE INSTALAÇÃO</button><p class="muted" style="font-size:.82rem;margin:10px 0 0">Se o navegador não abrir a instalação automaticamente, mostraremos como instalar pelo menu do navegador.</p></div>
     <div class="card"><h3>🎨 Aparência</h3><button class="btn btn-outline btn-block" id="toggle-theme-btn">Alternar tema (${s.theme === 'dark' ? 'escuro' : 'claro'})</button></div>
     <div class="card"><h3>💾 Dados e sincronização</h3><p class="muted">O estudo continua disponível offline. ${CoreSync.status().queued?`Há <strong>${CoreSync.status().queued}</strong> alteração(ões) aguardando sincronização.`:'Nenhuma alteração aguardando sincronização.'}</p><button class="btn btn-outline btn-block" id="sync-now">🔄 Sincronizar informações</button><button class="btn btn-danger btn-block" id="reset-progress">Zerar progresso</button></div>
     <div class="card"><h3>🧠 Doctor AI Core</h3><p class="muted">Motor de IA ${DoctorAICore.VERSION}. Geração, revisão, redação e Radar usam o perfil deste concurso. Questões e flashcards passam por revisão automática antes de serem entregues.</p></div><div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>
