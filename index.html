@@ -1052,6 +1052,7 @@ function defaultState() {
     progress,
     answeredIds,
     simulados: [],
+    simuladoQuota: { lastGeneratedAt: null, nextAllowedAt: null },
     aiQuestions: [], // questões geradas por IA, persistidas aqui para sobreviver a reload/fechar o app
     activeSession: null, // sessão de SIMULADO em andamento (prática usa "feeds", ver abaixo)
     feeds: {}, // fluxo contínuo por matéria: { subjectId: { order: [ids...], position: n } }
@@ -1154,6 +1155,7 @@ const Store = {
         if (!this.state.answeredIds[s.id]) this.state.answeredIds[s.id] = [];
       });
       if (!Array.isArray(this.state.aiQuestions)) this.state.aiQuestions = [];
+      if (!this.state.simuladoQuota || typeof this.state.simuladoQuota !== 'object') this.state.simuladoQuota = { lastGeneratedAt: null, nextAllowedAt: null };
       if (this.state.activeSession === undefined) this.state.activeSession = null;
       if (!this.state.feeds) this.state.feeds = {};
       if (!this.state.answerLog) this.state.answerLog = {};
@@ -3379,6 +3381,13 @@ Views.simuladoSetup = function () {
   }
   const weights = SUBJECTS.map(s => ({subject:s, count:Number(s.officialQuestions||0), points:Number(s.points||0), total:Number(s.officialQuestions||0)*Number(s.points||0)}));
   const totalWeight = weights.reduce((n,r)=>n+r.total,0);
+  const quota = Store.state.simuladoQuota || {};
+  const nextAllowed = Number(quota.nextAllowedAt || 0);
+  const remainingMs = Math.max(0, nextAllowed - Date.now());
+  const remainingDays = Math.ceil(remainingMs / 86400000);
+  const quotaMessage = remainingMs > 0
+    ? `Próximo simulado disponível em ${new Date(nextAllowed).toLocaleDateString('pt-BR')} (aguarde mais ${remainingDays} dia(s)).`
+    : 'Você pode gerar seu simulado agora.';
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
     <section class="card simulado-intro">
@@ -3405,8 +3414,8 @@ Views.simuladoSetup = function () {
         </div>`).join('')}
       <div class="simulado-total"><span>Total previsto</span><strong>${ExamRules.questionCount} questões · ${EXAM_CONFIG.totalPoints} pontos</strong></div>
     </section>
-    <div class="simulado-generation-note"><strong>Questões novas a cada geração.</strong><span>O Doctor usa o edital, o perfil da banca e provas anteriores ou similares como referência quando disponíveis. O conteúdo passa pela revisão automática antes de entrar no simulado.</span></div>
-    <button class="btn btn-primary btn-block simulado-generate" id="generate-simulado">${iconEl('bot')} Gerar simulado completo</button>
+    <div class="simulado-generation-note"><strong>Um simulado a cada sete dias.</strong><span>Recomendamos fazer seu simulado aos domingos para criar uma rotina semanal, mas você pode escolher qualquer dia. ${quotaMessage} As questões só serão contabilizadas quando o simulado completo estiver pronto.</span></div>
+    <button class="btn btn-primary btn-block simulado-generate" id="generate-simulado" ${remainingMs > 0 ? 'disabled' : ''}>${iconEl('bot')} ${remainingMs > 0 ? 'Simulado semanal indisponível' : 'Gerar simulado completo'}</button>
     <p class="muted simulado-footnote">É necessário configurar uma chave GROQ em Configurações para gerar as questões.</p>
   `;
 };
@@ -3425,6 +3434,13 @@ Views.bind.simuladoSetup = function () {
     }
   });
   document.getElementById('generate-simulado')?.addEventListener('click', async (e) => {
+    const quota = Store.state.simuladoQuota || { lastGeneratedAt: null, nextAllowedAt: null };
+    const nextAllowed = Number(quota.nextAllowedAt || 0);
+    if (nextAllowed > Date.now()) {
+      UI.toast('Você já gerou o simulado semanal. O próximo estará disponível em ' + new Date(nextAllowed).toLocaleDateString('pt-BR') + '.', 'warn');
+      UI.render('simuladoSetup');
+      return;
+    }
     if (!GroqAI.hasKey()) {
       UI.toast('Cadastre sua chave GROQ em Configurações para gerar o simulado.', 'warn');
       UI.render('settings');
@@ -3434,37 +3450,64 @@ Views.bind.simuladoSetup = function () {
     btn.disabled=true;
     const original=btn.innerHTML;
     const generated=[];
+    const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
     try {
       for (const subject of SUBJECTS) {
         const required=Number(subject.officialQuestions||0);
         let subjectQuestions=[];
-        let attempts=0;
-        while(subjectQuestions.length<required && attempts<Math.ceil(required/5)+2) {
-          attempts++;
+        let failedAttempts=0;
+        while(subjectQuestions.length<required && failedAttempts<5) {
           const count=Math.min(5,required-subjectQuestions.length);
           btn.innerHTML=iconEl('bot')+' Gerando '+subject.name+' ('+Math.min(required,subjectQuestions.length+count)+'/'+required+')…';
           const before=new Set(QUESTIONS.map(q=>q.id));
-          const result=await GroqAI.generateQuestions(subject.id,count);
-          if(!result?.ok) throw new Error('Não foi possível gerar questões de '+subject.name+'. Verifique a conexão e tente novamente.');
-          const fresh=QUESTIONS.filter(q=>q.subjectId===subject.id && q.aiGenerated && !before.has(q.id));
-          subjectQuestions=subjectQuestions.concat(fresh);
+          let result=null;
+          try { result=await GroqAI.generateQuestions(subject.id,count); }
+          catch(error) { result={ok:false,reason:'exception',error:error?.message}; }
+          const fresh=QUESTIONS.filter(q=>q.subjectId===subject.id && q.aiGenerated && q.reviewedByDoctor===true && !before.has(q.id));
+          if(fresh.length) {
+            subjectQuestions=subjectQuestions.concat(fresh);
+            failedAttempts=0;
+            continue;
+          }
+          failedAttempts++;
+          if(result?.status===401 || result?.status===403 || result?.reason==='no-key') {
+            throw new Error('A chave GROQ foi recusada ou está inválida. Confira Configurações. O limite semanal não foi consumido.');
+          }
+          if(result?.status===429 || result?.reason==='rate-limit') {
+            throw new Error('A GROQ atingiu o limite temporário de uso. Aguarde a renovação do limite e tente novamente. Seu simulado semanal continua disponível.');
+          }
+          if(failedAttempts<5) {
+            btn.innerHTML=iconEl('bot')+' Tentando completar '+subject.name+' ('+subjectQuestions.length+'/'+required+')…';
+            await sleep(Math.min(6000,1000*failedAttempts));
+          }
         }
-        if(subjectQuestions.length<required) throw new Error('A IA não conseguiu completar a quantidade de questões de '+subject.name+'. Gere novamente para tentar completar.');
+        if(subjectQuestions.length<required) {
+          throw new Error('Não foi possível validar todas as questões de '+subject.name+' após várias tentativas. Nenhum limite semanal foi consumido. Verifique a chave GROQ e tente novamente mais tarde.');
+        }
         generated.push(...Quiz.shuffle(subjectQuestions).slice(0,required));
       }
-      if(generated.length!==ExamRules.questionCount) throw new Error('A distribuição gerada não corresponde à quantidade oficial de questões.');
+      if(generated.length!==ExamRules.questionCount || SUBJECTS.some(subject=>generated.filter(q=>q.subjectId===subject.id).length!==Number(subject.officialQuestions||0))) {
+        throw new Error('A conferência final da distribuição falhou. O limite semanal não foi consumido; tente novamente.');
+      }
+      const uniqueIds=new Set(generated.map(q=>q.id));
+      if(uniqueIds.size!==ExamRules.questionCount || generated.some(q=>!DoctorQuestionIntegrity.assertDeliverable(q).ok)) {
+        throw new Error('A validação final detectou questões repetidas ou não aprovadas. O limite semanal não foi consumido; tente novamente.');
+      }
+      const completedAt=Date.now();
       Quiz.session={
         type:'simulado',
         questions:Quiz.shuffle(generated),
         index:0,
         answers:[],
-        startedAt:Date.now(),
+        startedAt:completedAt,
         timeLimitSeconds:ExamRules.durationSeconds
       };
+      Store.state.simuladoQuota={lastGeneratedAt:new Date(completedAt).toISOString(),nextAllowedAt:completedAt+7*86400000};
+      Store.save();
       Quiz.persist();
       UI.render('simuladoRunning');
     } catch(err) {
-      UI.toast(err?.message||'Não foi possível gerar o simulado completo. Tente novamente.', 'warn');
+      UI.toast(err?.message||'Não foi possível gerar o simulado completo. Nenhum limite semanal foi consumido.', 'warn');
       UI.render('simuladoSetup');
     } finally {
       const current=document.getElementById('generate-simulado');
