@@ -1,6 +1,11 @@
 /* Doctor Core — Product Context
  * Este arquivo contém somente configuração do produto/concurso.
  * Não colocar lógica do motor, autenticação, sincronização ou conteúdo aqui.
+ * CONTRATO OBRIGATÓRIO DO CORE: todo produto derivado deve preencher appTitle,
+ * appId e productId. A Central de Suporte usa esses três campos automaticamente
+ * e bloqueia o envio se algum estiver ausente, para nunca atribuir uma mensagem
+ * ao aplicativo errado. Ao criar um novo app, altere os valores no perfil;
+ * não crie um formulário de suporte específico por aplicativo.
  */
 const EXAM_CONFIG = {
   // Identidade do concurso
