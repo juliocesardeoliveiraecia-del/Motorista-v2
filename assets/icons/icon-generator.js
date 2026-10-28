@@ -9,12 +9,10 @@
  const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
  function render(config={}){
    const title=esc(config.appTitle || 'Doctor Concursos');
-   const rawLabel=String(config.label || config.productId || config.appId || 'DC').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);
-   const label=esc(rawLabel || 'DC');
    const color=config.badgeColor || (PALETTE.find(p=>p.id===config.color)?.color) || '#F5C400';
    const textColor=config.badgeTextColor || (PALETTE.find(p=>p.color===color)?.textColor) || '#071322';
    const svg=BASE.replace('__TITLE__',title);
-   const badge='<g id="product-badge"><rect x="812" y="58" width="150" height="108" rx="28" fill="'+esc(color)+'" stroke="#ffffff" stroke-opacity=".82" stroke-width="7"/><text x="887" y="126" font-family="Arial,Helvetica,sans-serif" font-size="'+(label.length>3?33:48)+'" font-weight="900" text-anchor="middle" fill="'+esc(textColor)+'" letter-spacing="-1">'+label+'</text></g>';
+   const badge='<g id="product-badge"><path d="M824 0 H1024 V208 H956 Z" fill="'+esc(color)+'" stroke="#ffffff" stroke-opacity=".9" stroke-width="7" stroke-linejoin="round"/><path d="M824 0 L956 208" fill="none" stroke="#ffffff" stroke-opacity=".24" stroke-width="5"/></g>';
    return svg.replace('</svg>',badge+'</svg>');
  }
  function apply(config={}){
@@ -24,5 +22,5 @@
    document.querySelectorAll('[data-doctor-app-icon]').forEach(el=>{el.src=url;el.alt=config.appTitle||'Doctor Concursos';});
    return {svg,url};
  }
- global.DoctorIconSystem={render,apply,palette:PALETTE,version:'1.1.0'};
+ global.DoctorIconSystem={render,apply,palette:PALETTE,version:'1.2.0'};
 })(window);
