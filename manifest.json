@@ -8,10 +8,10 @@
   "theme_color": "#0A192F",
   "lang": "pt-BR",
   "orientation": "portrait-primary",
-  "version": "1.13.1-icon-1.2.0",
+  "version": "1.13.1-icon-1.3.0",
   "icons": [
     {
-      "src": "assets/icons/products/motorista-legislativo.svg?v=1.2.0",
+      "src": "assets/icons/products/motorista-legislativo.svg?v=1.3.0",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
