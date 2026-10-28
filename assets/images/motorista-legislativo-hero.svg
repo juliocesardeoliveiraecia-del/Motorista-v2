@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Motorista Legislativo — banner principal</title><desc id="desc">Ilustração profissional de um motorista ao volante diante de um edifício público genérico, em tons de azul e dourado, sem brasões ou marcas de outros municípios.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06152c"/><stop offset=".52" stop-color="#0c3e78"/><stop offset="1" stop-color="#071323"/></linearGradient>
+ <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8bd9ff"/><stop offset="1" stop-color="#173d6b"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe66b"/><stop offset="1" stop-color="#e7a900"/></linearGradient>
+ <linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2367a8"/><stop offset="1" stop-color="#071e3a"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity=".38"/></filter>
+</defs>
+<rect width="1600" height="900" fill="url(#bg)"/>
+<circle cx="1310" cy="150" r="350" fill="#1e85e8" opacity=".12"/><path d="M0 700L620 900H0Z" fill="#0b2a50"/><path d="M0 0H38L0 110Z" fill="#ffd329"/><path d="M0 0H180L0 180Z" fill="#087bd8" opacity=".75"/>
+<!-- generic civic building, deliberately without municipal identity -->
+<g opacity=".92" transform="translate(660 125)">
+ <path d="M0 170L360 20L720 170Z" fill="#d5e5f5"/><path d="M35 170H685V490H35Z" fill="#c4d6e8"/>
+ <path d="M65 190H655V230H65Z" fill="#f3f7fb"/>
+ <g fill="#244b73"><rect x="85" y="245" width="72" height="205" rx="3"/><rect x="190" y="245" width="72" height="205" rx="3"/><rect x="295" y="245" width="72" height="205" rx="3"/><rect x="400" y="245" width="72" height="205" rx="3"/><rect x="505" y="245" width="72" height="205" rx="3"/></g>
+ <g fill="#8db6d6" opacity=".9"><rect x="95" y="255" width="52" height="185"/><rect x="200" y="255" width="52" height="185"/><rect x="305" y="255" width="52" height="185"/><rect x="410" y="255" width="52" height="185"/><rect x="515" y="255" width="52" height="185"/></g>
+ <path d="M0 490H720V525H0Z" fill="#eaf2fa"/><path d="M-20 525H745V555H-20Z" fill="#081d36"/>
+</g>
+<!-- road -->
+<path d="M450 900L875 620H1600V900Z" fill="#111f31"/><path d="M620 900L950 655H985L745 900Z" fill="#f5c72b" opacity=".8"/>
+<!-- car body / windshield -->
+<g filter="url(#shadow)">
+ <path d="M575 900L605 690Q630 615 760 590L1090 565Q1180 570 1250 655L1390 730L1455 900Z" fill="#06101f"/>
+ <path d="M700 680L790 615L1075 600Q1135 604 1195 680Z" fill="url(#glass)" stroke="#9ddfff" stroke-width="8"/>
+ <path d="M815 620L840 678M1078 605L1100 680" stroke="#d9f4ff" stroke-width="7" opacity=".7"/>
+ <path d="M625 735Q740 700 850 705L1160 708L1365 785L1385 860H610Z" fill="#0b3158"/>
+ <path d="M620 815H1377L1395 865H610Z" fill="#06101b"/>
+</g>
+<!-- driver, head/neck, uniform -->
+<g filter="url(#shadow)">
+ <path d="M890 900Q875 800 900 700Q918 640 1000 626Q1080 627 1110 690L1155 900Z" fill="url(#shirt)"/>
+ <path d="M975 635L978 590L1055 575L1082 650L1040 690Z" fill="#b9774b"/>
+ <ellipse cx="1020" cy="500" rx="104" ry="135" fill="#bd8056"/>
+ <path d="M915 490Q905 385 1000 350Q1100 365 1120 455L1090 430Q1040 400 1005 416Q970 443 915 490Z" fill="#151d29"/>
+ <path d="M916 468Q930 370 1014 370Q1080 374 1112 440L1080 430L1064 405Q1010 435 950 427Z" fill="#0b1422"/>
+ <path d="M928 496Q952 476 978 493M1034 493Q1060 478 1080 495" stroke="#18202a" stroke-width="12" stroke-linecap="round"/>
+ <path d="M968 548Q1017 574 1064 544" fill="none" stroke="#7a3d2f" stroke-width="8" stroke-linecap="round"/>
+ <path d="M940 616L972 647L1010 621L1048 654L1080 615" fill="none" stroke="#e5f3ff" stroke-width="7" opacity=".75"/>
+</g>
+<!-- steering wheel -->
+<circle cx="1260" cy="775" r="112" fill="none" stroke="#0a0d12" stroke-width="28"/><circle cx="1260" cy="775" r="83" fill="none" stroke="#5d6c7d" stroke-width="8"/><path d="M1260 690V760M1188 812L1240 780L1260 856L1280 780L1332 812" stroke="#66798c" stroke-width="12" fill="none" stroke-linecap="round"/>
+<!-- gold accent, no text so the app's live heading stays legible -->
+<path d="M0 775H560L510 900H0Z" fill="#06152c" opacity=".9"/><path d="M0 770H520" stroke="url(#gold)" stroke-width="9"/><path d="M0 0H18V900H0Z" fill="#ffd329"/>
+</svg>
