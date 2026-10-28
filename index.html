@@ -238,11 +238,15 @@ main { padding: 16px; max-width: 640px; margin: 0 auto; }
 .flashcard-face {
   position: absolute; inset: 0; backface-visibility: hidden;
   border-radius: var(--radius); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center; text-align: center;
-  padding: 20px; font-size: 15px; font-weight: 600; line-height: 1.45;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  padding: 18px 18px 62px; font-size: 15px; font-weight: 600; line-height: 1.45;
 }
 .flashcard-front { background: var(--surface); color: var(--text); }
 .flashcard-back { background: var(--blue-dark); color: #fff; transform: rotateY(180deg); font-weight: 500; }
+.flashcard-content { width: 100%; overflow-wrap: anywhere; }
+.flashcard-flip-btn { position: absolute; left: 14px; right: 14px; bottom: 12px; min-height: 40px; border: 2px solid currentColor; border-radius: 10px; background: rgba(0,0,0,.12); color: inherit; font: inherit; font-size: 13px; font-weight: 800; letter-spacing: .02em; cursor: pointer; }
+.flashcard-flip-btn:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+.flashcard-back .flashcard-flip-btn { background: rgba(255,255,255,.12); }
 .muted { font-size: 12.5px; color: var(--text-muted); }
 .center { text-align: center; }
 .text-green { color: var(--green-dark); }
@@ -3309,8 +3313,14 @@ Views.flashcardsSession = function () {
     </div>
     <div class="flashcard-wrap">
       <div class="flashcard ${s.flipped ? 'flipped' : ''}" id="flashcard-el">
-        <div class="flashcard-face flashcard-front">${card.front}</div>
-        <div class="flashcard-face flashcard-back">${card.back}</div>
+        <div class="flashcard-face flashcard-front">
+          <div class="flashcard-content">${card.front}</div>
+          <button type="button" class="flashcard-flip-btn" aria-label="Mostrar resposta">↻ APERTE PARA VER A RESPOSTA</button>
+        </div>
+        <div class="flashcard-face flashcard-back">
+          <div class="flashcard-content">${card.back}</div>
+          <button type="button" class="flashcard-flip-btn" aria-label="Voltar à pergunta">↻ APERTE PARA VOLTAR À PERGUNTA</button>
+        </div>
       </div>
     </div>
     <p class="muted center">Toque no card para virar</p>
