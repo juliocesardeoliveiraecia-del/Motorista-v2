@@ -45,8 +45,8 @@ const EXAM_CONFIG = {
   // app. Pode ser mais curto/direto que o "cargo" oficial do edital acima.
   productName: 'Motorista Legislativo — Câmara Municipal de Ipameri',
   appTitle: 'Motorista Legislativo',
-  heroImage: 'https://camaraipameri.go.gov.br/camara/storage/app/resources/resize/960_540_0_0_crop/img_4c40354850a52fa37fa0d4931da319c2.jpg',
-  organizationImageUrl: 'https://camaraipameri.go.gov.br/camara/storage/app/resources/resize/960_540_0_0_crop/img_4c40354850a52fa37fa0d4931da319c2.jpg',
+  heroImage: './assets/images/motorista-legislativo-banner.svg?v=1.0.0',
+  organizationImageUrl: './assets/images/motorista-legislativo-edital.svg?v=1.0.0',
   radarAllowedHosts: ['institutoverbena.ufg.br', 'camaraipameri.go.gov.br'],
 
   // Ícone temático do cargo (chave de icons.js) — troque para outro cargo
