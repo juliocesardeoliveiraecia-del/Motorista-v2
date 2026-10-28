@@ -4212,6 +4212,9 @@ Views.settings = function () {
         .doctor-support-grid label{display:block;font-weight:700;font-size:.9rem;margin-bottom:6px}
         .doctor-support-grid input,.doctor-support-grid select,.doctor-support-grid textarea{width:100%;box-sizing:border-box;border:1px solid var(--border,#7775);border-radius:10px;padding:12px;background:var(--surface,#fff);color:var(--text,inherit);font:inherit}
         .doctor-support-grid textarea{min-height:112px;resize:vertical}
+        .doctor-support-app{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--border,#7775);border-radius:10px;padding:12px;background:var(--surface,#fff)}
+        .doctor-support-app strong{display:block;margin-bottom:3px}
+        .doctor-support-app small{display:block;opacity:.8;overflow-wrap:anywhere}
         .doctor-support-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
         .doctor-support-actions .btn{min-height:46px;white-space:normal}
         .doctor-support-note{font-size:.82rem;line-height:1.45;margin:12px 0 0}
@@ -4225,6 +4228,10 @@ Views.settings = function () {
         <div><strong>Nosso compromisso é responder em até 5 horas</strong><span class="muted">Faremos o possível para responder nesse prazo. Solicitações que precisem de uma análise mais detalhada podem levar mais tempo.</span></div>
       </div>
       <form id="doctor-support-form">
+        <div class="doctor-support-app" style="margin-bottom:14px">
+          <span aria-hidden="true" style="font-size:1.4rem">📱</span>
+          <div><strong>Aplicativo identificado automaticamente</strong><span>${String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || 'Doctor Core')}</span><small>${String(EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Doctor Core')} · ID: ${String(EXAM_CONFIG.appId || EXAM_CONFIG.productId || 'doctor-core')}</small></div>
+        </div>
         <div class="doctor-support-grid">
           <div>
             <label for="doctor-support-type">Como podemos ajudar?</label>
@@ -4274,13 +4281,20 @@ Views.bind.settings = function () {
       'Tipo de solicitação: ' + type,
       'Assunto: ' + subject,
       'E-mail para retorno: ' + contact,
+      'Aplicativo: ' + (EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || 'Doctor Core'),
+      'Produto/concurso: ' + (EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Doctor Core'),
+      'Órgão: ' + (EXAM_CONFIG.orgName || 'Não informado') + (EXAM_CONFIG.orgState ? ' - ' + EXAM_CONFIG.orgState : ''),
+      'Cargo: ' + (EXAM_CONFIG.cargo || 'Não informado'),
+      'ID do aplicativo: ' + (EXAM_CONFIG.appId || EXAM_CONFIG.productId || 'doctor-core'),
+      'Versão do Core: ' + (EXAM_CONFIG.coreVersion || 'Não informada'),
       '',
       'Descrição:',
       message,
       '',
-      'Enviado pelo aplicativo Doctor Core.'
+      'Enviado automaticamente pelo formulário de suporte do aplicativo Doctor Core.'
     ].join('\\n');
-    const mailto = 'mailto:doctorconcursoschat@gmail.com?subject=' + encodeURIComponent('[Doctor Core] ' + type + ': ' + subject) + '&body=' + encodeURIComponent(body);
+    const appName = EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || 'Doctor Core';
+    const mailto = 'mailto:doctorconcursoschat@gmail.com?subject=' + encodeURIComponent('[' + appName + '] ' + type + ': ' + subject) + '&body=' + encodeURIComponent(body);
     window.location.href = mailto;
   });
   document.getElementById('groq-key-eye')?.addEventListener('click', () => {
