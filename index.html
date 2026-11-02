@@ -4377,43 +4377,53 @@ Views.bind.settings = function () {
       UI.toast('A instalação ainda está sendo preparada. Aguarde alguns segundos ou use o menu do navegador: “Instalar aplicativo” / “Adicionar à tela inicial”.', 'info');
     }
   });
-  document.getElementById('doctor-support-form')?.addEventListener('submit', (event) => {
+  document.getElementById('doctor-support-form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
+    const button = document.getElementById('doctor-support-email');
     const type = document.getElementById('doctor-support-type')?.value || 'Outro assunto';
     const personName = (document.getElementById('doctor-support-name')?.value || '').trim();
     const subject = (document.getElementById('doctor-support-subject')?.value || '').trim();
     const contact = (document.getElementById('doctor-support-contact')?.value || '').trim();
     const message = (document.getElementById('doctor-support-message')?.value || '').trim();
-    const supportAppName = String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || '').trim();
-    const supportAppId = String(EXAM_CONFIG.appId || '').trim();
-    const supportProductId = String(EXAM_CONFIG.productId || '').trim();
-    if (!supportAppName || !supportAppId || !supportProductId) { UI.toast('O perfil deste aplicativo está sem identificação obrigatória. A equipe precisa configurar appTitle, appId e productId antes de enviar o suporte.', 'warn'); return; }
+    const appName = String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || '').trim();
+    const appId = String(EXAM_CONFIG.appId || '').trim();
+    const productId = String(EXAM_CONFIG.productId || '').trim();
+    if (!appName || !appId || !productId) { UI.toast('O perfil deste aplicativo está sem identificação obrigatória. A equipe precisa configurar appTitle, appId e productId antes de enviar o suporte.', 'warn'); return; }
     if (!personName) { UI.toast('Informe seu nome para identificarmos sua solicitação.', 'warn'); document.getElementById('doctor-support-name')?.focus(); return; }
     if (!contact || !document.getElementById('doctor-support-contact')?.checkValidity()) { UI.toast('Informe um e-mail válido para que possamos responder à sua solicitação.', 'warn'); document.getElementById('doctor-support-contact')?.focus(); return; }
     if (!subject || !message) { UI.toast('Preencha o assunto e a descrição para continuar.', 'warn'); return; }
-    const body = [
-      'Central de Suporte Doctor Core',
-      '',
-      'Nome do solicitante: ' + personName,
-      'Tipo de solicitação: ' + type,
-      'Assunto: ' + subject,
-      'E-mail para retorno: ' + contact,
-      'Aplicativo: ' + supportAppName,
-      'ID do aplicativo: ' + supportAppId,
-      'ID do produto: ' + supportProductId,
-      'Produto/concurso: ' + (EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Não informado'),
-      'Órgão: ' + (EXAM_CONFIG.orgName || 'Não informado') + (EXAM_CONFIG.orgState ? ' - ' + EXAM_CONFIG.orgState : ''),
-      'Cargo: ' + (EXAM_CONFIG.cargo || 'Não informado'),
-      'Versão do Core: ' + (EXAM_CONFIG.coreVersion || 'Não informada'),
-      '',
-      'Descrição:',
-      message,
-      '',
-      'Enviado automaticamente pelo formulário de suporte do aplicativo Doctor Core.'
-    ].join('\n');
-    const appName = EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || 'Doctor Core';
-    const mailto = 'mailto:doctorconcursoschat@gmail.com?subject=' + encodeURIComponent('[' + appName + '] ' + type + ': ' + subject) + '&body=' + encodeURIComponent(body);
-    window.location.href = mailto;
+    if (button) { button.disabled = true; button.textContent = 'Enviando solicitação…'; }
+    try {
+      const response = await fetch('https://rouuppeosmizzqnubhgs.supabase.co/functions/v1/doctor-support-submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': window.DOCTOR_PRODUCTION_CONFIG?.integrations?.supabase?.publishableKey || '' },
+        body: JSON.stringify({
+          channel: 'app',
+          requester_name: personName,
+          requester_contact: contact,
+          requester_email: contact,
+          subject: '[' + type + '] ' + subject,
+          description: message,
+          app_name_snapshot: appName,
+          app_id: appId,
+          product_id: productId,
+          app_version: String(EXAM_CONFIG.coreVersion || ''),
+          contest_context: String(EXAM_CONFIG.productName || EXAM_CONFIG.cargo || ''),
+          position_context: String(EXAM_CONFIG.cargo || ''),
+          device_context: { userAgent: navigator.userAgent, language: navigator.language, platform: navigator.platform || '' },
+          source_metadata: { app_id_label: appId, product_id_label: productId, product_name: String(EXAM_CONFIG.productName || '') }
+        })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) throw new Error(result.error === 'rate_limited' ? 'Muitas solicitações em pouco tempo. Aguarde um pouco e tente novamente.' : 'Não foi possível registrar seu chamado agora. Tente novamente em instantes.');
+      const ticketNumber = result.ticket?.ticket_number ? ' Protocolo: #' + result.ticket.ticket_number + '.' : '';
+      UI.toast('Solicitação registrada na Central Doctor.' + ticketNumber, 'success');
+      document.getElementById('doctor-support-form')?.reset();
+    } catch (error) {
+      UI.toast(error.message || 'Falha ao enviar o suporte. Tente novamente.', 'warn');
+    } finally {
+      if (button) { button.disabled = false; button.textContent = '✉️ ENVIAR PARA A CENTRAL DOCTOR'; }
+    }
   });
   document.getElementById('groq-key-eye')?.addEventListener('click', () => {
     const input=document.getElementById('groq-key');
