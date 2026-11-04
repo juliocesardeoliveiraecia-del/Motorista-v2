@@ -19,7 +19,7 @@ if(!version) errors.push('production-config: versão ausente.');
 if(version && !index.includes(`version: '${version}'`)) errors.push('index.html: versão divergente.');
 // A revisão do cache offline pode evoluir separadamente para invalidar assets
 // (ex.: ícones). Exigimos um CACHE_NAME versionado, não igualdade com o Core.
-if(!cacheName || !/^motorista-ipameri-v\d+\.\d+\.\d+(?:-[a-z0-9]+)*$/i.test(cacheName)) {
+if(!cacheName || !/^motorista-ipameri-v\d+\.\d+\.\d+(?:-[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/i.test(cacheName)) {
   errors.push('service-worker: CACHE_NAME ausente ou sem revisão versionada válida.');
 }
 if(version && !manifest.includes(`"version": "${version}"`)) errors.push('manifest: versão divergente.');
