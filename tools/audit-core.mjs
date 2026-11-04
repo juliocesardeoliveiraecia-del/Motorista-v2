@@ -14,9 +14,14 @@ const context=read('product-context.js');
 
 const errors=[];
 const version=config.match(/version:\s*'([^']+)'/)?.[1];
+const cacheName=sw.match(/CACHE_NAME\s*=\s*'([^']+)'/)?.[1];
 if(!version) errors.push('production-config: versão ausente.');
 if(version && !index.includes(`version: '${version}'`)) errors.push('index.html: versão divergente.');
-if(version && !sw.includes(`motorista-ipameri-v${version}`)) errors.push('service-worker: cache versionado divergente.');
+// A revisão do cache offline pode evoluir separadamente para invalidar assets
+// (ex.: ícones). Exigimos um CACHE_NAME versionado, não igualdade com o Core.
+if(!cacheName || !/^motorista-ipameri-v\d+\.\d+\.\d+(?:-[a-z0-9]+)*$/i.test(cacheName)) {
+  errors.push('service-worker: CACHE_NAME ausente ou sem revisão versionada válida.');
+}
 if(version && !manifest.includes(`"version": "${version}"`)) errors.push('manifest: versão divergente.');
 if(version && !context.includes(`coreVersion: '${version}-core'`)) errors.push('product-context: coreVersion divergente.');
 
@@ -36,6 +41,6 @@ if(!index.includes("get_radar_feed")) errors.push('Radar: consumo central não e
 if(!index.includes("reviewedByDoctor===true")) errors.push('IA: gate de revisão independente ausente.');
 if(!index.includes("questionFingerprint")) errors.push('Integridade: fingerprint de questão ausente.');
 
-const result={ok:errors.length===0,version,errors};
+const result={ok:errors.length===0,version,cacheName,errors};
 console.log(JSON.stringify(result,null,2));
 if(errors.length) process.exit(1);
