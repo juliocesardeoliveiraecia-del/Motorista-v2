@@ -19,8 +19,8 @@ must('Production build version is declared', !!version);
 must('Index version marker matches production config', index.includes('doctor-core-version" content="'+version+'"'));
 // PWA manifest and Service Worker have independent asset/cache revisions.
 // They must be valid and versioned, but must not be forced to equal Core Version.
-must('Manifest carries an independent versioned asset revision', /^\d+\.\d+\.\d+(?:-[a-z0-9]+)*$/i.test(manifest.version||''));
-must('Service worker cache has an independent versioned namespace', /^motorista-ipameri-v\d+\.\d+\.\d+(?:-[a-z0-9]+)*$/i.test(cacheName||''));
+must('Manifest carries an independent versioned asset revision', /^\d+\.\d+\.\d+(?:-[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/i.test(manifest.version||''));
+must('Service worker cache has an independent versioned namespace', /^motorista-ipameri-v\d+\.\d+\.\d+(?:-[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/i.test(cacheName||''));
 must('Service worker cache-buster matches production config', index.includes('service-worker.js?v='+version));
 must('Product Context is loaded before Core engine', index.indexOf('product-context.js?v='+version) < index.indexOf('/* ===== icons.js'));
 must('Product Content is loaded before Core engine', index.indexOf('product-content.js?v='+version) < index.indexOf('/* ===== icons.js'));
