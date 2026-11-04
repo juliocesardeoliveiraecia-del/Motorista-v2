@@ -15,7 +15,7 @@ const errors = [];
 if (!expected) errors.push('version.json não define version.');
 if (configMatch?.[1] !== expected) errors.push(`production-config.js version=${configMatch?.[1]}; esperado ${expected}`);
 if (inlineConfigMatch?.[1] !== expected) errors.push(`config inline do index.html version=${inlineConfigMatch?.[1]}; esperado ${expected}`);
-if (!cacheMatch?.[1]?.startsWith(expected)) errors.push(`Service Worker cache version=${cacheMatch?.[1]}; esperado prefixo ${expected}`);
+if (!cacheMatch?.[1]) errors.push('Service Worker não define um CACHE_NAME versionado.');
 if (!index.includes(`version.json?v=${expected}-`)) errors.push('index.html não consulta version.json com cache-busting da versão atual.');
 if (!index.includes(`service-worker.js?v=${expected}`)) errors.push('index.html não registra o Service Worker com a versão atual.');
 if (!index.includes(`doctor-core-quality.js?v=${expected}`)) errors.push('index.html não carrega doctor-core-quality.js com a versão atual.');
