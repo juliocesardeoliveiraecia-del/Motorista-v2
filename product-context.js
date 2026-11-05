@@ -67,7 +67,7 @@ const EXAM_CONFIG = {
   productId: 'motorista-legislativo',
   // Slug comercial real no catálogo central. Mantém productId local estável para não perder dados offline.
   platformProductSlug: 'motorista-legislativo-ipameri',
-  coreVersion: '1.12.12-core',
+  coreVersion: '1.12.13-core',
   contentVersion: '2026.1',
   editorialMode: 'edital-plus-banca',
   // Perfil operacional da IA: muda com o concurso/banca, não com o Core.
