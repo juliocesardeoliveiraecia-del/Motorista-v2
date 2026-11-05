@@ -18,7 +18,7 @@ must('User can disable AI and clear the local key', index.includes('groq-disable
 must('App discloses local browser storage and warns it is not a cryptographic vault', index.includes('não é um cofre criptográfico'));
 must('App includes the non-affiliation disclaimer and trademark attribution', index.includes('não é afiliado, patrocinado, certificado ou endossado pela Groq LLC') && index.includes('Groq é marca da Groq LLC'));
 must('App does not promise a daily free quota reset', !/limite diário.{0,160}renovado no dia seguinte/i.test(index) && index.includes('limites e a disponibilidade podem mudar'));
-const coreScript = [...index.matchAll(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/gi)].map(match => match[1]).find(script => script.includes('const DOCTOR_CORE_BUILD'));
+const coreScript = [...index.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(match => match[1]).find(script => script.includes('const DOCTOR_CORE_BUILD'));
 must('Main Doctor Core inline script parses successfully', !!coreScript && (() => { try { new vm.Script(coreScript); return true; } catch (error) { console.error(error); return false; } })());
 must('AI disclosure links to current Groq data and service terms', index.includes('console.groq.com/docs/your-data') && index.includes('console.groq.com/docs/legal/services-agreement'));
 must('Snapshot allowlist does not include the Groq API key', !/groqApiKey/i.test(bridge.slice(bridge.indexOf('function snapshotPayload'), bridge.indexOf('function mergeSnapshots'))));
