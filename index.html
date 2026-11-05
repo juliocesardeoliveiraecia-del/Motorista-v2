@@ -4259,7 +4259,7 @@ Views.settings = function () {
   const hasKey = !!GroqAI.getKey();
   const groqState = !legalReady ? 'bad' : (s.groqValidation === 'ok' ? 'ok' : (s.groqValidation === 'checking' ? 'checking' : 'bad'));
   const statusTitle = !legalReady ? (hasStoredKey ? 'Confirmação necessária para ativar a IA' : 'Leia e confirme o aviso antes de ativar') : (groqState === 'ok' ? 'Groq funcionando corretamente' : (groqState === 'checking' ? 'Verificando sua chave…' : (hasKey ? 'Chave salva, mas ainda não validada' : 'IA ainda não configurada')));
-  const statusSub = !legalReady ? 'A chave já salva será preservada. Para usar a IA, confirme que tem 18 anos ou mais e leia o aviso de dados abaixo.' : (groqState === 'ok' ? 'Sua chave foi validada e a IA Doctor está pronta para uso.' : (groqState === 'checking' ? 'Aguarde alguns segundos.' : (hasKey ? 'Clique em “Salvar chave” para fazer a verificação automática.' : 'Configure sua chave para liberar os recursos de IA.'));
+  const statusSub = !legalReady ? 'A chave já salva será preservada. Para usar a IA, confirme que tem 18 anos ou mais e leia o aviso de dados abaixo.' : (groqState === 'ok' ? 'Sua chave foi validada e a IA Doctor está pronta para uso.' : (groqState === 'checking' ? 'Aguarde alguns segundos.' : (hasKey ? 'Clique em “Salvar chave” para fazer a verificação automática.' : 'Configure sua chave para liberar os recursos de IA.')));
   // Identidade obrigatória do produto, resolvida pelo perfil e não digitada pelo usuário.
   const supportAppName = String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || '').trim();
   const supportAppId = String(window.DOCTOR_PLATFORM_BRIDGE?.appId || '').trim();
