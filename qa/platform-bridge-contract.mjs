@@ -27,7 +27,7 @@ must('Sync payload excludes GROQ credentials and audio recordings', !/groqApiKey
 must('Snapshot conflicts merge remote and local state before retry', bridge.includes('mergeSnapshots(response.payload || {}, payload)') && bridge.includes('attempt < 2'));
 must('Unsupported audio mutations remain queued after partial sync', index.includes('syncQueue=Store.state.syncQueue.filter(item=>keep.has(item?.entity))') && bridge.includes("['recording']"));
 must('Local device identity remains shared with Doctor Core', bridge.includes('const store = window.DOCTOR_CORE_RUNTIME?.Store') && bridge.includes('store?.state?.deviceSession?.id'));
-must('Core preserves local sync queue until server confirmation', /if\(r\?\.ok\)\{Store\.state\.syncQueue=\[\];/.test(index));
+must('Core preserves local sync queue until server confirmation', /if\(r\?\.ok\)\{const keep=new Set\(r\.unsupportedEntities\|\|\[\]\);Store\.state\.syncQueue=Store\.state\.syncQueue\.filter\(item=>keep\.has\(item\?\.entity\)\);/.test(index));
 must('Product policy remains single active device per app', context.includes("sessionPolicy: 'single-active-device'"));
 must('No service-role key or private payment token is present in bridge', !/(service_role|sb_secret_|sk_live_|access_token\s*[:=])/i.test(bridge));
 console.log('DOCTOR PLATFORM BRIDGE QA: OK');
