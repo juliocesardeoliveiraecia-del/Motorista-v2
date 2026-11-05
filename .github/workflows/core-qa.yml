@@ -16,3 +16,5 @@ jobs:
           node-version: 22
       - run: node qa/core-static-audit.mjs
       - run: node qa/question-content-audit.mjs
+      - run: node --check doctor-platform-bridge.js
+      - run: node qa/platform-bridge-contract.mjs
