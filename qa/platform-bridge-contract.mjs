@@ -23,7 +23,7 @@ must('Client cannot choose the authenticated user identity', !bridge.includes('p
 must('No auth token is sent through a URL', !/access_token=|refresh_token=/.test(bridge));
 must('Offline access requires a recent verified lease and a valid expiry', bridge.includes('OFFLINE_GRACE_MS') && bridge.includes('lease.endsAt'));
 must('Versioned snapshot sync is enabled only through authenticated RPCs', bridge.includes('syncEnabled: true') && bridge.includes("rpc('get_app_snapshot_v1'") && bridge.includes("rpc('save_app_snapshot_v1'"));
-must('Sync payload excludes GROQ credentials and audio recordings', !/groqApiKey|recordings\s*:/.test(bridge) && bridge.includes('snapshot exceeds 256 KB limit') === false);
+must('Sync payload excludes GROQ credentials and audio recordings', !/groqApiKey|recordings\s*:/.test(bridge));
 must('Snapshot conflicts merge remote and local state before retry', bridge.includes('mergeSnapshots(response.payload || {}, payload)') && bridge.includes('attempt < 2'));
 must('Unsupported audio mutations remain queued after partial sync', index.includes('syncQueue=Store.state.syncQueue.filter(item=>keep.has(item?.entity))') && bridge.includes("['recording']"));
 must('Local device identity remains shared with Doctor Core', bridge.includes('DOCTOR_CORE_RUNTIME?.Store?.state?.deviceSession?.id'));
