@@ -4246,8 +4246,8 @@ Views.settings = function () {
   const statusSub = groqState === 'ok' ? 'Sua chave foi validada e a IA Doctor está pronta para uso.' : (groqState === 'checking' ? 'Aguarde alguns segundos.' : (hasKey ? 'Clique em “Salvar chave” para fazer a verificação automática.' : 'Configure sua chave gratuita para liberar os recursos de IA.'));
   // Identidade obrigatória do produto, resolvida pelo perfil e não digitada pelo usuário.
   const supportAppName = String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || '').trim();
-  const supportAppId = String(EXAM_CONFIG.appId || '').trim();
-  const supportProductId = String(EXAM_CONFIG.productId || '').trim();
+  const supportAppId = String(window.DOCTOR_PLATFORM_BRIDGE?.appId || '').trim();
+  const supportProductId = String(window.DOCTOR_PLATFORM_BRIDGE?.productId || '').trim();
   const supportIdentityReady = !!(supportAppName && supportAppId && supportProductId);
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">← Voltar para o Doctor</button>
