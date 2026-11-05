@@ -23,7 +23,7 @@ must('Client cannot choose the authenticated user identity', !bridge.includes('p
 must('No auth token is sent through a URL', !/access_token=|refresh_token=/.test(bridge));
 must('Offline access requires a recent verified lease and a valid expiry', bridge.includes('OFFLINE_GRACE_MS') && bridge.includes('lease.endsAt'));
 must('Versioned snapshot sync is enabled only through authenticated RPCs', bridge.includes('syncEnabled: true') && bridge.includes("rpc('get_app_snapshot_v1'") && bridge.includes("rpc('save_app_snapshot_v1'"));
-must('Sync payload excludes GROQ credentials and audio recordings', !/groqApiKey|recordings\s*:/.test(bridge));
+must('Sync payload excludes GROQ credentials and audio recordings', !/groqApiKey|audioId\s*:|blob\s*:/.test(bridge) && bridge.includes('storagePath'));
 must('Snapshot conflicts merge remote and local state before retry', bridge.includes('mergeSnapshots(response.payload || {}, payload)') && bridge.includes('attempt < 2'));
 must('Private audio is uploaded and downloaded through the existing recordings bucket', bridge.includes("storage.from('recordings').upload") && bridge.includes("storage.from('recordings').download") && bridge.includes("client.from('recordings').upsert"));
 must('Remote recording deletion is retained as a tombstone until successful', index.includes('deletedRecordingIds') && bridge.includes('processDeletedRecordings') && bridge.includes("storage.from('recordings').remove"));
