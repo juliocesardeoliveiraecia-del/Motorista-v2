@@ -24,6 +24,9 @@
   let currentLease = null;
   let heartbeatTimer = null;
   let gateElement = null;
+  let lastSnapshotJSON = null;
+  let autoSyncTimer = null;
+  let isSavingLocalSyncMetadata = false;
 
   function readJson(key) {
     try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (_) { return null; }
@@ -221,6 +224,256 @@
     renderGate({ reason: 'session-revoked' }, () => window.location.reload());
   }
 
+  function stableStringify(value) {
+    if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
+    if (value && typeof value === 'object') {
+      return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
+    }
+    return JSON.stringify(value);
+  }
+
+  function clone(value) {
+    return value == null ? value : JSON.parse(JSON.stringify(value));
+  }
+
+  function mergeMap(remoteValue, localValue) {
+    return { ...(remoteValue && typeof remoteValue === 'object' ? remoteValue : {}),
+      ...(localValue && typeof localValue === 'object' ? localValue : {}) };
+  }
+
+  function mergeArray(remoteValue, localValue) {
+    const remote = Array.isArray(remoteValue) ? remoteValue : [];
+    const local = Array.isArray(localValue) ? localValue : [];
+    if (![...remote, ...local].some(item => item && typeof item === 'object' && item.id != null)) {
+      return [...new Set([...remote, ...local])];
+    }
+    const map = new Map();
+    for (const item of [...remote, ...local]) {
+      if (!item || typeof item !== 'object' || item.id == null) continue;
+      const key = String(item.id);
+      const previous = map.get(key);
+      const itemDate = Date.parse(item.updatedAt || item.createdAt || '') || 0;
+      const previousDate = previous ? (Date.parse(previous.updatedAt || previous.createdAt || '') || 0) : -1;
+      if (!previous || itemDate >= previousDate) map.set(key, item);
+    }
+    return [...map.values()].sort((a,b) =>
+      (Date.parse(b.updatedAt || b.createdAt || '') || 0) -
+      (Date.parse(a.updatedAt || a.createdAt || '') || 0));
+  }
+
+  function snapshotPayload(state) {
+    const source = state || {};
+    const radar = source.radar || {};
+    return {
+      progress: clone(source.progress || {}),
+      answeredIds: clone(source.answeredIds || {}),
+      simulados: clone(source.simulados || []),
+      aiQuestions: clone(source.aiQuestions || []),
+      feeds: clone(source.feeds || {}),
+      answerLog: clone(source.answerLog || {}),
+      answerMeta: clone(source.answerMeta || {}),
+      flashcards: clone(source.flashcards || {}),
+      dailyPlan: clone(source.dailyPlan || null),
+      xp: Number(source.xp || 0),
+      xpEvents: clone(source.xpEvents || {}),
+      xpReviewRewards: clone(source.xpReviewRewards || {}),
+      xpDailyBonuses: clone(source.xpDailyBonuses || {}),
+      notes: clone(source.notes || []),
+      noteFolders: clone(source.noteFolders || []),
+      essays: clone(source.essays || []),
+      essayDraft: clone(source.essayDraft || null),
+      simuladoQuota: clone(source.simuladoQuota || {}),
+      radar: {
+        seenIds: clone(radar.seenIds || []),
+        interests: clone(radar.interests || {})
+      },
+      aiCore: clone(source.aiCore || {})
+    };
+  }
+
+  function mergeSnapshots(remoteValue, localValue) {
+    const remote = remoteValue && typeof remoteValue === 'object' ? remoteValue : {};
+    const local = localValue && typeof localValue === 'object' ? localValue : {};
+    const merged = { ...remote, ...local };
+    merged.progress = {};
+    merged.answeredIds = {};
+    const subjects = new Set([
+      ...Object.keys(remote.progress || {}), ...Object.keys(local.progress || {}),
+      ...Object.keys(remote.answeredIds || {}), ...Object.keys(local.answeredIds || {})
+    ]);
+    for (const subject of subjects) {
+      const ids = [...new Set([
+        ...(remote.answeredIds?.[subject] || []), ...(local.answeredIds?.[subject] || [])
+      ])];
+      merged.answeredIds[subject] = ids;
+      const rp = remote.progress?.[subject] || {};
+      const lp = local.progress?.[subject] || {};
+      merged.progress[subject] = {
+        answered: Math.max(Number(rp.answered || 0), Number(lp.answered || 0), ids.length),
+        correct: Math.max(Number(rp.correct || 0), Number(lp.correct || 0))
+      };
+    }
+    for (const key of ['simulados','aiQuestions','notes','noteFolders','essays']) {
+      merged[key] = mergeArray(remote[key], local[key]);
+    }
+    merged.flashcards = {};
+    for (const subject of new Set([
+      ...Object.keys(remote.flashcards || {}), ...Object.keys(local.flashcards || {})
+    ])) {
+      merged.flashcards[subject] = mergeArray(remote.flashcards?.[subject], local.flashcards?.[subject]);
+    }
+    merged.answerLog = mergeMap(remote.answerLog, local.answerLog);
+    merged.answerMeta = mergeMap(remote.answerMeta, local.answerMeta);
+    merged.xpEvents = mergeMap(remote.xpEvents, local.xpEvents);
+    merged.xpReviewRewards = mergeMap(remote.xpReviewRewards, local.xpReviewRewards);
+    merged.xpDailyBonuses = mergeMap(remote.xpDailyBonuses, local.xpDailyBonuses);
+    merged.xp = Math.max(Number(remote.xp || 0), Number(local.xp || 0));
+    merged.feeds = {};
+    for (const subject of new Set([...Object.keys(remote.feeds || {}), ...Object.keys(local.feeds || {})])) {
+      const rf = remote.feeds?.[subject] || {};
+      const lf = local.feeds?.[subject] || {};
+      merged.feeds[subject] = {
+        ...rf, ...lf,
+        order: [...new Set([...(rf.order || []), ...(lf.order || [])])],
+        position: Math.max(Number(rf.position || 0), Number(lf.position || 0))
+      };
+    }
+    const remoteDraftDate = Date.parse(remote.essayDraft?.updatedAt || '') || 0;
+    const localDraftDate = Date.parse(local.essayDraft?.updatedAt || '') || 0;
+    merged.essayDraft = localDraftDate >= remoteDraftDate ? clone(local.essayDraft || remote.essayDraft || null) : clone(remote.essayDraft);
+    const remotePlanDate = String(remote.dailyPlan?.date || '');
+    const localPlanDate = String(local.dailyPlan?.date || '');
+    merged.dailyPlan = localPlanDate >= remotePlanDate ? clone(local.dailyPlan || remote.dailyPlan || null) : clone(remote.dailyPlan);
+    merged.simuladoQuota = mergeMap(remote.simuladoQuota, local.simuladoQuota);
+    merged.radar = {
+      seenIds: [...new Set([...(remote.radar?.seenIds || []), ...(local.radar?.seenIds || [])])],
+      interests: mergeMap(remote.radar?.interests, local.radar?.interests)
+    };
+    merged.aiCore = mergeMap(remote.aiCore, local.aiCore);
+    if (remote.aiCore?.reviewStats || local.aiCore?.reviewStats) {
+      merged.aiCore.reviewStats = {};
+      for (const key of new Set([
+        ...Object.keys(remote.aiCore?.reviewStats || {}), ...Object.keys(local.aiCore?.reviewStats || {})
+      ])) merged.aiCore.reviewStats[key] = Math.max(
+        Number(remote.aiCore?.reviewStats?.[key] || 0), Number(local.aiCore?.reviewStats?.[key] || 0)
+      );
+    }
+    return merged;
+  }
+
+  function setRemoteRevision(revision) {
+    const store = window.DOCTOR_CORE_RUNTIME?.Store;
+    if (!store?.state) return;
+    if (!store.state.deviceSession) store.state.deviceSession = {};
+    store.state.deviceSession.remoteRevision = Number(revision || 0);
+    isSavingLocalSyncMetadata = true;
+    try { store.save(); } finally { isSavingLocalSyncMetadata = false; }
+  }
+
+  async function syncSnapshot(mutations) {
+    if (!navigator.onLine || !client || !currentSessionId || !currentAppId || !currentProductId) {
+      return { ok: false, reason: 'session-not-ready' };
+    }
+    const heartbeat = await window.DOCTOR_PLATFORM_BRIDGE.heartbeat();
+    if (!heartbeat.ok) return heartbeat;
+    const store = window.DOCTOR_CORE_RUNTIME?.Store;
+    if (!store?.state) return { ok: false, reason: 'local-store-not-ready' };
+    const payload = snapshotPayload(store.state);
+    const unsupportedEntities = [...new Set((Array.isArray(mutations) ? mutations : store.state.syncQueue || [])
+      .map(item => item?.entity).filter(entity => entity && entity !== 'recording'))];
+    const pendingRecordings = (Array.isArray(mutations) ? mutations : store.state.syncQueue || [])
+      .some(item => item?.entity === 'recording');
+    let expectedRevision = Number(store.state.deviceSession?.remoteRevision || 0);
+    let payloadJson = stableStringify(payload);
+    if (lastSnapshotJSON === payloadJson) {
+      return { ok: true, unchanged: true, revision: expectedRevision,
+        unsupportedEntities: pendingRecordings ? ['recording'] : [] };
+    }
+
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const { data, error } = await client.rpc('save_app_snapshot_v1', {
+        p_app_id: currentAppId,
+        p_product_id: currentProductId,
+        p_session_id: currentSessionId,
+        p_expected_revision: expectedRevision,
+        p_payload: payload,
+        p_client_version: String(config.version || '')
+      });
+      if (error) {
+        const message = String(error.message || '').toLowerCase();
+        if (message.includes('active device session required')) loseSession();
+        return { ok: false, reason: 'snapshot-save-failed', error: error.message };
+      }
+      const response = Array.isArray(data) ? data[0] : data;
+      if (response?.ok === true) {
+        expectedRevision = Number(response.revision || expectedRevision + 1);
+        lastSnapshotJSON = payloadJson;
+        setRemoteRevision(expectedRevision);
+        return { ok: true, revision: expectedRevision,
+          unsupportedEntities: pendingRecordings ? ['recording'] : [] };
+      }
+      if (response?.reason !== 'revision-conflict' || attempt > 0) {
+        return { ok: false, reason: response?.reason || 'snapshot-rejected' };
+      }
+      const merged = mergeSnapshots(response.payload || {}, payload);
+      store.state = { ...store.state, ...merged };
+      isSavingLocalSyncMetadata = true;
+      try { store.save(); } finally { isSavingLocalSyncMetadata = false; }
+      expectedRevision = Number(response.revision || 0);
+      payloadJson = stableStringify(snapshotPayload(store.state));
+    }
+    return { ok: false, reason: 'revision-conflict' };
+  }
+
+  async function restoreSnapshot() {
+    const store = window.DOCTOR_CORE_RUNTIME?.Store;
+    if (!store) return { ok: false, reason: 'local-store-not-ready' };
+    store.load();
+    const { data, error } = await client.rpc('get_app_snapshot_v1', {
+      p_app_id: currentAppId,
+      p_product_id: currentProductId,
+      p_session_id: currentSessionId
+    });
+    if (error) return { ok: false, reason: 'snapshot-load-failed', error: error.message };
+    const row = Array.isArray(data) ? data[0] : data;
+    const remote = row?.payload && typeof row.payload === 'object' ? row.payload : {};
+    const revision = Number(row?.revision || 0);
+    const local = snapshotPayload(store.state);
+    const merged = mergeSnapshots(remote, local);
+    store.state = { ...store.state, ...merged };
+    if (!store.state.deviceSession) store.state.deviceSession = {};
+    store.state.deviceSession.remoteRevision = revision;
+    isSavingLocalSyncMetadata = true;
+    try { store.save(); } finally { isSavingLocalSyncMetadata = false; }
+    lastSnapshotJSON = stableStringify(remote);
+    if (revision === 0 || stableStringify(merged) !== lastSnapshotJSON) {
+      return syncSnapshot(store.state.syncQueue || []);
+    }
+    installAutoSync();
+    return { ok: true, revision };
+  }
+
+  function scheduleAutoSync() {
+    if (!navigator.onLine || !currentSessionId || !client) return;
+    if (autoSyncTimer) clearTimeout(autoSyncTimer);
+    autoSyncTimer = setTimeout(() => {
+      autoSyncTimer = null;
+      syncSnapshot(window.DOCTOR_CORE_RUNTIME?.Store?.state?.syncQueue || []).catch(() => {});
+    }, 4500);
+  }
+
+  function installAutoSync() {
+    const store = window.DOCTOR_CORE_RUNTIME?.Store;
+    if (!store || store.__doctorAutoSyncInstalled) return;
+    const originalSave = store.save.bind(store);
+    store.save = function () {
+      const result = originalSave();
+      if (!isSavingLocalSyncMetadata) scheduleAutoSync();
+      return result;
+    };
+    store.__doctorAutoSyncInstalled = true;
+  }
+
   function messageFor(reason) {
     const messages = {
       'not-authenticated': 'Entre com a mesma conta que você utiliza no Doctor Concursos.',
@@ -324,6 +577,11 @@
     }
     try {
       const result = await claimCurrentSession();
+      if (result.ok && !result.offline) {
+        const syncResult = await restoreSnapshot();
+        if (!syncResult.ok) return { ok: false, reason: syncResult.reason || 'snapshot-load-failed' };
+        installAutoSync();
+      }
       return result;
     } catch (error) {
       return { ok: false, reason: error?.message === 'app_catalog_link_missing' ? 'app_catalog_link_missing' : 'validation-error', error };
@@ -334,7 +592,7 @@
     get userId() { return currentUserId; },
     get sessionId() { return currentSessionId; },
     get sessionActive() { return !!currentSessionId; },
-    syncEnabled: false,
+    syncEnabled: true,
     async claimDeviceSession() { return claimCurrentSession(); },
     async heartbeat() {
       if (!navigator.onLine || !client || !currentSessionId || !currentAppId) return { ok: false, reason: 'offline' };
@@ -346,7 +604,7 @@
       return { ok: true };
     },
     async revalidate() { return bootstrap(); },
-    async sync() { return { ok: false, reason: 'sync-not-enabled' }; },
+    async sync(args) { return syncSnapshot(args?.mutations || []); },
     async signOut() {
       const db = await getClient();
       await db.auth.signOut();
