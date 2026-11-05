@@ -34,6 +34,8 @@
   }
 
   function deviceId() {
+    const coreDeviceId = window.DOCTOR_CORE_RUNTIME?.Store?.state?.deviceSession?.id;
+    if (coreDeviceId) return String(coreDeviceId);
     try {
       let value = localStorage.getItem(deviceKey());
       if (!value) {
