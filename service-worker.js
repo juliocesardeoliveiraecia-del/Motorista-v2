@@ -1,8 +1,8 @@
 // service-worker.js — network-first (sempre busca a versão mais nova primeiro)
-const CACHE_NAME = 'motorista-ipameri-v1.13.1-icon-1.1.0';
+const CACHE_NAME = 'motorista-ipameri-v1.13.2-platform-bridge';
 const ASSETS = [
   './', './index.html', './manifest.json', './version.json',
-  './production-config.js', './product-context.js', './product-content.js',
+  './production-config.js', './doctor-platform-bridge.js', './product-context.js', './product-content.js',
   './doctor-core-quality.js', './calculator-scientific.js', './doctor-core-icon.svg', './assets/icons/products/motorista-legislativo.svg', './assets/icons/icon-palette.json', './assets/icons/icon-generator.js',
   './assets/doctor/evolution/doctor-avatar-fallback.svg'
 ];
