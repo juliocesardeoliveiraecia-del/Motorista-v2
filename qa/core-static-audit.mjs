@@ -37,6 +37,8 @@ must('AI generation re-audits the bank', /DoctorQuestionIntegrity\.auditBank\(\)
 must('Central Radar RPC is wired', index.includes('rpc/get_radar_feed'));
 must('Radar consumes content_url from central feed', index.includes('x.content_url'));
 must('Central product lookup uses the explicit catalog slug', context.includes("platformProductSlug: 'motorista-legislativo-ipameri'") && index.includes('EXAM_CONFIG.platformProductSlug||EXAM_CONFIG.productId'));
+must('Remote sync and device sessions use the platform catalog slug', /platformProductId\(\)\{ return EXAM_CONFIG\.platformProductSlug\|\|EXAM_CONFIG\.productId; \}/.test(index) && /bridge\.sync\([\s\S]{0,220}productId:this\.platformProductId\(\)/.test(index) && /claimDeviceSession\([\s\S]{0,180}productId:this\.platformProductId\(\)/.test(index));
+must('Offline storage identity remains on the local productId', index.includes("'doctor-core:' + String(EXAM_CONFIG.productId"));
 must('Device status does not claim central session while bridge is disabled', index.includes('Somente neste dispositivo') && !index.includes('<span>Dispositivo atual</span><strong>Ativo</strong>'));
 must('No Groq Compound legacy identifier', !index.includes('groq/compound'));
 must('Storage namespace derives from productId', index.includes("'doctor-core:' + String(EXAM_CONFIG.productId"));
