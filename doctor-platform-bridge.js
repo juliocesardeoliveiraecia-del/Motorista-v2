@@ -712,6 +712,8 @@
   window.DOCTOR_PLATFORM_BRIDGE = {
     get userId() { return currentUserId; },
     get sessionId() { return currentSessionId; },
+    get appId() { return currentAppId; },
+    get productId() { return currentProductId; },
     get sessionActive() { return !!currentSessionId; },
     syncEnabled: true,
     async claimDeviceSession() { return claimCurrentSession(); },
@@ -726,6 +728,25 @@
     },
     async revalidate() { return bootstrap(); },
     async sync(args) { return syncSnapshot(args?.mutations || []); },
+    async submitSupport(payload) {
+      const db = await getClient();
+      if (!currentAppId || !currentProductId || !currentUserId) throw new Error('A identidade central do aplicativo ainda não foi validada.');
+      const { data, error } = await db.functions.invoke('doctor-support-submit', {
+        body: {
+          ...payload,
+          channel: 'app',
+          app_id: currentAppId,
+          product_id: currentProductId,
+          app_name_snapshot: String(window.EXAM_CONFIG?.appTitle || window.EXAM_CONFIG?.productName || 'Doctor Core'),
+          app_version: String(config.version || window.EXAM_CONFIG?.coreVersion || ''),
+          contest_context: String(window.EXAM_CONFIG?.productName || window.EXAM_CONFIG?.examName || ''),
+          position_context: String(window.EXAM_CONFIG?.cargo || ''),
+          device_context: { platform: navigator.platform || 'web', userAgent: String(navigator.userAgent || '').slice(0,240) }
+        }
+      });
+      if (error) throw error;
+      return data;
+    },
     async signOut() {
       const db = await getClient();
       await db.auth.signOut();
