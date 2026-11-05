@@ -37,8 +37,14 @@
   }
 
   function deviceId() {
-    const coreDeviceId = window.DOCTOR_CORE_RUNTIME?.Store?.state?.deviceSession?.id;
+    const store = window.DOCTOR_CORE_RUNTIME?.Store;
+    const coreDeviceId = store?.state?.deviceSession?.id;
     if (coreDeviceId) return String(coreDeviceId);
+    if (store?.state?.deviceSession) {
+      store.state.deviceSession.id = 'device-' + crypto.randomUUID();
+      try { store.save(); } catch (_) {}
+      return store.state.deviceSession.id;
+    }
     try {
       let value = localStorage.getItem(deviceKey());
       if (!value) {
@@ -344,7 +350,12 @@
     const remotePlanDate = String(remote.dailyPlan?.date || '');
     const localPlanDate = String(local.dailyPlan?.date || '');
     merged.dailyPlan = localPlanDate >= remotePlanDate ? clone(local.dailyPlan || remote.dailyPlan || null) : clone(remote.dailyPlan);
-    merged.simuladoQuota = mergeMap(remote.simuladoQuota, local.simuladoQuota);
+    const rq = remote.simuladoQuota || {}; const lq = local.simuladoQuota || {};
+    const latestIso = (a,b) => (Date.parse(a || '') || 0) >= (Date.parse(b || '') || 0) ? (a || null) : (b || null);
+    merged.simuladoQuota = {
+      lastGeneratedAt: latestIso(rq.lastGeneratedAt,lq.lastGeneratedAt),
+      nextAllowedAt: latestIso(rq.nextAllowedAt,lq.nextAllowedAt)
+    };
     merged.radar = {
       seenIds: [...new Set([...(remote.radar?.seenIds || []), ...(local.radar?.seenIds || [])])],
       interests: mergeMap(remote.radar?.interests, local.radar?.interests)
@@ -576,11 +587,19 @@
       return { ok: true, offline: true };
     }
     try {
+      const store = window.DOCTOR_CORE_RUNTIME?.Store;
+      if (store && !store.state) store.load();
       const result = await claimCurrentSession();
       if (result.ok && !result.offline) {
         const syncResult = await restoreSnapshot();
-        if (!syncResult.ok) return { ok: false, reason: syncResult.reason || 'snapshot-load-failed' };
         installAutoSync();
+        if (!syncResult.ok) {
+          const detail = String(syncResult.error || '').toLowerCase();
+          if (detail.includes('active device session required') || detail.includes('active app access required')) {
+            return { ok: false, reason: 'session-revoked' };
+          }
+          return { ...result, syncWarning: syncResult.reason || 'snapshot-load-failed' };
+        }
       }
       return result;
     } catch (error) {
