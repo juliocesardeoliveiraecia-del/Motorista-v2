@@ -19,7 +19,7 @@ must('Core boot waits for access validation', index.includes('window.DOCTOR_PLAT
 must('Authentication uses the shared Supabase Auth session', bridge.includes('auth.signInWithPassword') && bridge.includes('auth.getUser'));
 must('Device session is claimed by authenticated RPC', bridge.includes("rpc('claim_device_session_v1'") && bridge.includes('p_app_id: target.appId'));
 must('Heartbeat validates the active remote session', bridge.includes("rpc('heartbeat_device_session_v1'"));
-must('Client cannot choose the authenticated user identity', !bridge.includes('p_user_id:') && bridge.includes('userId: args.userId'));
+must('Client cannot choose the authenticated user identity', !bridge.includes('p_user_id:') && !bridge.includes('userId: args.userId') && bridge.includes('auth.getUser(session.access_token)'));
 must('No auth token is sent through a URL', !/access_token=|refresh_token=/.test(bridge));
 must('Offline access requires a recent verified lease and a valid expiry', bridge.includes('OFFLINE_GRACE_MS') && bridge.includes('lease.endsAt'));
 must('Offline data is not falsely reported as synchronized', bridge.includes('syncEnabled: false') && bridge.includes("reason: 'sync-not-enabled'"));
