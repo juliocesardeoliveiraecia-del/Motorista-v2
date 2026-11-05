@@ -47,7 +47,11 @@ O aplicativo não deve pesquisar/scrapear o Radar por conta própria. Ele consom
 ## 6. Regra para produção em massa
 Um novo aplicativo deve alterar somente configuração + conteúdo + assets do produto. Lógica do Core não deve ser duplicada para cada concurso.
 
-## 7. Homologação antes de replicar
+## 7. Padrão obrigatório da integração de IA
+
+Todo aplicativo derivado deve herdar o padrão de transparência, idade mínima, ciência de tratamento de dados, marca, segurança de API key e opção de desativação definido em `docs/DOCTOR-CORE-GROQ-LEGAL-STANDARD.md`. A chave nunca pode entrar em snapshots, logs, URLs ou repositórios. O modelo BYOK não deve ser declarado formalmente aprovado até confirmação escrita da Groq.
+
+## 8. Homologação antes de replicar
 Antes dos 50 aplicativos, cada release-base deve passar por:
 - QA estático automático;
 - auditoria do banco de questões;
