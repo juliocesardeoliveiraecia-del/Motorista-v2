@@ -69,6 +69,10 @@ O app consome a infraestrutura central do Radar. Não deve criar scraping parale
 
 O Core não finge sincronização quando a ponte da Plataforma não existe. A fila local permanece preservada até o contrato oficial da ponte estar conectado.
 
+## Padrão obrigatório da IA externa (todos os aplicativos)
+
+Todo aplicativo derivado deve herdar o aviso, a confirmação de idade mínima de 18 anos, a ciência do envio de prompts/áudio/textos ao provedor, o disclaimer de não afiliação, a atribuição de marca, o aviso de retenção/localização de dados e a opção de desativar/apagar a chave local. Nunca prometer cota gratuita fixa ou retenção zero. Nunca sincronizar API keys. O contrato BYOK permanece sujeito à confirmação escrita da Groq; consulte `docs/DOCTOR-CORE-GROQ-LEGAL-STANDARD.md` antes de qualquer release.
+
 ## Regra para 50+ aplicativos
 
 O primeiro aplicativo serve como homologação do motor. Os próximos devem ser gerados por pacote:
