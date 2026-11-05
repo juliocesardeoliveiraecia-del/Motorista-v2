@@ -65,6 +65,8 @@ const EXAM_CONFIG = {
   // Doctor Core V1 — identidade estável do produto e versão de conteúdo
   appId: 'doctor-motorista-legislativo',
   productId: 'motorista-legislativo',
+  // Slug comercial real no catálogo central. Mantém productId local estável para não perder dados offline.
+  platformProductSlug: 'motorista-legislativo-ipameri',
   coreVersion: '1.12.12-core',
   contentVersion: '2026.1',
   editorialMode: 'edital-plus-banca',
