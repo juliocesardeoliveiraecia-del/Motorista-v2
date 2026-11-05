@@ -288,6 +288,13 @@
       noteFolders: clone(source.noteFolders || []),
       essays: clone(source.essays || []),
       essayDraft: clone(source.essayDraft || null),
+      recordings: (source.recordings || []).filter(item => item?.remoteId && item?.storagePath).map(item => ({
+        id: item.id, remoteId: item.remoteId, storagePath: item.storagePath, subjectId: item.subjectId,
+        name: item.name, createdAt: item.createdAt, mimeType: item.mimeType, durationMs: item.durationMs,
+        size: item.size, isEssayDraft: !!item.isEssayDraft, transcript: item.transcript || '',
+        transcribedAt: item.transcribedAt || null, cloudStatus: 'synced'
+      })),
+      deletedRecordingIds: clone(source.deletedRecordingIds || []),
       simuladoQuota: clone(source.simuladoQuota || {}),
       radar: {
         seenIds: clone(radar.seenIds || []),
@@ -328,6 +335,11 @@
     ])) {
       merged.flashcards[subject] = mergeArray(remote.flashcards?.[subject], local.flashcards?.[subject]);
     }
+    const deletedRecordingIds = [...new Set([...(remote.deletedRecordingIds || []), ...(local.deletedRecordingIds || [])])];
+    merged.deletedRecordingIds = deletedRecordingIds;
+    merged.recordings = mergeArray(remote.recordings, local.recordings)
+      .filter(item => !deletedRecordingIds.includes(item.remoteId))
+      .map(item => ({ ...item, audioId: item.audioId || ('audio-' + item.id) }));
     merged.answerLog = mergeMap(remote.answerLog, local.answerLog);
     merged.answerMeta = mergeMap(remote.answerMeta, local.answerMeta);
     merged.xpEvents = mergeMap(remote.xpEvents, local.xpEvents);
@@ -381,6 +393,80 @@
     try { store.save(); } finally { isSavingLocalSyncMetadata = false; }
   }
 
+  async function processDeletedRecordings() {
+    const store = window.DOCTOR_CORE_RUNTIME?.Store;
+    const ids = [...new Set(store?.state?.deletedRecordingIds || [])];
+    if (!ids.length) return { ok: true, pending: false };
+    let pending = false;
+    for (const id of ids) {
+      try {
+        const { data: row, error: readError } = await client.from('recordings')
+          .select('storage_path').eq('id', id).maybeSingle();
+        if (readError) { pending = true; continue; }
+        if (row?.storage_path) {
+          const { error: storageError } = await client.storage.from('recordings').remove([row.storage_path]);
+          if (storageError) { pending = true; continue; }
+          const { error: rowError } = await client.from('recordings').delete().eq('id', id);
+          if (rowError) { pending = true; continue; }
+        }
+        store.state.deletedRecordingIds = (store.state.deletedRecordingIds || []).filter(value => value !== id);
+      } catch (_) { pending = true; }
+    }
+    isSavingLocalSyncMetadata = true;
+    try { store.save(); } finally { isSavingLocalSyncMetadata = false; }
+    return { ok: !pending, pending };
+  }
+
+  async function uploadPendingRecordings() {
+    const store = window.DOCTOR_CORE_RUNTIME?.Store;
+    const audioDB = window.DOCTOR_CORE_RUNTIME?.AudioDB;
+    const recordings = store?.state?.recordings || [];
+    if (!recordings.length) return { ok: true, pending: false };
+    if (!audioDB) return { ok: false, pending: true };
+    let pending = false;
+    for (const recording of recordings) {
+      if (recording.remoteId && recording.storagePath && recording.cloudStatus === 'synced') continue;
+      try {
+        const blob = recording.audioId ? await audioDB.get(recording.audioId) : null;
+        if (!blob || !blob.size) { pending = true; recording.cloudStatus = 'pending-local-audio'; continue; }
+        if (blob.size > 209715200) { pending = true; recording.cloudStatus = 'over-storage-limit'; continue; }
+        const remoteId = recording.remoteId || crypto.randomUUID();
+        const rawMime = String(blob.type || recording.mimeType || 'audio/webm').toLowerCase();
+        const mimeType = rawMime.includes('mpeg') ? 'audio/mpeg'
+          : rawMime.includes('mp4') ? 'audio/mp4'
+          : rawMime.includes('wav') ? 'audio/wav' : 'audio/webm';
+        const extension = mimeType === 'audio/mpeg' ? 'mp3'
+          : mimeType === 'audio/mp4' ? 'm4a'
+          : mimeType === 'audio/wav' ? 'wav' : 'webm';
+        const path = currentUserId + '/' + currentProductId + '/' + remoteId + '.' + extension;
+        const { error: uploadError } = await client.storage.from('recordings').upload(path, blob, {
+          upsert: true, contentType: mimeType
+        });
+        if (uploadError) { pending = true; recording.cloudStatus = 'pending-upload'; continue; }
+        const { error: rowError } = await client.from('recordings').upsert({
+          id: remoteId, user_id: currentUserId, product_id: currentProductId,
+          title: String(recording.name || 'Gravação Doctor').slice(0,240),
+          storage_path: path, duration_seconds: Math.max(0,Math.round(Number(recording.durationMs || 0)/1000)),
+          status: 'active', created_at: recording.createdAt || new Date().toISOString()
+        }, { onConflict: 'id' });
+        if (rowError) {
+          await client.storage.from('recordings').remove([path]);
+          pending = true; recording.cloudStatus = 'pending-metadata'; continue;
+        }
+        recording.remoteId = remoteId;
+        recording.storagePath = path;
+        recording.cloudStatus = 'synced';
+        if (!recording.audioId) recording.audioId = 'audio-' + recording.id;
+      } catch (_) {
+        pending = true;
+        recording.cloudStatus = 'pending-upload';
+      }
+    }
+    isSavingLocalSyncMetadata = true;
+    try { store.save(); } finally { isSavingLocalSyncMetadata = false; }
+    return { ok: !pending, pending };
+  }
+
   async function syncSnapshot(mutations) {
     if (!navigator.onLine || !client || !currentSessionId || !currentAppId || !currentProductId) {
       return { ok: false, reason: 'session-not-ready' };
@@ -389,11 +475,12 @@
     if (!heartbeat.ok) return heartbeat;
     const store = window.DOCTOR_CORE_RUNTIME?.Store;
     if (!store?.state) return { ok: false, reason: 'local-store-not-ready' };
+    const deletionResult = await processDeletedRecordings();
+    const uploadResult = await uploadPendingRecordings();
     const payload = snapshotPayload(store.state);
-    const unsupportedEntities = [...new Set((Array.isArray(mutations) ? mutations : store.state.syncQueue || [])
-      .map(item => item?.entity).filter(entity => entity && entity !== 'recording'))];
-    const pendingRecordings = (Array.isArray(mutations) ? mutations : store.state.syncQueue || [])
-      .some(item => item?.entity === 'recording');
+    const queue = Array.isArray(mutations) ? mutations : store.state.syncQueue || [];
+    const pendingRecordings = deletionResult.pending || uploadResult.pending ||
+      queue.some(item => item?.entity === 'recording' && (store.state.recordings || []).some(rec => !rec.storagePath || rec.cloudStatus !== 'synced'));
     let expectedRevision = Number(store.state.deviceSession?.remoteRevision || 0);
     let payloadJson = stableStringify(payload);
     if (lastSnapshotJSON === payloadJson) {
@@ -483,6 +570,21 @@
       return result;
     };
     store.__doctorAutoSyncInstalled = true;
+    if (audioDB && !audioDB.__doctorCloudFallbackInstalled) {
+      const originalGet = audioDB.get.bind(audioDB);
+      audioDB.get = async function (id) {
+        const localBlob = await originalGet(id);
+        if (localBlob) return localBlob;
+        if (!client || !navigator.onLine) return null;
+        const recording = (store.state.recordings || []).find(item => item.audioId === id || ('audio-' + item.id) === id);
+        if (!recording?.storagePath) return null;
+        const { data, error } = await client.storage.from('recordings').download(recording.storagePath);
+        if (error || !data) return null;
+        await audioDB.put(id, data);
+        return data;
+      };
+      audioDB.__doctorCloudFallbackInstalled = true;
+    }
   }
 
   function messageFor(reason) {
