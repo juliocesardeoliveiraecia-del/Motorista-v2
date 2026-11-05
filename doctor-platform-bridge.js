@@ -247,6 +247,12 @@
       ...(localValue && typeof localValue === 'object' ? localValue : {}) };
   }
 
+  function timestamp(value) {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    const parsed = Date.parse(value || '');
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
   function mergeArray(remoteValue, localValue) {
     const remote = Array.isArray(remoteValue) ? remoteValue : [];
     const local = Array.isArray(localValue) ? localValue : [];
@@ -258,8 +264,8 @@
       if (!item || typeof item !== 'object' || item.id == null) continue;
       const key = String(item.id);
       const previous = map.get(key);
-      const itemDate = Date.parse(item.updatedAt || item.createdAt || '') || 0;
-      const previousDate = previous ? (Date.parse(previous.updatedAt || previous.createdAt || '') || 0) : -1;
+      const itemDate = timestamp(item.updatedAt || item.createdAt);
+      const previousDate = previous ? timestamp(previous.updatedAt || previous.createdAt) : -1;
       if (!previous || itemDate >= previousDate) map.set(key, item);
     }
     return [...map.values()].sort((a,b) =>
@@ -356,8 +362,8 @@
         position: Math.max(Number(rf.position || 0), Number(lf.position || 0))
       };
     }
-    const remoteDraftDate = Date.parse(remote.essayDraft?.updatedAt || '') || 0;
-    const localDraftDate = Date.parse(local.essayDraft?.updatedAt || '') || 0;
+    const remoteDraftDate = timestamp(remote.essayDraft?.updatedAt);
+    const localDraftDate = timestamp(local.essayDraft?.updatedAt);
     merged.essayDraft = localDraftDate >= remoteDraftDate ? clone(local.essayDraft || remote.essayDraft || null) : clone(remote.essayDraft);
     const remotePlanDate = String(remote.dailyPlan?.date || '');
     const localPlanDate = String(local.dailyPlan?.date || '');
@@ -447,7 +453,7 @@
           id: remoteId, user_id: currentUserId, product_id: currentProductId,
           title: String(recording.name || 'Gravação Doctor').slice(0,240),
           storage_path: path, duration_seconds: Math.max(0,Math.round(Number(recording.durationMs || 0)/1000)),
-          status: 'active', created_at: recording.createdAt || new Date().toISOString()
+          status: 'active', created_at: (typeof recording.createdAt === 'number' ? new Date(recording.createdAt).toISOString() : recording.createdAt) || new Date().toISOString()
         }, { onConflict: 'id' });
         if (rowError) {
           await client.storage.from('recordings').remove([path]);
