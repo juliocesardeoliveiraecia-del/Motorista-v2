@@ -2505,7 +2505,7 @@ const RadarDoctor = {
         if(found?.uuid||/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(String(found?.productId||''))) return String(found.uuid||found.productId);
       }
     }catch(_){}
-    const slug=encodeURIComponent(String(EXAM_CONFIG.productId||'').trim());
+    const slug=encodeURIComponent(String(EXAM_CONFIG.platformProductSlug||EXAM_CONFIG.productId||'').trim());
     const rows=await this._fetch('products?select=id,slug,status&slug=eq.'+slug+'&status=eq.published&limit=1');
     const id=Array.isArray(rows)&&rows[0]?.id?String(rows[0].id):null;
     this.currentProductUuid=id;
@@ -4290,10 +4290,10 @@ Views.settings = function () {
 
       <p class="muted center" style="margin-top:14px">Nesta versão, sua chave fica armazenada localmente neste dispositivo. Nunca coloque sua chave em código público.</p>
     </div>
-    <div class="card"><h3>📱 Sessão e dispositivo</h3><p class="muted">Arquitetura preparada para uma sessão ativa por vez. A autoridade final de acesso e sessão será integrada à plataforma principal.</p><div class="subj-row"><span>Dispositivo atual</span><strong>Ativo</strong></div></div>
+    <div class="card"><h3>📱 Sessão e dispositivo</h3><p class="muted">O controle de uma sessão por aplicativo depende da conexão segura com a plataforma Doctor.</p><div class="subj-row"><span>Estado da sessão</span><strong>${CoreSync.status().remoteConfigured ? "Conectado à plataforma" : "Somente neste dispositivo"}</strong></div></div>
     <div class="card" id="doctor-install-settings-card"><h3>📲 Instalar o aplicativo</h3><p class="muted">Instale o Doctor Core na tela inicial do celular ou como aplicativo no computador. Esta opção permanece disponível aqui nas Configurações, mesmo depois da instalação.</p><button class="doctor-install-settings-btn" id="doctor-install-settings" type="button" aria-label="Instalar aplicativo Doctor ou ver opções de instalação"><span class="install-symbol" aria-hidden="true">⬇</span><span>Instalar aplicativo</span></button><p class="muted" style="font-size:.82rem;margin:10px 0 0">Se o navegador não abrir a instalação automaticamente, mostraremos como instalar pelo menu do navegador.</p></div>
     <div class="card"><h3>🎨 Aparência</h3><button class="btn btn-outline btn-block" id="toggle-theme-btn">Alternar tema (${s.theme === 'dark' ? 'escuro' : 'claro'})</button></div>
-    <div class="card"><h3>💾 Dados e sincronização</h3><p class="muted">O estudo continua disponível offline. ${CoreSync.status().queued?`Há <strong>${CoreSync.status().queued}</strong> alteração(ões) aguardando sincronização.`:'Nenhuma alteração aguardando sincronização.'}</p><button class="btn btn-outline btn-block" id="sync-now">🔄 Sincronizar informações</button><button class="btn btn-danger btn-block" id="reset-progress">Zerar progresso</button></div>
+    <div class="card"><h3>💾 Dados e sincronização</h3><p class="muted">Seus dados locais continuam disponíveis offline. ${CoreSync.status().remoteConfigured ? (CoreSync.status().queued?`Há <strong>${CoreSync.status().queued}</strong> alteração(ões) aguardando sincronização.`:'Nenhuma alteração aguardando sincronização.') : 'A sincronização com a plataforma Doctor ainda não está conectada; os dados permanecem salvos neste dispositivo.'}</p><button class="btn btn-outline btn-block" id="sync-now">🔄 Sincronizar informações</button><button class="btn btn-danger btn-block" id="reset-progress">Zerar progresso</button></div>
     <div class="card"><h3>🧠 Doctor AI Core</h3><p class="muted">Motor de IA ${DoctorAICore.VERSION}. Geração, revisão, redação e Radar usam o perfil deste concurso. Questões e flashcards passam por revisão automática antes de serem entregues.</p></div><div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>
     <section class="card doctor-support-card" aria-labelledby="doctor-support-title">
       <style>
