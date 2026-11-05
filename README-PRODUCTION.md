@@ -2,7 +2,8 @@
 
 ## Estado auditado
 
-- **Core:** V1.12.3
+- **Core base em main/produção:** V1.12.3
+- **QA Gate industrial proposto:** PR #13 (branch de homologação; ainda não promovido a produção)
 - **Concurso:** Câmara Municipal de Ipameri/GO
 - **Cargo:** Agente Legislativo — Motorista Legislativo
 - **Banca:** Instituto Verbena / UFG
@@ -50,6 +51,12 @@ A meta é que um novo aplicativo seja produzido por troca de configuração/cont
 ## Segurança
 
 Nunca versionar GROQ API key, Supabase service-role key, tokens de pagamento ou outros segredos. O repositório pode conter somente configuração pública necessária ao cliente.
+
+## Gate de produção em massa
+
+A preparação industrial está sendo acompanhada em [PR #13 — Quality Gate](https://github.com/juliocesardeoliveiraecia-del/Motorista-v2/pull/13). O PR endurece a validação estrutural e bloqueia questões sem aprovação editorial/versionamento explícitos. Isso é uma correção de segurança, não uma certificação factual do banco.
+
+A liberação segue bloqueada até: revisar e versionar as questões estáticas; completar as 40 questões na distribuição 10/3/2/25; popular catálogo/Product Context e Radar pelo fluxo oficial do Main; resolver a política central de fontes; homologar bridge/sync/dispositivo/pagamento; e executar E2E real em desktop e celular. O preview Vercel e o CI verdes não substituem essa homologação.
 
 ## Rollback
 
