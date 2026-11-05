@@ -4360,7 +4360,7 @@ Views.settings = function () {
           </div>
         </div>
         <div class="doctor-support-actions">
-          <button class="btn btn-primary btn-block" id="doctor-support-email" type="submit" ${supportIdentityReady ? '' : 'disabled'}>✉️ ENVIAR POR E-MAIL</button>
+          <button class="btn btn-primary btn-block" id="doctor-support-email" type="submit" ${supportIdentityReady ? '' : 'disabled'}>✉️ ENVIAR CHAMADO</button>
           <button class="btn btn-outline btn-block" type="button" disabled title="O canal será ativado quando o número oficial for definido">💬 WhatsApp — em breve</button>
         </div>
         <p class="doctor-support-note muted">Ao tocar em “Enviar por e-mail”, o aplicativo abrirá o programa de e-mail do seu dispositivo com a mensagem preenchida para <strong>doctorconcursoschat@gmail.com</strong>. Revise e toque em enviar no seu e-mail. O WhatsApp será ativado quando o número oficial estiver definido.</p>
@@ -4380,45 +4380,50 @@ Views.bind.settings = function () {
       UI.toast('A instalação ainda está sendo preparada. Aguarde alguns segundos ou use o menu do navegador: “Instalar aplicativo” / “Adicionar à tela inicial”.', 'info');
     }
   });
-  document.getElementById('doctor-support-form')?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const type = document.getElementById('doctor-support-type')?.value || 'Outro assunto';
-    const personName = (document.getElementById('doctor-support-name')?.value || '').trim();
-    const subject = (document.getElementById('doctor-support-subject')?.value || '').trim();
-    const contact = (document.getElementById('doctor-support-contact')?.value || '').trim();
-    const message = (document.getElementById('doctor-support-message')?.value || '').trim();
-    const supportAppName = String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || '').trim();
-    const supportAppId = String(EXAM_CONFIG.appId || '').trim();
-    const supportProductId = String(EXAM_CONFIG.productId || '').trim();
-    if (!supportAppName || !supportAppId || !supportProductId) { UI.toast('O perfil deste aplicativo está sem identificação obrigatória. A equipe precisa configurar appTitle, appId e productId antes de enviar o suporte.', 'warn'); return; }
-    if (!personName) { UI.toast('Informe seu nome para identificarmos sua solicitação.', 'warn'); document.getElementById('doctor-support-name')?.focus(); return; }
-    if (!contact || !document.getElementById('doctor-support-contact')?.checkValidity()) { UI.toast('Informe um e-mail válido para que possamos responder à sua solicitação.', 'warn'); document.getElementById('doctor-support-contact')?.focus(); return; }
-    if (!subject || !message) { UI.toast('Preencha o assunto e a descrição para continuar.', 'warn'); return; }
-    const body = [
-      'Central de Suporte Doctor Core',
-      '',
-      'Nome do solicitante: ' + personName,
-      'Tipo de solicitação: ' + type,
-      'Assunto: ' + subject,
-      'E-mail para retorno: ' + contact,
-      'Aplicativo: ' + supportAppName,
-      'ID do aplicativo: ' + supportAppId,
-      'ID do produto: ' + supportProductId,
-      'Produto/concurso: ' + (EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Não informado'),
-      'Órgão: ' + (EXAM_CONFIG.orgName || 'Não informado') + (EXAM_CONFIG.orgState ? ' - ' + EXAM_CONFIG.orgState : ''),
-      'Cargo: ' + (EXAM_CONFIG.cargo || 'Não informado'),
-      'Versão do Core: ' + (EXAM_CONFIG.coreVersion || 'Não informada'),
-      '',
-      'Descrição:',
-      message,
-      '',
-      'Enviado automaticamente pelo formulário de suporte do aplicativo Doctor Core.'
-    ].join('\n');
-    const appName = EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || 'Doctor Core';
-    const mailto = 'mailto:doctorconcursoschat@gmail.com?subject=' + encodeURIComponent('[' + appName + '] ' + type + ': ' + subject) + '&body=' + encodeURIComponent(body);
-    window.location.href = mailto;
-  });
-  document.getElementById('groq-key-eye')?.addEventListener('click', () => {
+  document.getElementById('doctor-support-form')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const submit = form.querySelector('button[type="submit"]');
+      const type = form.querySelector('[name="support-type"]')?.value || 'Dúvida';
+      const name = form.querySelector('[name="support-name"]')?.value?.trim() || '';
+      const contact = form.querySelector('[name="support-contact"]')?.value?.trim() || '';
+      const subject = form.querySelector('[name="support-subject"]')?.value?.trim() || '';
+      const message = form.querySelector('[name="support-message"]')?.value?.trim() || '';
+      if (!window.DOCTOR_PLATFORM_BRIDGE?.submitSupport || !window.DOCTOR_PLATFORM_BRIDGE.appId || !window.DOCTOR_PLATFORM_BRIDGE.productId) {
+        UI.toast('A identidade central deste aplicativo ainda não foi validada. Entre novamente e tente de novo.','warn');
+        return;
+      }
+      if (!name || !contact || !subject || !message) {
+        UI.toast('Preencha todos os campos do chamado.','warn');
+        return;
+      }
+      submit.disabled = true;
+      const oldLabel = submit.textContent;
+      submit.textContent = 'ENVIANDO...';
+      try {
+        const response = await window.DOCTOR_PLATFORM_BRIDGE.submitSupport({
+          requester_name: name,
+          requester_contact: contact,
+          requester_email: contact,
+          subject: '[' + type + '] ' + subject,
+          description: message
+        });
+        if (!response?.ok || !response?.ticket?.ticket_number) {
+          throw new Error(response?.error || 'A Central de Suporte não confirmou o protocolo.');
+        }
+        const notification = response.email_notification === 'sent'
+          ? 'A equipe também recebeu a notificação por e-mail.'
+          : 'A notificação por e-mail ficou registrada na fila central.';
+        UI.toast('Chamado #' + response.ticket.ticket_number + ' registrado. ' + notification,'success');
+        form.reset();
+      } catch (error) {
+        UI.toast('Não foi possível registrar o chamado: ' + String(error?.message || error),'error');
+      } finally {
+        submit.disabled = false;
+        submit.textContent = oldLabel;
+      }
+    });
+    document.getElementById('groq-key-eye')?.addEventListener('click', () => {
     const input=document.getElementById('groq-key');
     if(!input) return;
     input.type=input.type==='password'?'text':'password';
