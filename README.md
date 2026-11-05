@@ -17,7 +17,7 @@ Sem gamificação, sem chat de IA, sem flashcards, sem sincronização remota �
 
 ## Como usar
 1. Suba `index.html` e `service-worker.js` para um repositório do GitHub (ou Vercel).
-2. Abra o app, vá em **Configurações** e cole sua chave gratuita da Groq ([console.groq.com/keys](https://console.groq.com/keys)) — ela fica salva só no seu aparelho, nunca no código.
+2. Abra o app, vá em **Configurações** e cole sua própria chave da GroqCloud ([console.groq.com/keys](https://console.groq.com/keys)). A integração externa exige 18 anos ou mais; a disponibilidade do plano gratuito e seus limites podem mudar. A chave fica no armazenamento local do navegador e não deve ser compartilhada.
 3. Toque em **Praticar Questões**, escolha uma matéria, e vá respondendo. Quando o banco daquela matéria acabar (ou quiser mais), toque em **"Gerar mais questões com IA"**.
 4. Quando quiser testar valendo, use o **Simulado Oficial** — ele reproduz exatamente a estrutura da prova real (40 questões, 100 pontos, 4h). Se faltar questão em alguma matéria pra montar o simulado completo, o próprio app oferece gerar as que faltam automaticamente.
 
