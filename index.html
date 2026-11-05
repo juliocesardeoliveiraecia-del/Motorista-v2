@@ -4330,7 +4330,7 @@ Views.settings = function () {
           <span aria-hidden="true" style="font-size:1.4rem">📱</span>
           <div><strong>Aplicativo identificado automaticamente</strong><span>${supportAppName || 'Identificação obrigatória pendente'}</span><small>${String(EXAM_CONFIG.productName || EXAM_CONFIG.cargo || 'Produto não configurado')} · ID do app: ${supportAppId || 'NÃO CONFIGURADO'} · ID do produto: ${supportProductId || 'NÃO CONFIGURADO'}</small></div>
         </div>
-        ${supportIdentityReady ? '' : '<p class="doctor-support-note" role="alert">⚠️ O suporte está temporariamente indisponível porque a identidade obrigatória deste aplicativo não foi configurada. Informe appTitle, appId e productId no perfil do produto.</p>'}
+        ${supportIdentityReady ? '' : '<p class="doctor-support-note" role="alert">⚠️ O suporte está temporariamente indisponível porque a identidade obrigatória deste aplicativo não foi configurada. A equipe precisa concluir o vínculo deste app e produto no catálogo central.</p>'}
         <div class="doctor-support-grid">
           <div>
             <label for="doctor-support-type">Como podemos ajudar?</label>
@@ -4384,11 +4384,11 @@ Views.bind.settings = function () {
       e.preventDefault();
       const form = e.currentTarget;
       const submit = form.querySelector('button[type="submit"]');
-      const type = form.querySelector('[name="support-type"]')?.value || 'Dúvida';
-      const name = form.querySelector('[name="support-name"]')?.value?.trim() || '';
-      const contact = form.querySelector('[name="support-contact"]')?.value?.trim() || '';
-      const subject = form.querySelector('[name="support-subject"]')?.value?.trim() || '';
-      const message = form.querySelector('[name="support-message"]')?.value?.trim() || '';
+      const type = form.querySelector('#doctor-support-type')?.value || 'Dúvida';
+      const name = form.querySelector('#doctor-support-name')?.value?.trim() || '';
+      const contact = form.querySelector('#doctor-support-contact')?.value?.trim() || '';
+      const subject = form.querySelector('#doctor-support-subject')?.value?.trim() || '';
+      const message = form.querySelector('#doctor-support-message')?.value?.trim() || '';
       if (!window.DOCTOR_PLATFORM_BRIDGE?.submitSupport || !window.DOCTOR_PLATFORM_BRIDGE.appId || !window.DOCTOR_PLATFORM_BRIDGE.productId) {
         UI.toast('A identidade central deste aplicativo ainda não foi validada. Entre novamente e tente de novo.','warn');
         return;
