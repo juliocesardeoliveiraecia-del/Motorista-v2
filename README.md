@@ -63,6 +63,19 @@ O app não fornece chave compartilhada. O fluxo implementado é BYOK, com chave 
 
 **Pendência jurídica:** os documentos públicos da Groq não esclarecem de forma inequívoca o uso de contas pessoais BYOK por alunos em aplicativo comercial de terceiro. Não declarar o modelo formalmente aprovado até receber confirmação escrita da Groq. Consulte `docs/DOCTOR-CORE-GROQ-LEGAL-STANDARD.md`.
 
+## Gerar um novo produto
+
+Use o manifesto de exemplo e a fábrica de configuração para validar o edital e gerar `product-context.js`, `manifest.json` e `version.json`:
+
+```bash
+cp templates/product-manifest.example.json product-manifest.json
+# Edite o manifesto com dados conferidos no edital e fontes oficiais.
+node tools/scaffold-product.mjs --manifest product-manifest.json
+node tools/scaffold-product.mjs --manifest product-manifest.json --out-dir . --apply --force
+```
+
+O gerador não cria questões, assets, repositório GitHub ou projeto Vercel; conteúdo e identidade visual continuam sendo preparados e revisados separadamente.
+
 ## Produção em massa
 
 Um novo aplicativo deve alterar apenas:
