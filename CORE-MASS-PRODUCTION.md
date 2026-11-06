@@ -65,9 +65,11 @@ A auditoria automatizada não substitui a revisão factual/editorial. Para legis
 
 O app consome a infraestrutura central do Radar. Não deve criar scraping paralelo. A publicação pública depende do contrato central do Supabase, com fonte oficial, identificação de produto/concurso e deduplicação por `content_url`.
 
-## Sincronização
+## Sincronização e sessão
 
-O Core não finge sincronização quando a ponte da Plataforma não existe. A fila local permanece preservada até o contrato oficial da ponte estar conectado.
+A linha-base Motorista conecta o Core ao Supabase staging por sessão de dispositivo e snapshot versionado (`get_app_snapshot_v1` / `save_app_snapshot_v1`). A fila local só é limpa após confirmação do servidor; conflitos reconciliam revisão remota/local; metadados do Gravador sincronizam e os arquivos de áudio usam o bucket privado `recordings`.
+
+A sessão única é garantida no servidor quando há conexão. Um dispositivo totalmente offline não consegue receber uma revogação em tempo real: o acesso offline usa lease previamente validado com janela máxima de 72 horas e é revalidado assim que a conexão retorna. Não anunciar exclusividade instantânea enquanto um dispositivo estiver desconectado.
 
 ## Padrão obrigatório da IA externa (todos os aplicativos)
 
