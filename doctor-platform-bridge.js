@@ -1,7 +1,7 @@
-/* Doctor Concursos — identidade e sessão central do Doctor Core.
+/* Doctor Concursos — identidade, sessão e sincronização do Doctor Core.
  * Usa o mesmo Supabase Auth do site. Nenhum token é colocado na URL.
- * A fila offline permanece local; a sincronização de dados só será habilitada
- * quando o contrato de payload/versionamento estiver homologado.
+ * O snapshot versionado usa RPCs autenticadas e só confirma a fila após resposta
+ * do servidor. Áudio fica no bucket privado; chaves/API tokens nunca sincronizam.
  */
 (function () {
   'use strict';
