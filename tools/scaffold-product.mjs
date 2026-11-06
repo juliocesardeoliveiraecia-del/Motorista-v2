@@ -81,7 +81,7 @@ export function validateManifest(m) {
   else for (const source of m.radarSources) {
     try {
       const u = new URL(source);
-      if (u.protocol !== 'https:' || !allowed.has(u.hostname.toLowerCase())) errors.push('fonte Radar não permitida: ' + source);
+      const host=u.hostname.toLowerCase();if (u.protocol !== 'https:' || ![...allowed].some(base=>host===base||host.endsWith('.'+base))) errors.push('fonte Radar não permitida: ' + source);
     } catch { errors.push('URL de Radar inválida: ' + source); }
   }
 
