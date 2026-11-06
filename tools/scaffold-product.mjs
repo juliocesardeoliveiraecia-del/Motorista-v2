@@ -24,7 +24,7 @@ export function validateManifest(m) {
   const errors = [];
   if (!m || typeof m !== 'object' || Array.isArray(m)) return ['manifest precisa ser um objeto JSON'];
   if (m.schemaVersion !== 1) errors.push('schemaVersion deve ser 1');
-  if (!/^\\d+\\.\\d+\\.\\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(String(m.version || ''))) errors.push('version inválida');
+  if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(String(m.version || ''))) errors.push('version inválida');
   if (!String(m.coreVersion || '').trim()) errors.push('coreVersion obrigatória');
   if (!String(m.contentVersion || '').trim()) errors.push('contentVersion obrigatória');
 
@@ -32,7 +32,7 @@ export function validateManifest(m) {
   for (const key of ['appId','productId','platformProductSlug']) {
     if (!SLUG.test(String(a[key] || ''))) errors.push('app.' + key + ' deve ser slug minúsculo');
   }
-  for (const key of ['appTitle','productName','orgName','orgState','cargo','banca','editalNumber','editalPublishDate','examDateISO','applicationCity','themeIcon']) {
+  for (const key of ['appTitle','productName','orgName','orgState','cargo','banca','editalNumber','editalPublishDate','examDateISO','applicationCity','themeIcon','appIconBadge']) {
     if (!String(a[key] || '').trim()) errors.push('app.' + key + ' obrigatória');
   }
   if (!Number.isInteger(a.durationHours) || a.durationHours < 1 || a.durationHours > 8) errors.push('app.durationHours deve ser inteiro entre 1 e 8');
@@ -40,7 +40,7 @@ export function validateManifest(m) {
     if (!Number.isInteger(a[key]) || a[key] <= 0) errors.push('app.' + key + ' deve ser inteiro positivo');
   }
   if (a.passingScore > a.totalPoints) errors.push('passingScore não pode exceder totalPoints');
-  if (!/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$/.test(String(a.examDateISO || '')) || Number.isNaN(Date.parse(a.examDateISO))) errors.push('examDateISO deve usar YYYY-MM-DDTHH:mm:ss');
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(String(a.examDateISO || '')) || Number.isNaN(Date.parse(a.examDateISO))) errors.push('examDateISO deve usar YYYY-MM-DDTHH:mm:ss');
   for (const key of ['primaryColor','primaryColorMid','accentColor','accentColorDark','appIconBadgeColor','appIconBadgeTextColor']) {
     if (!HEX.test(String(a[key] || ''))) errors.push('app.' + key + ' deve ser cor hexadecimal #RRGGBB');
   }
@@ -55,8 +55,10 @@ export function validateManifest(m) {
   if (rules.optionCount !== a.alternativesPerQuestion) errors.push('examRules.optionCount deve coincidir com app.alternativesPerQuestion');
   if (!['multiple-choice','true-false'].includes(rules.questionType)) errors.push('examRules.questionType deve ser multiple-choice ou true-false');
   if (!Array.isArray(rules.optionLabels) || rules.optionLabels.length !== rules.optionCount || rules.optionLabels.some(x => !String(x).trim())) errors.push('examRules.optionLabels deve ter uma etiqueta por alternativa');
-  if (!['single-correct','true-false'].includes(rules.answerPolicy)) errors.push('examRules.answerPolicy inválida');
-  if (!rules.scoring || !Number.isFinite(rules.scoring.incorrectPoints) || !Number.isFinite(rules.scoring.blankPoints)) errors.push('examRules.scoring inválido');
+  const expectedPolicy = rules.questionType === 'true-false' ? 'true-false' : 'single-correct';
+  if (rules.answerPolicy !== expectedPolicy) errors.push('examRules.answerPolicy incompatível com questionType');
+  if (rules.questionType === 'true-false' && rules.optionCount !== 2) errors.push('prova certo/errado deve ter exatamente 2 opções');
+  if (!rules.scoring || !Number.isFinite(rules.scoring.incorrectPoints) || !Number.isFinite(rules.scoring.blankPoints) || !String(rules.scoring.correct || '').trim()) errors.push('examRules.scoring inválido');
   if (!rules.passingScore || rules.passingScore.value !== a.passingScore) errors.push('examRules.passingScore deve coincidir com app.passingScore');
 
   if (!Array.isArray(m.subjects) || !m.subjects.length) errors.push('subjects deve conter as matérias do edital');
@@ -86,17 +88,18 @@ export function validateManifest(m) {
   const radar = m.aiProfile?.radar;
   if (!radar || radar.officialFirst !== true) errors.push('aiProfile.radar.officialFirst deve ser true');
   else {
-    const share = Number(radar.contestShare) + Number(radar.promotionShare) + Number(radar.discoveryShare);
-    if (Math.abs(share - 1) > 0.000001 || [radar.contestShare,radar.promotionShare,radar.discoveryShare].some(x => !Number.isFinite(x) || x < 0 || x > 1)) errors.push('percentuais do Radar devem somar 1 e ficar entre 0 e 1');
+    const shares = [radar.contestShare,radar.promotionShare,radar.discoveryShare];
+    const share = shares.reduce((sum,value)=>sum+Number(value),0);
+    if (Math.abs(share - 1) > 0.000001 || shares.some(x => !Number.isFinite(x) || x < 0 || x > 1)) errors.push('percentuais do Radar devem somar 1 e ficar entre 0 e 1');
   }
-  if (!m.aiProfile || !['multiple-choice','true-false'].includes(m.aiProfile.questionMode) || !m.aiProfile.answerPolicy || m.aiProfile.revisionRequired !== true || m.aiProfile.currentFactsNeedSource !== true) errors.push('aiProfile precisa definir modo, gabarito, revisão obrigatória e fonte para fatos atuais');
+  if (!m.aiProfile || m.aiProfile.questionMode !== rules.questionType || m.aiProfile.answerPolicy !== expectedPolicy || m.aiProfile.revisionRequired !== true || m.aiProfile.currentFactsNeedSource !== true) errors.push('aiProfile deve espelhar o modo da prova, exigir revisão e fonte para fatos atuais');
 
   return errors;
 }
 
 export function buildOutputs(m) {
   const errors = validateManifest(m);
-  if (errors.length) throw new Error(errors.join('\\n'));
+  if (errors.length) throw new Error(errors.join('\n'));
   const a = m.app;
   const context = {
     orgName:a.orgName, orgState:a.orgState, cargo:a.cargo, banca:a.banca,
@@ -130,9 +133,9 @@ export function buildOutputs(m) {
     icons:[{src:a.appIconAsset,sizes:'any',type:a.appIconAsset.toLowerCase().endsWith('.svg')?'image/svg+xml':'image/png',purpose:'any'}]
   };
   return {
-    'product-context.js':'/* Gerado por tools/scaffold-product.mjs. Edite o manifesto, não a lógica do Core. */\\nconst EXAM_CONFIG = '+JSON.stringify(context,null,2)+';\\nwindow.EXAM_CONFIG = EXAM_CONFIG;\\n',
-    'manifest.json':JSON.stringify(pwa,null,2)+'\\n',
-    'version.json':JSON.stringify({version:m.version,core:'Doctor Core',product:a.appTitle},null,2)+'\\n'
+    'product-context.js':'/* Gerado por tools/scaffold-product.mjs. Edite o manifesto, não a lógica do Core. */\nconst EXAM_CONFIG = '+JSON.stringify(context,null,2)+';\nwindow.EXAM_CONFIG = EXAM_CONFIG;\n',
+    'manifest.json':JSON.stringify(pwa,null,2)+'\n',
+    'version.json':JSON.stringify({version:m.version,core:'Doctor Core',product:a.appTitle},null,2)+'\n'
   };
 }
 
@@ -150,7 +153,7 @@ async function main() {
   if(errors.length){console.error('MANIFESTO INVÁLIDO');for(const e of errors)console.error('- '+e);process.exit(1);}
   const outputs=buildOutputs(manifest);
   const apply=process.argv.includes('--apply'),force=process.argv.includes('--force'),outArg=arg('--out-dir');
-  if(!apply){console.log('MANIFESTO VÁLIDO — prévia dos arquivos gerados:');for(const [name,content] of Object.entries(outputs))console.log('\\n--- '+name+' ---\\n'+content);return;}
+  if(!apply){console.log('MANIFESTO VÁLIDO — prévia dos arquivos gerados:');for(const [name,content] of Object.entries(outputs))console.log('\n--- '+name+' ---\n'+content);return;}
   if(!outArg){console.error('--out-dir é obrigatório com --apply; isso evita sobrescrever o app atual por engano.');process.exit(2);}
   const outDir=path.resolve(outArg);
   const existing=Object.keys(outputs).filter(name=>fs.existsSync(path.join(outDir,name)));
