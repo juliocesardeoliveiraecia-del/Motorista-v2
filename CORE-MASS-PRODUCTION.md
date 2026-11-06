@@ -33,6 +33,23 @@ Esta é a linha-base industrial do Core. Um novo aplicativo deve trocar **Produc
 - flashcards/recursos de conteúdo;
 - fontes e rastreabilidade editorial quando aplicável.
 
+## Fábrica de configuração de novos aplicativos
+
+O repositório agora inclui um gerador sem dependências externas:
+- manifesto de produto: `templates/product-manifest.example.json`;
+- gerador: `tools/scaffold-product.mjs`;
+- QA: `qa/scaffold-product-contract.mjs`.
+
+Fluxo em uma cópia do Core:
+```bash
+cp templates/product-manifest.example.json product-manifest.json
+# Preencha o manifesto com o edital, banca, distribuição, identidade e fontes oficiais.
+node tools/scaffold-product.mjs --manifest product-manifest.json
+node tools/scaffold-product.mjs --manifest product-manifest.json --out-dir . --apply --force
+```
+
+O gerador valida slugs, datas, cores, distribuição total de questões, duração, número de alternativas, modo múltipla escolha/Certo-Errado, fontes HTTPS dentro da allowlist oficial e proporções do Radar. Ele gera somente `product-context.js`, `manifest.json` e `version.json`; não inventa questões, gabaritos, assets, fontes nem cria repositório/Vercel. Esses itens continuam sujeitos a revisão editorial e ao gate de conteúdo. Sem `--apply`, executa apenas prévia; `--force` é exigido para sobrescrever arquivos existentes.
+
 ## Gate de qualidade das questões
 
 Uma questão só pode ser entregue se:
