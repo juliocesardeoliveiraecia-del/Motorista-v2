@@ -59,7 +59,8 @@ Antes dos 50 aplicativos, cada release-base deve passar por:
 - teste de alteração/fingerprint;
 - teste de simulado completo;
 - teste offline/online;
-- teste de sync sem bridge;
+- teste de sync autenticado com bridge, conflito de revisão e fila preservada até confirmação;
+- teste de revogação de sessão ao reconectar após uso offline (lease máximo de 72 horas);
 - teste de Radar central;
 - teste mobile/desktop;
 - teste de atualização do PWA;
