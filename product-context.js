@@ -86,7 +86,7 @@ const EXAM_CONFIG = {
     'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/',
     'https://institutoverbena.ufg.br/'
   ],
-  sync: { enabled: true, provider: 'supabase-adapter-pending' },
+  sync: { enabled: true, provider: 'supabase-versioned-snapshot-v1' },
   sessionPolicy: 'single-active-device',
   // Identidade visual — os mesmos valores que já estavam fixos no CSS.
   // Trocar aqui muda a cor do app inteiro sem mexer em nenhum outro arquivo.
