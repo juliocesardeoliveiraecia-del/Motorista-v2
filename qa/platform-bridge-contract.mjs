@@ -13,7 +13,7 @@ function must(label, condition) {
 }
 
 must('Platform bridge is loaded before the Core runtime', index.indexOf('doctor-platform-bridge.js') > 0 && index.indexOf('doctor-platform-bridge.js') < index.indexOf('window.DOCTOR_CORE_RUNTIME'));
-must('Platform bridge is cached by the PWA service worker', sw.includes("'./doctor-platform-bridge.js'"));
+must('Platform bridge is cached by the PWA service worker', sw.includes("'./doctor-platform-bridge.js?v=1.12.13-platform-1'"));
 must('Staging bridge is explicitly enabled', config.includes("environment: 'staging'") && config.includes('bridgeEnabled: true'));
 must('Product context declares the implemented versioned snapshot adapter', context.includes("provider: 'supabase-versioned-snapshot-v1'") && context.includes('sync: { enabled: true'));
 must('Core boot waits for access validation', index.includes('window.DOCTOR_PLATFORM_BRIDGE.bootstrap()') && index.includes('renderGate(result, startDoctorCore)'));
