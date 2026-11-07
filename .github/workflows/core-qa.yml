@@ -15,6 +15,7 @@ jobs:
         with:
           node-version: 22
       - run: node qa/core-static-audit.mjs
+      - run: node qa/service-worker-offline-contract.mjs
       - run: node qa/question-content-audit.mjs
       - name: Block release when the official question distribution is incomplete
         run: node tools/audit-content.mjs --release
