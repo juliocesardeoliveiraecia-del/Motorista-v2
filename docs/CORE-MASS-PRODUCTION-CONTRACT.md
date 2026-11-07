@@ -69,3 +69,15 @@ Antes dos 50 aplicativos, cada release-base deve passar por:
 - teste mobile/desktop;
 - teste de atualização do PWA;
 - verificação de ausência de segredos no repositório.
+
+
+## 9. Atualização segura do PWA offline
+
+A instalação de uma nova versão do Service Worker deve:
+- tentar obter a versão mais recente de cada asset;
+- recuperar do cache anterior os assets que não puderem ser obtidos pela rede;
+- validar a presença de todo o shell crítico (HTML, manifesto, versão, configuração, bridge, contexto e conteúdo);
+- abortar a instalação se o shell crítico estiver incompleto, mantendo o Service Worker e o cache anteriores;
+- excluir somente caches antigos com o namespace deste aplicativo, sem apagar caches de outros produtos na mesma origem.
+
+QA automatizado: `node qa/service-worker-offline-contract.mjs`. O teste não substitui homologação real em dispositivo com perda de conexão durante uma atualização.
