@@ -4,7 +4,19 @@ const ASSETS = [
   './', './index.html', './manifest.json', './version.json',
   './production-config.js', './doctor-platform-bridge.js', './product-context.js', './product-content.js',
   './doctor-core-quality.js', './calculator-scientific.js', './doctor-core-icon.svg', './assets/icons/products/motorista-legislativo.svg', './assets/icons/icon-palette.json', './assets/icons/icon-generator.js',
-  './assets/doctor/evolution/doctor-avatar-fallback.svg'
+  './assets/doctor/evolution/doctor-avatar-fallback.svg',
+  './assets/images/ipameri-chamber-green.svg',
+  './assets/images/motorista-legislativo-edital.svg',
+  './assets/doctor/evolution/doctor-level-01.svg',
+  './assets/doctor/evolution/doctor-level-02.svg',
+  './assets/doctor/evolution/doctor-level-03.svg',
+  './assets/doctor/evolution/doctor-level-04.svg',
+  './assets/doctor/evolution/doctor-level-05.svg',
+  './assets/doctor/evolution/doctor-level-06.svg',
+  './assets/doctor/evolution/doctor-level-07.svg',
+  './assets/doctor/evolution/doctor-level-08.svg',
+  './assets/doctor/evolution/doctor-level-09.svg',
+  './assets/doctor/evolution/doctor-level-10.svg',
 ];
 const CORE_ASSETS = [
   './index.html', './manifest.json', './version.json',
