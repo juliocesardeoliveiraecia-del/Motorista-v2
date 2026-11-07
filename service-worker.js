@@ -29,7 +29,7 @@ const NETWORK_TIMEOUT_MS = 3500;
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    const previousNames = (await caches.keys()).filter(name => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME);
+    const previousNames = (await caches.keys()).filter(name => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME).reverse();
 
     async function previousResponse(asset) {
       for (const name of previousNames) {
