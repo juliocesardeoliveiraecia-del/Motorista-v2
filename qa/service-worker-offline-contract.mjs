@@ -6,7 +6,7 @@ for (let level = 1; level <= 10; level += 1) {
   const asset = './assets/doctor/evolution/doctor-level-' + String(level).padStart(2, '0') + '.svg';
   must('Doctor evolution level ' + level + ' is precached', sw.includes(asset));
 }
-must('Product hero and edital artwork are precached', sw.includes('./assets/images/ipameri-chamber-green.svg') && sw.includes('./assets/images/motorista-legislativo-edital.svg'));
+must('Product hero and edital artwork are precached', sw.includes('./assets/images/ipameri-chamber-green.svg?v=20261028-2') && sw.includes('./assets/images/motorista-legislativo-edital.svg'));
 must('Critical app shell is explicitly declared',/const CORE_ASSETS\s*=\s*\[[\s\S]*?\.\/index\.html[\s\S]*?\.\/product-content\.js[\s\S]*?\]/.test(sw));
 must('Offline update reuses assets from the previous app cache',/previousNames[\s\S]*?previousResponse\(asset\)[\s\S]*?cache\.put\(asset, response\.clone\(\)\)/.test(sw));
 must('Incomplete core cache aborts service worker installation',/missingCore\.length\) throw new Error/.test(sw));
