@@ -6,6 +6,17 @@ for (let level = 1; level <= 10; level += 1) {
   const asset = './assets/doctor/evolution/doctor-level-' + String(level).padStart(2, '0') + '.svg';
   must('Doctor evolution level ' + level + ' is precached', sw.includes(asset));
 }
+for (const asset of [
+  './manifest.json?v=1.13.2-platform-bridge',
+  './doctor-platform-bridge.js?v=1.12.13-platform-1',
+  './product-context.js?v=1.12.13-context-1',
+  './product-content.js?v=1.12.13',
+  './doctor-core-quality.js?v=1.12.13',
+  './calculator-scientific.js?v=1.12.13',
+  './assets/icons/icon-generator.js?v=1.3.0',
+  './assets/icons/products/motorista-legislativo.svg?v=1.3.0',
+  './assets/images/motorista-legislativo-banner.svg?v=20261028-2'
+]) must('Exact versioned request is precached: ' + asset, sw.includes(asset));
 must('Product hero and edital artwork are precached', sw.includes('./assets/images/ipameri-chamber-green.svg?v=20261028-2') && sw.includes('./assets/images/motorista-legislativo-edital.svg'));
 must('Critical app shell is explicitly declared',/const CORE_ASSETS\s*=\s*\[[\s\S]*?\.\/index\.html[\s\S]*?\.\/product-content\.js[\s\S]*?\]/.test(sw));
 must('Offline update reuses assets from the previous app cache',/previousNames[\s\S]*?previousResponse\(asset\)[\s\S]*?cache\.put\(asset, response\.clone\(\)\)/.test(sw));
