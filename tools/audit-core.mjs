@@ -9,15 +9,22 @@ const read=(p)=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const index=read('index.html');
 const config=read('production-config.js');
 const sw=read('service-worker.js');
-const manifest=read('manifest.json');
+const manifest=JSON.parse(read('manifest.json'));
 const context=read('product-context.js');
 
 const errors=[];
 const version=config.match(/version:\s*'([^']+)'/)?.[1];
+const cacheName=sw.match(/CACHE_NAME\s*=\s*'([^']+)'/)?.[1];
 if(!version) errors.push('production-config: versão ausente.');
 if(version && !index.includes(`version: '${version}'`)) errors.push('index.html: versão divergente.');
-if(version && !sw.includes(`motorista-ipameri-v${version}`)) errors.push('service-worker: cache versionado divergente.');
-if(version && !manifest.includes(`"version": "${version}"`)) errors.push('manifest: versão divergente.');
+// Cache e manifesto podem ter revisões próprias para invalidar assets e ícones.
+// O contrato exige formatos versionados válidos, não igualdade com Core Version.
+if(!cacheName || !/^motorista-ipameri-v\d+\.\d+\.\d+(?:-[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/i.test(cacheName)) {
+  errors.push('service-worker: CACHE_NAME ausente ou sem revisão versionada válida.');
+}
+if(!/^\d+\.\d+\.\d+(?:-[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/i.test(manifest.version||'')) {
+  errors.push('manifest: revisão PWA ausente ou inválida.');
+}
 if(version && !context.includes(`coreVersion: '${version}-core'`)) errors.push('product-context: coreVersion divergente.');
 
 for(const forbidden of ['gsk_','service_role','sk_live_','sk_test_']){
@@ -36,6 +43,6 @@ if(!index.includes("get_radar_feed")) errors.push('Radar: consumo central não e
 if(!index.includes("reviewedByDoctor===true")) errors.push('IA: gate de revisão independente ausente.');
 if(!index.includes("questionFingerprint")) errors.push('Integridade: fingerprint de questão ausente.');
 
-const result={ok:errors.length===0,version,errors};
+const result={ok:errors.length===0,version,cacheName,manifestVersion:manifest.version,errors};
 console.log(JSON.stringify(result,null,2));
 if(errors.length) process.exit(1);

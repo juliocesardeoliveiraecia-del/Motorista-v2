@@ -33,6 +33,23 @@ Esta é a linha-base industrial do Core. Um novo aplicativo deve trocar **Produc
 - flashcards/recursos de conteúdo;
 - fontes e rastreabilidade editorial quando aplicável.
 
+## Fábrica de configuração de novos aplicativos
+
+O repositório agora inclui um gerador sem dependências externas:
+- manifesto de produto: `templates/product-manifest.example.json`;
+- gerador: `tools/scaffold-product.mjs`;
+- QA: `qa/scaffold-product-contract.mjs`.
+
+Fluxo em uma cópia do Core:
+```bash
+cp templates/product-manifest.example.json product-manifest.json
+# Preencha o manifesto com o edital, banca, distribuição, identidade e fontes oficiais.
+node tools/scaffold-product.mjs --manifest product-manifest.json
+node tools/scaffold-product.mjs --manifest product-manifest.json --out-dir . --apply --force
+```
+
+O gerador valida slugs, datas, cores, distribuição total de questões, duração, número de alternativas, modo múltipla escolha/Certo-Errado, fontes HTTPS dentro da allowlist oficial e proporções do Radar. Ele gera somente `product-context.js`, `manifest.json` e `version.json`; não inventa questões, gabaritos, assets, fontes nem cria repositório/Vercel. Esses itens continuam sujeitos a revisão editorial e ao gate de conteúdo. Sem `--apply`, executa apenas prévia; `--force` é exigido para sobrescrever arquivos existentes.
+
 ## Gate de qualidade das questões
 
 Uma questão só pode ser entregue se:
@@ -65,9 +82,15 @@ A auditoria automatizada não substitui a revisão factual/editorial. Para legis
 
 O app consome a infraestrutura central do Radar. Não deve criar scraping paralelo. A publicação pública depende do contrato central do Supabase, com fonte oficial, identificação de produto/concurso e deduplicação por `content_url`.
 
-## Sincronização
+## Sincronização e sessão
 
-O Core não finge sincronização quando a ponte da Plataforma não existe. A fila local permanece preservada até o contrato oficial da ponte estar conectado.
+A linha-base Motorista conecta o Core ao Supabase staging por sessão de dispositivo e snapshot versionado (`get_app_snapshot_v1` / `save_app_snapshot_v1`). A fila local só é limpa após confirmação do servidor; conflitos reconciliam revisão remota/local; metadados do Gravador sincronizam e os arquivos de áudio usam o bucket privado `recordings`.
+
+A sessão única é garantida no servidor quando há conexão. Um dispositivo totalmente offline não consegue receber uma revogação em tempo real: o acesso offline usa lease previamente validado com janela máxima de 72 horas e é revalidado assim que a conexão retorna. Não anunciar exclusividade instantânea enquanto um dispositivo estiver desconectado.
+
+## Padrão obrigatório da IA externa (todos os aplicativos)
+
+Todo aplicativo derivado deve herdar o aviso, a confirmação de idade mínima de 18 anos, a ciência do envio de prompts/áudio/textos ao provedor, o disclaimer de não afiliação, a atribuição de marca, o aviso de retenção/localização de dados e a opção de desativar/apagar a chave local. Nunca prometer cota gratuita fixa ou retenção zero. Nunca sincronizar API keys. O contrato BYOK permanece sujeito à confirmação escrita da Groq; consulte `docs/DOCTOR-CORE-GROQ-LEGAL-STANDARD.md` antes de qualquer release.
 
 ## Regra para 50+ aplicativos
 

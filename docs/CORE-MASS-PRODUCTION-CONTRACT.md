@@ -47,7 +47,15 @@ O aplicativo não deve pesquisar/scrapear o Radar por conta própria. Ele consom
 ## 6. Regra para produção em massa
 Um novo aplicativo deve alterar somente configuração + conteúdo + assets do produto. Lógica do Core não deve ser duplicada para cada concurso.
 
-## 7. Homologação antes de replicar
+## 7. Padrão obrigatório da integração de IA
+
+Todo aplicativo derivado deve herdar o padrão de transparência, idade mínima, ciência de tratamento de dados, marca, segurança de API key e opção de desativação definido em `docs/DOCTOR-CORE-GROQ-LEGAL-STANDARD.md`. A chave nunca pode entrar em snapshots, logs, URLs ou repositórios. O modelo BYOK não deve ser declarado formalmente aprovado até confirmação escrita da Groq.
+
+## 8. Fábrica de configuração
+
+A configuração de cada produto deve ser gerada a partir de `templates/product-manifest.example.json` com `tools/scaffold-product.mjs`. O gerador valida a distribuição do edital, duração, modo de resposta, hosts oficiais do Radar e identidade PWA. Ele não gera conteúdo acadêmico nem assets e não publica o produto. QA: `node qa/scaffold-product-contract.mjs`.
+
+## 8. Homologação antes de replicar
 Antes dos 50 aplicativos, cada release-base deve passar por:
 - QA estático automático;
 - auditoria do banco de questões;
@@ -55,8 +63,21 @@ Antes dos 50 aplicativos, cada release-base deve passar por:
 - teste de alteração/fingerprint;
 - teste de simulado completo;
 - teste offline/online;
-- teste de sync sem bridge;
+- teste de sync autenticado com bridge, conflito de revisão e fila preservada até confirmação;
+- teste de revogação de sessão ao reconectar após uso offline (lease máximo de 72 horas);
 - teste de Radar central;
 - teste mobile/desktop;
 - teste de atualização do PWA;
 - verificação de ausência de segredos no repositório.
+
+
+## 9. Atualização segura do PWA offline
+
+A instalação de uma nova versão do Service Worker deve:
+- tentar obter a versão mais recente de cada asset;
+- recuperar do cache anterior os assets que não puderem ser obtidos pela rede;\n- pré-carregar as URLs exatas com query strings de versão usadas pelo HTML (scripts, manifesto, banner, ícones e imagens), além dos dez níveis do avatar Doctor;
+- validar a presença de todo o shell crítico (HTML, manifesto, versão, configuração, bridge, contexto e conteúdo);
+- abortar a instalação se o shell crítico estiver incompleto, mantendo o Service Worker e o cache anteriores;
+- excluir somente caches antigos com o namespace deste aplicativo, sem apagar caches de outros produtos na mesma origem.
+
+QA automatizado: `node qa/service-worker-offline-contract.mjs`. O teste não substitui homologação real em dispositivo com perda de conexão durante uma atualização.

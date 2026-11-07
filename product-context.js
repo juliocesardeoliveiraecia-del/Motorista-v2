@@ -65,7 +65,9 @@ const EXAM_CONFIG = {
   // Doctor Core V1 — identidade estável do produto e versão de conteúdo
   appId: 'doctor-motorista-legislativo',
   productId: 'motorista-legislativo',
-  coreVersion: '1.12.12-core',
+  // Slug comercial real no catálogo central. Mantém productId local estável para não perder dados offline.
+  platformProductSlug: 'motorista-legislativo-ipameri',
+  coreVersion: '1.12.13-core',
   contentVersion: '2026.1',
   editorialMode: 'edital-plus-banca',
   // Perfil operacional da IA: muda com o concurso/banca, não com o Core.
@@ -84,7 +86,7 @@ const EXAM_CONFIG = {
     'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/',
     'https://institutoverbena.ufg.br/'
   ],
-  sync: { enabled: true, provider: 'supabase-adapter-pending' },
+  sync: { enabled: true, provider: 'supabase-versioned-snapshot-v1' },
   sessionPolicy: 'single-active-device',
   // Identidade visual — os mesmos valores que já estavam fixos no CSS.
   // Trocar aqui muda a cor do app inteiro sem mexer em nenhum outro arquivo.
