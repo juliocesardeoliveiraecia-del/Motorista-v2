@@ -1,12 +1,16 @@
 // service-worker.js — network-first com preservação do último shell offline válido.
 const CACHE_NAME = 'motorista-ipameri-v1.13.3-offline-preserve';
 const ASSETS = [
-  './', './index.html', './manifest.json', './version.json',
-  './production-config.js', './doctor-platform-bridge.js', './product-context.js', './product-content.js',
-  './doctor-core-quality.js', './calculator-scientific.js', './doctor-core-icon.svg', './assets/icons/products/motorista-legislativo.svg', './assets/icons/icon-palette.json', './assets/icons/icon-generator.js',
-  './assets/doctor/evolution/doctor-avatar-fallback.svg',
+  './', './index.html', './manifest.json?v=1.13.2-platform-bridge', './version.json',
+  './production-config.js', './doctor-platform-bridge.js?v=1.12.13-platform-1',
+  './product-context.js?v=1.12.13-context-1', './product-content.js?v=1.12.13',
+  './doctor-core-quality.js?v=1.12.13', './calculator-scientific.js?v=1.12.13',
+  './doctor-core-icon.svg', './assets/icons/products/motorista-legislativo.svg?v=1.3.0',
+  './assets/icons/icon-palette.json', './assets/icons/icon-generator.js?v=1.3.0',
   './assets/images/ipameri-chamber-green.svg?v=20261028-2',
   './assets/images/motorista-legislativo-edital.svg',
+  './assets/images/motorista-legislativo-banner.svg?v=20261028-2',
+  './assets/doctor/evolution/doctor-avatar-fallback.svg',
   './assets/doctor/evolution/doctor-level-01.svg',
   './assets/doctor/evolution/doctor-level-02.svg',
   './assets/doctor/evolution/doctor-level-03.svg',
@@ -16,12 +20,14 @@ const ASSETS = [
   './assets/doctor/evolution/doctor-level-07.svg',
   './assets/doctor/evolution/doctor-level-08.svg',
   './assets/doctor/evolution/doctor-level-09.svg',
-  './assets/doctor/evolution/doctor-level-10.svg',
+  './assets/doctor/evolution/doctor-level-10.svg'
 ];
 const CORE_ASSETS = [
-  './index.html', './manifest.json', './version.json',
-  './production-config.js', './doctor-platform-bridge.js',
-  './product-context.js', './product-content.js'
+  './index.html', './manifest.json?v=1.13.2-platform-bridge', './version.json',
+  './production-config.js', './doctor-platform-bridge.js?v=1.12.13-platform-1',
+  './product-context.js?v=1.12.13-context-1', './product-content.js?v=1.12.13',
+  './doctor-core-quality.js?v=1.12.13', './calculator-scientific.js?v=1.12.13',
+  './assets/icons/icon-generator.js?v=1.3.0'
 ];
 const CACHE_PREFIX = 'motorista-ipameri-';
 const NETWORK_TIMEOUT_MS = 3500;
