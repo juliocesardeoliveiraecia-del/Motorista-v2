@@ -16,6 +16,8 @@ jobs:
           node-version: 22
       - run: node qa/core-static-audit.mjs
       - run: node qa/question-content-audit.mjs
+      - name: Block release when the official question distribution is incomplete
+        run: node tools/audit-content.mjs --release
       - run: node --check tools/scaffold-product.mjs
       - run: node qa/scaffold-product-contract.mjs
       - run: node tools/scaffold-product.mjs --manifest templates/product-manifest.example.json
