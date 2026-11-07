@@ -77,6 +77,17 @@ for (const q of QUESTIONS || []) {
   }
 }
 
+if ((QUESTIONS || []).length >= 8) {
+  const answerCounts = [0, 0, 0, 0];
+  for (const q of QUESTIONS) {
+    if (Number.isInteger(q.correct) && q.correct >= 0 && q.correct < 4) answerCounts[q.correct] += 1;
+  }
+  const maxShare = Math.max(...answerCounts) / QUESTIONS.length;
+  if (answerCounts.some((count) => count === 0) || maxShare > 0.4) {
+    errors.push(`Distribuição de gabaritos desequilibrada: ${answerCounts.map((n, i) => String.fromCharCode(65 + i) + '=' + n).join(', ')}.`);
+  }
+}
+
 const distribution = Object.fromEntries((SUBJECTS || []).map((s) => {
   const actual = (QUESTIONS || []).filter((q) => q.subjectId === s.id).length;
   return [s.id, { actual, required: s.officialQuestions }];
