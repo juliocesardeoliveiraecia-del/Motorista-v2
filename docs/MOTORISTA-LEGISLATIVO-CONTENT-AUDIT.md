@@ -44,7 +44,7 @@ O pacote `2026.2` contém 47 questões autorais de treino:
 
 O excedente em Raciocínio Lógico e Realidade permanece no banco de prática. O motor seleciona, para o simulado oficial, exatamente o número previsto no edital por disciplina e embaralha a ordem final.
 
-As questões deste pacote são material didático autoral, não transcrições da prova oficial nem questões oficialmente aprovadas pela banca. O gabarito e as justificativas foram submetidos a validação estrutural automatizada (quantidade de alternativas, índice de resposta, explicações e duplicidade). A aprovação automatizada não substitui revisão factual/editorial humana.
+A posição das respostas corretas foi balanceada entre A-D (12/12/12/11) para evitar padrões previsíveis. O auditor de release também bloqueia concentração excessiva em uma única letra.\n\nAs questões deste pacote são material didático autoral, não transcrições da prova oficial nem questões oficialmente aprovadas pela banca. O gabarito e as justificativas foram submetidos a validação estrutural automatizada (quantidade de alternativas, índice de resposta, explicações e duplicidade). A aprovação automatizada não substitui revisão factual/editorial humana.
 
 ## Gates automatizados
 
