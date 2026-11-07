@@ -5,7 +5,7 @@ const ASSETS = [
   './production-config.js', './doctor-platform-bridge.js', './product-context.js', './product-content.js',
   './doctor-core-quality.js', './calculator-scientific.js', './doctor-core-icon.svg', './assets/icons/products/motorista-legislativo.svg', './assets/icons/icon-palette.json', './assets/icons/icon-generator.js',
   './assets/doctor/evolution/doctor-avatar-fallback.svg',
-  './assets/images/ipameri-chamber-green.svg',
+  './assets/images/ipameri-chamber-green.svg?v=20261028-2',
   './assets/images/motorista-legislativo-edital.svg',
   './assets/doctor/evolution/doctor-level-01.svg',
   './assets/doctor/evolution/doctor-level-02.svg',
