@@ -65,16 +65,7 @@ for (const q of QUESTIONS || []) {
     errors.push(`${q.id}: explicações desalinhadas/incompletas.`);
   }
 
-  // Prova determinística do contrato de correção:
-  // a mesma regra selected === correct precisa produzir o mesmo resultado
-  // em prática, simulado e revisão.
-  for (let selected = 0; selected < 4; selected += 1) {
-    const expected = selected === q.correct;
-    const observed = selected === q.correct;
-    if (observed !== expected) {
-      errors.push(`${q.id}: inconsistência determinística no gabarito.`);
-    }
-  }
+
 }
 
 if ((QUESTIONS || []).length >= 8) {
