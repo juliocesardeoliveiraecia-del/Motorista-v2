@@ -26,12 +26,13 @@ function must(label,condition){if(!condition)throw new Error('FAIL: '+label);con
 must('Runtime integrity gate validates every static question',QUESTIONS.every(q=>integrity.validate(q).ok));
 must('Every question is deliverable before quarantine',QUESTIONS.every(q=>integrity.assertDeliverable(q).ok));
 
-for(const q of QUESTIONS){
-  for(let selected=0;selected<4;selected++){
+const runtimeAnswersCorrect=QUESTIONS.every(q=>
+  [0,1,2,3].every(selected=>{
     const result=integrity.answer(q,selected,'contract-test');
-    must('Runtime grading is correct for '+q.id+' option '+selected,result.ok && result.evidence.isCorrect===(selected===q.correct));
-  }
-}
+    return result.ok && result.evidence.isCorrect===(selected===q.correct);
+  })
+);
+must('Runtime grading is correct for every question and all four options',runtimeAnswersCorrect);
 
 const sample=QUESTIONS[0];
 sandbox.Store.state.answerMeta[sample.id]={questionId:sample.id,selected:3,phase:'original'};
