@@ -68,10 +68,10 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     Promise.race([fetch(req), timeoutPromise(NETWORK_TIMEOUT_MS)])
-      .then((response) => {
+      .then(async (response) => {
         if (response && response.status === 200) {
           const clone = response.clone();
-          event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(req, clone)));
+          await caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
         }
         return response;
       })
