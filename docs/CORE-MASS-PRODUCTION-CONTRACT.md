@@ -75,7 +75,7 @@ Antes dos 50 aplicativos, cada release-base deve passar por:
 
 A instalação de uma nova versão do Service Worker deve:
 - tentar obter a versão mais recente de cada asset;
-- recuperar do cache anterior os assets que não puderem ser obtidos pela rede;
+- recuperar do cache anterior os assets que não puderem ser obtidos pela rede;\n- pré-carregar as URLs exatas com query strings de versão usadas pelo HTML (scripts, manifesto, banner, ícones e imagens), além dos dez níveis do avatar Doctor;
 - validar a presença de todo o shell crítico (HTML, manifesto, versão, configuração, bridge, contexto e conteúdo);
 - abortar a instalação se o shell crítico estiver incompleto, mantendo o Service Worker e o cache anteriores;
 - excluir somente caches antigos com o namespace deste aplicativo, sem apagar caches de outros produtos na mesma origem.
