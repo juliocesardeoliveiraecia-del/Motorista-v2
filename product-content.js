@@ -597,5 +597,110 @@ const QUESTIONS = [
       'Errado: esperar o problema aparecer no trajeto é uma prática de risco, e não de prevenção.',
       'Errado: a verificação preventiva deve ser feita antes de cada uso relevante, não apenas mensalmente.'
     ]
+  },
+  {
+    id: 'pt-9', subjectId: 'portugues',
+    text: "Leia: “Embora o veículo estivesse revisado, o motorista conferiu novamente os pneus antes da saída.” A palavra “Embora” estabelece relação de:",
+    options: ["Causa, pois apresenta o motivo da conferência","Concessão, pois introduz circunstância que não impede a ação principal","Conclusão, pois encerra o raciocínio","Finalidade, pois indica o objetivo da revisão"],
+    correct: 1,
+    explanations: ["Errado: “embora” não apresenta a causa da conferência.","Correto: “embora” introduz oração concessiva; a revisão prévia não impediu nova conferência.","Errado: não há conclusão introduzida por essa conjunção.","Errado: finalidade seria expressa por “para que”, por exemplo."]
+  },
+  {
+    id: 'pt-10', subjectId: 'portugues',
+    text: "Assinale a alternativa em que a pontuação está adequada à norma-padrão:",
+    options: ["Antes da viagem o motorista, verificou os freios e os pneus.","Antes da viagem, o motorista verificou os freios e os pneus.","Antes, da viagem o motorista verificou, os freios e os pneus.","Antes da viagem o motorista verificou, os freios, e os pneus."],
+    correct: 1,
+    explanations: ["Errado: a vírgula separa indevidamente sujeito e predicado.","Correto: a expressão adverbial deslocada está separada por vírgula, sem separar sujeito e verbo.","Errado: as vírgulas interrompem indevidamente a expressão e a relação sintática.","Errado: não se separa o verbo de seu complemento direto nesse contexto."]
+  },
+  {
+    id: 'esp-13', subjectId: 'especificos',
+    text: "De acordo com o Código de Trânsito Brasileiro, o condutor deve, a todo momento:",
+    options: ["Manter domínio do veículo, dirigindo com atenção e cuidados indispensáveis à segurança","Priorizar a rapidez do deslocamento, desde que conheça o trajeto","Confiar exclusivamente nos sistemas eletrônicos de assistência do veículo","Manter distância do veículo da frente apenas em rodovias"],
+    correct: 0,
+    explanations: ["Correto: o art. 28 do CTB exige domínio do veículo e atenção e cuidados indispensáveis à segurança.","Errado: conhecer o trajeto não autoriza priorizar rapidez em detrimento da segurança.","Errado: sistemas de assistência não substituem o dever de condução atenta.","Errado: distância de segurança também é necessária em vias urbanas."]
+  },
+  {
+    id: 'esp-14', subjectId: 'especificos',
+    text: "Ao seguir outro veículo em circulação, a conduta compatível com a direção segura e com o CTB é:",
+    options: ["Manter distância fixa de um metro, independentemente da velocidade","Aproximar-se para impedir que outro veículo entre na faixa","Manter distância de segurança frontal e lateral, considerando velocidade, via e condições do tráfego","Reduzir a distância em pista molhada para evitar frenagens bruscas"],
+    correct: 2,
+    explanations: ["Errado: distância fixa não atende às diferentes velocidades e condições.","Errado: aproximar-se deliberadamente reduz a margem de reação.","Correto: o art. 29, II, do CTB determina distância lateral e frontal considerando velocidade e condições locais, de circulação, veículo e clima.","Errado: em pista molhada a distância deve ser ampliada."]
+  },
+  {
+    id: 'esp-15', subjectId: 'especificos',
+    text: "Em situação de chuva intensa, neblina ou cerração, qual medida contribui para a segurança?",
+    options: ["Utilizar farol alto continuamente, mesmo quando refletir na neblina","Apagar todas as luzes para evitar reflexos","Aumentar a velocidade para atravessar rapidamente o trecho","Utilizar luz baixa, reduzir a velocidade e ampliar a distância de segurança"],
+    correct: 3,
+    explanations: ["Errado: farol alto pode refletir nas partículas e prejudicar a visão.","Errado: circular sem iluminação adequada reduz a visibilidade do veículo.","Errado: maior velocidade reduz o tempo de reação e frenagem.","Correto: luz baixa, velocidade compatível e maior distância são medidas prudentes em condições adversas."]
+  },
+  {
+    id: 'esp-16', subjectId: 'especificos',
+    text: "Ao perceber falha nos freios durante o deslocamento, o motorista de veículo oficial deve:",
+    options: ["Continuar até a garagem, utilizando o freio de estacionamento em movimento","Reduzir a velocidade com segurança, imobilizar em local seguro e comunicar a ocorrência","Desligar imediatamente o motor e retirar a chave ainda em movimento","Pedir ao passageiro que salte do veículo"],
+    correct: 1,
+    explanations: ["Errado: continuar a viagem com falha de freios é perigoso.","Correto: a prioridade é controlar a situação, reduzir a velocidade progressivamente, imobilizar em local seguro e comunicar a avaria.","Errado: desligar o motor em movimento pode comprometer sistemas de assistência.","Errado: nunca se deve orientar passageiro a saltar de veículo em movimento."]
+  },
+  {
+    id: 'esp-17', subjectId: 'especificos',
+    text: "Em um acidente, uma vítima está caída e consciente, sem risco imediato de incêndio ou atropelamento. Qual é a conduta inicial mais adequada?",
+    options: ["Retirar a vítima rapidamente, mesmo sem necessidade","Oferecer água e alimento para tranquilizá-la","Sinalizar o local, acionar emergência e evitar movimentar a vítima, salvo risco iminente","Retirar o capacete em qualquer circunstância"],
+    correct: 2,
+    explanations: ["Errado: movimentação desnecessária pode agravar lesões, especialmente na coluna.","Errado: não se deve oferecer líquidos ou alimentos à vítima.","Correto: deve-se proteger o local, chamar socorro especializado e evitar movimentar a vítima sem necessidade.","Errado: a retirada do capacete por pessoa sem treinamento pode agravar lesões."]
+  },
+  {
+    id: 'esp-18', subjectId: 'especificos',
+    text: "Qual conjunto deve integrar uma inspeção preventiva básica antes de uma viagem institucional?",
+    options: ["Pneus, freios, iluminação, níveis de fluidos e equipamentos obrigatórios","Apenas combustível e aparência externa","Somente ar-condicionado e sistema de áudio","Apenas documentos pessoais do motorista"],
+    correct: 0,
+    explanations: ["Correto: a inspeção deve abranger itens que afetam segurança e funcionamento, além dos equipamentos obrigatórios.","Errado: combustível e aparência não substituem a verificação dos sistemas de segurança.","Errado: conforto e áudio não são os itens prioritários de segurança.","Errado: documentos são importantes, mas não substituem a inspeção do veículo."]
+  },
+  {
+    id: 'esp-19', subjectId: 'especificos',
+    text: "Durante a inspeção, o motorista identifica desgaste acentuado e irregular nos pneus. Qual providência é mais adequada?",
+    options: ["Aumentar a pressão acima da recomendação para compensar o desgaste","Continuar normalmente, pois o desgaste só importa em rodovias","Trocar os pneus apenas quando houver perda total de pressão","Não liberar o veículo para uso sem avaliação e correção da condição, comunicando a área responsável"],
+    correct: 3,
+    explanations: ["Errado: pressão excessiva não corrige desgaste e pode criar novos riscos.","Errado: pneus em más condições comprometem a segurança também em vias urbanas.","Errado: esperar a perda de pressão expõe os ocupantes a risco.","Correto: a condição irregular exige avaliação e providência antes de colocar o veículo em circulação."]
+  },
+  {
+    id: 'esp-20', subjectId: 'especificos',
+    text: "A luz de advertência da temperatura do motor indica superaquecimento. Qual atitude é mais segura?",
+    options: ["Abrir imediatamente a tampa do reservatório ainda quente","Parar em local seguro e aguardar o resfriamento antes de qualquer verificação","Jogar água fria diretamente no motor quente","Prosseguir em alta rotação para aumentar a circulação do líquido"],
+    correct: 1,
+    explanations: ["Errado: abrir o sistema pressurizado quente pode provocar queimaduras graves.","Correto: imobilize o veículo em segurança e aguarde o resfriamento; siga as orientações do fabricante.","Errado: choque térmico pode causar danos e não resolve a causa.","Errado: elevar a carga do motor pode agravar o superaquecimento."]
+  },
+  {
+    id: 'esp-21', subjectId: 'especificos',
+    text: "No transporte institucional, um passageiro conversa sobre assunto reservado relacionado ao trabalho. O motorista deve:",
+    options: ["Compartilhar o conteúdo com conhecidos, sem citar nomes","Gravar a conversa para publicar posteriormente","Preservar a discrição e não divulgar informações obtidas em razão do serviço","Utilizar a informação em benefício próprio"],
+    correct: 2,
+    explanations: ["Errado: divulgação indireta também pode violar a confidencialidade.","Errado: gravar e publicar conversa reservada sem autorização viola a discrição esperada.","Correto: a função exige postura profissional, discrição, sigilo e responsabilidade.","Errado: utilizar informação funcional para benefício próprio é incompatível com a ética pública."]
+  },
+  {
+    id: 'esp-22', subjectId: 'especificos',
+    text: "Ao transportar documentos oficiais entre unidades públicas, a conduta mais adequada é:",
+    options: ["Deixá-los visíveis no interior do veículo","Entregá-los a qualquer pessoa que se apresente como servidor","Fotografá-los e encaminhá-los a contatos pessoais","Preservar a guarda e a integridade dos documentos e entregá-los ao destinatário ou setor autorizado"],
+    correct: 3,
+    explanations: ["Errado: documentos devem ser protegidos contra acesso indevido, perda ou exposição.","Errado: a entrega deve observar o destinatário ou procedimento autorizado.","Errado: compartilhar cópias em canais pessoais pode expor dados e informações institucionais.","Correto: deve-se preservar integridade e confidencialidade e cumprir o fluxo institucional de entrega."]
+  },
+  {
+    id: 'esp-23', subjectId: 'especificos',
+    text: "Um registro de viagem institucional confiável deve permitir reconstruir o deslocamento. Qual conjunto de dados atende melhor a essa finalidade?",
+    options: ["Itinerário, quilometragem inicial e final, horários de saída e chegada e identificação do serviço","Somente o primeiro nome do motorista","Apenas o valor gasto com combustível, sem data ou trajeto","Uma avaliação pessoal sobre o trânsito"],
+    correct: 0,
+    explanations: ["Correto: esses dados permitem controle, rastreabilidade e conferência do uso do veículo oficial.","Errado: o nome isolado não permite verificar o deslocamento.","Errado: despesa sem data, quilometragem ou trajeto não permite controle suficiente.","Errado: opinião pessoal não substitui dados objetivos do relatório."]
+  },
+  {
+    id: 'esp-24', subjectId: 'especificos',
+    text: "Durante o expediente, um servidor solicita que o motorista utilize o veículo oficial para resolver assunto particular, sem autorização institucional. O motorista deve:",
+    options: ["Atender porque o pedido foi feito por um servidor","Recusar o uso particular e seguir as regras de autorização e finalidade do veículo público","Aceitar desde que o trajeto seja curto","Utilizar o veículo se repuser o combustível depois"],
+    correct: 1,
+    explanations: ["Errado: solicitação de outro servidor não transforma finalidade particular em serviço público.","Correto: o veículo oficial deve ser utilizado conforme a finalidade pública e as autorizações do órgão.","Errado: curta distância não legitima uso particular de bem público.","Errado: repor combustível não regulariza o uso particular do patrimônio público."]
+  },
+  {
+    id: 'esp-25', subjectId: 'especificos',
+    text: "Ao identificar uma avaria no veículo oficial durante o serviço, qual procedimento é mais adequado?",
+    options: ["Ocultar a ocorrência se o veículo ainda conseguir se deslocar","Fazer reparo improvisado e não comunicar para evitar atraso","Comunicar a área responsável, registrar os fatos e seguir o procedimento institucional para avaliação e reparo","Aguardar a próxima revisão periódica, independentemente do risco"],
+    correct: 2,
+    explanations: ["Errado: ocultar avaria impede avaliação e pode colocar pessoas em risco.","Errado: reparo improvisado e ausência de comunicação comprometem segurança e rastreabilidade.","Correto: a ocorrência deve ser comunicada e registrada para avaliação e reparo pelo setor competente.","Errado: avaria que afeta segurança ou funcionamento exige avaliação, não espera automática pela revisão."]
   }
 ]
