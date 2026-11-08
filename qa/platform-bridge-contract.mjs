@@ -14,18 +14,18 @@ function must(label, condition) {
 
 must('Platform bridge is loaded before the Core runtime', index.indexOf('doctor-platform-bridge.js') > 0 && index.indexOf('doctor-platform-bridge.js') < index.indexOf('window.DOCTOR_CORE_RUNTIME'));
 must('Platform bridge is cached by the PWA service worker', sw.includes("'./doctor-platform-bridge.js?v=1.12.13-platform-1'"));
-const environment = config.match(/environment:\\s*'([^']+)'/)?.[1] || '';
-const supabaseMatch = config.match(/supabase:\\s*\\{\\s*enabled:\\s*(true|false),\\s*url:\\s*("(?:\\\\.|[^"])*"),\\s*publishableKey:\\s*("(?:\\\\.|[^"])*")\\s*\\}/);
+const environment = config.match(/environment:\s*'([^']+)'/)?.[1] || '';
+const supabaseMatch = config.match(/supabase:\s*\{\s*enabled:\s*(true|false),\s*url:\s*("(?:\\.|[^"])*"),\s*publishableKey:\s*("(?:\\.|[^"])*")\s*\}/);
 let runtimeUrl = '', runtimeKey = '';
 if (supabaseMatch) {
   try { runtimeUrl = JSON.parse(supabaseMatch[2]); runtimeKey = JSON.parse(supabaseMatch[3]); } catch {}
 }
 const previewConfigSafe = environment === 'preview' && supabaseMatch?.[1] === 'false' && !runtimeUrl && !runtimeKey;
 const productionConfigSafe = environment === 'production' && supabaseMatch?.[1] === 'true' &&
-  /^https:\\/\\/[a-z0-9-]+\\.supabase\\.co$/i.test(runtimeUrl) && runtimeKey.startsWith('sb_publishable_') &&
+  /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(runtimeUrl) && runtimeKey.startsWith('sb_publishable_') &&
   (!process.env.SUPABASE_URL || runtimeUrl === process.env.SUPABASE_URL) &&
   (!process.env.SUPABASE_ANON_KEY || runtimeKey === process.env.SUPABASE_ANON_KEY);
-const noPrivateCredentials = !/(service_role|sb_secret_|sk_live_|access_token\\s*[:=])/i.test(config);
+const noPrivateCredentials = !/(service_role|sb_secret_|sk_live_|access_token\s*[:=])/i.test(config);
 must('Runtime configuration is safe in preview and production and keeps the platform bridge enabled',
   (previewConfigSafe || productionConfigSafe) && noPrivateCredentials &&
   !config.includes('rouuppeosmizzqnubhgs') && config.includes('bridgeEnabled: true') &&
