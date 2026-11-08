@@ -14,6 +14,7 @@ const EXAM_CONFIG = {
   cargo: 'Agente Legislativo — Motorista Legislativo',
   banca: 'Instituto Verbena / UFG',
   editalNumber: 'Edital nº 02/2026',
+  officialEditalUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/9-edital/167-edital-de-abertura-n%C2%BA-02-2026.html',
   editalPublishDate: '01/06/2026',
 
   // Prova
@@ -67,7 +68,7 @@ const EXAM_CONFIG = {
   productId: 'motorista-legislativo',
   // Slug comercial real no catálogo central. Mantém productId local estável para não perder dados offline.
   platformProductSlug: 'motorista-legislativo-ipameri',
-  coreVersion: '1.12.13-core',
+  coreVersion: '1.12.14-core',
   contentVersion: '2026.1',
   editorialMode: 'edital-plus-banca',
   // Perfil operacional da IA: muda com o concurso/banca, não com o Core.

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<script src="production-config.js?v=1.12.13"></script>
-<script src="product-context.js?v=1.12.13-context-1"></script>
+<script src="production-config.js?v=1.12.14"></script>
+<script src="product-context.js?v=1.12.14-context-1"></script>
 <script src="assets/icons/icon-generator.js?v=1.3.0"></script>
-<script src="product-content.js?v=1.12.13"></script>
-<script src="./doctor-platform-bridge.js?v=1.12.13-platform-1"></script>
+<script src="product-content.js?v=1.12.14"></script>
+<script src="./doctor-platform-bridge.js?v=1.12.14-platform-1"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="doctor-core-version" content="1.12.13">
+<meta name="doctor-core-version" content="1.12.14">
 <title>Doctor Core</title>
 <meta name="description" content="Doctor Core — aplicativo de estudos configurado para o concurso ativo.">
 <meta name="theme-color" content="#0A192F">
@@ -663,7 +663,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 
 
 <style id="doctor-calculator-scientific-v2">.calculator-page{max-width:760px;margin:0 auto;padding:4px 0 24px}.calculator-expression-label{display:block;font-size:12px;font-weight:800;color:var(--text-muted);margin:2px 0 7px}.calculator-expression{width:100%;box-sizing:border-box;min-height:48px;border:1px solid var(--border);border-radius:13px;padding:12px 14px;background:var(--bg);color:var(--text);font-size:16px;font-weight:650;margin-bottom:12px}.calculator-error{min-height:18px;color:#ff9b8f;font-size:12px;margin-top:7px}.scientific-keys{grid-template-columns:repeat(5,minmax(0,1fr))}.calc-key.science{background:rgba(22,135,255,.11);font-size:15px;color:var(--text)}.calculator-memory{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;color:var(--text-muted);font-size:12px}.calc-memory{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:9px;padding:8px 12px;font-weight:800}#calculator-memory-label{margin-left:auto}.calculator-history{margin-top:18px;border-top:1px solid var(--border);padding-top:12px}.calculator-history h3{font-size:13px;margin:0 0 8px}.calculator-history-item{width:100%;display:flex;justify-content:space-between;gap:12px;text-align:left;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:10px;padding:10px;margin:5px 0;font-size:12px}.calculator-history-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:440px){.scientific-keys{gap:6px}.scientific-keys .calc-key{min-height:48px;border-radius:11px;font-size:14px}.calculator-expression{font-size:15px}}
-/* V1.12.13 — cores semânticas preservadas; azul apenas nos botões de Praticar Questões. */
+/* V1.12.14 — cores semânticas preservadas; azul apenas nos botões de Praticar Questões. */
 #home-primary-actions #home-practice,
 #home-practice {
   background: var(--green) !important;
@@ -847,6 +847,32 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 .doctor-clock-page:fullscreen #doctor-clock-dial .doctor-clock-number,.doctor-clock-page.doctor-clock-immersive #doctor-clock-dial .doctor-clock-number{transform:rotate(var(--a)) translateY(calc(var(--clock-number-radius) * -1)) rotate(calc(var(--a) * -1));}
 .doctor-clock-page:fullscreen #doctor-clock-dial .doctor-clock-tick,.doctor-clock-page.doctor-clock-immersive #doctor-clock-dial .doctor-clock-tick{transform-origin:50% calc(var(--clock-tick-radius) * -1);}
 </style>
+<style id="doctor-simulado-print-v1">
+.simulado-subject-list{display:grid;gap:8px;margin:16px 0}
+.simulado-subject-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+.simulado-subject-row strong{font-size:14px}.simulado-subject-row span{font-weight:900;font-variant-numeric:tabular-nums}
+.simulado-progress{padding:12px;border:1px solid var(--border);border-radius:12px;margin:12px 0;background:var(--surface)}
+.simulado-paper{max-width:850px;margin:0 auto;background:#fff;color:#111;padding:24px;font-family:Arial,sans-serif}
+.simulado-paper h1{font-size:22px;text-align:center;margin:0 0 8px}.simulado-paper .paper-meta{text-align:center;font-size:12px;margin-bottom:18px}
+.simulado-paper .paper-instructions{font-size:12px;border:1px solid #bbb;padding:10px;margin:12px 0 18px}
+.simulado-paper .paper-question{break-inside:avoid;page-break-inside:avoid;margin:0 0 16px}
+.simulado-paper .paper-question h3{font-size:13px;line-height:1.45;margin:0 0 7px}
+.simulado-paper .paper-option{font-size:12px;line-height:1.45;margin:4px 0 4px 14px}
+.simulado-paper .answer-sheet{break-before:page;page-break-before:always;margin-top:24px}
+.simulado-paper .answer-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.simulado-paper .answer-cell{border:1px solid #aaa;padding:8px;font-size:12px;break-inside:avoid}
+.simulado-paper .answer-cell span{display:inline-block;margin-left:5px;letter-spacing:2px}
+@media print{
+  @page{size:A4;margin:14mm}
+  body *{visibility:hidden!important}
+  #main-view,#main-view *{visibility:visible!important}
+  #main-view{position:absolute!important;left:0!important;top:0!important;width:100%!important;margin:0!important;padding:0!important;background:#fff!important;color:#111!important}
+  .no-print,.app-header,header,footer,.bottom-nav,.nav-bar{display:none!important}
+  .simulado-paper{max-width:none!important;padding:0!important;margin:0!important}
+  .simulado-paper .paper-question{break-inside:avoid;page-break-inside:avoid}
+}
+</style>
+<style id="simulado-answer-lock-v1">.q-option.answered-locked{opacity:.82;cursor:default;pointer-events:none}.simulado-progress{margin:10px 0;padding:12px;border-radius:12px;background:rgba(0,0,0,.06);font-size:.92rem}</style>
 </head>
 <body>
 <div id="splash" aria-label="Carregando Doctor Concursos"><img class="logo" id="splash-logo" alt="Doctor Concursos"><div id="splash-text"></div>
@@ -916,7 +942,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
   });
 })();
 </script>
-<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.13</div><div id="splash-progress" aria-hidden="true"></div></div>
+<div id="splash-subtitle">Preparando seu ambiente de estudo</div><div id="splash-version">VERSÃO 1.12.14</div><div id="splash-progress" aria-hidden="true"></div></div>
 <div id="toast-container"></div>
 <header class="topbar">
   <button type="button" class="topbar-brand" id="topbar-home" aria-label="Voltar para a página inicial do Doctor Concursos" title="Voltar para o início">
@@ -1529,6 +1555,7 @@ const Quiz = {
 
   clearPersisted() {
     Store.state.activeSession = null;
+    if(Store.state.simuladoQuota){delete Store.state.simuladoQuota.pendingQuestionIds;delete Store.state.simuladoQuota.pendingResearchNotes;}
     Store.save();
   },
 
@@ -1564,6 +1591,34 @@ const Quiz = {
     };
     this.persist();
     return this.session;
+  },
+
+  prepareSimulado(questions) {
+    if(!Array.isArray(questions)||questions.length!==ExamRules.questionCount)return {ok:false,reason:'invalid-count'};
+    const counts=Object.fromEntries(SUBJECTS.map(s=>[s.id,0])),ids=new Set(),fingerprints=new Set();
+    for(const q of questions){
+      if(!q||q.aiGenerated!==true||q.reviewedByDoctor!==true||!['APROVAR','CORRIGIR'].includes(q.reviewStatus))return {ok:false,reason:'unreviewed-question'};
+      const gate=DoctorQuestionIntegrity.assertDeliverable(q);
+      if(!gate.ok)return {ok:false,reason:gate.reason||'integrity-gate'};
+      if(!DoctorAICore.validateQuestion(q,q.subjectId))return {ok:false,reason:'question-validation'};
+      if(!q.id||ids.has(q.id))return {ok:false,reason:'duplicate-question'};
+      ids.add(q.id);
+      const fp=DoctorQuestionIntegrity.fingerprint(q);
+      if(fingerprints.has(fp))return {ok:false,reason:'duplicate-question'};
+      fingerprints.add(fp);
+      if(!(q.subjectId in counts))return {ok:false,reason:'invalid-subject'};
+      counts[q.subjectId]++;
+    }
+    if(SUBJECTS.some(s=>counts[s.id]!==Number(s.officialQuestions||0)))return {ok:false,reason:'distribution-gate'};
+    this.session={type:'simulado',status:'prepared',questions:this.shuffle(questions.slice()),index:0,answers:[],startedAt:null,timeLimitSeconds:ExamRules.durationSeconds};
+    this.persist();
+    return {ok:true,session:this.session};
+  },
+  startPreparedSimulado() {
+    if(!this.session||this.session.type!=='simulado'||this.session.status!=='prepared')return {ok:false,reason:'not-prepared'};
+    if(this.session.questions.some(q=>!DoctorQuestionIntegrity.assertDeliverable(q).ok))return {ok:false,reason:'integrity-gate'};
+    this.session.status='running';this.session.startedAt=Date.now();this.persist();
+    return {ok:true,session:this.session};
   },
 
   simuladoReadiness() {
@@ -1920,11 +1975,11 @@ const GroqAI = {
     return {ok:false,attempts,status:attempts.at(-1)?.status};
   },
 
-  _buildPrompt(subject, count, existingSamples) {
+  _buildPrompt(subject, count, existingSamples, researchNotes='') {
     const sampleText = existingSamples.map(q => `- ${q.text}`).join('\n');
     const n = ExamRules.optionCount;
     const letters = ExamRules.optionLabels.join(', ');
-    return `Você é especialista em elaborar questões de concurso público brasileiro, no padrão do(a) ${EXAM_CONFIG.banca}, para o ${EXAM_CONFIG.editalNumber} do(a) ${EXAM_CONFIG.orgName}, cargo "${EXAM_CONFIG.cargo}". O formato desta prova é "${ExamRules.questionType}" e a política de resposta é "${ExamRules.answerPolicy}".\n\nGere ${count} questões NOVAS e ORIGINAIS sobre a matéria "${subject.name}", usando SOMENTE os tópicos oficiais abaixo:\n${subject.topics.map(t => '- ' + t).join('\n')}\n\nQuestões já existentes (não repita o mesmo enunciado nem a mesma ideia central):\n${sampleText || '(nenhuma)'}\n\nREGRAS:\n1. Exatamente ${n} alternativas (${letters}).\n2. Apenas 1 correta.\n3. Uma explicação própria para cada alternativa, na mesma ordem.\n4. Não invente artigos, datas, normas ou fatos. Se não tiver segurança, não use o dado específico.\n5. Nível médio, objetivo e compatível com concurso público real.\n6. Português do Brasil.\n7. Responda SOMENTE JSON válido no formato {"questions":[{"text":"...","options":[...],"correct":0,"explanations":[...]}]}.`;
+    return `Você é especialista em elaborar questões de concurso público brasileiro, no padrão observável do(a) ${EXAM_CONFIG.banca}, para o ${EXAM_CONFIG.editalNumber} do(a) ${EXAM_CONFIG.orgName}, cargo "${EXAM_CONFIG.cargo}". O edital define o conteúdo; a banca define o modo de cobrança. Formato: "${ExamRules.questionType}"; política: "${ExamRules.answerPolicy}".\n\nPESQUISA DOCUMENTAL PRÉVIA (não trate inferências como fatos):\n${String(researchNotes||'').slice(0,8000)||'Pesquisa não fornecida; não alegue que consultou provas anteriores.'}\n\nGere ${count} questões NOVAS e ORIGINAIS sobre "${subject.name}", usando SOMENTE os tópicos oficiais abaixo:\n${subject.topics.map(t => '- ' + t).join('\n')}\n\nQuestões existentes para evitar repetição:\n${sampleText || '(nenhuma)'}\n\nREGRAS OBRIGATÓRIAS:\n1. Exatamente ${n} alternativas (${letters}) e uma única correta.\n2. Alternativas plausíveis, sem pegadinhas ambíguas; uma explicação específica para cada alternativa.\n3. Compatibilidade com a banca com base apenas nos padrões encontrados na pesquisa; não copie enunciados protegidos.\n4. Não invente artigos, datas, normas, estatísticas ou fatos. Se não houver sustentação segura, formule de modo conceitual ou não use o dado.\n5. Cobertura equilibrada dos tópicos do edital e nível realista de prova.\n6. Verifique internamente se o gabarito corresponde ao enunciado e se nenhuma outra alternativa também pode ser correta.\n7. Português do Brasil.\n8. Responda SOMENTE JSON válido no formato {"questions":[{"text":"...","options":[...],"correct":0,"explanations":[...]}]}.`;
   },
 
   _validateAndTag(rawQuestions, subjectId) {
@@ -1944,14 +1999,14 @@ const GroqAI = {
     return valid;
   },
 
-  async generateQuestions(subjectId, count=6) {
+  async generateQuestions(subjectId, count=6, options={}) {
     const key=this.getKey(); if(!key) return {ok:false,reason:'no-key'};
     const subject=SUBJECTS.find(s=>s.id===subjectId); if(!subject) return {ok:false,reason:'invalid-subject'};
     const lockKey=`questions:${subjectId}`;
     if(this._inFlight.has(lockKey)) return this._inFlight.get(lockKey);
     const run=(async()=>{
       const existingSamples=Quiz.shuffle(Quiz.poolFor(subjectId)).slice(0,8);
-      const prompt=this._buildPrompt(subject,count,existingSamples);
+      const prompt=this._buildPrompt(subject,count,existingSamples,options.researchNotes||'');
       const r=await DoctorAICore.call({messages:[{role:'system',content:'Você é o gerador de questões do Doctor. Produza apenas conteúdo dentro do contexto recebido.'},{role:'user',content:DoctorAICore.context()+'\\n'+prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_questions',strict:true,schema:DoctorAICore.questionSchema(count,ExamRules.optionCount)}},temperature:0.45,timeout:45000});
       if(!r.ok) return r;
       const parsed=DoctorAICore.parseJSON(r.content); const raw=Array.isArray(parsed?.questions)?parsed.questions:[];
@@ -2024,7 +2079,24 @@ const DoctorAICore = {
     const c=EXAM_CONFIG;
     return `CONTEXTO DO PRODUTO\nConcurso: ${c.productName}\nÓrgão: ${c.orgName} - ${c.orgState}\nCargo: ${c.cargo}\nBanca: ${c.banca}\nEdital: ${c.editalNumber}\nModo editorial: ${c.editorialMode}\nFormato da prova: ${c.alternativesPerQuestion} alternativas por questão; regra de resposta: ${c.aiProfile?.answerPolicy||'single-correct'}\nMatérias: ${SUBJECTS.map(x=>x.name).join(', ')}\nRegra de ouro: o edital define o conteúdo; a banca define o modo de cobrança. Nunca misture informações de outro concurso.`;
   },
-  async call({model=null,messages,responseFormat=null,temperature=0.2,timeout=45000,searchSettings=null,maxTokens=null}) {
+  async researchExamPattern() {
+    const c=EXAM_CONFIG;
+    const officialUrl=c.officialEditalUrl||'';
+    if(!/^https:\/\/(?:[a-z0-9-]+\.)*(?:gov\.br|ufg\.br|cebraspe\.org\.br)(?:\/|$)/i.test(officialUrl))return {ok:false,reason:'official-edital-unavailable'};
+    const sourceUrls=(Array.isArray(c.radarSources)?c.radarSources:[]).join('\n');
+    const prompt=`Pesquise na web antes de elaborar este simulado. Concurso: ${c.productName}; cargo: ${c.cargo}; banca: ${c.banca}; edital: ${c.editalNumber}.\n1) Priorize o edital oficial e documentos oficiais da banca. Edital oficial: ${officialUrl||'(não configurado)'}\n2) Procure provas anteriores da mesma banca, primeiro para o mesmo cargo; se não encontrar, para cargos/áreas semelhantes, com nível de escolaridade e perfil de atribuições compatíveis com o edital.\n3) Identifique padrões observáveis: comando do enunciado, extensão, dificuldade, tipos de distratores, distribuição por tópicos e formato das alternativas.\n4) Separe claramente o que foi confirmado em fonte oficial do que é apenas padrão inferido.\n5) Não invente provas, questões, datas, leis ou fontes. Não reproduza questões protegidas literalmente; descreva o estilo e crie itens originais.\nFontes oficiais para começar:\\n${sourceUrls}\nResponda em português, de forma concisa, incluindo URLs e uma seção explícita “LACUNAS DE EVIDÊNCIA” quando não conseguir confirmar algum dado. Se não encontrar prova anterior, diga isso claramente.`;
+    const r=await this.call({model:'openai/gpt-oss-120b',messages:[{role:'system',content:'Você é o pesquisador documental do Doctor. Pesquise fontes reais; nunca invente citações.'},{role:'user',content:prompt}],searchSettings:{},reasoningEffort:'low',temperature:0.1,timeout:60000,maxTokens:1200});
+    if(!r.ok)return {ok:false,reason:'research-unavailable',status:r.status||null};
+    const tools=r.data?.choices?.[0]?.message?.executed_tools||[];
+    const content=String(r.content||'');
+    const notes=[content,tools.length?'Resultados de ferramentas de busca: '+JSON.stringify(tools):''].filter(Boolean).join('\n\n');
+    const evidenceText=content+' '+JSON.stringify(tools);
+    const hasSearchCitations=/〖\d+†L\d+(?:-L\d+)?〗/.test(content)||tools.length>0;
+    const hasOfficialEvidence=/https?:\/\/[^\s<>"']*(?:gov\.br|ufg\.br|cebraspe\.org\.br)/i.test(evidenceText);
+    if(notes.length<120||!hasSearchCitations||!hasOfficialEvidence)return {ok:false,reason:'research-insufficient'};
+    return {ok:true,notes,model:r.model};
+  },
+  async call({model=null,messages,responseFormat=null,temperature=0.2,timeout=45000,searchSettings=null,maxTokens=null,reasoningEffort=null}) {
     const key=GroqAI.getKey(); if(!key)return {ok:false,reason:'no-key'};
     const primary=model || GroqAI.getActiveModel();
     const candidates=searchSettings?[primary]:[primary,...GROQ_MODEL_PREFERENCES.filter(x=>x!==primary)];
@@ -2038,6 +2110,7 @@ const DoctorAICore = {
         try{
           const body={model:candidate,messages,temperature};
           if(maxTokens)body.max_completion_tokens=maxTokens;
+          if(reasoningEffort)body.reasoning_effort=reasoningEffort;
           if(responseFormat)body.response_format=responseFormat;
           if(searchSettings){
             body.search_settings=searchSettings;
@@ -2285,7 +2358,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     document.getElementById('recorder-toggle').innerHTML = ICONS.microphone;
     document.getElementById('settings-toggle').innerHTML = ICONS.gear;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=1.12.13', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
+      navigator.serviceWorker.register('./service-worker.js?v=1.12.14', { updateViaCache: 'none' }).then(reg => { try { reg.update(); } catch(e) {} }).catch(() => {});
       // IMPORTANTE: clients.claim() pode disparar controllerchange na PRIMEIRA
       // instalação. Isso não é uma atualização e não pode recarregar o app.
       // Só recarregamos quando a página já estava sendo controlada por um
@@ -2301,7 +2374,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
       setTimeout(() => sessionStorage.removeItem('doctor-core-sw-reloaded'), 12000);
       // Se uma instalação antiga conseguir abrir uma cópia stale do HTML,
       // consulta o marcador de build sem usar cache e força a versão atual.
-      fetch('./version.json?v=1.12.13-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+      fetch('./version.json?v=1.12.14-' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
         if (v?.version && v.version !== DOCTOR_CORE_BUILD) window.location.reload();
       }).catch(() => {});
     }
@@ -2462,7 +2535,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
           return;
         }
         this.dataset.fallbackApplied = '1';
-        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.13';
+        this.src = './assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.14';
         this.classList.add('doctor-avatar-fallback-image');
       });
     });
@@ -2919,7 +2992,7 @@ Views.doctorCard = function () {
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
         ${p.level.imageUri
-          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.13&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.14&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
@@ -3094,7 +3167,7 @@ Views.reviewSession = function () {
         }
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
       }).join('')}
-      ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Resposta preservada — revisão necessária</strong><p>O conteúdo desta questão mudou depois da resposta. O Core não vai recalcular nem marcar sua resposta como errada. A questão foi bloqueada para revisão.</p></div>` : ''}
+      ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Resposta preservada — revisão necessária</strong><p>O conteúdo desta questão mudou depois da resposta. O Core não vai recalcular nem marcar sua resposta como errada. A questão foi bloqueada para revisão.</p></div><button class="btn btn-primary btn-block" id="sim-next">${s.index + 1 < s.questions.length ? 'Próxima' : 'Finalizar'}</button>` : ''}
       ${answered && !integrityMismatch ? `
         <div class="explanation">
           <strong>${last.correct ? iconEl('checkCircle') + ' Acertou dessa vez!' : iconEl('xCircle') + ' Ainda não foi.'}</strong>
@@ -3483,9 +3556,71 @@ Views.bind.flashcardsSession = function () {
 };
 
 // ---------------- SIMULADO: SETUP ----------------
+function escapeSimuladoHtml(value){
+  return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+  });
+}
+
+async function DoctorGenerateFullSimulado(onProgress=()=>{}) {
+  if(!GroqAI.hasKey())return {ok:false,reason:'no-key'};
+  if(!navigator.onLine)return {ok:false,reason:'offline'};
+  onProgress('Pesquisando edital oficial e provas anteriores da banca…');
+  const research=await DoctorAICore.researchExamPattern();
+  if(!research.ok)return {ok:false,reason:research.reason||'research-unavailable'};
+  const exam=[],seen=new Set();
+  for(const subject of SUBJECTS){
+    const target=Number(subject.officialQuestions||0);
+    const collected=[];
+    let rounds=0;
+    while(collected.length<target&&rounds<4){
+      rounds++;
+      const requestCount=Math.min(10,target-collected.length);
+      onProgress('Gerando e revisando '+subject.name+' ('+collected.length+'/'+target+')…');
+      const before=new Set(QUESTIONS.map(q=>q.id));
+      const result=await GroqAI.generateQuestions(subject.id,requestCount,{researchNotes:research.notes});
+      if(result.status===429||result.reason==='rate-limit')return {ok:false,reason:'rate-limit',subject:subject.name};
+      const blocked=new Set(Store.state.questionIntegrity?.quarantinedIds||[]);
+      const fresh=QUESTIONS.filter(q=>!before.has(q.id)&&q.subjectId===subject.id&&q.aiGenerated===true&&q.reviewedByDoctor===true&&!blocked.has(q.id)&&DoctorQuestionIntegrity.assertDeliverable(q).ok);
+      for(const q of fresh){
+        const fp=[q.subjectId,q.text,...q.options].map(v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ')).join('|');
+        if(seen.has(fp)||!DoctorAICore.validateQuestion(q,subject.id))continue;
+        seen.add(fp);collected.push(q);
+        if(collected.length===target)break;
+      }
+      if(!result.ok&&fresh.length===0)return {ok:false,reason:result.reason||'generation-failed',subject:subject.name};
+    }
+    if(collected.length!==target)return {ok:false,reason:'incomplete-generation',subject:subject.name,have:collected.length,need:target};
+    exam.push(...collected);
+  }
+  if(exam.length!==ExamRules.questionCount)return {ok:false,reason:'invalid-total'};
+  const counts=Object.fromEntries(SUBJECTS.map(s=>[s.id,0]));
+  for(const q of exam){
+    if(q.aiGenerated!==true||q.reviewedByDoctor!==true||!['APROVAR','CORRIGIR'].includes(q.reviewStatus)||!DoctorQuestionIntegrity.assertDeliverable(q).ok)return {ok:false,reason:'review-gate'};
+    counts[q.subjectId]++;
+  }
+  if(SUBJECTS.some(s=>counts[s.id]!==s.officialQuestions))return {ok:false,reason:'distribution-gate'};
+  return {ok:true,questions:exam,researchNotes:research.notes,sourceModel:research.model};
+}
+
 Views.simuladoSetup = function () {
+  const quotaSnapshot=Store.state.simuladoQuota||{};
+  if(!Quiz.resumableSimulado()&&Array.isArray(quotaSnapshot.pendingQuestionIds)&&quotaSnapshot.pendingQuestionIds.length===ExamRules.questionCount){
+    const allQuestions=[...(QUESTIONS||[]),...(Store.state.aiQuestions||[])],byId=new Map(allQuestions.map(q=>[q.id,q]));
+    const pending=quotaSnapshot.pendingQuestionIds.map(id=>byId.get(id)).filter(Boolean);
+    if(pending.length===ExamRules.questionCount)Quiz.prepareSimulado(pending);
+  }
   const resumable = Quiz.resumableSimulado();
   if (resumable) {
+    if(resumable.status==='prepared'){
+      return '<button class="btn btn-ghost btn-sm" id="back-home">'+iconEl('arrowLeft')+' Voltar</button>'+
+        '<section class="card simulado-intro"><div class="simulado-eyebrow">DOCTOR CORE · PROVA PRONTA</div>'+
+        '<h2>'+iconEl('clipboard')+' Simulado gerado e revisado</h2>'+
+        '<p>As '+resumable.questions.length+' questões foram salvas e podem ser iniciadas ou impressas sem gabarito.</p>'+
+        '<button class="btn btn-primary btn-block" id="start-prepared-simulado">Iniciar simulado</button>'+
+        '<button class="btn btn-ghost btn-block" id="print-prepared-simulado">Imprimir / Salvar PDF</button>'+
+        '<button class="btn btn-ghost btn-block" id="abandon-simulado">Descartar prova preparada</button></section>';
+    }
     return `
       <button class="btn btn-ghost btn-sm" id="back-home">${iconEl('arrowLeft')} Voltar</button>
       <section class="card simulado-intro">
@@ -3510,7 +3645,7 @@ Views.simuladoSetup = function () {
     <section class="card simulado-intro">
       <div class="simulado-eyebrow">DOCTOR CORE · SIMULADO PERSONALIZADO</div>
       <h2>${iconEl('clipboard')} Simulado</h2>
-      <p class="muted">O Core configura automaticamente o formato da prova conforme o edital e a banca. Cada simulado é gerado por IA para este concurso, respeitando matérias, quantidade de questões, alternativas e estilo de cobrança.</p>
+      <p class="muted">O Core configura automaticamente o formato da prova conforme o edital e a banca. A IA pesquisa o edital e fontes oficiais disponíveis, cria questões originais no perfil da banca e submete cada item à revisão independente do Revisor Doctor.</p>
       <div class="simulado-summary">
         <div><strong>${ExamRules.questionCount}</strong><span>questões</span></div>
         <div><strong>${ExamRules.optionCount}</strong><span>alternativas</span></div>
@@ -3533,104 +3668,101 @@ Views.simuladoSetup = function () {
     </section>
     <div class="simulado-generation-note"><strong>⚠️ ATENÇÃO: LIMITE DE 1 SIMULADO A CADA 7 DIAS</strong><span>Depois de gerar um simulado completo, você deverá aguardar 7 dias para gerar o próximo. Fazer o simulado aos domingos é apenas uma recomendação — você pode escolher qualquer dia. ${quotaMessage} O prazo só começa quando o simulado completo estiver pronto.</span></div>
     <button class="btn btn-primary btn-block simulado-generate" id="generate-simulado" ${remainingMs > 0 ? 'disabled' : ''}>${iconEl('bot')} ${remainingMs > 0 ? 'Simulado semanal indisponível' : 'Gerar simulado completo'}</button>
-    <p class="muted simulado-footnote">É necessário configurar uma chave GROQ em Configurações para gerar as questões.</p>
+    <div id="simulado-generation-status" class="simulado-progress" hidden role="status" aria-live="polite"></div>
+    <p class="muted simulado-footnote">É necessário configurar a chave GROQ e aceitar o aviso de uso de dados em Configurações. A pesquisa e a geração só acontecem quando você solicitar, com internet disponível.</p>
   `;
 };
 
 Views.bind.simuladoSetup = function () {
-  document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
-  document.getElementById('continue-simulado')?.addEventListener('click', () => {
-    Quiz.session = Quiz.resumableSimulado();
-    UI.render('simuladoRunning');
-  });
-  document.getElementById('abandon-simulado')?.addEventListener('click', () => {
-    if (confirm('Descartar o simulado atual e gerar outro?')) {
-      Quiz.clearPersisted();
-      Quiz.session = null;
-      UI.render('simuladoSetup');
+  document.getElementById('back-home')?.addEventListener('click',()=>UI.render('home'));
+  const resumable=Quiz.resumableSimulado();
+  if(resumable){
+    if(resumable.status==='prepared'){
+      document.getElementById('start-prepared-simulado')?.addEventListener('click',()=>{
+        const started=Quiz.startPreparedSimulado();
+        if(!started.ok){UI.toast('A prova não passou pela verificação final de integridade.','warn');return;}
+        UI.render('simuladoRunning');
+      });
+      document.getElementById('print-prepared-simulado')?.addEventListener('click',()=>UI.render('simuladoPrint'));
+    }else{
+      document.getElementById('continue-simulado')?.addEventListener('click',()=>{
+        Quiz.session=Quiz.resumableSimulado();
+        if(Quiz.session&&!Quiz.session.startedAt){Quiz.session.startedAt=Date.now();Quiz.session.status='running';Quiz.persist();}
+        UI.render('simuladoRunning');
+      });
     }
-  });
-  document.getElementById('generate-simulado')?.addEventListener('click', async (e) => {
-    const quota = Store.state.simuladoQuota || { lastGeneratedAt: null, nextAllowedAt: null };
-    const nextAllowed = Number(quota.nextAllowedAt || 0);
-    if (nextAllowed > Date.now()) {
-      UI.toast('Você já gerou o simulado semanal. O próximo estará disponível em ' + new Date(nextAllowed).toLocaleDateString('pt-BR') + '.', 'warn');
-      UI.render('simuladoSetup');
-      return;
-    }
-    if (!GroqAI.hasKey()) {
-      UI.toast('Cadastre sua chave GROQ em Configurações para gerar o simulado.', 'warn');
-      UI.render('settings');
-      return;
-    }
-    const btn=e.currentTarget;
+    document.getElementById('abandon-simulado')?.addEventListener('click',()=>{
+      if(confirm('Descartar esta prova? O limite semanal continua contando porque a geração já foi concluída.')){
+        Quiz.clearPersisted();Quiz.session=null;UI.render('simuladoSetup');
+      }
+    });
+  }
+  document.getElementById('generate-simulado')?.addEventListener('click',async e=>{
+    const quota=Store.state.simuladoQuota||{},nextAllowed=Number(quota.nextAllowedAt||0);
+    if(nextAllowed>Date.now()){UI.toast('Você já gerou o simulado semanal. O próximo estará disponível em '+new Date(nextAllowed).toLocaleDateString('pt-BR')+'.','warn');UI.render('simuladoSetup');return;}
+    if(!navigator.onLine){UI.toast('A pesquisa do edital e a geração exigem internet. Seus estudos offline continuam disponíveis.','warn');return;}
+    if(!GroqAI.hasKey()){UI.toast('Configure sua chave GROQ e aceite o aviso de uso de dados nas Configurações.','warn');UI.render('settings');return;}
+    const btn=e.currentTarget,original=btn.innerHTML,status=document.getElementById('simulado-generation-status');
     btn.disabled=true;
-    const original=btn.innerHTML;
-    const generated=[];
-    const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-    try {
-      for (const subject of SUBJECTS) {
-        const required=Number(subject.officialQuestions||0);
-        let subjectQuestions=[];
-        let failedAttempts=0;
-        while(subjectQuestions.length<required && failedAttempts<5) {
-          const count=Math.min(5,required-subjectQuestions.length);
-          btn.innerHTML=iconEl('bot')+' Gerando '+subject.name+' ('+Math.min(required,subjectQuestions.length+count)+'/'+required+')…';
-          const before=new Set(QUESTIONS.map(q=>q.id));
-          let result=null;
-          try { result=await GroqAI.generateQuestions(subject.id,count); }
-          catch(error) { result={ok:false,reason:'exception',error:error?.message}; }
-          const fresh=QUESTIONS.filter(q=>q.subjectId===subject.id && q.aiGenerated && q.reviewedByDoctor===true && !before.has(q.id));
-          if(fresh.length) {
-            subjectQuestions=subjectQuestions.concat(fresh);
-            failedAttempts=0;
-            continue;
-          }
-          failedAttempts++;
-          if(result?.status===401 || result?.status===403 || result?.reason==='no-key') {
-            throw new Error('A chave GROQ foi recusada ou está inválida. Confira Configurações. O limite semanal não foi consumido.');
-          }
-          if(result?.status===429 || result?.reason==='rate-limit') {
-            throw new Error('A GROQ atingiu o limite temporário de uso. Aguarde a renovação do limite e tente novamente. Seu simulado semanal continua disponível.');
-          }
-          if(failedAttempts<5) {
-            btn.innerHTML=iconEl('bot')+' Tentando completar '+subject.name+' ('+subjectQuestions.length+'/'+required+')…';
-            await sleep(Math.min(6000,1000*failedAttempts));
-          }
-        }
-        if(subjectQuestions.length<required) {
-          throw new Error('Não foi possível validar todas as questões de '+subject.name+' após várias tentativas. Nenhum limite semanal foi consumido. Verifique a chave GROQ e tente novamente mais tarde.');
-        }
-        generated.push(...Quiz.shuffle(subjectQuestions).slice(0,required));
+    const progress=message=>{btn.textContent='⏳ '+message;if(status){status.hidden=false;status.textContent=message;}};
+    try{
+      const result=await DoctorGenerateFullSimulado(progress);
+      if(!result.ok){
+        const messages={
+          'no-key':'A chave GROQ não está configurada ou o aviso de uso de dados ainda não foi aceito.',
+          'offline':'A pesquisa e a geração exigem internet.',
+          'official-edital-unavailable':'O edital oficial do concurso não está configurado no perfil do produto.',
+          'research-unavailable':'A pesquisa documental não pôde ser concluída. Nenhuma prova foi criada.',
+          'research-insufficient':'Não foi possível confirmar fontes oficiais suficientes. O Core bloqueou a geração para evitar conteúdo sem evidência.',
+          'rate-limit':'A GROQ atingiu o limite gratuito temporário. Aguarde a renovação diária e tente novamente; seu limite semanal não foi consumido.',
+          'incomplete-generation':'A IA não conseguiu completar a distribuição oficial. Nenhum limite semanal foi consumido.',
+          'review-gate':'Uma ou mais questões não passaram pela revisão independente.',
+          'distribution-gate':'A distribuição final não corresponde ao edital.'
+        };
+        throw new Error(messages[result.reason]||('Não foi possível concluir o simulado'+(result.subject?' em '+result.subject:'')+'. Nenhum limite semanal foi consumido.'));
       }
-      if(generated.length!==ExamRules.questionCount || SUBJECTS.some(subject=>generated.filter(q=>q.subjectId===subject.id).length!==Number(subject.officialQuestions||0))) {
-        throw new Error('A conferência final da distribuição falhou. O limite semanal não foi consumido; tente novamente.');
-      }
-      const uniqueIds=new Set(generated.map(q=>q.id));
-      if(uniqueIds.size!==ExamRules.questionCount || generated.some(q=>!DoctorQuestionIntegrity.assertDeliverable(q).ok)) {
-        throw new Error('A validação final detectou questões repetidas ou não aprovadas. O limite semanal não foi consumido; tente novamente.');
-      }
+      const prepared=Quiz.prepareSimulado(result.questions);
+      if(!prepared.ok)throw new Error('A prova falhou na validação final ('+prepared.reason+'). O limite semanal não foi consumido.');
       const completedAt=Date.now();
-      Quiz.session={
-        type:'simulado',
-        questions:Quiz.shuffle(generated),
-        index:0,
-        answers:[],
-        startedAt:completedAt,
-        timeLimitSeconds:ExamRules.durationSeconds
-      };
-      Store.state.simuladoQuota={lastGeneratedAt:new Date(completedAt).toISOString(),nextAllowedAt:completedAt+7*86400000};
-      Quiz.persist();
-      UI.render('simuladoRunning');
-    } catch(err) {
-      UI.toast(err?.message||'Não foi possível gerar o simulado completo. Nenhum limite semanal foi consumido.', 'warn');
+      Store.state.simuladoQuota=Object.assign({},Store.state.simuladoQuota||{},{
+        lastGeneratedAt:new Date(completedAt).toISOString(),nextAllowedAt:completedAt+7*86400000,
+        pendingQuestionIds:result.questions.map(q=>q.id),pendingResearchNotes:String(result.researchNotes||'').slice(0,6000)
+      });
+      Store.save();UI.render('simuladoReady');
+    }catch(error){
+      UI.toast(error?.message||'Não foi possível gerar o simulado completo. Nenhum limite semanal foi consumido.','warn');
       UI.render('simuladoSetup');
-    } finally {
+    }finally{
       const current=document.getElementById('generate-simulado');
       if(current){current.disabled=false;current.innerHTML=original;}
     }
   });
 };
+
+Views.simuladoReady = function(){
+  const s=Quiz.session||Quiz.resumableSimulado();
+  if(!s||s.type!=='simulado'||s.status!=='prepared')return '<div class="card warn-card">A prova preparada não está disponível. Volte ao Simulado para verificar o estado.</div>';
+  return '<button class="btn btn-ghost btn-sm" id="simulado-ready-back">'+iconEl('arrowLeft')+' Voltar</button><h2>Simulado gerado e revisado</h2><section class="card">'+
+    '<p><strong>'+s.questions.length+' questões</strong> · distribuição oficial do edital · '+EXAM_CONFIG.durationHours+' horas.</p>'+
+    '<p class="muted">Pesquisa documental com fontes oficiais, questões originais e revisão independente. O simulado é material de treino; não é prova oficial da banca.</p>'+
+    '<button class="btn btn-danger btn-block" id="simulado-ready-start">Iniciar prova no aplicativo</button><button class="btn btn-primary btn-block" id="simulado-ready-print">Gerar PDF / Imprimir prova</button></section>';
+};
+Views.bind.simuladoReady=function(){
+  document.getElementById('simulado-ready-back')?.addEventListener('click',()=>UI.render('simuladoSetup'));
+  document.getElementById('simulado-ready-start')?.addEventListener('click',()=>{const started=Quiz.startPreparedSimulado();if(!started.ok){UI.toast('A prova falhou na verificação final.','warn');UI.render('simuladoSetup');return;}UI.render('simuladoRunning');});
+  document.getElementById('simulado-ready-print')?.addEventListener('click',()=>UI.render('simuladoPrint'));
+};
+Views.simuladoPrint=function(){
+  const s=Quiz.session||Quiz.resumableSimulado();
+  if(!s||s.type!=='simulado'||s.status!=='prepared')return '<div class="card">A prova para impressão não está disponível.</div>';
+  const ordered=s.questions.slice(),labels=ExamRules.optionLabels||['A','B','C','D'];
+  return '<div class="no-print"><button class="btn btn-ghost btn-sm" id="simulado-print-back">'+iconEl('arrowLeft')+' Voltar</button><button class="btn btn-primary btn-block" id="simulado-print-now">Imprimir / Salvar como PDF</button><p class="muted">Escolha “Salvar como PDF” na janela de impressão. O gabarito não aparece nesta folha.</p></div>'+
+    '<article class="simulado-paper"><h1>'+escapeSimuladoHtml(EXAM_CONFIG.orgName)+'</h1><div class="paper-meta">'+escapeSimuladoHtml(EXAM_CONFIG.editalNumber)+' · '+escapeSimuladoHtml(EXAM_CONFIG.cargo)+'<br>'+escapeSimuladoHtml(EXAM_CONFIG.banca)+' · '+EXAM_CONFIG.durationHours+' horas · '+ordered.length+' questões</div>'+
+    '<div class="paper-instructions"><strong>INSTRUÇÕES</strong><br>Leia cada questão com atenção. Assinale uma alternativa por questão. Este simulado é material original de treino, elaborado com apoio de IA e pesquisa documental; não é prova oficial da banca.</div>'+
+    ordered.map((q,i)=>'<section class="paper-question"><h3>'+(i+1)+'. '+escapeSimuladoHtml(q.text)+'</h3>'+q.options.map((opt,j)=>'<div class="paper-option">'+escapeSimuladoHtml(labels[j]||String.fromCharCode(65+j))+') '+escapeSimuladoHtml(opt)+'</div>').join('')+'</section>').join('')+
+    '<section class="answer-sheet"><h2>Folha de respostas</h2><p>Preencha uma alternativa por questão.</p><div class="answer-grid">'+ordered.map((q,i)=>'<div class="answer-cell">'+(i+1)+'. <span>'+q.options.map((_,j)=>'○ '+escapeSimuladoHtml(labels[j]||String.fromCharCode(65+j))).join('　')+'</span></div>').join('')+'</div></section></article>';
+};
+Views.bind.simuladoPrint=function(){document.getElementById('simulado-print-back')?.addEventListener('click',()=>UI.render('simuladoReady'));document.getElementById('simulado-print-now')?.addEventListener('click',()=>window.print());};
 
 // ---------------- SIMULADO: EXECUÇÃO ----------------
 Views.simuladoRunning = function () {
@@ -3647,7 +3779,7 @@ Views.simuladoRunning = function () {
   const last = answered ? s.answers[s.index] : null;
   const evidence = q ? DoctorQuestionIntegrity.getEvidence(q) : null;
   const integrityMismatch = !!evidence?.mismatch || !!(last?.questionFingerprint && q && last.questionFingerprint !== DoctorQuestionIntegrity.fingerprint(q));
-  const letters = Array.from({ length: ExamRules.optionCount }, (_, i) => String.fromCharCode(65 + i));
+  const letters = Array.from({ length: ExamRules.optionCount }, (_, i) => String(ExamRules.optionLabels?.[i] || String.fromCharCode(65 + i)));
 
   return `
     <button class="btn btn-ghost btn-sm" id="sim-back">${iconEl('arrowLeft')} Sair do simulado</button>
@@ -3656,19 +3788,16 @@ Views.simuladoRunning = function () {
       <span class="badge timer" id="sim-timer">${iconEl('clock')} --:--:--</span>
     </div>
     <div class="card">
-      <p class="q-text">${q.text}</p>
+      <p class="q-text">${escapeSimuladoHtml(q.text)}</p>
       ${q.options.map((opt, i) => {
         let cls = 'q-option';
-        if (answered && !integrityMismatch) {
-          if (i === last.selected && last.correct) cls += ' correct';
-          else if (i === last.selected && !last.correct) cls += ' wrong';
-          else if (i === q.correct) cls += ' correct';
-        }
-        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
+        // Em prova oficial simulada, não revelar gabarito nem acerto durante a execução.
+        if (answered) cls += ' answered-locked';
+        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${escapeSimuladoHtml(opt)}</div>`;
       }).join('')}
       ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Questão bloqueada para revisão</strong><p>A questão mudou depois da resposta. O Core preservou a resposta original e bloqueou a correção automática para impedir um falso “erro”.</p></div>` : ''}
       ${answered && !integrityMismatch ? `
-        <div class="explanation"><p>${q.explanations[last.selected]}</p></div>
+        <div class="explanation"><p>Resposta registrada. O gabarito e os comentários serão exibidos após finalizar a prova.</p></div>
         <button class="btn btn-primary btn-block" id="sim-next">${s.index + 1 < s.questions.length ? 'Próxima' : 'Finalizar'}</button>
       ` : ''}
     </div>
@@ -3719,13 +3848,13 @@ Views.simuladoResult = function () {
   const r = UI._lastResult;
   if (!r) return '<div class="empty">Nenhum resultado disponível.</div>';
   const pct = Math.round((r.score / r.total) * 100);
-  const passed = r.score >= 60;
+  const passed = r.score >= Number(EXAM_CONFIG.passingScore||60);
 
   return `
     <div class="card center">
       <div class="big-icon">${passed ? iconEl('trophy') : iconEl('book')}</div>
       <h2>${r.score} / ${r.total} pontos</h2>
-      <p class="${passed ? 'text-green' : 'text-orange'}"><strong>${passed ? 'Aprovado(a)! Acima dos 60 pontos mínimos.' : 'Abaixo dos 60 pontos mínimos — bora reforçar.'}</strong></p>
+      <p class="${passed ? 'text-green' : 'text-orange'}"><strong>${passed ? 'Aprovado(a)! Acima dos '+Number(EXAM_CONFIG.passingScore||60)+' pontos mínimos.' : 'Abaixo dos '+Number(EXAM_CONFIG.passingScore||60)+' pontos mínimos — bora reforçar.'}</strong></p>
       <p class="muted">Tempo utilizado: ${Math.floor(r.timeSpentSec / 60)} min</p>
     </div>
     <div class="section-title">Desempenho por matéria</div>
@@ -3739,15 +3868,35 @@ Views.simuladoResult = function () {
         </div>
       `;
     }).join('')}
+    <button class="btn btn-primary btn-block" id="result-review">Conferir gabarito comentado</button>
     <button class="btn btn-primary btn-block" id="result-home">Voltar ao início</button>
   `;
 };
 
 Views.bind.simuladoResult = function () {
-  document.getElementById('result-home')?.addEventListener('click', () => { Quiz.session = null; UI.render('home'); });
+  document.getElementById('result-review')?.addEventListener('click',()=>UI.render('simuladoAnswerReview'));
+  document.getElementById('result-home')?.addEventListener('click',()=>{Quiz.session=null;UI.render('home');});
 };
 
-
+Views.simuladoAnswerReview = function(){
+  const s=Quiz.session;
+  if(!s||s.type!=='simulado'||!Array.isArray(s.questions))return '<div class="card">O gabarito comentado não está disponível nesta sessão.</div>';
+  const answers=new Map((s.answers||[]).map(a=>[a.questionId,a])),labels=ExamRules.optionLabels||['A','B','C','D'];
+  const cards=s.questions.map((q,i)=>{
+    const a=answers.get(q.id),evidence=DoctorQuestionIntegrity.getEvidence(q);
+    const mismatch=!!evidence?.mismatch||!!(a?.questionFingerprint&&a.questionFingerprint!==DoctorQuestionIntegrity.fingerprint(q));
+    if(mismatch)return '<article class="card"><h3>'+(i+1)+'. '+escapeSimuladoHtml(q.text)+'</h3><div class="warn-card"><strong>Questão bloqueada para correção</strong><p>O conteúdo mudou depois da resposta. O Core preservou a evidência original e não exibirá um gabarito potencialmente incorreto.</p></div></article>';
+    const selected=a?(labels[a.selected]||String.fromCharCode(65+a.selected)):'Em branco',correct=labels[q.correct]||String.fromCharCode(65+q.correct);
+    const explanations=q.options.map((opt,j)=>'<div class="review-option"><strong>'+escapeSimuladoHtml(labels[j]||String.fromCharCode(65+j))+') '+escapeSimuladoHtml(opt)+'</strong><p>'+escapeSimuladoHtml(q.explanations?.[j]||'Comentário não cadastrado para esta alternativa.')+'</p></div>').join('');
+    return '<article class="card"><h3>'+(i+1)+'. '+escapeSimuladoHtml(q.text)+'</h3><p><strong>Sua resposta:</strong> '+escapeSimuladoHtml(selected)+' · <strong>Gabarito:</strong> '+escapeSimuladoHtml(correct)+'</p>'+
+      (a&&!a.correct?'<p class="text-orange"><strong>Revise este tópico antes de avançar.</strong></p>':'')+'<div class="answer-explanations">'+explanations+'</div></article>';
+  }).join('');
+  return '<button class="btn btn-ghost btn-sm" id="answer-review-back">'+iconEl('arrowLeft')+' Voltar ao resultado</button><h2>Gabarito comentado</h2><p class="muted">A correção é exibida somente depois da prova. Cada alternativa traz seu comentário específico.</p>'+cards+'<button class="btn btn-primary btn-block" id="answer-review-done">Voltar ao início</button>';
+};
+Views.bind.simuladoAnswerReview=function(){
+  document.getElementById('answer-review-back')?.addEventListener('click',()=>UI.render('simuladoResult'));
+  document.getElementById('answer-review-done')?.addEventListener('click',()=>{Quiz.session=null;UI.render('home');});
+};
 
 /* ---------------- CALCULADORA DOCTOR ----------------
    Calculadora local, sem rede e sem eval. Operações encadeadas com
@@ -3963,7 +4112,7 @@ Views.radarArticle=function(){ return RadarDoctor.article(UI._radarArticleId); }
 Views.bind.radarArticle=function(){ document.getElementById('radar-article-back')?.addEventListener('click',()=>UI.back()); document.getElementById('radar-article-study')?.addEventListener('click',()=>UI.goHome()); };
 
 /* ===== CADERNO DOCTOR — serviço local de notas =====
-   V1.12.13 hotfix: a interface chamava CoreNotes, mas o serviço não
+   V1.12.14 hotfix: a interface chamava CoreNotes, mas o serviço não
    estava definido no bundle. Mantém dados no Store existente.
 */
 const CoreNotes = {
@@ -4585,9 +4734,9 @@ if (window.DOCTOR_PLATFORM_BRIDGE?.bootstrap) {
   schedule();
 })();
 </script>
-<script src="./doctor-core-quality.js?v=1.12.13" defer></script>
+<script src="./doctor-core-quality.js?v=1.12.14" defer></script>
 
-<script src="./calculator-scientific.js?v=1.12.13"></script>
+<script src="./calculator-scientific.js?v=1.12.14"></script>
 
 <script id="doctor-remove-radar-header-notice-v11210">
 /* Remove somente avisos legados que mencionem Radar e apareçam antes do cabeçalho. */
