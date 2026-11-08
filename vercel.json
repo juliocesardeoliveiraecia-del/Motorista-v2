@@ -4,8 +4,14 @@
     {
       "source": "/service-worker.js",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     }
-  ]
+  ],
+  "framework": null,
+  "buildCommand": "node tools/build-config.mjs && node scripts/check-version-contract.mjs && node qa/platform-bridge-contract.mjs",
+  "outputDirectory": "."
 }
