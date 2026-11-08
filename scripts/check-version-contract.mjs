@@ -10,6 +10,7 @@ const context = read('product-context.js');
 const configMatch = config.match(/version:\s*['\"]([^'\"]+)['\"]/);
 const cacheMatch = sw.match(/CACHE_NAME\s*=\s*'motorista-ipameri-v([^']+)'/);
 const expected = version.version;
+const configScriptLoaded = index.includes(`production-config.js?v=${expected}`);
 const errors = [];
 if (!expected) errors.push('version.json não define version.');
 if (configMatch?.[1] !== expected) errors.push(`production-config.js version=${configMatch?.[1]}; esperado ${expected}`);
