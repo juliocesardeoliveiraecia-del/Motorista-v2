@@ -16,7 +16,7 @@ const errors=[];
 const version=config.match(/version:\s*'([^']+)'/)?.[1];
 const cacheName=sw.match(/CACHE_NAME\s*=\s*'([^']+)'/)?.[1];
 if(!version) errors.push('production-config: versão ausente.');
-if(version && !index.includes(`version: '${version}'`)) errors.push('index.html: versão divergente.');
+if(version && !index.includes(`<meta name="doctor-core-version" content="${version}">`)) errors.push('index.html: versão divergente.');
 // Cache e manifesto podem ter revisões próprias para invalidar assets e ícones.
 // O contrato exige formatos versionados válidos, não igualdade com Core Version.
 if(!cacheName || !/^motorista-ipameri-v\d+\.\d+\.\d+(?:-[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/i.test(cacheName)) {
