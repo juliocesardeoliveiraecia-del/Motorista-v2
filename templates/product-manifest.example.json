@@ -50,7 +50,11 @@
     "primaryColor": "#0A192F",
     "primaryColorMid": "#16345E",
     "accentColor": "#2ECC71",
-    "accentColorDark": "#1E9E58"
+    "accentColorDark": "#1E9E58",
+    "contestStage": "post-edital",
+    "officialEditalUrl": "https://www.gov.br/",
+    "lastExamDateISO": null,
+    "officialLastExamUrl": null
   },
   "subjects": [
     {

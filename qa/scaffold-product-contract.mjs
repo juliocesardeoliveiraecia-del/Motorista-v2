@@ -20,6 +20,10 @@ const untrustedRadar=structuredClone(manifest);
 untrustedRadar.radarSources=['https://example.com/not-official'];
 assert.ok(validateManifest(untrustedRadar).some(x=>x.includes('fonte Radar não permitida')));
 
+const invalidDate=structuredClone(manifest);
+invalidDate.app.examDateISO='sem-data';
+assert.ok(validateManifest(invalidDate).some(x=>x.includes('examDateISO deve usar')));
+
 const wrongDuration=structuredClone(manifest);
 wrongDuration.examRules.durationSeconds=3600;
 assert.ok(validateManifest(wrongDuration).some(x=>x.includes('durationSeconds')));
@@ -33,5 +37,37 @@ cebraspe.examRules.answerPolicy='true-false';
 cebraspe.aiProfile.questionMode='true-false';
 cebraspe.aiProfile.answerPolicy='true-false';
 assert.deepEqual(validateManifest(cebraspe),[]);
+
+
+const preEdital=structuredClone(manifest);
+preEdital.app.contestStage='pre-edital';
+preEdital.app.examDateISO=null;
+preEdital.app.examDateLabel='Aguardando novo edital';
+preEdital.app.orgName='Polícia Federal';
+preEdital.app.orgState='BR';
+preEdital.app.cargo='Agente de Polícia Federal';
+preEdital.app.banca='Cebraspe';
+preEdital.app.editalNumber='Edital nº 01/2025 - PF - POLICIAL';
+preEdital.app.editalPublishDate='20/05/2025';
+preEdital.app.lastExamDateISO='2025-07-27';
+preEdital.app.officialEditalUrl='https://www.gov.br/pf/pt-br/acesso-a-informacao/servidores/concursos/edital/carreira-policial-2025/editais';
+preEdital.app.officialLastExamUrl='https://www.gov.br/pf/pt-br/acesso-a-informacao/servidores/concursos/provas-e-gabaritos-de-concursos-anteriores';
+preEdital.radarAllowedHosts=['gov.br','cebraspe.org.br'];
+preEdital.radarSources=[preEdital.app.officialEditalUrl,preEdital.app.officialLastExamUrl];
+assert.deepEqual(validateManifest(preEdital),[]);
+const preOutputs=buildOutputs(preEdital);
+assert.ok(preOutputs['product-context.js'].includes('"contestStage": "pre-edital"'));
+assert.ok(preOutputs['product-context.js'].includes('"examDateISO": null'));
+assert.ok(preOutputs['product-context.js'].includes('"contentSourceMode": "last-edital-last-exam"'));
+assert.ok(preOutputs['product-context.js'].includes('"officialLastExamUrl"'));
+assert.doesNotThrow(()=>new vm.Script(preOutputs['product-context.js']));
+
+const missingLastExam=structuredClone(preEdital);
+missingLastExam.app.officialLastExamUrl='';
+assert.ok(validateManifest(missingLastExam).some(x=>x.includes('officialLastExamUrl obrigatória')));
+
+const badStage=structuredClone(manifest);
+badStage.app.contestStage='future';
+assert.ok(validateManifest(badStage).some(x=>x.includes('contestStage')));
 
 console.log('DOCTOR CORE PRODUCT SCAFFOLD QA: OK');
