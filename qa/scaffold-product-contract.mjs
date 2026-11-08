@@ -20,6 +20,10 @@ const untrustedRadar=structuredClone(manifest);
 untrustedRadar.radarSources=['https://example.com/not-official'];
 assert.ok(validateManifest(untrustedRadar).some(x=>x.includes('fonte Radar não permitida')));
 
+const invalidDate=structuredClone(manifest);
+invalidDate.app.examDateISO='sem-data';
+assert.ok(validateManifest(invalidDate).some(x=>x.includes('examDateISO deve usar')));
+
 const wrongDuration=structuredClone(manifest);
 wrongDuration.examRules.durationSeconds=3600;
 assert.ok(validateManifest(wrongDuration).some(x=>x.includes('durationSeconds')));
@@ -39,9 +43,15 @@ const preEdital=structuredClone(manifest);
 preEdital.app.contestStage='pre-edital';
 preEdital.app.examDateISO=null;
 preEdital.app.examDateLabel='Aguardando novo edital';
+preEdital.app.orgName='Polícia Federal';
+preEdital.app.orgState='BR';
+preEdital.app.cargo='Agente de Polícia Federal';
+preEdital.app.banca='Cebraspe';
+preEdital.app.editalNumber='Edital nº 01/2025 - PF - POLICIAL';
+preEdital.app.editalPublishDate='20/05/2025';
 preEdital.app.lastExamDateISO='2025-07-27';
 preEdital.app.officialEditalUrl='https://www.gov.br/pf/pt-br/acesso-a-informacao/servidores/concursos/edital/carreira-policial-2025/editais';
-preEdital.app.officialLastExamUrl='https://cdn.cebraspe.org.br/concursos/PF_25/arquivos/Ed_1_PF_25_Abertura.html';
+preEdital.app.officialLastExamUrl='https://www.gov.br/pf/pt-br/acesso-a-informacao/servidores/concursos/provas-e-gabaritos-de-concursos-anteriores';
 preEdital.radarAllowedHosts=['gov.br','cebraspe.org.br'];
 preEdital.radarSources=[preEdital.app.officialEditalUrl,preEdital.app.officialLastExamUrl];
 assert.deepEqual(validateManifest(preEdital),[]);
