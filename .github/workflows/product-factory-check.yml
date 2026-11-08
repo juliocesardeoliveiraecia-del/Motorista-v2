@@ -31,4 +31,3 @@ jobs:
       - run: node --check tools/scaffold-products-batch.mjs
       - run: node qa/scaffold-product-contract.mjs
       - run: node qa/scaffold-products-batch-contract.mjs
-      - run: node tools/scaffold-products-batch.mjs --batch-manifest templates/product-manifest.example.json
