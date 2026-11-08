@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "version": "1.0.0",
-  "coreVersion": "1.12.14",
+  "coreVersion": "1.12.15",
   "contentVersion": "2027.1",
   "description": "Aplicativo de estudos configurado para um concurso público.",
   "app": {
