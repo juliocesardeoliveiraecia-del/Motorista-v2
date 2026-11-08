@@ -7,7 +7,7 @@ const version = JSON.parse(read('version.json'));
 const sw = read('service-worker.js');
 const context = read('product-context.js');
 
-const configMatch = config.match(/version:\\s*['\"]([^'\"]+)['\"]/);
+const configMatch = config.match(/version:\s*['\"]([^'\"]+)['\"]/);
 const cacheMatch = sw.match(/CACHE_NAME\s*=\s*'motorista-ipameri-v([^']+)'/);
 const expected = version.version;
 const errors = [];
