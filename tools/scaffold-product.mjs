@@ -32,8 +32,20 @@ export function validateManifest(m) {
   for (const key of ['appId','productId','platformProductSlug']) {
     if (!SLUG.test(String(a[key] || ''))) errors.push('app.' + key + ' deve ser slug minúsculo');
   }
-  for (const key of ['appTitle','productName','orgName','orgState','cargo','banca','editalNumber','editalPublishDate','examDateISO','applicationCity','themeIcon','appIconBadge']) {
+  for (const key of ['appTitle','productName','orgName','orgState','cargo','banca','editalNumber','editalPublishDate','applicationCity','themeIcon','appIconBadge']) {
     if (!String(a[key] || '').trim()) errors.push('app.' + key + ' obrigatória');
+  }
+  const contestStage = a.contestStage || 'post-edital';
+  const isPreEdital = contestStage === 'pre-edital';
+  if (!['pre-edital','post-edital'].includes(contestStage)) errors.push('app.contestStage deve ser pre-edital ou post-edital');
+  const validDateOnly = value => /^\\d{4}-\\d{2}-\\d{2}$/.test(String(value || '')) && !Number.isNaN(Date.parse(String(value) + 'T00:00:00'));
+  const validDateTime = value => /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$/.test(String(value || '')) && !Number.isNaN(Date.parse(String(value)));
+  if (isPreEdital) {
+    if (a.examDateISO != null && String(a.examDateISO).trim()) errors.push('app.examDateISO deve ficar vazio no modo pre-edital');
+    if (!validDateOnly(a.lastExamDateISO)) errors.push('app.lastExamDateISO deve informar a data da última prova no formato YYYY-MM-DD');
+  } else {
+    if (!validDateTime(a.examDateISO)) errors.push('app.examDateISO deve usar YYYY-MM-DDTHH:mm:ss');
+    if (a.lastExamDateISO && !validDateOnly(a.lastExamDateISO)) errors.push('app.lastExamDateISO inválida');
   }
   if (!Number.isInteger(a.durationHours) || a.durationHours < 1 || a.durationHours > 8) errors.push('app.durationHours deve ser inteiro entre 1 e 8');
   for (const key of ['totalQuestions','totalPoints','passingScore','alternativesPerQuestion']) {
@@ -77,6 +89,16 @@ export function validateManifest(m) {
 
   const allowed = new Set(Array.isArray(m.radarAllowedHosts) ? m.radarAllowedHosts.map(x => String(x).toLowerCase()) : []);
   if (!allowed.size) errors.push('radarAllowedHosts deve conter hosts oficiais');
+  const validateOfficialUrl = (value, field, required = false) => {
+    if (!value) { if (required) errors.push(field + ' obrigatória'); return; }
+    try {
+      const u = new URL(value);
+      const host = u.hostname.toLowerCase();
+      if (u.protocol !== 'https:' || ![...allowed].some(base => host === base || host.endsWith('.' + base))) errors.push(field + ' deve ser HTTPS e pertencer a um host oficial permitido');
+    } catch { errors.push(field + ' deve ser uma URL válida'); }
+  };
+  validateOfficialUrl(a.officialEditalUrl, 'app.officialEditalUrl', true);
+  validateOfficialUrl(a.officialLastExamUrl, 'app.officialLastExamUrl', isPreEdital);
   if (!Array.isArray(m.radarSources) || !m.radarSources.length) errors.push('radarSources deve conter ao menos uma fonte oficial');
   else for (const source of m.radarSources) {
     try {
@@ -101,10 +123,17 @@ export function buildOutputs(m) {
   const errors = validateManifest(m);
   if (errors.length) throw new Error(errors.join('\n'));
   const a = m.app;
+  const isPreEdital = (a.contestStage || 'post-edital') === 'pre-edital';
   const context = {
     orgName:a.orgName, orgState:a.orgState, cargo:a.cargo, banca:a.banca,
     editalNumber:a.editalNumber, editalPublishDate:a.editalPublishDate,
-    examDateISO:a.examDateISO, examDateLabel:a.examDateLabel || a.examDateISO,
+    contestStage:isPreEdital ? 'pre-edital' : 'post-edital',
+    contentSourceMode:isPreEdital ? 'last-edital-last-exam' : 'current-edital',
+    officialEditalUrl:a.officialEditalUrl,
+    officialLastExamUrl:a.officialLastExamUrl || '',
+    lastExamDateISO:a.lastExamDateISO || '',
+    examDateISO:isPreEdital ? null : a.examDateISO,
+    examDateLabel:a.examDateLabel || (isPreEdital ? 'Aguardando novo edital' : a.examDateISO),
     applicationCity:a.applicationCity, durationHours:a.durationHours,
     totalQuestions:a.totalQuestions, totalPoints:a.totalPoints, passingScore:a.passingScore,
     alternativesPerQuestion:a.alternativesPerQuestion, examRules:m.examRules,
@@ -117,9 +146,9 @@ export function buildOutputs(m) {
     appIconBase:a.appIconBase, appIconSizes:a.appIconSizes,
     appId:a.appId, productId:a.productId, platformProductSlug:a.platformProductSlug,
     coreVersion:m.coreVersion, contentVersion:m.contentVersion,
-    editorialMode:'edital-plus-banca', aiProfile:m.aiProfile,
+    editorialMode:isPreEdital ? 'last-edital-last-exam-plus-banca' : 'edital-plus-banca', aiProfile:m.aiProfile,
     radarShareRatio:{contest:m.aiProfile.radar.contestShare,promotion:m.aiProfile.radar.promotionShare,discovery:m.aiProfile.radar.discoveryShare},
-    radarSources:m.radarSources, sync:{enabled:true,provider:'supabase-versioned-snapshot-v1'},
+    radarSources:[...new Set([...m.radarSources,a.officialEditalUrl,a.officialLastExamUrl].filter(Boolean))], sync:{enabled:true,provider:'supabase-versioned-snapshot-v1'},
     sessionPolicy:'single-active-device',
     primaryColor:a.primaryColor, primaryColorMid:a.primaryColorMid,
     accentColor:a.accentColor, accentColorDark:a.accentColorDark,

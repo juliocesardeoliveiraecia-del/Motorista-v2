@@ -48,3 +48,14 @@ Execute:
 node --check tools/scaffold-products-batch.mjs
 node qa/scaffold-products-batch-contract.mjs
 ```
+
+
+## Modo pré-edital
+A fábrica também aceita produtos em fase pré-edital. Nesse modo, o manifesto deve:
+- definir `app.contestStage: "pre-edital"`;
+- deixar `app.examDateISO` como `null` (não inventar data de prova);
+- preencher `app.lastExamDateISO` com a data da última prova real;
+- apontar `app.officialEditalUrl` para o último edital oficial e `app.officialLastExamUrl` para a prova/gabarito oficial;
+- incluir os hosts oficiais correspondentes em `radarAllowedHosts`.
+
+O Core exibe a preparação pré-edital, usa o último edital + última prova como base e mantém a banca como perfil de cobrança. Quando sair edital novo, o manifesto muda para `post-edital` com a nova data e os documentos oficiais. O modo pré-edital não inventa cronograma, prova ou edital futuro.

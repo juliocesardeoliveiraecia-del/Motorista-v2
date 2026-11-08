@@ -34,4 +34,30 @@ cebraspe.aiProfile.questionMode='true-false';
 cebraspe.aiProfile.answerPolicy='true-false';
 assert.deepEqual(validateManifest(cebraspe),[]);
 
+
+const preEdital=structuredClone(manifest);
+preEdital.app.contestStage='pre-edital';
+preEdital.app.examDateISO=null;
+preEdital.app.examDateLabel='Aguardando novo edital';
+preEdital.app.lastExamDateISO='2025-07-27';
+preEdital.app.officialEditalUrl='https://www.gov.br/pf/pt-br/acesso-a-informacao/servidores/concursos/edital/carreira-policial-2025/editais';
+preEdital.app.officialLastExamUrl='https://cdn.cebraspe.org.br/concursos/PF_25/arquivos/Ed_1_PF_25_Abertura.html';
+preEdital.radarAllowedHosts=['gov.br','cebraspe.org.br'];
+preEdital.radarSources=[preEdital.app.officialEditalUrl,preEdital.app.officialLastExamUrl];
+assert.deepEqual(validateManifest(preEdital),[]);
+const preOutputs=buildOutputs(preEdital);
+assert.ok(preOutputs['product-context.js'].includes('"contestStage": "pre-edital"'));
+assert.ok(preOutputs['product-context.js'].includes('"examDateISO": null'));
+assert.ok(preOutputs['product-context.js'].includes('"contentSourceMode": "last-edital-last-exam"'));
+assert.ok(preOutputs['product-context.js'].includes('"officialLastExamUrl"'));
+assert.doesNotThrow(()=>new vm.Script(preOutputs['product-context.js']));
+
+const missingLastExam=structuredClone(preEdital);
+missingLastExam.app.officialLastExamUrl='';
+assert.ok(validateManifest(missingLastExam).some(x=>x.includes('officialLastExamUrl obrigatória')));
+
+const badStage=structuredClone(manifest);
+badStage.app.contestStage='future';
+assert.ok(validateManifest(badStage).some(x=>x.includes('contestStage')));
+
 console.log('DOCTOR CORE PRODUCT SCAFFOLD QA: OK');
