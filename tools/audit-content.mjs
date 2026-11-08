@@ -65,15 +65,17 @@ for (const q of QUESTIONS || []) {
     errors.push(`${q.id}: explicações desalinhadas/incompletas.`);
   }
 
-  // Prova determinística do contrato de correção:
-  // a mesma regra selected === correct precisa produzir o mesmo resultado
-  // em prática, simulado e revisão.
-  for (let selected = 0; selected < 4; selected += 1) {
-    const expected = selected === q.correct;
-    const observed = selected === q.correct;
-    if (observed !== expected) {
-      errors.push(`${q.id}: inconsistência determinística no gabarito.`);
-    }
+
+}
+
+if ((QUESTIONS || []).length >= 8) {
+  const answerCounts = [0, 0, 0, 0];
+  for (const q of QUESTIONS) {
+    if (Number.isInteger(q.correct) && q.correct >= 0 && q.correct < 4) answerCounts[q.correct] += 1;
+  }
+  const maxShare = Math.max(...answerCounts) / QUESTIONS.length;
+  if (answerCounts.some((count) => count === 0) || maxShare > 0.4) {
+    errors.push(`Distribuição de gabaritos desequilibrada: ${answerCounts.map((n, i) => String.fromCharCode(65 + i) + '=' + n).join(', ')}.`);
   }
 }
 

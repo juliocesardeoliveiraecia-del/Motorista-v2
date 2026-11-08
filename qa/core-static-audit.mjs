@@ -13,11 +13,14 @@ function must(label, condition){
 }
 
 const version=(prod.match(/version:\s*['\"]([^'\"]+)['\"]/ )||[])[1];
+const cacheName=(sw.match(/CACHE_NAME\s*=\s*['\"]([^'\"]+)['\"]/ )||[])[1];
 
 must('Production build version is declared', !!version);
 must('Index version marker matches production config', index.includes('doctor-core-version" content="'+version+'"'));
-must('Manifest version matches production config', manifest.version === version);
-must('Service worker cache matches production config', sw.includes('motorista-ipameri-v'+version));
+// PWA manifest and Service Worker have independent asset/cache revisions.
+// They must be valid and versioned, but must not be forced to equal Core Version.
+must('Manifest carries an independent versioned asset revision', /^\d+\.\d+\.\d+(?:-[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/i.test(manifest.version||''));
+must('Service worker cache has an independent versioned namespace', /^motorista-ipameri-v\d+\.\d+\.\d+(?:-[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/i.test(cacheName||''));
 must('Service worker cache-buster matches production config', index.includes('service-worker.js?v='+version));
 must('Product Context is loaded before Core engine', index.indexOf('product-context.js?v='+version) < index.indexOf('/* ===== icons.js'));
 must('Product Content is loaded before Core engine', index.indexOf('product-content.js?v='+version) < index.indexOf('/* ===== icons.js'));
@@ -33,6 +36,10 @@ must('Official simulado has engine-level readiness gate', index.includes("reason
 must('AI generation re-audits the bank', /DoctorQuestionIntegrity\.auditBank\(\);[\s\S]{0,120}Store\.save\(\);[\s\S]{0,80}return \{ok:true,added/.test(index));
 must('Central Radar RPC is wired', index.includes('rpc/get_radar_feed'));
 must('Radar consumes content_url from central feed', index.includes('x.content_url'));
+must('Central product lookup uses the explicit catalog slug', context.includes("platformProductSlug: 'motorista-legislativo-ipameri'") && index.includes('EXAM_CONFIG.platformProductSlug||EXAM_CONFIG.productId'));
+must('Remote sync and device sessions use the platform catalog slug', /platformProductId\(\)\{ return EXAM_CONFIG\.platformProductSlug\|\|EXAM_CONFIG\.productId; \}/.test(index) && /bridge\.sync\([\s\S]{0,220}productId:this\.platformProductId\(\)/.test(index) && /claimDeviceSession\([\s\S]{0,180}productId:this\.platformProductId\(\)/.test(index));
+must('Offline storage identity remains on the local productId', index.includes("'doctor-core:' + String(EXAM_CONFIG.productId"));
+must('Device status does not claim central session while bridge is disabled', index.includes('Somente neste dispositivo') && !index.includes('<span>Dispositivo atual</span><strong>Ativo</strong>'));
 must('No Groq Compound legacy identifier', !index.includes('groq/compound'));
 must('Storage namespace derives from productId', index.includes("'doctor-core:' + String(EXAM_CONFIG.productId"));
 must('Core build derives from production config', index.includes('window.DOCTOR_PRODUCTION_CONFIG?.version'));
