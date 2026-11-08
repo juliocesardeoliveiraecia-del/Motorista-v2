@@ -21,13 +21,14 @@ if (supabaseMatch) {
   try { runtimeUrl = JSON.parse(supabaseMatch[2]); runtimeKey = JSON.parse(supabaseMatch[3]); } catch {}
 }
 const previewConfigSafe = environment === 'preview' && supabaseMatch?.[1] === 'false' && !runtimeUrl && !runtimeKey;
+const unconfiguredConfigSafe = environment === 'unconfigured' && supabaseMatch?.[1] === 'false' && !runtimeUrl && !runtimeKey;
 const productionConfigSafe = environment === 'production' && supabaseMatch?.[1] === 'true' &&
   /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(runtimeUrl) && runtimeKey.startsWith('sb_publishable_') &&
   (!process.env.SUPABASE_URL || runtimeUrl === process.env.SUPABASE_URL) &&
   (!process.env.SUPABASE_ANON_KEY || runtimeKey === process.env.SUPABASE_ANON_KEY);
 const noPrivateCredentials = !/(service_role|sb_secret_|sk_live_|access_token\s*[:=])/i.test(config);
 must('Runtime configuration is safe in preview and production and keeps the platform bridge enabled',
-  (previewConfigSafe || productionConfigSafe) && noPrivateCredentials &&
+  (previewConfigSafe || unconfiguredConfigSafe || productionConfigSafe) && noPrivateCredentials &&
   !config.includes('rouuppeosmizzqnubhgs') && config.includes('bridgeEnabled: true') &&
   config.includes('payments: { enabled: false'));
 must('Product context declares the implemented versioned snapshot adapter', context.includes("provider: 'supabase-versioned-snapshot-v1'") && context.includes('sync: { enabled: true'));
