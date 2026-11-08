@@ -1,11 +1,11 @@
 # Doctor Core — Motorista Legislativo
 
-## Estado auditado — 2026-11-06
+## Estado auditado — 2026-11-08
 
 - **Core:** V1.12.13.
 - **Concurso:** Câmara Municipal de Ipameri/GO; Agente Legislativo — Motorista Legislativo; Instituto Verbena/UFG; Edital nº 02/2026.
 - **PWA/offline:** ativo.
-- **Plataforma:** bridge implementada e habilitada no staging, com Supabase Auth compartilhado, sessão por usuário/app e snapshot versionado.
+- **Plataforma:** bridge preparada para produção, com Supabase Auth compartilhado, sessão por usuário/app e snapshot versionado. A configuração pública do Supabase é gerada no build pelo Vercel; não há URL ou chave de staging fixa no HTML.
 - **Sincronização:** RPCs `claim_device_session_v1`, `heartbeat_device_session_v1`, `get_app_snapshot_v1` e `save_app_snapshot_v1`; fila só é limpa após confirmação do servidor.
 - **Gravador:** bucket privado `recordings`; arquivos de áudio não entram no snapshot, somente metadados.
 - **Limite offline:** lease validado por até 72 horas; um dispositivo desconectado não recebe revogação em tempo real e é revalidado ao reconectar.
@@ -13,11 +13,11 @@
 - **IA:** Groq BYOK com avisos, confirmação de idade e ciência de dados; aprovação contratual do uso de chaves pessoais em app comercial continua pendente de resposta escrita da Groq.
 - **Pagamentos:** Doctor Pay central; checkout do app permanece desativado.
 - **Catálogo staging:** produto `draft`, app `maintenance`, sem `app_url`.
-- **Produção:** nenhuma publicação comercial ou promoção do staging foi realizada por esta branch.
+- **Produção:** o backend Supabase de produção já possui o schema consolidado e o catálogo inicial. Esta branch prepara o app para usar somente as credenciais públicas do projeto de produção no build de produção; o checkout permanece desligado até Doctor Pay estar implantado e verificado.
 
 ## Regra de publicação
 
-O código de produção deve entrar em `main`. O Vercel conectado ao GitHub publica automaticamente o que estiver em `main`.
+O código de produção deve entrar em `main`. O Vercel conectado ao GitHub publica automaticamente o que estiver em `main`. O build gera `production-config.js` a partir de `SUPABASE_URL` e `SUPABASE_ANON_KEY` definidos no ambiente Production. Preview não recebe credenciais de produção e mantém a integração Supabase desabilitada. O build de produção falha se as variáveis obrigatórias estiverem ausentes.
 
 ## Radar central
 
