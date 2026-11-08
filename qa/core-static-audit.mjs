@@ -46,4 +46,11 @@ must('Core build derives from production config', index.includes('window.DOCTOR_
 must('Product asset paths are context-driven', !index.includes('assets/concurso/camara-ipameri.webp') && !index.includes('camaraipameri.go.gov.br'));
 must('Radar allowlist is context-driven', !index.includes("host==='institutoverbena.ufg.br'"));
 must('No obvious private secret patterns in source', !/(service[-_ ]role|sk_live_|gsk_[A-Za-z0-9_-]{20,})/i.test(index+prod+context+content));
+must('AI simulado uses official-source browser research with citations', index.includes('researchExamPattern') && index.includes('hasSearchCitations') && context.includes('officialEditalUrl'));
+must('AI simulado generation is independently reviewed and integrity-gated', index.includes('DoctorGenerateFullSimulado') && index.includes('reviewedByDoctor===true') && index.includes('DoctorQuestionIntegrity.assertDeliverable'));
+must('Prepared exam and seven-day quota are persisted', index.includes('pendingQuestionIds') && index.includes('prepareSimulado(questions)') && index.includes('nextAllowedAt:completedAt+7*86400000'));
+must('Correctness is hidden during the exam and mismatch questions remain navigable', index.includes('O gabarito e os comentários serão exibidos após finalizar a prova.') && index.includes('integrityMismatch') && index.includes('id="sim-next"'));
+must('Print/PDF provides a blank answer sheet without the key', index.includes('Views.simuladoPrint') && index.includes('window.print()') && index.includes('Folha de respostas'));
+must('Post-exam review explains each alternative', index.includes('Views.simuladoAnswerReview') && index.includes('answer-explanations') && index.includes('Conferir gabarito comentado'));
+must('Exam option labels follow the product-specific banca rules', index.includes('ExamRules.optionLabels?.[i]'));
 console.log('CORE STATIC QA: OK');

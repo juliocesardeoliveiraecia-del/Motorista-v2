@@ -2085,16 +2085,18 @@ const DoctorAICore = {
     if(!/^https:\/\/(?:[a-z0-9-]+\.)*(?:gov\.br|ufg\.br|cebraspe\.org\.br)(?:\/|$)/i.test(officialUrl))return {ok:false,reason:'official-edital-unavailable'};
     const sourceUrls=(Array.isArray(c.radarSources)?c.radarSources:[]).join('\\n');
     const prompt=`Pesquise na web antes de elaborar este simulado. Concurso: ${c.productName}; cargo: ${c.cargo}; banca: ${c.banca}; edital: ${c.editalNumber}.\n1) Priorize o edital oficial e documentos oficiais da banca. Edital oficial: ${officialUrl||'(não configurado)'}\n2) Procure provas anteriores da mesma banca, primeiro para o mesmo cargo; se não encontrar, para cargos/áreas semelhantes, com nível de escolaridade e perfil de atribuições compatíveis com o edital.\n3) Identifique padrões observáveis: comando do enunciado, extensão, dificuldade, tipos de distratores, distribuição por tópicos e formato das alternativas.\n4) Separe claramente o que foi confirmado em fonte oficial do que é apenas padrão inferido.\n5) Não invente provas, questões, datas, leis ou fontes. Não reproduza questões protegidas literalmente; descreva o estilo e crie itens originais.\nFontes oficiais para começar:\\n${sourceUrls}\nResponda em português, de forma concisa, incluindo URLs e uma seção explícita “LACUNAS DE EVIDÊNCIA” quando não conseguir confirmar algum dado. Se não encontrar prova anterior, diga isso claramente.`;
-    const r=await this.call({model:'openai/gpt-oss-120b',messages:[{role:'system',content:'Você é o pesquisador documental do Doctor. Pesquise fontes reais; nunca invente citações.'},{role:'user',content:prompt}],searchSettings:{},temperature:0.1,timeout:60000,maxTokens:1800});
+    const r=await this.call({model:'openai/gpt-oss-120b',messages:[{role:'system',content:'Você é o pesquisador documental do Doctor. Pesquise fontes reais; nunca invente citações.'},{role:'user',content:prompt}],searchSettings:{},reasoningEffort:'low',temperature:0.1,timeout:60000,maxTokens:1200});
     if(!r.ok)return {ok:false,reason:'research-unavailable',status:r.status||null};
     const tools=r.data?.choices?.[0]?.message?.executed_tools||[];
-    const notes=[String(r.content||''),tools.length?'Resultados de ferramentas de busca: '+JSON.stringify(tools):''].filter(Boolean).join('\\n\\n');
-    const toolEvidence=JSON.stringify(tools);
-    const hasOfficialEvidence=tools.length>0&&/https?:\/\/[^"\s]*(?:gov\.br|ufg\.br|cebraspe\.org\.br)/i.test(toolEvidence);
-    if(notes.length<120||!hasOfficialEvidence)return {ok:false,reason:'research-insufficient'};
+    const content=String(r.content||'');
+    const notes=[content,tools.length?'Resultados de ferramentas de busca: '+JSON.stringify(tools):''].filter(Boolean).join('\\n\\n');
+    const evidenceText=content+' '+JSON.stringify(tools);
+    const hasSearchCitations=/〖\\d+†L\\d+(?:-L\\d+)?〗/.test(content)||tools.length>0;
+    const hasOfficialEvidence=/https?:\\/\\/[^\\s<>"')\\]]*(?:gov\\.br|ufg\\.br|cebraspe\\.org\\.br)/i.test(evidenceText);
+    if(notes.length<120||!hasSearchCitations||!hasOfficialEvidence)return {ok:false,reason:'research-insufficient'};
     return {ok:true,notes,model:r.model};
   },
-  async call({model=null,messages,responseFormat=null,temperature=0.2,timeout=45000,searchSettings=null,maxTokens=null}) {
+  async call({model=null,messages,responseFormat=null,temperature=0.2,timeout=45000,searchSettings=null,maxTokens=null,reasoningEffort=null}) {
     const key=GroqAI.getKey(); if(!key)return {ok:false,reason:'no-key'};
     const primary=model || GroqAI.getActiveModel();
     const candidates=searchSettings?[primary]:[primary,...GROQ_MODEL_PREFERENCES.filter(x=>x!==primary)];
@@ -2108,6 +2110,7 @@ const DoctorAICore = {
         try{
           const body={model:candidate,messages,temperature};
           if(maxTokens)body.max_completion_tokens=maxTokens;
+          if(reasoningEffort)body.reasoning_effort=reasoningEffort;
           if(responseFormat)body.response_format=responseFormat;
           if(searchSettings){
             body.search_settings=searchSettings;
@@ -3164,7 +3167,7 @@ Views.reviewSession = function () {
         }
         return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
       }).join('')}
-      ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Resposta preservada — revisão necessária</strong><p>O conteúdo desta questão mudou depois da resposta. O Core não vai recalcular nem marcar sua resposta como errada. A questão foi bloqueada para revisão.</p></div>` : ''}
+      ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Resposta preservada — revisão necessária</strong><p>O conteúdo desta questão mudou depois da resposta. O Core não vai recalcular nem marcar sua resposta como errada. A questão foi bloqueada para revisão.</p></div><button class="btn btn-primary btn-block" id="sim-next">${s.index + 1 < s.questions.length ? 'Próxima' : 'Finalizar'}</button>` : ''}
       ${answered && !integrityMismatch ? `
         <div class="explanation">
           <strong>${last.correct ? iconEl('checkCircle') + ' Acertou dessa vez!' : iconEl('xCircle') + ' Ainda não foi.'}</strong>
@@ -3585,7 +3588,7 @@ async function DoctorGenerateFullSimulado(onProgress=()=>{}) {
         seen.add(fp);collected.push(q);
         if(collected.length===target)break;
       }
-      if(!result.ok&&fresh.length===0&&rounds>=2)return {ok:false,reason:result.reason||'generation-failed',subject:subject.name};
+      if(!result.ok&&fresh.length===0)return {ok:false,reason:result.reason||'generation-failed',subject:subject.name};
     }
     if(collected.length!==target)return {ok:false,reason:'incomplete-generation',subject:subject.name,have:collected.length,need:target};
     exam.push(...collected);
@@ -3761,7 +3764,7 @@ Views.simuladoPrint=function(){
 };
 Views.bind.simuladoPrint=function(){document.getElementById('simulado-print-back')?.addEventListener('click',()=>UI.render('simuladoReady'));document.getElementById('simulado-print-now')?.addEventListener('click',()=>window.print());};
 
-// ---------------- SIMULADO: EXECUÇÃO// ---------------- SIMULADO: EXECUÇÃO ----------------
+// ---------------- SIMULADO: EXECUÇÃO ----------------
 Views.simuladoRunning = function () {
   const s = Quiz.session;
   if (!s || s.type !== 'simulado') return '<div class="empty">Nenhum simulado ativo.</div>';
@@ -3851,7 +3854,7 @@ Views.simuladoResult = function () {
     <div class="card center">
       <div class="big-icon">${passed ? iconEl('trophy') : iconEl('book')}</div>
       <h2>${r.score} / ${r.total} pontos</h2>
-      <p class="${passed ? 'text-green' : 'text-orange'}"><strong>${passed ? 'Aprovado(a)! Acima dos 60 pontos mínimos.' : 'Abaixo dos 60 pontos mínimos — bora reforçar.'}</strong></p>
+      <p class="${passed ? 'text-green' : 'text-orange'}"><strong>${passed ? 'Aprovado(a)! Acima dos '+Number(EXAM_CONFIG.passingScore||60)+' pontos mínimos.' : 'Abaixo dos '+Number(EXAM_CONFIG.passingScore||60)+' pontos mínimos — bora reforçar.'}</strong></p>
       <p class="muted">Tempo utilizado: ${Math.floor(r.timeSpentSec / 60)} min</p>
     </div>
     <div class="section-title">Desempenho por matéria</div>
