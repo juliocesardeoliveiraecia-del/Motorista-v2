@@ -2083,16 +2083,16 @@ const DoctorAICore = {
     const c=EXAM_CONFIG;
     const officialUrl=c.officialEditalUrl||'';
     if(!/^https:\/\/(?:[a-z0-9-]+\.)*(?:gov\.br|ufg\.br|cebraspe\.org\.br)(?:\/|$)/i.test(officialUrl))return {ok:false,reason:'official-edital-unavailable'};
-    const sourceUrls=(Array.isArray(c.radarSources)?c.radarSources:[]).join('\\n');
+    const sourceUrls=(Array.isArray(c.radarSources)?c.radarSources:[]).join('\n');
     const prompt=`Pesquise na web antes de elaborar este simulado. Concurso: ${c.productName}; cargo: ${c.cargo}; banca: ${c.banca}; edital: ${c.editalNumber}.\n1) Priorize o edital oficial e documentos oficiais da banca. Edital oficial: ${officialUrl||'(não configurado)'}\n2) Procure provas anteriores da mesma banca, primeiro para o mesmo cargo; se não encontrar, para cargos/áreas semelhantes, com nível de escolaridade e perfil de atribuições compatíveis com o edital.\n3) Identifique padrões observáveis: comando do enunciado, extensão, dificuldade, tipos de distratores, distribuição por tópicos e formato das alternativas.\n4) Separe claramente o que foi confirmado em fonte oficial do que é apenas padrão inferido.\n5) Não invente provas, questões, datas, leis ou fontes. Não reproduza questões protegidas literalmente; descreva o estilo e crie itens originais.\nFontes oficiais para começar:\\n${sourceUrls}\nResponda em português, de forma concisa, incluindo URLs e uma seção explícita “LACUNAS DE EVIDÊNCIA” quando não conseguir confirmar algum dado. Se não encontrar prova anterior, diga isso claramente.`;
     const r=await this.call({model:'openai/gpt-oss-120b',messages:[{role:'system',content:'Você é o pesquisador documental do Doctor. Pesquise fontes reais; nunca invente citações.'},{role:'user',content:prompt}],searchSettings:{},reasoningEffort:'low',temperature:0.1,timeout:60000,maxTokens:1200});
     if(!r.ok)return {ok:false,reason:'research-unavailable',status:r.status||null};
     const tools=r.data?.choices?.[0]?.message?.executed_tools||[];
     const content=String(r.content||'');
-    const notes=[content,tools.length?'Resultados de ferramentas de busca: '+JSON.stringify(tools):''].filter(Boolean).join('\\n\\n');
+    const notes=[content,tools.length?'Resultados de ferramentas de busca: '+JSON.stringify(tools):''].filter(Boolean).join('\n\n');
     const evidenceText=content+' '+JSON.stringify(tools);
-    const hasSearchCitations=/〖\\d+†L\\d+(?:-L\\d+)?〗/.test(content)||tools.length>0;
-    const hasOfficialEvidence=/https?:\\/\\/[^\\s<>"')\\]]*(?:gov\\.br|ufg\\.br|cebraspe\\.org\\.br)/i.test(evidenceText);
+    const hasSearchCitations=/〖\d+†L\d+(?:-L\d+)?〗/.test(content)||tools.length>0;
+    const hasOfficialEvidence=/https?:\/\/[^\s<>"']*(?:gov\.br|ufg\.br|cebraspe\.org\.br)/i.test(evidenceText);
     if(notes.length<120||!hasSearchCitations||!hasOfficialEvidence)return {ok:false,reason:'research-insufficient'};
     return {ok:true,notes,model:r.model};
   },
@@ -3583,7 +3583,7 @@ async function DoctorGenerateFullSimulado(onProgress=()=>{}) {
       const blocked=new Set(Store.state.questionIntegrity?.quarantinedIds||[]);
       const fresh=QUESTIONS.filter(q=>!before.has(q.id)&&q.subjectId===subject.id&&q.aiGenerated===true&&q.reviewedByDoctor===true&&!blocked.has(q.id)&&DoctorQuestionIntegrity.assertDeliverable(q).ok);
       for(const q of fresh){
-        const fp=[q.subjectId,q.text,...q.options].map(v=>String(v||'').trim().toLowerCase().replace(/\\s+/g,' ')).join('|');
+        const fp=[q.subjectId,q.text,...q.options].map(v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ')).join('|');
         if(seen.has(fp)||!DoctorAICore.validateQuestion(q,subject.id))continue;
         seen.add(fp);collected.push(q);
         if(collected.length===target)break;
