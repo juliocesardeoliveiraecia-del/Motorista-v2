@@ -15,11 +15,15 @@ const EXAM_CONFIG = {
   banca: 'Instituto Verbena / UFG',
   editalNumber: 'Edital nº 02/2026',
   officialEditalUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/9-edital/167-edital-de-abertura-n%C2%BA-02-2026.html',
-  editalPublishDate: '01/06/2026',
+  editalPublishDate: '2026-06-01',
 
-  // Prova
-  examDateISO: '2026-09-13T13:00:00',
-  examDateLabel: '13 de setembro de 2026, à tarde',
+  // Próximo ciclo: modo pré-edital baseado no último edital e na última prova oficial.
+  contestStage: 'pre-edital',
+  contentSourceMode: 'last-edital-last-exam',
+  examDateISO: null,
+  examDateLabel: 'Aguardando novo edital',
+  lastExamDateISO: '2026-09-13',
+  officialLastExamUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/sistema/provas_gabaritos/Provas_gabaritos_finais_Ipameri_2026.html',
   applicationCity: 'Ipameri/GO',
   durationHours: 4,
   totalQuestions: 40,
@@ -48,7 +52,7 @@ const EXAM_CONFIG = {
   appTitle: 'Motorista Legislativo',
   heroImage: './assets/images/ipameri-chamber-green.svg?v=20261028-2',
   organizationImageUrl: '/assets/images/motorista-legislativo-edital.svg',
-  radarAllowedHosts: ['institutoverbena.ufg.br', 'camaraipameri.go.gov.br'],
+  radarAllowedHosts: ['institutoverbena.ufg.br', 'sistemas.institutoverbena.ufg.br', 'camaraipameri.go.gov.br'],
 
   // Ícone temático do cargo (chave de icons.js) — troque para outro cargo
   themeIcon: 'car',
@@ -70,7 +74,7 @@ const EXAM_CONFIG = {
   platformProductSlug: 'motorista-legislativo-ipameri',
   coreVersion: '1.12.15-core',
   contentVersion: '2026.1',
-  editorialMode: 'edital-plus-banca',
+  editorialMode: 'last-edital-last-exam-plus-banca',
   // Perfil operacional da IA: muda com o concurso/banca, não com o Core.
   aiProfile: {
     questionMode: 'multiple-choice',
@@ -85,6 +89,7 @@ const EXAM_CONFIG = {
   // O agente continua fazendo busca em tempo real; estas URLs apenas garantem que ele comece no lugar certo.
   radarSources: [
     'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/',
+    'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/sistema/provas_gabaritos/Provas_gabaritos_finais_Ipameri_2026.html',
     'https://institutoverbena.ufg.br/'
   ],
   sync: { enabled: true, provider: 'supabase-versioned-snapshot-v1' },
@@ -101,7 +106,7 @@ const EXAM_CONFIG = {
   // de 30% do Radar. A Plataforma pode substituir este catálogo em runtime
   // por window.DOCTOR_PLATFORM_CATALOG ou bridge.getProductCatalog().
   platformCatalog: [
-    { productId: 'motorista-legislativo', appId: 'doctor-motorista-legislativo', name: 'Motorista Legislativo — Câmara Municipal de Ipameri', shortName: 'Motorista Legislativo', status: 'active', url: '', current: true },
+    { productId: 'motorista-legislativo', appId: 'doctor-motorista-legislativo', name: 'Motorista Legislativo — Câmara Municipal de Ipameri', shortName: 'Motorista Legislativo', status: 'draft', url: '', current: true },
   ]
 };
 

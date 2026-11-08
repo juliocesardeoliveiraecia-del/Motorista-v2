@@ -26,6 +26,8 @@ must('Product Context is loaded before Core engine', index.indexOf('product-cont
 must('Product Content is loaded before Core engine', index.indexOf('product-content.js?v='+version) < index.indexOf('/* ===== icons.js'));
 must('Core engine does not redeclare EXAM_CONFIG', !/const\s+EXAM_CONFIG\s*=/.test(index));
 must('Product Context declares EXAM_CONFIG', /const\s+EXAM_CONFIG\s*=/.test(context));
+must('Motorista app is explicitly pre-edital with official last exam reference', context.includes("contestStage: 'pre-edital'") && context.includes("examDateISO: null") && context.includes("lastExamDateISO: '2026-09-13'") && context.includes("officialLastExamUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/sistema/provas_gabaritos/Provas_gabaritos_finais_Ipameri_2026.html'"));
+must('Draft Motorista product is not locally advertised as active', context.includes("status: 'draft'"));
 must('Product Content declares SUBJECTS and QUESTIONS', /const\s+SUBJECTS\s*=/.test(content) && /const\s+QUESTIONS\s*=/.test(content));
 must('Structural question integrity exists', index.includes('const DoctorQuestionIntegrity'));
 must('Quarantine is enforced in question pool', /poolFor\(subjectId\)[\s\S]{0,900}quarantinedIds/.test(index));
