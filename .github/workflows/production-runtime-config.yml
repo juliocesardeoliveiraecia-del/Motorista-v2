@@ -1,0 +1,30 @@
+name: Doctor Core production runtime configuration
+
+on:
+  pull_request:
+    branches: [main, feature/doctor-platform-auth-session]
+    paths:
+      - 'index.html'
+      - 'production-config.js'
+      - 'tools/build-config.mjs'
+      - 'scripts/check-version-contract.mjs'
+      - 'qa/platform-bridge-contract.mjs'
+      - 'service-worker.js'
+      - '.github/workflows/production-runtime-config.yml'
+
+jobs:
+  runtime-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate safe preview configuration
+        run: node tools/build-config.mjs
+        env:
+          VERCEL_ENV: preview
+      - name: Check version contract
+        run: node scripts/check-version-contract.mjs
+      - name: Check platform bridge contract
+        run: node qa/platform-bridge-contract.mjs
