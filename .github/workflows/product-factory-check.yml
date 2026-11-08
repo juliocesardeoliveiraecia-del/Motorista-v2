@@ -1,0 +1,33 @@
+name: Doctor Core Product Factory
+
+on:
+  push:
+    branches: [main, feat/batch-product-scaffolder]
+    paths:
+      - 'tools/scaffold-product*.mjs'
+      - 'templates/product-manifest.example.json'
+      - 'qa/scaffold-product*-contract.mjs'
+      - '.github/workflows/product-factory-check.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/scaffold-product*.mjs'
+      - 'templates/product-manifest.example.json'
+      - 'qa/scaffold-product*-contract.mjs'
+      - '.github/workflows/product-factory-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  factory-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --check tools/scaffold-product.mjs
+      - run: node --check tools/scaffold-products-batch.mjs
+      - run: node qa/scaffold-product-contract.mjs
+      - run: node qa/scaffold-products-batch-contract.mjs
