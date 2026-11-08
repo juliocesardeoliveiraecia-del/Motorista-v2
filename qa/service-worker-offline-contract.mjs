@@ -6,13 +6,15 @@ for (let level = 1; level <= 10; level += 1) {
   const asset = './assets/doctor/evolution/doctor-level-' + String(level).padStart(2, '0') + '.svg';
   must('Doctor evolution level ' + level + ' is precached', sw.includes(asset));
 }
+const coreVersion = JSON.parse(fs.readFileSync('version.json', 'utf8')).version;
+const manifestVersion = JSON.parse(fs.readFileSync('manifest.json', 'utf8')).version;
 for (const asset of [
-  './manifest.json?v=1.13.2-platform-bridge',
-  './doctor-platform-bridge.js?v=1.12.13-platform-1',
-  './product-context.js?v=1.12.13-context-1',
-  './product-content.js?v=1.12.13',
-  './doctor-core-quality.js?v=1.12.13',
-  './calculator-scientific.js?v=1.12.13',
+  './manifest.json?v=' + manifestVersion,
+  './doctor-platform-bridge.js?v=' + coreVersion + '-platform-1',
+  './product-context.js?v=' + coreVersion + '-context-1',
+  './product-content.js?v=' + coreVersion,
+  './doctor-core-quality.js?v=' + coreVersion,
+  './calculator-scientific.js?v=' + coreVersion,
   './assets/icons/icon-generator.js?v=1.3.0',
   './assets/icons/products/motorista-legislativo.svg?v=1.3.0',
   './assets/images/motorista-legislativo-banner.svg?v=20261028-2'
