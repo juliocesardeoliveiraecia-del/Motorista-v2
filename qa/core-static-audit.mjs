@@ -28,6 +28,9 @@ must('Core engine does not redeclare EXAM_CONFIG', !/const\s+EXAM_CONFIG\s*=/.te
 must('Product Context declares EXAM_CONFIG', /const\s+EXAM_CONFIG\s*=/.test(context));
 must('Motorista app is explicitly pre-edital with official last exam reference', context.includes("contestStage: 'pre-edital'") && context.includes("examDateISO: null") && context.includes("lastExamDateISO: '2026-09-13'") && context.includes("officialLastExamUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/sistema/provas_gabaritos/Provas_gabaritos_finais_Ipameri_2026.html'"));
 must('Draft Motorista product is not locally advertised as active', context.includes("status: 'draft'"));
+must('Legacy CSS suppression no longer hides Radar Doctor', !index.includes('doctor-hidden-feature-suppression'));
+must('Radar ticker remains fixed and yields to the footer', index.includes('#radar-ticker-mount{position:fixed') && index.includes('.radar-at-footer{position:absolute'));
+must('Radar page and home card are wired in the UI', index.includes('Views.radar = function(){ return RadarDoctor.page(); }') && index.includes('home-radar') && index.includes('radar-ticker-mount'));
 must('Product Content declares SUBJECTS and QUESTIONS', /const\s+SUBJECTS\s*=/.test(content) && /const\s+QUESTIONS\s*=/.test(content));
 must('Structural question integrity exists', index.includes('const DoctorQuestionIntegrity'));
 must('Quarantine is enforced in question pool', /poolFor\(subjectId\)[\s\S]{0,900}quarantinedIds/.test(index));
