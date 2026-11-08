@@ -5,6 +5,12 @@ on:
     branches: [main, feature/doctor-platform-auth-session]
     paths:
       - 'tools/build-config.mjs'
+      - '.github/workflows/production-runtime-config.yml'
+  push:
+    branches: [main, feature/doctor-platform-auth-session, chore/production-runtime-config]
+    paths:
+      - 'tools/build-config.mjs'
+      - '.github/workflows/production-runtime-config.yml'
 
 jobs:
   runtime-config:
