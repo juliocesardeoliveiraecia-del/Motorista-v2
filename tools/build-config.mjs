@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+// Production runtime configuration: public Supabase client only; preview remains isolated.
 // Preview builds deliberately receive no production Supabase credentials.
 const root = process.cwd();
 const version = JSON.parse(fs.readFileSync(path.join(root, 'version.json'), 'utf8')).version;
