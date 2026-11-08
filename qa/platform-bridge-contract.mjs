@@ -15,11 +15,9 @@ function must(label, condition) {
 must('Platform bridge is loaded before the Core runtime', index.indexOf('doctor-platform-bridge.js') > 0 && index.indexOf('doctor-platform-bridge.js') < index.indexOf('window.DOCTOR_CORE_RUNTIME'));
 must('Platform bridge is cached by the PWA service worker', sw.includes("'./doctor-platform-bridge.js?v=1.12.13-platform-1'"));
 const environment = config.match(/environment:\s*'([^']+)'/)?.[1] || '';
-const supabaseMatch = config.match(/supabase:\s*\{\s*enabled:\s*(true|false),\s*url:\s*("(?:\\.|[^"])*"),\s*publishableKey:\s*("(?:\\.|[^"])*")\s*\}/);
-let runtimeUrl = '', runtimeKey = '';
-if (supabaseMatch) {
-  try { runtimeUrl = JSON.parse(supabaseMatch[2]); runtimeKey = JSON.parse(supabaseMatch[3]); } catch {}
-}
+const supabaseMatch = config.match(/supabase:\s*\{\s*enabled:\s*(true|false),\s*url:\s*(['"])(.*?)\2,\s*publishableKey:\s*(['"])(.*?)\4\s*\}/);
+const runtimeUrl = supabaseMatch?.[3] || '';
+const runtimeKey = supabaseMatch?.[5] || '';
 const previewConfigSafe = environment === 'preview' && supabaseMatch?.[1] === 'false' && !runtimeUrl && !runtimeKey;
 const unconfiguredConfigSafe = environment === 'unconfigured' && supabaseMatch?.[1] === 'false' && !runtimeUrl && !runtimeKey;
 const productionConfigSafe = environment === 'production' && supabaseMatch?.[1] === 'true' &&
