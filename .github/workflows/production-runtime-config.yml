@@ -4,13 +4,7 @@ on:
   pull_request:
     branches: [main, feature/doctor-platform-auth-session]
     paths:
-      - 'index.html'
-      - 'production-config.js'
       - 'tools/build-config.mjs'
-      - 'scripts/check-version-contract.mjs'
-      - 'qa/platform-bridge-contract.mjs'
-      - 'service-worker.js'
-      - '.github/workflows/production-runtime-config.yml'
 
 jobs:
   runtime-config:
