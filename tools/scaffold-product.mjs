@@ -38,8 +38,8 @@ export function validateManifest(m) {
   const contestStage = a.contestStage || 'post-edital';
   const isPreEdital = contestStage === 'pre-edital';
   if (!['pre-edital','post-edital'].includes(contestStage)) errors.push('app.contestStage deve ser pre-edital ou post-edital');
-  const validDateOnly = value => /^\\d{4}-\\d{2}-\\d{2}$/.test(String(value || '')) && !Number.isNaN(Date.parse(String(value) + 'T00:00:00'));
-  const validDateTime = value => /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$/.test(String(value || '')) && !Number.isNaN(Date.parse(String(value)));
+  const validDateOnly = value => /^\d{4}-\d{2}-\d{2}$/.test(String(value || '')) && !Number.isNaN(Date.parse(String(value) + 'T00:00:00'));
+  const validDateTime = value => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(String(value || '')) && !Number.isNaN(Date.parse(String(value)));
   if (isPreEdital) {
     if (a.examDateISO != null && String(a.examDateISO).trim()) errors.push('app.examDateISO deve ficar vazio no modo pre-edital');
     if (!validDateOnly(a.lastExamDateISO)) errors.push('app.lastExamDateISO deve informar a data da última prova no formato YYYY-MM-DD');
@@ -52,7 +52,6 @@ export function validateManifest(m) {
     if (!Number.isInteger(a[key]) || a[key] <= 0) errors.push('app.' + key + ' deve ser inteiro positivo');
   }
   if (a.passingScore > a.totalPoints) errors.push('passingScore não pode exceder totalPoints');
-  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(String(a.examDateISO || '')) || Number.isNaN(Date.parse(a.examDateISO))) errors.push('examDateISO deve usar YYYY-MM-DDTHH:mm:ss');
   for (const key of ['primaryColor','primaryColorMid','accentColor','accentColorDark','appIconBadgeColor','appIconBadgeTextColor']) {
     if (!HEX.test(String(a[key] || ''))) errors.push('app.' + key + ' deve ser cor hexadecimal #RRGGBB');
   }
