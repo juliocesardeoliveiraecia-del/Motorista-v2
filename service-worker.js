@@ -2,9 +2,9 @@
 const CACHE_NAME = 'motorista-ipameri-v1.13.4-offline-preserve';
 const ASSETS = [
   './', './index.html', './manifest.json?v=1.13.3-platform-bridge', './version.json',
-  './production-config.js?v=1.12.14', './doctor-platform-bridge.js?v=1.12.14-platform-1',
-  './product-context.js?v=1.12.14-context-1', './product-content.js?v=1.12.14',
-  './doctor-core-quality.js?v=1.12.14', './calculator-scientific.js?v=1.12.14',
+  './production-config.js?v=1.12.15', './doctor-platform-bridge.js?v=1.12.15-platform-1',
+  './product-context.js?v=1.12.15-context-1', './product-content.js?v=1.12.15',
+  './doctor-core-quality.js?v=1.12.15', './calculator-scientific.js?v=1.12.15',
   './doctor-core-icon.svg', './assets/icons/products/motorista-legislativo.svg?v=1.3.0',
   './assets/icons/icon-palette.json', './assets/icons/icon-generator.js?v=1.3.0',
   './assets/images/ipameri-chamber-green.svg?v=20261028-2',
@@ -24,9 +24,9 @@ const ASSETS = [
 ];
 const CORE_ASSETS = [
   './index.html', './manifest.json?v=1.13.3-platform-bridge', './version.json',
-  './production-config.js?v=1.12.14', './doctor-platform-bridge.js?v=1.12.14-platform-1',
-  './product-context.js?v=1.12.14-context-1', './product-content.js?v=1.12.14',
-  './doctor-core-quality.js?v=1.12.14', './calculator-scientific.js?v=1.12.14',
+  './production-config.js?v=1.12.15', './doctor-platform-bridge.js?v=1.12.15-platform-1',
+  './product-context.js?v=1.12.15-context-1', './product-content.js?v=1.12.15',
+  './doctor-core-quality.js?v=1.12.15', './calculator-scientific.js?v=1.12.15',
   './assets/icons/icon-generator.js?v=1.3.0'
 ];
 const CACHE_PREFIX = 'motorista-ipameri-';
