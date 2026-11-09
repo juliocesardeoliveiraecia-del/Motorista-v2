@@ -2138,7 +2138,7 @@ const DoctorAICore = {
         try{
           const body={model:candidate,messages,temperature};
           if(maxTokens)body.max_completion_tokens=maxTokens;
-          if(reasoningEffort)body.reasoning_effort=reasoningEffort;
+          if(reasoningEffort && (/^openai\\/gpt-oss-(?:20b|120b)$/.test(candidate) || candidate==='qwen/qwen3.8-27b'))body.reasoning_effort=reasoningEffort;
           if(responseFormat)body.response_format=responseFormat;
           if(searchSettings){
             body.search_settings=searchSettings;
