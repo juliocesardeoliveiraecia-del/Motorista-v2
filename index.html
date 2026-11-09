@@ -4460,6 +4460,11 @@ Views.settings = function () {
     <div class="card" id="doctor-install-settings-card"><h3>📲 Instalar o aplicativo</h3><p class="muted">Instale o Doctor Core na tela inicial do celular ou como aplicativo no computador. Esta opção permanece disponível aqui nas Configurações, mesmo depois da instalação.</p><button class="doctor-install-settings-btn" id="doctor-install-settings" type="button" aria-label="Instalar aplicativo Doctor ou ver opções de instalação"><span class="install-symbol" aria-hidden="true">⬇</span><span>Instalar aplicativo</span></button><p class="muted" style="font-size:.82rem;margin:10px 0 0">Se o navegador não abrir a instalação automaticamente, mostraremos como instalar pelo menu do navegador.</p></div>
     <div class="card"><h3>🎨 Aparência</h3><button class="btn btn-outline btn-block" id="toggle-theme-btn">Alternar tema (${s.theme === 'dark' ? 'escuro' : 'claro'})</button></div>
     <div class="card"><h3>💾 Dados e sincronização</h3><p class="muted">Seus dados locais continuam disponíveis offline. ${CoreSync.status().remoteConfigured ? (CoreSync.status().queued?`Há <strong>${CoreSync.status().queued}</strong> alteração(ões) aguardando sincronização.`:'Nenhuma alteração aguardando sincronização.') : 'A sincronização com a plataforma Doctor ainda não está conectada; os dados permanecem salvos neste dispositivo.'}</p><button class="btn btn-outline btn-block" id="sync-now">🔄 Sincronizar informações</button><button class="btn btn-danger btn-block" id="reset-progress">Zerar progresso</button></div>
+    <section class="card doctor-account-card" aria-labelledby="doctor-account-title">
+      <h3 id="doctor-account-title">🔐 Sua conta Doctor</h3>
+      <p class="muted">Encerre sua sessão com segurança neste dispositivo. Seus estudos, anotações e progresso salvos não serão apagados.</p>
+      <button class="btn btn-danger btn-block" id="doctor-sign-out" type="button">↪ Sair da conta</button>
+    </section>
     <div class="card"><h3>🧠 Doctor AI Core</h3><p class="muted">Motor de IA ${DoctorAICore.VERSION}. Geração, revisão, redação e Radar usam o perfil deste concurso. Questões e flashcards passam por revisão automática antes de serem entregues.</p></div><div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>
     <section class="card doctor-support-card" aria-labelledby="doctor-support-title">
       <style>
@@ -4628,6 +4633,23 @@ Views.bind.settings = function () {
     UI.render('settings');
   });
   document.getElementById('toggle-theme-btn')?.addEventListener('click', () => { UI.toggleTheme(); UI.render('settings'); });
+  document.getElementById('doctor-sign-out')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    if (!window.DOCTOR_PLATFORM_BRIDGE?.signOut) {
+      UI.toast('Não foi possível iniciar o encerramento da sessão. Atualize o aplicativo e tente novamente.', 'error');
+      return;
+    }
+    if (!confirm('Deseja sair da sua conta neste dispositivo? Seus dados de estudo salvos não serão apagados.')) return;
+    button.disabled = true;
+    button.textContent = 'ENCERRANDO SESSÃO...';
+    try {
+      await window.DOCTOR_PLATFORM_BRIDGE.signOut();
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = '↪ Sair da conta';
+      UI.toast('Não foi possível encerrar a sessão: ' + String(error?.message || error), 'error');
+    }
+  });
   document.getElementById('sync-now')?.addEventListener('click', async () => { const r=await CoreSync.flush(); if(r.ok && r.unsupportedEntities?.length) UI.toast('Progresso, questões e anotações sincronizados. Gravações de áudio continuam neste dispositivo até a integração segura do armazenamento.','warn'); else if(r.ok) UI.toast('🔄 Informações sincronizadas.','success'); else if(r.reason==='sync-not-enabled') UI.toast('A sincronização central ainda está em homologação. Seus dados continuam salvos neste dispositivo.','warn'); else if(r.reason==='platform-not-connected') UI.toast('A Plataforma ainda não está conectada a este aplicativo. Seus dados continuam salvos neste dispositivo.','warn'); else UI.toast('Não foi possível sincronizar agora. Seus dados locais foram preservados.','warn'); UI.render('settings'); });
   document.getElementById('reset-progress')?.addEventListener('click', () => { if (confirm('Zerar todo o progresso? Essa ação não pode ser desfeita.')) { Store.reset(); UI.toast('Progresso zerado.', 'warn'); UI.render('home'); } });
 };

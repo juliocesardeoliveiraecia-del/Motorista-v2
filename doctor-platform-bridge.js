@@ -755,7 +755,8 @@
     },
     async signOut() {
       const db = await getClient();
-      await db.auth.signOut();
+      const { error } = await db.auth.signOut({ scope: 'local' });
+      if (error) throw error;
       try { localStorage.removeItem(storageKey()); } catch (_) {}
       currentUserId = currentAppId = currentProductId = currentSessionId = null;
       if (heartbeatTimer) clearInterval(heartbeatTimer);
