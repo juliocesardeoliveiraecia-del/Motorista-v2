@@ -1995,29 +1995,61 @@ const GroqAI = {
     return valid;
   },
 
-  async generateQuestions(subjectId, count=6, options={}) {
+  async generateQuestions(subjectId, count=10, options={}) {
     const key=this.getKey(); if(!key) return {ok:false,reason:'no-key'};
     const subject=SUBJECTS.find(s=>s.id===subjectId); if(!subject) return {ok:false,reason:'invalid-subject'};
+    const targetCount=Math.max(1,Math.min(40,Math.floor(Number(count)||10)));
     const lockKey=`questions:${subjectId}`;
     if(this._inFlight.has(lockKey)) return this._inFlight.get(lockKey);
     const run=(async()=>{
-      const existingSamples=Quiz.shuffle(Quiz.poolFor(subjectId)).slice(0,8);
-      const prompt=this._buildPrompt(subject,count,existingSamples,options.researchNotes||'');
-      const r=await DoctorAICore.call({messages:[{role:'system',content:'Você é o gerador de questões do Doctor. Produza apenas conteúdo dentro do contexto recebido.'},{role:'user',content:DoctorAICore.context()+'\\n'+prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_questions',strict:true,schema:DoctorAICore.questionSchema(count,ExamRules.optionCount)}},temperature:0.45,timeout:45000});
-      if(!r.ok) return r;
-      const parsed=DoctorAICore.parseJSON(r.content); const raw=Array.isArray(parsed?.questions)?parsed.questions:[];
-      let validated=this._validateAndTag(raw,subjectId);
-      if(!validated.length) return {ok:false,reason:'invalid-generation'};
-      if(EXAM_CONFIG.aiProfile?.revisionRequired!==false){
-        const reviewed=await DoctorAICore.reviewQuestions(validated,subject);
-        if(!reviewed.ok) return {ok:false,reason:'review-unavailable',status:reviewed.status,error:reviewed.error};
-        validated=reviewed.questions||[];
+      const pending=[],existingPool=Quiz.poolFor(subjectId);
+      const fingerprint=q=>[q.subjectId,q.text,...(q.options||[])].map(v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ')).join('|');
+      const seen=new Set(existingPool.map(fingerprint));
+      let lastModel=null,lastReason='incomplete-generation';
+      for(let round=0;round<4&&pending.length<targetCount;round++){
+        const remaining=targetCount-pending.length;
+        const samples=[...Quiz.shuffle(existingPool).slice(0,8),...pending].slice(-16);
+        const prompt=this._buildPrompt(subject,remaining,samples,options.researchNotes||'');
+        // O padrão de reasoning da Groq pode limitar a saída a 1024 tokens.
+        // Reservar orçamento para enunciados, alternativas, explicações e JSON.
+        const tokenBudget=Math.min(24000,Math.max(5000,remaining*1800));
+        const r=await DoctorAICore.call({
+          messages:[
+            {role:'system',content:'Você é o gerador de questões do Doctor. Produza apenas conteúdo dentro do contexto recebido.'},
+            {role:'user',content:DoctorAICore.context()+'\\n'+prompt}
+          ],
+          responseFormat:{type:'json_schema',json_schema:{name:'doctor_questions',strict:true,schema:DoctorAICore.questionSchema(remaining,ExamRules.optionCount)}},
+          temperature:0.35,timeout:60000,maxTokens:tokenBudget,reasoningEffort:'low'
+        });
+        if(!r.ok)return {...r,added:0,generated:pending.length,required:targetCount};
+        lastModel=r.model||lastModel;
+        const finishReason=r.data?.choices?.[0]?.finish_reason;
+        const parsed=DoctorAICore.parseJSON(r.content);
+        const raw=Array.isArray(parsed?.questions)?parsed.questions:[];
+        if(!raw.length){lastReason=finishReason==='length'?'output-truncated':'invalid-generation';continue;}
+        const candidates=this._validateAndTag(raw,subjectId).filter(q=>{
+          const fp=fingerprint(q);if(seen.has(fp))return false;seen.add(fp);return true;
+        });
+        if(!candidates.length){lastReason='invalid-generation';continue;}
+        let approved=candidates;
+        if(EXAM_CONFIG.aiProfile?.revisionRequired!==false){
+          const reviewBudget=Math.min(24000,Math.max(5000,candidates.length*1800));
+          const reviewed=await DoctorAICore.reviewQuestions(candidates,subject,{maxTokens:reviewBudget});
+          if(!reviewed.ok)return {ok:false,reason:'review-unavailable',status:reviewed.status,error:reviewed.error,generated:pending.length,required:targetCount};
+          approved=reviewed.questions||[];
+        }
+        approved.forEach(q=>{
+          if(pending.length>=targetCount)return;
+          const fp=fingerprint(q);
+          if(!pending.some(x=>fingerprint(x)===fp))pending.push(q);
+        });
+        if(approved.length<candidates.length)lastReason='review-rejected';
       }
-      if(!validated.length) return {ok:false,reason:'review-rejected'};
-      validated.forEach(q=>{ QUESTIONS.push(q); Store.state.aiQuestions.push(q); });
+      if(pending.length!==targetCount)return {ok:false,reason:lastReason,generated:pending.length,required:targetCount,model:lastModel};
+      pending.forEach(q=>{QUESTIONS.push(q);Store.state.aiQuestions.push(q);});
       DoctorQuestionIntegrity.auditBank();
       Store.save();
-      return {ok:true,added:validated.length,model:r.model};
+      return {ok:true,added:pending.length,model:lastModel};
     })();
     this._inFlight.set(lockKey,run);
     try{return await run;}finally{this._inFlight.delete(lockKey);}
@@ -2057,7 +2089,7 @@ const DoctorAICore = {
   questionSchema(count, n) {
     return {
       type: 'object', additionalProperties: false,
-      properties: { questions: { type:'array', items: { type:'object', additionalProperties:false,
+      properties: { questions: { type:'array', description:'Gere exatamente '+count+' questões completas, nem menos nem mais.', items: { type:'object', additionalProperties:false,
         properties: {
           text:{type:'string'}, options:{type:'array',items:{type:'string'}}, correct:{type:'integer'},
           explanations:{type:'array',items:{type:'string'}}
@@ -2106,7 +2138,7 @@ const DoctorAICore = {
         try{
           const body={model:candidate,messages,temperature};
           if(maxTokens)body.max_completion_tokens=maxTokens;
-          if(reasoningEffort)body.reasoning_effort=reasoningEffort;
+          if(reasoningEffort && (candidate==='openai/gpt-oss-20b' || candidate==='openai/gpt-oss-120b' || candidate==='qwen/qwen3.8-27b'))body.reasoning_effort=reasoningEffort;
           if(responseFormat)body.response_format=responseFormat;
           if(searchSettings){
             body.search_settings=searchSettings;
@@ -2180,12 +2212,12 @@ const DoctorAICore = {
     if(new Set(normalized).size!==normalized.length)return false;
     return true;
   },
-  async reviewQuestions(questions,subject) {
+  async reviewQuestions(questions,subject,{maxTokens=null}={}) {
     if(!questions?.length) return {ok:true,questions:[]};
     const n=ExamRules.optionCount;
     const payload=questions.map((q,i)=>({index:i,text:q.text,options:q.options,correct:q.correct,explanations:q.explanations}));
     const prompt=`Você é o REVISOR DOCTOR, uma camada independente do gerador.\n${this.context()}\nMatéria: ${subject.name}\nTópicos permitidos:\n${subject.topics.map(x=>'- '+x).join('\n')}\n\nAnalise cada questão abaixo ANTES de permitir sua entrega ao aluno.\nREGRAS: (1) exatamente ${n} alternativas; (2) somente uma correta; (3) gabarito deve ser defensável; (4) explicações coerentes com o gabarito; (5) sem informação inventada; (6) se houver artigo, lei, data ou fato atual cuja correção não possa ser sustentada com segurança pelo contexto recebido, marque REJEITAR em vez de adivinhar; (7) questão fora do edital ou incompatível com o estilo da banca = REJEITAR.\nResponda JSON com decisions: [{index,status,reason,correctedQuestion}]. status só pode ser APROVAR, CORRIGIR ou REJEITAR. correctedQuestion deve existir sempre; quando não houver correção segura, repita a questão original.\nQUESTÕES:\n${JSON.stringify(payload)}`;
-    const r=await this.call({messages:[{role:'system',content:'Você é o Revisor Doctor. Nunca aprove uma questão só porque parece plausível.'},{role:'user',content:prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_review_decisions',strict:true,schema:{type:'object',additionalProperties:false,properties:{decisions:{type:'array',items:{type:'object',additionalProperties:false,properties:{index:{type:'integer'},status:{type:'string',enum:['APROVAR','CORRIGIR','REJEITAR']},reason:{type:'string'},correctedQuestion:{type:'object',additionalProperties:false,properties:{text:{type:'string'},options:{type:'array',items:{type:'string'}},correct:{type:'integer'},explanations:{type:'array',items:{type:'string'}}},required:['text','options','correct','explanations']}},required:['index','status','reason','correctedQuestion']}}},required:['decisions']}}},temperature:0});
+    const r=await this.call({messages:[{role:'system',content:'Você é o Revisor Doctor. Nunca aprove uma questão só porque parece plausível.'},{role:'user',content:prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_review_decisions',strict:true,schema:{type:'object',additionalProperties:false,properties:{decisions:{type:'array',items:{type:'object',additionalProperties:false,properties:{index:{type:'integer'},status:{type:'string',enum:['APROVAR','CORRIGIR','REJEITAR']},reason:{type:'string'},correctedQuestion:{type:'object',additionalProperties:false,properties:{text:{type:'string'},options:{type:'array',items:{type:'string'}},correct:{type:'integer'},explanations:{type:'array',items:{type:'string'}}},required:['text','options','correct','explanations']}},required:['index','status','reason','correctedQuestion']}}},required:['decisions']}}},temperature:0,timeout:60000,maxTokens:maxTokens||Math.min(24000,Math.max(5000,questions.length*1800)),reasoningEffort:'low'});
     if(!r.ok)return {ok:false,reason:'review-unavailable',error:r.error,status:r.status};
     const parsed=this.parseJSON(r.content); if(!parsed||!Array.isArray(parsed.decisions))return {ok:false,reason:'review-invalid'};
     const out=[];
@@ -3330,60 +3362,46 @@ Views.practice = function () {
 Views.bind.practice = function () {
   const subjectId = UI.practiceSubject;
   document.getElementById('practice-back')?.addEventListener('click', () => UI.back());
-
   document.querySelectorAll('.q-option').forEach(el => {
     el.addEventListener('click', () => {
       const q = Quiz.currentQuestion(subjectId);
-      if (Quiz.isAnsweredAnywhere(q.id)) return; // já respondida, não deixa responder de novo
+      if (Quiz.isAnsweredAnywhere(q.id)) return;
       const result=Quiz.answerFeedQuestion(subjectId,parseInt(el.dataset.i,10));
       if(result?.reason==='question-integrity'){UI.toast('Questão bloqueada por falha de integridade. Ela não será entregue como válida.','warn');return;}
       UI.render('practice');
     });
   });
-
-  document.getElementById('q-prev')?.addEventListener('click', () => {
-    Quiz.goPrev(subjectId);
-    UI.render('practice');
-  });
-
+  document.getElementById('q-prev')?.addEventListener('click', () => { Quiz.goPrev(subjectId); UI.render('practice'); });
   document.getElementById('q-next')?.addEventListener('click', () => {
-    const result = Quiz.goNext(subjectId);
-    if (result === 'need-more') {
-      UI.toast('Você chegou ao fim das questões disponíveis desta matéria.', 'warn');
-    }
+    const result=Quiz.goNext(subjectId);
+    if(result==='need-more')UI.toast('Você chegou ao fim das questões disponíveis desta matéria.','warn');
     UI.render('practice');
   });
-
-  document.getElementById('q-generate-inline')?.addEventListener('click', async (e) => {
-    if (!GroqAI.hasKey()) { UI.toast('Cadastre sua chave da Groq em Configurações.', 'warn'); UI.render('settings'); return; }
-    const btn = e.target;
-    btn.innerHTML = iconEl('bot') + ' Gerando...';
-    btn.disabled = true;
-    const targetSubject = subjectId === 'todas' ? Quiz.mostNeededSubjectForGeneration().id : subjectId;
-    const result = await GroqAI.generateQuestions(targetSubject, 6);
-    if (result.ok) {
-      UI.toast(`${result.added} questão(ões) nova(s) geradas!`, 'success');
-      Quiz.goNext(subjectId); // avança direto pra primeira questão nova, sem precisar de outro clique
-    } else {
-      UI.toast(result.reason==='no-key' ? 'Configure sua chave GROQ em Configurações.' : 'A IA está ocupada no momento. Aguarde alguns segundos e tente novamente.', 'warn');
-    }
-    UI.render('practice');
-  });
-
-  document.getElementById('q-generate-more')?.addEventListener('click', async (e) => {
-    if (!GroqAI.hasKey()) { UI.toast('Cadastre sua chave da Groq em Configurações.', 'warn'); UI.render('settings'); return; }
-    const btn = e.target;
-    btn.innerHTML = iconEl('bot') + ' Gerando...';
-    btn.disabled = true;
-    const targetSubject = subjectId === 'todas' ? Quiz.mostNeededSubjectForGeneration().id : subjectId;
-    const result = await GroqAI.generateQuestions(targetSubject, 6);
-    if (result.ok) {
-      UI.toast(`${result.added} questão(ões) nova(s) geradas!`, 'success');
-    } else {
-      UI.toast(result.reason==='no-key' ? 'Configure sua chave GROQ em Configurações.' : 'A IA está ocupada no momento. Aguarde alguns segundos e tente novamente.', 'warn');
-    }
-    UI.render('practice'); // ensureCurrent vai pegar automaticamente uma das novas
-  });
+  const generate=async(btn,advance)=>{
+    if(!GroqAI.hasKey()){UI.toast('Cadastre sua chave da Groq em Configurações.','warn');UI.render('settings');return;}
+    if(!navigator.onLine){UI.toast('A geração de novas questões exige internet. Seus estudos offline continuam disponíveis.','warn');return;}
+    const original=btn.innerHTML;
+    btn.disabled=true;btn.innerHTML=iconEl('bot')+' Gerando 10 questões...';
+    const targetSubject=subjectId==='todas'?Quiz.mostNeededSubjectForGeneration().id:subjectId;
+    try{
+      const result=await GroqAI.generateQuestions(targetSubject,10);
+      if(result.ok){
+        UI.toast(result.added+' questões novas geradas e revisadas!','success');
+        if(advance)Quiz.goNext(subjectId);
+      }else{
+        const message=result.reason==='no-key'?'Configure sua chave GROQ em Configurações.':
+          result.reason==='rate-limit'?'A GROQ atingiu um limite temporário. Nenhuma questão parcial foi salva.':
+          result.reason==='review-unavailable'?'A revisão independente não concluiu. Tente novamente; nada parcial foi salvo.':
+          result.reason==='incomplete-generation'?('A IA entregou apenas '+(result.generated||0)+' de '+(result.required||10)+' questões válidas. Nada parcial foi salvo; tente novamente.'):
+          result.reason==='output-truncated'?'A resposta da IA foi interrompida antes de concluir o lote. Tente novamente.':
+          'Não foi possível gerar e validar as 10 questões. Nenhum lote parcial foi salvo.';
+        UI.toast(message,'warn');
+      }
+    }catch(error){UI.toast(error?.message||'Falha inesperada na geração. Nenhuma questão parcial foi salva.','warn');}
+    finally{if(btn.isConnected){btn.disabled=false;btn.innerHTML=original;}UI.render('practice');}
+  };
+  document.getElementById('q-generate-inline')?.addEventListener('click',e=>generate(e.currentTarget,true));
+  document.getElementById('q-generate-more')?.addEventListener('click',e=>generate(e.currentTarget,false));
 };
 
 // ================= FLASHCARDS =================
@@ -3590,7 +3608,7 @@ async function DoctorGenerateFullSimulado(onProgress=()=>{}) {
     const target=Number(subject.officialQuestions||0);
     const collected=[];
     let rounds=0;
-    while(collected.length<target&&rounds<4){
+    while(collected.length<target&&rounds<Math.ceil(target/10)+1){
       rounds++;
       const requestCount=Math.min(10,target-collected.length);
       onProgress('Gerando e revisando '+subject.name+' ('+collected.length+'/'+target+')…');
@@ -3605,7 +3623,7 @@ async function DoctorGenerateFullSimulado(onProgress=()=>{}) {
         seen.add(fp);collected.push(q);
         if(collected.length===target)break;
       }
-      if(!result.ok&&fresh.length===0)return {ok:false,reason:result.reason||'generation-failed',subject:subject.name};
+      if(!result.ok&&fresh.length===0)return {ok:false,reason:result.reason||'generation-failed',subject:subject.name,status:result.status||null,generated:result.generated||0,required:result.required||requestCount,error:result.error||null};
     }
     if(collected.length!==target)return {ok:false,reason:'incomplete-generation',subject:subject.name,have:collected.length,need:target};
     exam.push(...collected);
@@ -3732,7 +3750,13 @@ Views.bind.simuladoSetup = function () {
           'research-unavailable':'A pesquisa documental não pôde ser concluída. Nenhuma prova foi criada.',
           'research-insufficient':'Não foi possível confirmar fontes oficiais suficientes. O Core bloqueou a geração para evitar conteúdo sem evidência.',
           'rate-limit':'A GROQ atingiu o limite gratuito temporário. Aguarde a renovação diária e tente novamente; seu limite semanal não foi consumido.',
-          'incomplete-generation':'A IA não conseguiu completar a distribuição oficial. Nenhum limite semanal foi consumido.',
+          'incomplete-generation':'A IA não conseguiu completar o lote de questões válidas para '+(result.subject||'uma matéria')+'. Nenhuma prova parcial foi criada e o limite semanal não foi consumido.',
+          'output-truncated':'A resposta da IA foi interrompida antes de concluir o lote. Tente novamente; nenhum limite semanal foi consumido.',
+          'invalid-generation':'A IA não entregou questões em formato válido. Nenhuma prova parcial foi criada.',
+          'review-unavailable':'A camada de revisão independente não concluiu. Nenhuma prova parcial foi criada.',
+          'review-invalid':'A resposta do revisor veio incompleta ou inválida. Nenhuma prova parcial foi criada.',
+          'review-rejected':'As questões foram rejeitadas pela revisão de qualidade. Nenhuma prova parcial foi criada.',
+          'generation-failed':'A geração de questões falhou antes da validação final. Nenhum limite semanal foi consumido.',
           'review-gate':'Uma ou mais questões não passaram pela revisão independente.',
           'distribution-gate':'A distribuição final não corresponde ao edital.'
         };
