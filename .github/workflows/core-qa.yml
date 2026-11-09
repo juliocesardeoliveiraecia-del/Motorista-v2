@@ -18,6 +18,7 @@ jobs:
       - run: node qa/service-worker-offline-contract.mjs
       - run: node qa/question-content-audit.mjs
       - run: node qa/question-answer-contract.mjs
+      - run: node qa/ai-generation-contract.mjs
       - name: Block release when the official question distribution is incomplete
         run: node tools/audit-content.mjs --release
       - run: node --check tools/scaffold-product.mjs
