@@ -32,6 +32,7 @@ function makeHarness(alwaysReturnTwo=false){
     ExamRules:{optionCount:4},
     DoctorAICore:{
       context:()=> 'contexto',
+      parseJSON:text=>JSON.parse(text),
       questionSchema:(count)=>({properties:{questions:{description:'Gere exatamente '+count+' questões completas, nem menos nem mais.'}}}),
       call:async({responseFormat})=>{
         calls++;
