@@ -35,7 +35,7 @@ function makeHarness(alwaysReturnTwo=false){
       questionSchema:(count)=>({properties:{questions:{description:'Gere exatamente '+count+' questões completas, nem menos nem mais.'}}}),
       call:async({responseFormat})=>{
         calls++;
-        const requested=Number(responseFormat.json_schema.schema.properties.questions.description.match(/exatamente (\\d+)/)?.[1]||10);
+        const requested=Number(responseFormat.json_schema.schema.properties.questions.description.match(/exatamente (\d+)/)?.[1]||10);
         const n=alwaysReturnTwo?Math.min(2,requested):Math.min(calls===1?2:requested,requested);
         return {ok:true,model:'mock',content:JSON.stringify({questions:Array.from({length:n},(_,i)=>({
           text:'Enunciado válido de teste número '+calls+' questão '+i+' com conteúdo suficiente.',
