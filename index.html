@@ -2495,19 +2495,29 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
 
   back() {
     if (this.currentView === 'home') return;
-    if (this._navIndex > 0 && history.state?.doctorCore) { history.back(); return; }
+    const currentIndex = history.state?.doctorCore
+      ? Math.max(0, Number(history.state.navIndex) || 0)
+      : Math.max(0, Number(this._navIndex) || 0);
+    this._navIndex = currentIndex;
+    if (currentIndex > 0 && history.state?.doctorCore) { history.back(); return; }
     this._navIndex = 0;
     this.render('home', { replaceHistory: true });
   },
 
   goHome() {
     if (this.currentView === 'home') return;
-    if (this._navIndex > 0) { history.go(-this._navIndex); return; }
+    const currentIndex = history.state?.doctorCore
+      ? Math.max(0, Number(history.state.navIndex) || 0)
+      : Math.max(0, Number(this._navIndex) || 0);
+    this._navIndex = currentIndex;
+    if (currentIndex > 0 && history.state?.doctorCore) { history.go(-currentIndex); return; }
+    this._navIndex = 0;
     this.render('home', { replaceHistory: true });
   },
 
   render(view, opts = {}) {
     if (this._calculatorKeyCleanup) { this._calculatorKeyCleanup(); this._calculatorKeyCleanup = null; }
+    const previousView = this.currentView;
     // Home é a raiz da navegação: ir para Home limpa a pilha interna.
     if (view === 'home' && !opts.fromHistory && this.currentView !== 'home' && this._navIndex > 0) {
       this.goHome();
@@ -2517,8 +2527,13 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     if (this._navReady && !opts.skipHistory && !opts.fromHistory) {
       if (opts.replaceHistory) {
         history.replaceState({ doctorCore: true, view, navIndex: this._navIndex }, '', location.href);
+      } else if (previousView === view && history.state?.doctorCore) {
+        // Atualizações internas da mesma tela (respostas, salvamentos e estados)
+        // não são novas páginas: substituir evita que Voltar fique preso nela.
+        this._navIndex = Math.max(0, Number(history.state.navIndex) || this._navIndex || 0);
+        history.replaceState({ doctorCore: true, view, navIndex: this._navIndex }, '', location.href);
       } else {
-        this._navIndex += 1;
+        this._navIndex = Math.max(0, Number(history.state?.navIndex) || this._navIndex || 0) + 1;
         history.pushState({ doctorCore: true, view, navIndex: this._navIndex }, '', location.href);
       }
     }
