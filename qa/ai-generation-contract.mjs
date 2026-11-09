@@ -47,6 +47,7 @@ function makeHarness(alwaysReturnTwo=false){
     }
   };
   const generator=vm.runInNewContext('({'+methodSource+'})',sandbox);
+  generator.getKey=()=> 'test-key';
   generator._inFlight=new Map();
   generator._buildPrompt=()=> 'prompt';
   generator._validateAndTag=(raw,subjectId)=>raw.map((q,i)=>({...q,id:subjectId+'-'+calls+'-'+i,subjectId,aiGenerated:true}));
