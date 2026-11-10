@@ -13,8 +13,9 @@ must('Question review has an explicit completion-token budget',index.includes('a
 must('Question generation retries partial or rejected batches before returning',methodSource.includes('round<4')&&methodSource.includes('pending.length<targetCount'));
 must('Question generation does not persist a partial batch',methodSource.indexOf('if(pending.length!==targetCount)')<methodSource.indexOf('pending.forEach(q=>{QUESTIONS.push(q)'));
 must('Practice actions request ten new questions and use the actual button target',index.includes('GroqAI.generateQuestions(targetSubject,10)')&&index.includes('e=>generate(e.currentTarget,true)')&&index.includes('e=>generate(e.currentTarget,false)'));
-must('Exhausted practice bank always exposes the generate-more action',index.includes('id="q-generate-more"')&&index.includes('id="q-generate-inline"'));
-must('Every active subject practice screen exposes a dedicated generate-ten button',index.includes('id="q-generate-subject"')&&index.includes("getElementById('q-generate-subject')?.addEventListener('click',e=>generate(e.currentTarget,false))"));
+must('No always-visible generate button is offered while the student is answering available questions',!index.includes('id="q-generate-subject"'));
+must('Generation handler blocks requests while fresh questions remain',index.includes("if(Quiz.hasMoreFresh(subjectId)){UI.toast('Conclua todas as questões disponíveis desta matéria antes de gerar mais."));
+must('Generation remains available only at the exhausted-bank states',index.includes('id="q-generate-more"')&&index.includes('id="q-generate-inline"')&&index.includes('const needsMoreToAdvance = isFrontier && !Quiz.hasMoreFresh(subjectId);'));
 must('All four contest subjects remain configured for the shared practice flow', ['portugues','rlm','realidade','especificos'].every(id=>fs.readFileSync('product-content.js','utf8').includes("id: '"+id+"'")));
 must('Simulado preserves the official per-subject distribution and has enough bounded batches',index.includes('Math.ceil(target/10)+1')&&index.includes('counts[s.id]!==s.officialQuestions'));
 must('Simulado quota is consumed only after full proof preparation',index.indexOf('const prepared=Quiz.prepareSimulado(result.questions)')<index.indexOf('nextAllowedAt:completedAt+7*86400000'));
