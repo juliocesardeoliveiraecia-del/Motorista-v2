@@ -3324,10 +3324,6 @@ Views.practice = function () {
       <span class="badge">Questão ${feed.position + 1}</span>
       ${q.aiGenerated ? `<span class="badge badge-ai">${iconEl('bot')} IA</span>` : ''}
     </div>
-    <div class="card" style="padding:10px 12px;">
-      <button class="btn btn-primary btn-block" id="q-generate-subject">${iconEl('bot')} Gerar 10 questões para esta matéria</button>
-      <p class="muted center" style="margin:4px 0 0;">Gera questões novas sem interromper seu progresso atual.</p>
-    </div>
     <div class="card">
       <p class="q-text">${q.text}</p>
       ${q.options.map((opt, i) => {
@@ -3383,6 +3379,7 @@ Views.bind.practice = function () {
   });
   const generate=async(btn,advance)=>{
     if(!GroqAI.hasKey()){UI.toast('Cadastre sua chave da Groq em Configurações.','warn');UI.render('settings');return;}
+    if(Quiz.hasMoreFresh(subjectId)){UI.toast('Conclua todas as questões disponíveis desta matéria antes de gerar mais.','warn');return;}
     if(!navigator.onLine){UI.toast('A geração de novas questões exige internet. Seus estudos offline continuam disponíveis.','warn');return;}
     const original=btn.innerHTML;
     btn.disabled=true;btn.innerHTML=iconEl('bot')+' Gerando 10 questões...';
@@ -3406,7 +3403,6 @@ Views.bind.practice = function () {
   };
   document.getElementById('q-generate-inline')?.addEventListener('click',e=>generate(e.currentTarget,true));
   document.getElementById('q-generate-more')?.addEventListener('click',e=>generate(e.currentTarget,false));
-  document.getElementById('q-generate-subject')?.addEventListener('click',e=>generate(e.currentTarget,false));
 };
 
 // ================= FLASHCARDS =================
