@@ -54,7 +54,12 @@
     "contestStage": "post-edital",
     "officialEditalUrl": "https://www.gov.br/",
     "lastExamDateISO": null,
-    "officialLastExamUrl": null
+    "officialLastExamUrl": null,
+    "institutionGroupId": "orgao-publico",
+    "targetPosition": "Cargo Exemplo",
+    "contentIsolation": "single_position_only",
+    "sharedContentPolicy": "verified-identical-topics-only",
+    "bancaStatus": "confirmed-current"
   },
   "subjects": [
     {
@@ -123,5 +128,22 @@
       "teachStructure": true,
       "analyzeText": true
     }
+  },
+  "edition": {
+    "id": "concurso-exemplo-edital-01-2027",
+    "contestId": "concurso-exemplo-orgao-publico-cargo-exemplo",
+    "sequence": 1,
+    "mode": "post-edital",
+    "basis": "current-official-edital",
+    "sourceType": "current-edital",
+    "editalNumber": "Edital nº 01/2027",
+    "publicationDate": "01/01/2027",
+    "editalUrl": "https://www.gov.br/",
+    "examUrl": null,
+    "boardName": "Banca Exemplo",
+    "boardStatus": "confirmed-current",
+    "boardEvidenceUrl": "https://www.gov.br/",
+    "supersedesEditionId": null,
+    "changeSet": []
   }
 }
