@@ -2615,6 +2615,8 @@ const RadarDoctor = {
   },
   async _resolveCurrentProduct(){
     const bridge=window.DOCTOR_PLATFORM_BRIDGE;
+    const bridgedProductId=String(bridge?.productId||'').trim();
+    if(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(bridgedProductId)){this.currentProductUuid=bridgedProductId;return bridgedProductId;}
     try{
       const bridgeProduct=bridge?.getProductCatalog?.();
       if(Array.isArray(bridgeProduct)){
