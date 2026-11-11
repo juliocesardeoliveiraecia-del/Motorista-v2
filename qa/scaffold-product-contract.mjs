@@ -47,6 +47,7 @@ preEdital.app.examDateLabel='Aguardando novo edital';
 preEdital.app.orgName='Polícia Federal';
 preEdital.app.orgState='BR';
 preEdital.app.cargo='Agente de Polícia Federal';
+preEdital.app.targetPosition='Agente de Polícia Federal';
 preEdital.app.banca='Cebraspe';
 preEdital.app.editalNumber='Edital nº 01/2025 - PF - POLICIAL';
 preEdital.app.editalPublishDate='20/05/2025';
