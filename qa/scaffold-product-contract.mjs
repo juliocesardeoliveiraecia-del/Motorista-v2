@@ -17,6 +17,13 @@ for (const required of [
   "boardEvidenceUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/'"
 ]) assert.ok(currentProductContext.includes(required), 'Motorista current context missing ' + required);
 assert.doesNotThrow(()=>new vm.Script(currentProductContext));
+assert.ok(currentProductContext.includes("contentVersion: '2026.3'"));
+assert.ok(currentProductContext.includes("questionCount: 47"));
+assert.ok(currentProductContext.includes("traceabilityCount: 47"));
+assert.ok(currentProductContext.includes("hashCount: 47"));
+assert.ok(currentProductContext.includes("reviewStatus: 'pending'"));
+assert.ok(currentProductContext.includes("manifestSha256: '50e8a5dc7cf30290ab04564831d91d0de9ae5bc75af7a684b89a48cffdb53a44'"));
+assert.ok(manifest.contentPackage === null, 'New app template must require content package to be filled before central registration');
 assert.deepEqual(validateManifest(manifest),[]);
 const outputs=buildOutputs(manifest);
 assert.ok(outputs['product-context.js'].includes('"provider": "supabase-versioned-snapshot-v1"'));
