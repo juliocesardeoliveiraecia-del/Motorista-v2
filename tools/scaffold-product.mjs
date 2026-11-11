@@ -96,8 +96,40 @@ export function validateManifest(m) {
       if (u.protocol !== 'https:' || ![...allowed].some(base => host === base || host.endsWith('.' + base))) errors.push(field + ' deve ser HTTPS e pertencer a um host oficial permitido');
     } catch { errors.push(field + ' deve ser uma URL válida'); }
   };
+  const identity = { institutionGroupId: a.institutionGroupId, targetPosition: a.targetPosition, contentIsolation: a.contentIsolation, sharedContentPolicy: a.sharedContentPolicy };
+  if (!SLUG.test(String(identity.institutionGroupId || ''))) errors.push('app.institutionGroupId deve ser slug estável do órgão/família');
+  if (String(identity.targetPosition || '').trim() !== String(a.cargo || '').trim()) errors.push('app.targetPosition deve identificar exatamente o mesmo cargo de app.cargo');
+  if (identity.contentIsolation !== 'single_position_only') errors.push('app.contentIsolation deve ser single_position_only');
+  if (identity.sharedContentPolicy !== 'verified-identical-topics-only') errors.push('app.sharedContentPolicy deve ser verified-identical-topics-only');
+  if (!['historical-reference','confirmed-current'].includes(a.bancaStatus)) errors.push('app.bancaStatus deve ser historical-reference ou confirmed-current');
+  if (isPreEdital && a.bancaStatus !== 'historical-reference') errors.push('pré-edital só pode apresentar banca como referência histórica, nunca como banca futura confirmada');
+  if (!isPreEdital && a.bancaStatus !== 'confirmed-current') errors.push('pós-edital exige banca confirmada no edital vigente');
+  const edition = m.edition || {};
+  if (!SLUG.test(String(edition.id || ''))) errors.push('edition.id deve ser slug único da versão do concurso');
+  if (!SLUG.test(String(edition.contestId || ''))) errors.push('edition.contestId deve ser slug estável do concurso');
+  if (!Number.isInteger(edition.sequence) || edition.sequence < 1) errors.push('edition.sequence deve ser inteiro >= 1');
+  if (edition.mode !== contestStage) errors.push('edition.mode deve coincidir com app.contestStage');
+  if (edition.basis !== (isPreEdital ? 'last-official-edital-and-exam' : 'current-official-edital')) errors.push('edition.basis incompatível com a fase do concurso');
+  if (edition.sourceType !== (isPreEdital ? 'previous-edital' : 'current-edital')) errors.push('edition.sourceType incompatível com a fase do concurso');
+  if (!String(edition.editalNumber || '').trim() || edition.editalNumber !== a.editalNumber) errors.push('edition.editalNumber deve coincidir com o edital efetivamente usado');
+  if (!String(edition.publicationDate || '').trim() || edition.publicationDate !== a.editalPublishDate) errors.push('edition.publicationDate deve coincidir com a data do edital usado');
+  if (!String(edition.boardName || '').trim() || edition.boardName !== a.banca) errors.push('edition.boardName deve coincidir com a banca registrada');
+  if (edition.boardStatus !== (isPreEdital ? 'historical-reference' : 'confirmed-current')) errors.push('edition.boardStatus não pode apresentar banca histórica como confirmada');
+  if (edition.editalUrl !== a.officialEditalUrl) errors.push('edition.editalUrl deve apontar para o edital oficial exato usado');
+  if (edition.examUrl !== (a.officialLastExamUrl || null)) errors.push('edition.examUrl deve coincidir com a prova oficial de referência');
+  if (edition.sequence === 1 && edition.supersedesEditionId != null) errors.push('primeira versão não pode declarar supersedesEditionId');
+  if (edition.sequence > 1 && !SLUG.test(String(edition.supersedesEditionId || ''))) errors.push('atualização deve informar edition.supersedesEditionId da versão anterior');
+  if (!Array.isArray(edition.changeSet)) errors.push('edition.changeSet deve ser um array, inclusive quando vazio');
+  else for (const change of edition.changeSet) {
+    if (!change || !['subject-added','subject-removed','topic-added','topic-removed','topic-modified','exam-format','weight-change','board-change','date-change','other'].includes(change.type)) errors.push('edition.changeSet contém tipo de alteração inválido');
+    if (!String(change.description || '').trim()) errors.push('cada alteração do edition.changeSet precisa de descrição');
+    if (change.sourceUrl) validateOfficialUrl(change.sourceUrl, 'edition.changeSet.sourceUrl', false);
+  }
   validateOfficialUrl(a.officialEditalUrl, 'app.officialEditalUrl', true);
   validateOfficialUrl(a.officialLastExamUrl, 'app.officialLastExamUrl', isPreEdital);
+  validateOfficialUrl(edition.editalUrl, 'edition.editalUrl', true);
+  validateOfficialUrl(edition.boardEvidenceUrl, 'edition.boardEvidenceUrl', true);
+  validateOfficialUrl(edition.examUrl, 'edition.examUrl', isPreEdital);
   if (!Array.isArray(m.radarSources) || !m.radarSources.length) errors.push('radarSources deve conter ao menos uma fonte oficial');
   else for (const source of m.radarSources) {
     try {
@@ -124,7 +156,10 @@ export function buildOutputs(m) {
   const a = m.app;
   const isPreEdital = (a.contestStage || 'post-edital') === 'pre-edital';
   const context = {
-    orgName:a.orgName, orgState:a.orgState, cargo:a.cargo, banca:a.banca,
+    orgName:a.orgName, orgState:a.orgState, cargo:a.cargo, targetPosition:a.targetPosition,
+    institutionGroupId:a.institutionGroupId, contentIsolation:a.contentIsolation,
+    sharedContentPolicy:a.sharedContentPolicy, banca:a.banca, bancaStatus:a.bancaStatus,
+    edition:m.edition,
     editalNumber:a.editalNumber, editalPublishDate:a.editalPublishDate,
     contestStage:isPreEdital ? 'pre-edital' : 'post-edital',
     contentSourceMode:isPreEdital ? 'last-edital-last-exam' : 'current-edital',
