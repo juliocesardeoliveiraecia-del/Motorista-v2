@@ -4,6 +4,19 @@ import vm from 'node:vm';
 import { validateManifest, buildOutputs } from '../tools/scaffold-product.mjs';
 
 const manifest=JSON.parse(fs.readFileSync(new URL('../templates/product-manifest.example.json',import.meta.url),'utf8'));
+const currentProductContext=fs.readFileSync(new URL('../product-context.js',import.meta.url),'utf8');
+for (const required of [
+  "appCode: 'DC-APP-0001'",
+  "institutionGroupId: 'camara-municipal-ipameri-go'",
+  "targetPosition: 'Agente Legislativo — Motorista Legislativo'",
+  "contentIsolation: 'single_position_only'",
+  "sharedContentPolicy: 'verified-identical-topics-only'",
+  "bancaStatus: 'historical-reference'",
+  "edition: {",
+  "publicationDate: '2026-06-01'",
+  "boardEvidenceUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/'"
+]) assert.ok(currentProductContext.includes(required), 'Motorista current context missing ' + required);
+assert.doesNotThrow(()=>new vm.Script(currentProductContext));
 assert.deepEqual(validateManifest(manifest),[]);
 const outputs=buildOutputs(manifest);
 assert.ok(outputs['product-context.js'].includes('"provider": "supabase-versioned-snapshot-v1"'));

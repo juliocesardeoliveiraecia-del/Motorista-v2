@@ -69,6 +69,28 @@ const EXAM_CONFIG = {
 
   // Doctor Core V1 — identidade estável do produto e versão de conteúdo
   appCode: 'DC-APP-0001', // código permanente do cadastro mestre Doctor Concursos
+  institutionGroupId: 'camara-municipal-ipameri-go',
+  targetPosition: 'Agente Legislativo — Motorista Legislativo',
+  contentIsolation: 'single_position_only',
+  sharedContentPolicy: 'verified-identical-topics-only',
+  bancaStatus: 'historical-reference',
+  edition: {
+    id: 'camara-ipameri-motorista-legislativo-edital-02-2026',
+    contestId: 'concurso-camara-municipal-ipameri-go-2026',
+    sequence: 1,
+    mode: 'pre-edital',
+    basis: 'last-official-edital-and-exam',
+    sourceType: 'previous-edital',
+    editalNumber: 'Edital nº 02/2026',
+    publicationDate: '2026-06-01',
+    editalUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/9-edital/167-edital-de-abertura-n%C2%BA-02-2026.html',
+    examUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/sistema/provas_gabaritos/Provas_gabaritos_finais_Ipameri_2026.html',
+    boardName: 'Instituto Verbena / UFG',
+    boardStatus: 'historical-reference',
+    boardEvidenceUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/',
+    supersedesEditionId: null,
+    changeSet: []
+  },
   appId: 'doctor-motorista-legislativo',
   productId: 'motorista-legislativo',
   // Slug comercial real no catálogo central. Mantém productId local estável para não perder dados offline.
