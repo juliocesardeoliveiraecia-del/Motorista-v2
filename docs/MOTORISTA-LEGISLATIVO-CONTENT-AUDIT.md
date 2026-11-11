@@ -86,3 +86,10 @@ A migração `20261111011923_map_motorista_questions_to_topics` vinculou os 47 I
 - as 47 questões permanecem com `review_status=pending` até revisão factual/editorial independente.
 
 O QA `qa/question-topic-mapping-contract.mjs` verifica que cada ID do pacote possui exatamente um vínculo na migração, que o tópico complementar permanece identificado e que nenhuma questão é aprovada automaticamente.
+
+
+## Fingerprints SHA-256 — pacote 2026.3
+
+A migração `20261111013355_motorista_question_content_hashes_2026_3` registrou SHA-256 dos blocos exatos das 47 questões no metadado `contentHash`, com algoritmo e versão de fingerprint identificados. Os hashes foram calculados no PostgreSQL com pgcrypto e correspondem ao pacote 2026.3 publicado no repositório.
+
+Isso permite detectar divergência entre o pacote versionado e o registro central. O hash é controle de integridade, não prova de correção factual nem aprovação editorial. As 47 questões permanecem pendentes.
