@@ -1057,7 +1057,11 @@ const ExamRules = Object.freeze({
   scoring: Object.freeze({
     correct: EXAM_CONFIG.examRules?.scoring?.correct ?? 'subject-weight',
     incorrectPoints: Number(EXAM_CONFIG.examRules?.scoring?.incorrectPoints ?? 0),
-    blankPoints: Number(EXAM_CONFIG.examRules?.scoring?.blankPoints ?? 0)
+    blankPoints: Number(EXAM_CONFIG.examRules?.scoring?.blankPoints ?? 0),
+    mode: String(EXAM_CONFIG.examRules?.scoring?.mode || (EXAM_CONFIG.examRules?.scoring?.correct === 'subject-weight' ? 'weighted-by-subject' : 'per-question')),
+    negativeMarking: Boolean(EXAM_CONFIG.examRules?.scoring?.negativeMarking ?? Number(EXAM_CONFIG.examRules?.scoring?.incorrectPoints || 0) < 0),
+    annulledPoints: Number(EXAM_CONFIG.examRules?.scoring?.annulledPoints ?? 0),
+    penaltyDescription: String(EXAM_CONFIG.examRules?.scoring?.penaltyDescription || 'Conforme edital oficial.')
   }),
   passingScore: EXAM_CONFIG.examRules?.passingScore ?? {type:'points',value:Number(EXAM_CONFIG.passingScore||0)}
 });
@@ -1647,21 +1651,20 @@ const Quiz = {
     const bySubject = {};
     let totalPoints = 0, earnedPoints = 0;
 
-    // O resultado deve representar a prova inteira, não apenas as questões
-    // respondidas. Questões em branco valem zero, mas continuam compondo
-    // o denominador e o total por matéria. Isso evita resultados falsos
-    // como "20/40" quando o aluno deixou questões sem responder.
+    // O resultado respeita o peso configurado para esta edição e inclui questões em branco.
+    const correctPointsFor = (q, subj) => {
+      if (ExamRules.scoring.mode === 'weighted-by-subject' || ExamRules.scoring.correct === 'subject-weight') return Number(subj.points || 0);
+      if (ExamRules.scoring.mode === 'weighted-by-item') return Number(q.points ?? 0);
+      return Number(ExamRules.scoring.correct || 0);
+    };
     SUBJECTS.forEach(subj => {
       bySubject[subj.id] = { correct: 0, total: 0, points: 0, answered: 0, blank: 0 };
     });
 
-    // O conjunto do simulado define o total real da prova.
     s.questions.forEach(q => {
       const subj = SUBJECTS.find(x => x.id === q.subjectId);
       if (!subj) return;
-      const correctPoints = ExamRules.scoring.correct === 'subject-weight'
-        ? Number(subj.points || 0)
-        : Number(ExamRules.scoring.correct || 0);
+      const correctPoints = correctPointsFor(q, subj);
       bySubject[q.subjectId].total++;
       totalPoints += correctPoints;
     });
@@ -1671,14 +1674,15 @@ const Quiz = {
       const subj = SUBJECTS.find(x => x.id === q.subjectId);
       if (!subj) return;
       const a = answersByQuestion.get(q.id);
+      const correctPoints = correctPointsFor(q, subj);
       if (!a) {
+        const blankPoints = Number(ExamRules.scoring.blankPoints || 0);
         bySubject[q.subjectId].blank++;
+        bySubject[q.subjectId].points += blankPoints;
+        earnedPoints += blankPoints;
         return;
       }
       bySubject[q.subjectId].answered++;
-      const correctPoints = ExamRules.scoring.correct === 'subject-weight'
-        ? Number(subj.points || 0)
-        : Number(ExamRules.scoring.correct || 0);
       const answerPoints = a.correct ? correctPoints : Number(ExamRules.scoring.incorrectPoints || 0);
       if (a.correct) bySubject[q.subjectId].correct++;
       bySubject[q.subjectId].points += answerPoints;
@@ -1975,6 +1979,9 @@ const GroqAI = {
     const sampleText = existingSamples.map(q => `- ${q.text}`).join('\n');
     const n = ExamRules.optionCount;
     const letters = ExamRules.optionLabels.join(', ');
+    const responseRule = ExamRules.questionType === 'true-false'
+      ? 'Cada questão deve apresentar uma afirmação objetiva para julgamento. As opções devem ser exatamente Certo e Errado, nesta ordem; não transforme o item em pergunta de múltipla escolha.'
+      : `Cada questão deve ter exatamente ${n} alternativas identificadas por ${letters}, com uma única correta.`;
     return `Você é especialista em elaborar questões de concurso público brasileiro, no padrão observável do(a) ${EXAM_CONFIG.banca}, para o ${EXAM_CONFIG.editalNumber} do(a) ${EXAM_CONFIG.orgName}, cargo "${EXAM_CONFIG.cargo}". O edital define o conteúdo; a banca define o modo de cobrança. Formato: "${ExamRules.questionType}"; política: "${ExamRules.answerPolicy}".\n\nPESQUISA DOCUMENTAL PRÉVIA (não trate inferências como fatos):\n${String(researchNotes||'').slice(0,8000)||'Pesquisa não fornecida; não alegue que consultou provas anteriores.'}\n\nGere ${count} questões NOVAS e ORIGINAIS sobre "${subject.name}", usando SOMENTE os tópicos oficiais abaixo:\n${subject.topics.map(t => '- ' + t).join('\n')}\n\nQuestões existentes para evitar repetição:\n${sampleText || '(nenhuma)'}\n\nREGRAS OBRIGATÓRIAS:\n1. Exatamente ${n} alternativas (${letters}) e uma única correta.\n2. Alternativas plausíveis, sem pegadinhas ambíguas; uma explicação específica para cada alternativa.\n3. Compatibilidade com a banca com base apenas nos padrões encontrados na pesquisa; não copie enunciados protegidos.\n4. Não invente artigos, datas, normas, estatísticas ou fatos. Se não houver sustentação segura, formule de modo conceitual ou não use o dado.\n5. Cobertura equilibrada dos tópicos do edital e nível realista de prova.\n6. Verifique internamente se o gabarito corresponde ao enunciado e se nenhuma outra alternativa também pode ser correta.\n7. Português do Brasil.\n8. Responda SOMENTE JSON válido no formato {"questions":[{"text":"...","options":[...],"correct":0,"explanations":[...]}]}.`;
   },
 
@@ -1996,6 +2003,7 @@ const GroqAI = {
   },
 
   async generateQuestions(subjectId, count=10, options={}) {
+    if (EXAM_CONFIG.aiProfile?.formatEvidenceVerified !== true) return {ok:false,reason:'exam-format-unverified'};
     const key=this.getKey(); if(!key) return {ok:false,reason:'no-key'};
     const subject=SUBJECTS.find(s=>s.id===subjectId); if(!subject) return {ok:false,reason:'invalid-subject'};
     const targetCount=Math.max(1,Math.min(40,Math.floor(Number(count)||10)));
@@ -3216,7 +3224,7 @@ Views.reviewSession = function () {
           else if (i === last.selected && !last.correct) cls += ' wrong';
           else if (i === q.correct) cls += ' correct';
         }
-        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
+        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${ExamRules.questionType === 'true-false' ? '' : opt}</div>`;
       }).join('')}
       ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Resposta preservada — revisão necessária</strong><p>O conteúdo desta questão mudou depois da resposta. O Core não vai recalcular nem marcar sua resposta como errada. A questão foi bloqueada para revisão.</p></div><button class="btn btn-primary btn-block" id="sim-next">${s.index + 1 < s.questions.length ? 'Próxima' : 'Finalizar'}</button>` : ''}
       ${answered && !integrityMismatch ? `
@@ -3601,6 +3609,7 @@ function escapeSimuladoHtml(value){
 }
 
 async function DoctorGenerateFullSimulado(onProgress=()=>{}) {
+  if(EXAM_CONFIG.aiProfile?.formatEvidenceVerified!==true)return {ok:false,reason:'exam-format-unverified'};
   if(!GroqAI.hasKey())return {ok:false,reason:'no-key'};
   if(!navigator.onLine)return {ok:false,reason:'offline'};
   onProgress('Pesquisando edital oficial e provas anteriores da banca…');
@@ -3802,9 +3811,9 @@ Views.simuladoPrint=function(){
   const ordered=s.questions.slice(),labels=ExamRules.optionLabels||['A','B','C','D'];
   return '<div class="no-print"><button class="btn btn-ghost btn-sm" id="simulado-print-back">'+iconEl('arrowLeft')+' Voltar</button><button class="btn btn-primary btn-block" id="simulado-print-now">Imprimir / Salvar como PDF</button><p class="muted">Escolha “Salvar como PDF” na janela de impressão. O gabarito não aparece nesta folha.</p></div>'+
     '<article class="simulado-paper"><h1>'+escapeSimuladoHtml(EXAM_CONFIG.orgName)+'</h1><div class="paper-meta">'+escapeSimuladoHtml(EXAM_CONFIG.editalNumber)+' · '+escapeSimuladoHtml(EXAM_CONFIG.cargo)+'<br>'+escapeSimuladoHtml(EXAM_CONFIG.banca)+' · '+EXAM_CONFIG.durationHours+' horas · '+ordered.length+' questões</div>'+
-    '<div class="paper-instructions"><strong>INSTRUÇÕES</strong><br>Leia cada questão com atenção. Assinale uma alternativa por questão. Este simulado é material original de treino, elaborado com apoio de IA e pesquisa documental; não é prova oficial da banca.</div>'+
-    ordered.map((q,i)=>'<section class="paper-question"><h3>'+(i+1)+'. '+escapeSimuladoHtml(q.text)+'</h3>'+q.options.map((opt,j)=>'<div class="paper-option">'+escapeSimuladoHtml(labels[j]||String.fromCharCode(65+j))+') '+escapeSimuladoHtml(opt)+'</div>').join('')+'</section>').join('')+
-    '<section class="answer-sheet"><h2>Folha de respostas</h2><p>Preencha uma alternativa por questão.</p><div class="answer-grid">'+ordered.map((q,i)=>'<div class="answer-cell">'+(i+1)+'. <span>'+q.options.map((_,j)=>'○ '+escapeSimuladoHtml(labels[j]||String.fromCharCode(65+j))).join('　')+'</span></div>').join('')+'</div></section></article>';
+    '<div class="paper-instructions"><strong>INSTRUÇÕES</strong><br>'+ (ExamRules.questionType === 'true-false' ? 'Julgue cada afirmação como Certo ou Errado.' : 'Leia cada questão com atenção e assinale uma alternativa por questão.') +' Este simulado é material original de treino, elaborado com apoio de IA e pesquisa documental; não é prova oficial da banca.</div>'+
+    ordered.map((q,i)=>'<section class="paper-question"><h3>'+(i+1)+'. '+escapeSimuladoHtml(q.text)+'</h3>'+q.options.map((opt,j)=>'<div class="paper-option">'+escapeSimuladoHtml(labels[j]||String.fromCharCode(65+j))+(ExamRules.questionType === 'true-false' ? '' : ') '+escapeSimuladoHtml(opt))+'</div>').join('')+'</section>').join('')+
+    '<section class="answer-sheet"><h2>Folha de respostas</h2><p>'+(ExamRules.questionType === 'true-false' ? 'Marque Certo ou Errado em cada item.' : 'Preencha uma alternativa por questão.')+'</p><div class="answer-grid">'+ordered.map((q,i)=>'<div class="answer-cell">'+(i+1)+'. <span>'+q.options.map((_,j)=>'○ '+escapeSimuladoHtml(labels[j]||String.fromCharCode(65+j))).join('　')+'</span></div>').join('')+'</div></section></article>';
 };
 Views.bind.simuladoPrint=function(){document.getElementById('simulado-print-back')?.addEventListener('click',()=>UI.render('simuladoReady'));document.getElementById('simulado-print-now')?.addEventListener('click',()=>window.print());};
 
