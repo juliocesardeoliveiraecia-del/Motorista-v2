@@ -21,8 +21,14 @@ sandbox.Store={state:{answerMeta:{},answerLog:{},questionIntegrity:{quarantinedI
 vm.runInContext(integritySource+'\nglobalThis.__INTEGRITY=DoctorQuestionIntegrity;',sandbox);
 const integrity=sandbox.__INTEGRITY;
 const {QUESTIONS}=sandbox.__DATA;
+const correctPositions=QUESTIONS.map(q=>q.correct);
+const answerCounts=[0,1,2,3].map(n=>correctPositions.filter(x=>x===n).length);
+const subjectPositions={};for(const q of QUESTIONS)(subjectPositions[q.subjectId]??=[]).push(q.correct);
 
 function must(label,condition){if(!condition)throw new Error('FAIL: '+label);console.log('PASS:',label);}
+must('Answer positions are balanced across A-D',Math.max(...answerCounts)-Math.min(...answerCounts)<=3);
+must('Answer positions are balanced within each subject',Object.values(subjectPositions).every(values=>{const c=[0,1,2,3].map(n=>values.filter(x=>x===n).length);return Math.max(...c)-Math.min(...c)<=1;}));
+must('No adjacent or triple identical correct-answer positions',correctPositions.every((v,i)=>i===0||v!==correctPositions[i-1])&&correctPositions.every((v,i)=>i<2||!(v===correctPositions[i-1]&&v===correctPositions[i-2])));
 must('Runtime integrity gate validates every static question',QUESTIONS.every(q=>integrity.validate(q).ok));
 must('Every question is deliverable before quarantine',QUESTIONS.every(q=>integrity.assertDeliverable(q).ok));
 

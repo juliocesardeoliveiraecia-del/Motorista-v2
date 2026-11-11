@@ -1,6 +1,6 @@
 # Auditoria do pacote de conteúdo — Motorista Legislativo
 
-**Pacote:** `2026.2`  
+**Pacote:** `2026.3`  
 **Edital-base:** Edital de Abertura nº 02/2026 — Câmara Municipal de Ipameri/GO  
 **Banca:** Instituto Verbena/UFG  
 **Fonte primária:** [PDF oficial do edital](https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/sistema/arquivos/editais/EDITAL_CAMARA_IPAMERI_GO.pdf)
@@ -32,7 +32,7 @@ O Anexo IV, páginas 38-39, lista seis eixos para Motorista Legislativo:
 
 ## Banco do Doctor Core
 
-O pacote `2026.2` contém 47 questões autorais de treino:
+O pacote `2026.3` contém 47 questões autorais de treino:
 
 | Disciplina | Questões disponíveis | Seleção no simulado oficial |
 |---|---:|---:|
@@ -44,7 +44,7 @@ O pacote `2026.2` contém 47 questões autorais de treino:
 
 O excedente em Raciocínio Lógico e Realidade permanece no banco de prática. O motor seleciona, para o simulado oficial, exatamente o número previsto no edital por disciplina e embaralha a ordem final.
 
-A posição das respostas corretas foi balanceada entre A-D (12/12/12/11) para evitar padrões previsíveis. O auditor de release também bloqueia concentração excessiva em uma única letra.\n\nAs questões deste pacote são material didático autoral, não transcrições da prova oficial nem questões oficialmente aprovadas pela banca. O gabarito e as justificativas foram submetidos a validação estrutural automatizada (quantidade de alternativas, índice de resposta, explicações e duplicidade). A aprovação automatizada não substitui revisão factual/editorial humana.
+As posições corretas foram redistribuídas sem alterar gabaritos: distribuição global 13/13/10/11, balanceamento por matéria com diferença máxima de uma resposta e sem letras corretas repetidas consecutivamente. O auditor de release também bloqueia concentração excessiva em uma única letra.\n\nAs questões deste pacote são material didático autoral, não transcrições da prova oficial nem questões oficialmente aprovadas pela banca. O gabarito e as justificativas foram submetidos a validação estrutural automatizada (quantidade de alternativas, índice de resposta, explicações e duplicidade). A aprovação automatizada não substitui revisão factual/editorial humana.
 
 ## Gates automatizados
 
