@@ -62,10 +62,30 @@ cebraspe.app.alternativesPerQuestion=2;
 cebraspe.examRules.optionCount=2;
 cebraspe.examRules.optionLabels=['Certo','Errado'];
 cebraspe.examRules.questionType='true-false';
+cebraspe.examRules.formatEvidence.boardName='Banca Exemplo';
+cebraspe.examRules.scoring={correct:'1 ponto',mode:'net-score',incorrectPoints:-1,blankPoints:0,annulledPoints:0,negativeMarking:true,penaltyDescription:'Item errado anula item certo, conforme regra desta fixture'};
 cebraspe.examRules.answerPolicy='true-false';
 cebraspe.aiProfile.questionMode='true-false';
 cebraspe.aiProfile.answerPolicy='true-false';
 assert.deepEqual(validateManifest(cebraspe),[]);
+
+const sixOptions=structuredClone(manifest);
+sixOptions.app.alternativesPerQuestion=6;
+sixOptions.examRules.optionCount=6;
+sixOptions.examRules.optionLabels=['A','B','C','D','E','F'];
+assert.deepEqual(validateManifest(sixOptions),[]);
+
+const wrongOptionLabels=structuredClone(manifest);
+wrongOptionLabels.examRules.optionLabels=['A','B','C','D','F'];
+assert.ok(validateManifest(wrongOptionLabels).some(x=>x.includes('alternativas sequenciais')));
+
+const missingFormatEvidence=structuredClone(manifest);
+missingFormatEvidence.examRules.formatEvidence.answerKeyUrl='';
+assert.ok(validateManifest(missingFormatEvidence).some(x=>x.includes('answerKeyUrl')));
+
+const guessedScoring=structuredClone(manifest);
+guessedScoring.examRules.scoring.negativeMarking=true;
+assert.ok(validateManifest(guessedScoring).some(x=>x.includes('incorrectPoints deve ser negativo')));
 
 
 const preEdital=structuredClone(manifest);
