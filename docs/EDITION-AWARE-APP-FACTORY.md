@@ -95,3 +95,7 @@ Valores de `edition.sourceType`:
 - `current-edital` para pós-edital.
 
 A fábrica valida HTTPS e host permitido para edital, prova, evidência da banca e fontes de cada alteração. A lista de hosts deve ser explicitamente revisada; não usar domínios genéricos como prova de autenticidade de documentos específicos.
+
+## 9. Identidade permanente do aplicativo
+
+Todo aplicativo real deve receber o código público permanente `DC-APP-NNNN` no cadastro mestre do Doctor Concursos. O UUID do banco continua sendo a chave relacional; o código público deve ser copiado para `app.appCode` no manifesto e exportado para `EXAM_CONFIG.appCode` em `product-context.js`. O gerador aceita `appCode: null` somente para prévia/dry-run; a opção `--apply` bloqueia a geração se não houver código válido atribuído pelo cadastro mestre. Nunca inventar, reutilizar ou alterar o código.
