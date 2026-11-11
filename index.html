@@ -1982,7 +1982,7 @@ const GroqAI = {
     const responseRule = ExamRules.questionType === 'true-false'
       ? 'Cada questão deve apresentar uma afirmação objetiva para julgamento. As opções devem ser exatamente Certo e Errado, nesta ordem; não transforme o item em pergunta de múltipla escolha.'
       : `Cada questão deve ter exatamente ${n} alternativas identificadas por ${letters}, com uma única correta.`;
-    return `Você é especialista em elaborar questões de concurso público brasileiro, no padrão observável do(a) ${EXAM_CONFIG.banca}, para o ${EXAM_CONFIG.editalNumber} do(a) ${EXAM_CONFIG.orgName}, cargo "${EXAM_CONFIG.cargo}". O edital define o conteúdo; a banca define o modo de cobrança. Formato: "${ExamRules.questionType}"; política: "${ExamRules.answerPolicy}".\n\nPESQUISA DOCUMENTAL PRÉVIA (não trate inferências como fatos):\n${String(researchNotes||'').slice(0,8000)||'Pesquisa não fornecida; não alegue que consultou provas anteriores.'}\n\nGere ${count} questões NOVAS e ORIGINAIS sobre "${subject.name}", usando SOMENTE os tópicos oficiais abaixo:\n${subject.topics.map(t => '- ' + t).join('\n')}\n\nQuestões existentes para evitar repetição:\n${sampleText || '(nenhuma)'}\n\nREGRAS OBRIGATÓRIAS:\n1. Exatamente ${n} alternativas (${letters}) e uma única correta.\n2. Alternativas plausíveis, sem pegadinhas ambíguas; uma explicação específica para cada alternativa.\n3. Compatibilidade com a banca com base apenas nos padrões encontrados na pesquisa; não copie enunciados protegidos.\n4. Não invente artigos, datas, normas, estatísticas ou fatos. Se não houver sustentação segura, formule de modo conceitual ou não use o dado.\n5. Cobertura equilibrada dos tópicos do edital e nível realista de prova.\n6. Verifique internamente se o gabarito corresponde ao enunciado e se nenhuma outra alternativa também pode ser correta.\n7. Português do Brasil.\n8. Responda SOMENTE JSON válido no formato {"questions":[{"text":"...","options":[...],"correct":0,"explanations":[...]}]}.`;
+    return `Você é especialista em elaborar questões de concurso público brasileiro, no padrão observável do(a) ${EXAM_CONFIG.banca}, para o ${EXAM_CONFIG.editalNumber} do(a) ${EXAM_CONFIG.orgName}, cargo "${EXAM_CONFIG.cargo}". O edital define o conteúdo; a banca define o modo de cobrança. Formato: "${ExamRules.questionType}"; política: "${ExamRules.answerPolicy}".\n\nPESQUISA DOCUMENTAL PRÉVIA (não trate inferências como fatos):\n${String(researchNotes||'').slice(0,8000)||'Pesquisa não fornecida; não alegue que consultou provas anteriores.'}\n\nGere ${count} questões NOVAS e ORIGINAIS sobre "${subject.name}", usando SOMENTE os tópicos oficiais abaixo:\n${subject.topics.map(t => '- ' + t).join('\n')}\n\nQuestões existentes para evitar repetição:\n${sampleText || '(nenhuma)'}\n\nREGRAS OBRIGATÓRIAS:\n${responseRule}\n2. Para Certo/Errado, a afirmação deve ser julgável sem ambiguidade; para múltipla escolha, as alternativas devem ser plausíveis e não ambíguas. Inclua explicação específica para cada opção.\n3. Compatibilidade com a banca com base apenas nos padrões encontrados na pesquisa; não copie enunciados protegidos.\n4. Não invente artigos, datas, normas, estatísticas ou fatos. Se não houver sustentação segura, formule de modo conceitual ou não use o dado.\n5. Cobertura equilibrada dos tópicos do edital e nível realista de prova.\n6. Verifique internamente se o gabarito corresponde ao enunciado e se nenhuma outra alternativa também pode ser correta.\n7. Português do Brasil.\n8. Responda SOMENTE JSON válido no formato {"questions":[{"text":"...","options":[...],"correct":0,"explanations":[...]}]}.`;
   },
 
   _validateAndTag(rawQuestions, subjectId) {
@@ -1994,6 +1994,7 @@ const GroqAI = {
       if(!Array.isArray(q.explanations)||q.explanations.length!==n)return;
       const options=q.options.map(o=>String(o).trim()); const exps=q.explanations.map(e=>String(e).trim());
       if(options.some(x=>!x)||exps.some(x=>!x))return;
+      if(ExamRules.questionType==='true-false'&&options.map(x=>x.toLowerCase()).join('|')!=='certo|errado')return;
       const normalized=[q.text,...options].map(x=>String(x).toLowerCase().replace(/\\s+/g,' ').trim());
       if(new Set(options.map(x=>x.toLowerCase())).size!==n)return;
       const signature=normalized.join('|'); if(seen.has(signature))return; seen.add(signature);
@@ -2218,6 +2219,7 @@ const DoctorAICore = {
     // Não permitir alternativas duplicadas.
     const normalized=q.options.map(x=>x.trim().toLowerCase());
     if(new Set(normalized).size!==normalized.length)return false;
+    if(ExamRules.questionType==='true-false'&&normalized.join('|')!=='certo|errado')return false;
     return true;
   },
   async reviewQuestions(questions,subject,{maxTokens=null}={}) {
