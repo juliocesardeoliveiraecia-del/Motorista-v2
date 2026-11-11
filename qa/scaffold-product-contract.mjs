@@ -41,6 +41,8 @@ assert.deepEqual(validateManifest(cebraspe),[]);
 
 const preEdital=structuredClone(manifest);
 preEdital.app.contestStage='pre-edital';
+preEdital.app.bancaStatus='historical-reference';
+preEdital.edition={...preEdital.edition,id:'pf-agente-edital-2025-historico',contestId:'pf-carreira-policial-agente',mode:'pre-edital',basis:'last-official-edital-and-exam',sourceType:'previous-edital',editalNumber:preEdital.app.editalNumber,publicationDate:preEdital.app.editalPublishDate,editalUrl:preEdital.app.officialEditalUrl,examUrl:preEdital.app.officialLastExamUrl,boardName:'Cebraspe',boardStatus:'historical-reference',boardEvidenceUrl:'https://www.cebraspe.org.br/',supersedesEditionId:null,changeSet:[]};
 preEdital.app.examDateISO=null;
 preEdital.app.examDateLabel='Aguardando novo edital';
 preEdital.app.orgName='Polícia Federal';
@@ -65,6 +67,33 @@ assert.doesNotThrow(()=>new vm.Script(preOutputs['product-context.js']));
 const missingLastExam=structuredClone(preEdital);
 missingLastExam.app.officialLastExamUrl='';
 assert.ok(validateManifest(missingLastExam).some(x=>x.includes('officialLastExamUrl obrigatória')));
+
+
+const wrongCargoIdentity=structuredClone(manifest);
+wrongCargoIdentity.app.targetPosition='Cargo diferente';
+assert.ok(validateManifest(wrongCargoIdentity).some(x=>x.includes('targetPosition')));
+
+const guessedFutureBoard=structuredClone(preEdital);
+guessedFutureBoard.app.bancaStatus='confirmed-current';
+guessedFutureBoard.edition.boardStatus='confirmed-current';
+assert.ok(validateManifest(guessedFutureBoard).some(x=>x.includes('banca histórica')));
+
+const missingBoardEvidence=structuredClone(manifest);
+missingBoardEvidence.edition.boardEvidenceUrl='';
+assert.ok(validateManifest(missingBoardEvidence).some(x=>x.includes('edition.boardEvidenceUrl')));
+
+const editionUpdate=structuredClone(manifest);
+editionUpdate.edition.id='concurso-exemplo-edital-02-2028';
+editionUpdate.edition.sequence=2;
+editionUpdate.edition.supersedesEditionId='concurso-exemplo-edital-01-2027';
+editionUpdate.edition.changeSet=[{type:'topic-added',description:'Inclusão de novo tópico no conteúdo programático',sourceUrl:'https://www.gov.br/'}];
+assert.deepEqual(validateManifest(editionUpdate),[]);
+const updateOutputs=buildOutputs(editionUpdate);
+assert.ok(updateOutputs['product-context.js'].includes('"supersedesEditionId": "concurso-exemplo-edital-01-2027"'));
+
+const invalidUpdate=structuredClone(editionUpdate);
+invalidUpdate.edition.supersedesEditionId=null;
+assert.ok(validateManifest(invalidUpdate).some(x=>x.includes('supersedesEditionId')));
 
 const badStage=structuredClone(manifest);
 badStage.app.contestStage='future';
