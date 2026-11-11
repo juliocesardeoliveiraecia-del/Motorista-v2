@@ -91,6 +91,29 @@ const EXAM_CONFIG = {
     supersedesEditionId: null,
     changeSet: []
   },
+  contentPackage: {
+    contentVersion: '2026.3',
+    subjectCount: 4,
+    topicCount: 40,
+    questionCount: 47,
+    traceabilityCount: 47,
+    hashCount: 47,
+    manifestSha256: '50e8a5dc7cf30290ab04564831d91d0de9ae5bc75af7a684b89a48cffdb53a44',
+    reviewStatus: 'pending',
+    questionSourceReferences: [
+      {
+        label: 'Edital oficial e conteúdo programático — Câmara Municipal de Ipameri',
+        url: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/9-edital/167-edital-de-abertura-n%C2%BA-02-2026.html',
+        sourceType: 'official-syllabus'
+      },
+      {
+        label: 'Última prova e gabaritos oficiais — Câmara Municipal de Ipameri',
+        url: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/sistema/provas_gabaritos/Provas_gabaritos_finais_Ipameri_2026.html',
+        sourceType: 'official-exam'
+      }
+    ],
+    supplementalTopicPending: true
+  },
   appId: 'doctor-motorista-legislativo',
   productId: 'motorista-legislativo',
   // Slug comercial real no catálogo central. Mantém productId local estável para não perder dados offline.
