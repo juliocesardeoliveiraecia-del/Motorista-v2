@@ -99,3 +99,8 @@ A fábrica valida HTTPS e host permitido para edital, prova, evidência da banca
 ## 9. Identidade permanente do aplicativo
 
 Todo aplicativo real deve receber o código público permanente `DC-APP-NNNN` no cadastro mestre do Doctor Concursos. O UUID do banco continua sendo a chave relacional; o código público deve ser copiado para `app.appCode` no manifesto e exportado para `EXAM_CONFIG.appCode` em `product-context.js`. O gerador aceita `appCode: null` somente para prévia/dry-run; a opção `--apply` bloqueia a geração se não houver código válido atribuído pelo cadastro mestre. Nunca inventar, reutilizar ou alterar o código.
+
+
+## Pacote de conteúdo antes do cadastro central
+
+O manifesto pode ser scaffoldado durante o desenvolvimento, mas o adaptador central só prepara o pacote de cadastro quando `contentPackage` estiver preenchido com versão, contagens de matérias/tópicos/questões, uma linha de rastreabilidade e um hash por questão, SHA-256 do manifesto, fontes HTTPS e `reviewStatus: pending`. O template deixa `contentPackage: null` intencionalmente para evitar que um app vazio seja cadastrado.
