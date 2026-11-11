@@ -2224,7 +2224,7 @@ const DoctorAICore = {
     if(!questions?.length) return {ok:true,questions:[]};
     const n=ExamRules.optionCount;
     const payload=questions.map((q,i)=>({index:i,text:q.text,options:q.options,correct:q.correct,explanations:q.explanations}));
-    const prompt=`Você é o REVISOR DOCTOR, uma camada independente do gerador.\n${this.context()}\nMatéria: ${subject.name}\nTópicos permitidos:\n${subject.topics.map(x=>'- '+x).join('\n')}\n\nAnalise cada questão abaixo ANTES de permitir sua entrega ao aluno.\nREGRAS: (1) exatamente ${n} alternativas; (2) somente uma correta; (3) gabarito deve ser defensável; (4) explicações coerentes com o gabarito; (5) sem informação inventada; (6) se houver artigo, lei, data ou fato atual cuja correção não possa ser sustentada com segurança pelo contexto recebido, marque REJEITAR em vez de adivinhar; (7) questão fora do edital ou incompatível com o estilo da banca = REJEITAR.\nResponda JSON com decisions: [{index,status,reason,correctedQuestion}]. status só pode ser APROVAR, CORRIGIR ou REJEITAR. correctedQuestion deve existir sempre; quando não houver correção segura, repita a questão original.\nQUESTÕES:\n${JSON.stringify(payload)}`;
+    const prompt=`Você é o REVISOR DOCTOR, uma camada independente do gerador.\nFormato verificado: ${ExamRules.questionType}; opções: ${ExamRules.optionLabels.join(', ')}; política: ${ExamRules.answerPolicy}. Para Certo/Errado, julgue afirmações e mantenha exatamente as opções Certo e Errado.\n${this.context()}\nMatéria: ${subject.name}\nTópicos permitidos:\n${subject.topics.map(x=>'- '+x).join('\n')}\n\nAnalise cada questão abaixo ANTES de permitir sua entrega ao aluno.\nREGRAS: (1) exatamente ${n} alternativas; (2) somente uma correta; (3) gabarito deve ser defensável; (4) explicações coerentes com o gabarito; (5) sem informação inventada; (6) se houver artigo, lei, data ou fato atual cuja correção não possa ser sustentada com segurança pelo contexto recebido, marque REJEITAR em vez de adivinhar; (7) questão fora do edital ou incompatível com o estilo da banca = REJEITAR.\nResponda JSON com decisions: [{index,status,reason,correctedQuestion}]. status só pode ser APROVAR, CORRIGIR ou REJEITAR. correctedQuestion deve existir sempre; quando não houver correção segura, repita a questão original.\nQUESTÕES:\n${JSON.stringify(payload)}`;
     const r=await this.call({messages:[{role:'system',content:'Você é o Revisor Doctor. Nunca aprove uma questão só porque parece plausível.'},{role:'user',content:prompt}],responseFormat:{type:'json_schema',json_schema:{name:'doctor_review_decisions',strict:true,schema:{type:'object',additionalProperties:false,properties:{decisions:{type:'array',items:{type:'object',additionalProperties:false,properties:{index:{type:'integer'},status:{type:'string',enum:['APROVAR','CORRIGIR','REJEITAR']},reason:{type:'string'},correctedQuestion:{type:'object',additionalProperties:false,properties:{text:{type:'string'},options:{type:'array',items:{type:'string'}},correct:{type:'integer'},explanations:{type:'array',items:{type:'string'}}},required:['text','options','correct','explanations']}},required:['index','status','reason','correctedQuestion']}}},required:['decisions']}}},temperature:0,timeout:60000,maxTokens:maxTokens||Math.min(24000,Math.max(5000,questions.length*1800)),reasoningEffort:'low'});
     if(!r.ok)return {ok:false,reason:'review-unavailable',error:r.error,status:r.status};
     const parsed=this.parseJSON(r.content); if(!parsed||!Array.isArray(parsed.decisions))return {ok:false,reason:'review-invalid'};
@@ -3342,7 +3342,7 @@ Views.practice = function () {
           if (i === evidence.correct) cls += ' correct';
           else if (i === selected) cls += ' wrong';
         }
-        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${opt}</div>`;
+        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${ExamRules.questionType === 'true-false' ? '' : opt}</div>`;
       }).join('')}
       ${answered ? `
         <div class="explanation">
@@ -3846,7 +3846,7 @@ Views.simuladoRunning = function () {
         let cls = 'q-option';
         // Em prova oficial simulada, não revelar gabarito nem acerto durante a execução.
         if (answered) cls += ' answered-locked';
-        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${escapeSimuladoHtml(opt)}</div>`;
+        return `<div class="${cls}" data-i="${i}"><span class="letter">${letters[i]}</span>${ExamRules.questionType === 'true-false' ? '' : escapeSimuladoHtml(opt)}</div>`;
       }).join('')}
       ${answered && integrityMismatch ? `<div class="explanation warn-card"><strong>${iconEl('xCircle')} Questão bloqueada para revisão</strong><p>A questão mudou depois da resposta. O Core preservou a resposta original e bloqueou a correção automática para impedir um falso “erro”.</p></div>` : ''}
       ${answered && !integrityMismatch ? `
