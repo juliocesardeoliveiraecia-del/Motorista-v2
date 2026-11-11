@@ -64,13 +64,13 @@ A aprovação do gate demonstra que o pacote cumpre a distribuição estrutural 
 ## Registro central do conteúdo — produção 2026-11-11
 
 A migração `20261111010740_motorista_content_registry_traceability` foi aplicada ao Supabase de produção de forma aditiva e idempotente. O registro central agora contém:
-- 4 matérias e 39 tópicos vinculados à versão de contexto do produto;
+- 4 matérias e 40 tópicos vinculados à versão de contexto do produto (39 do edital-base + 1 complementar);
 - 1 contexto de produto e 1 versão de contexto em estado `draft`, pois o produto permanece em pré-edital;
 - 47 registros de rastreabilidade, associados ao ID estável da questão e à matéria;
 - estado editorial `pending` para as 47 questões, sem aprovação automática;
 - índice único por produto + ID de questão para impedir duplicação em reimportações.
 
-O mapeamento individual de questão para tópico ainda está pendente. A migração registra isso explicitamente em `metadata.topicAssignment`; não atribui tópicos por inferência e não declara revisão factual independente concluída. As URLs do último edital e da última prova são registradas como fontes de referência do escopo, não como prova de que cada gabarito foi validado.
+As 47 questões estão vinculadas a um tópico por classificação editorial. O tópico complementar de Poder Legislativo municipal permanece marcado como pendente de alinhamento com o edital vigente. As 47 questões continuam com revisão factual/editorial independente pendente; as URLs do último edital e da última prova são referências de escopo, não prova de validação individual de cada gabarito.
 
 O contrato `qa/content-registry-migration-contract.mjs` compara o conjunto de IDs do pacote estático com os IDs da migração e bloqueia divergências ou aprovação editorial automática. O workflow Doctor Core QA executa esse contrato em cada PR.
 
