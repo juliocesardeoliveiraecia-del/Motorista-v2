@@ -29,7 +29,7 @@ export function validateManifest(m) {
   if (!String(m.contentVersion || '').trim()) errors.push('contentVersion obrigatória');
 
   const a = m.app || {};
-  if (a.appCode != null && !/^DC-APP-\\d{4,}$/.test(String(a.appCode))) errors.push('app.appCode deve seguir o formato DC-APP-NNNN e ser atribuído pelo cadastro mestre');
+  if (a.appCode != null && !/^DC-APP-\d{4,}$/.test(String(a.appCode))) errors.push('app.appCode deve seguir o formato DC-APP-NNNN e ser atribuído pelo cadastro mestre');
   for (const key of ['appId','productId','platformProductSlug']) {
     if (!SLUG.test(String(a[key] || ''))) errors.push('app.' + key + ' deve ser slug minúsculo');
   }
@@ -216,7 +216,7 @@ async function main() {
   const errors=validateManifest(manifest);
   if(errors.length){console.error('MANIFESTO INVÁLIDO');for(const e of errors)console.error('- '+e);process.exit(1);}
   const apply=process.argv.includes('--apply'),force=process.argv.includes('--force'),outArg=arg('--out-dir');
-  if(apply && !/^DC-APP-\\d{4,}$/.test(String(manifest.app?.appCode || ''))){console.error('app.appCode é obrigatório para aplicar a configuração. Cadastre o aplicativo na Fábrica Doctor e use o código permanente atribuído pelo banco.');process.exit(1);}
+  if(apply && !/^DC-APP-\d{4,}$/.test(String(manifest.app?.appCode || ''))){console.error('app.appCode é obrigatório para aplicar a configuração. Cadastre o aplicativo na Fábrica Doctor e use o código permanente atribuído pelo banco.');process.exit(1);}
   const outputs=buildOutputs(manifest);
   if(!apply){console.log('MANIFESTO VÁLIDO — prévia dos arquivos gerados:');for(const [name,content] of Object.entries(outputs))console.log('\n--- '+name+' ---\n'+content);return;}
   if(!outArg){console.error('--out-dir é obrigatório com --apply; isso evita sobrescrever o app atual por engano.');process.exit(2);}
