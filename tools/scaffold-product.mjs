@@ -69,8 +69,26 @@ export function validateManifest(m) {
   if (!Array.isArray(rules.optionLabels) || rules.optionLabels.length !== rules.optionCount || rules.optionLabels.some(x => !String(x).trim())) errors.push('examRules.optionLabels deve ter uma etiqueta por alternativa');
   const expectedPolicy = rules.questionType === 'true-false' ? 'true-false' : 'single-correct';
   if (rules.answerPolicy !== expectedPolicy) errors.push('examRules.answerPolicy incompatível com questionType');
-  if (rules.questionType === 'true-false' && rules.optionCount !== 2) errors.push('prova certo/errado deve ter exatamente 2 opções');
-  if (!rules.scoring || !Number.isFinite(rules.scoring.incorrectPoints) || !Number.isFinite(rules.scoring.blankPoints) || !String(rules.scoring.correct || '').trim()) errors.push('examRules.scoring inválido');
+  if (rules.questionType === 'true-false' && (rules.optionCount !== 2 || rules.optionLabels?.map(x => String(x).toLowerCase()).join('|') !== 'certo|errado')) errors.push('prova certo/errado deve usar exatamente as opções Certo e Errado, nesta ordem');
+  if (rules.questionType === 'multiple-choice') {
+    const expectedLabels = ['A','B','C','D','E','F'].slice(0, rules.optionCount);
+    if (rules.optionCount < 2 || rules.optionCount > 6 || JSON.stringify(rules.optionLabels) !== JSON.stringify(expectedLabels)) errors.push('múltipla escolha deve usar de 2 a 6 alternativas sequenciais A–F, conforme prova oficial');
+  }
+  const scoring = rules.scoring || {};
+  if (!Number.isFinite(scoring.incorrectPoints) || !Number.isFinite(scoring.blankPoints) || !String(scoring.correct || '').trim() ||
+      !['per-question','weighted-by-subject','weighted-by-item','net-score'].includes(scoring.mode) ||
+      typeof scoring.negativeMarking !== 'boolean' || !Number.isFinite(scoring.annulledPoints) ||
+      !String(scoring.penaltyDescription || '').trim()) errors.push('examRules.scoring deve declarar modo, penalização, questão anulada, branco e descrição conforme edital');
+  if (scoring.negativeMarking === false && scoring.incorrectPoints !== 0) errors.push('sem penalização, incorrectPoints deve ser zero');
+  if (scoring.negativeMarking === true && scoring.incorrectPoints >= 0) errors.push('com penalização, incorrectPoints deve ser negativo');
+  const formatEvidence = rules.formatEvidence || {};
+  validateOfficialUrl(formatEvidence.editalUrl, 'examRules.formatEvidence.editalUrl', true);
+  validateOfficialUrl(formatEvidence.examUrl, 'examRules.formatEvidence.examUrl', true);
+  validateOfficialUrl(formatEvidence.answerKeyUrl, 'examRules.formatEvidence.answerKeyUrl', true);
+  if (formatEvidence.editalUrl !== a.officialEditalUrl) errors.push('formatEvidence.editalUrl deve ser o edital oficial exato do manifesto');
+  if (!Array.isArray(formatEvidence.verifiedAgainst) ||
+      !['edital','official-exam','official-answer-key'].every(x => formatEvidence.verifiedAgainst.includes(x))) errors.push('formato da prova deve ser conferido contra edital, prova oficial e gabarito oficial');
+  if (formatEvidence.boardName !== a.banca) errors.push('formatEvidence.boardName deve coincidir com a banca do concurso');
   if (!rules.passingScore || rules.passingScore.value !== a.passingScore) errors.push('examRules.passingScore deve coincidir com app.passingScore');
 
   if (!Array.isArray(m.subjects) || !m.subjects.length) errors.push('subjects deve conter as matérias do edital');
@@ -146,7 +164,7 @@ export function validateManifest(m) {
     const share = shares.reduce((sum,value)=>sum+Number(value),0);
     if (Math.abs(share - 1) > 0.000001 || shares.some(x => !Number.isFinite(x) || x < 0 || x > 1)) errors.push('percentuais do Radar devem somar 1 e ficar entre 0 e 1');
   }
-  if (!m.aiProfile || m.aiProfile.questionMode !== rules.questionType || m.aiProfile.answerPolicy !== expectedPolicy || m.aiProfile.revisionRequired !== true || m.aiProfile.currentFactsNeedSource !== true) errors.push('aiProfile deve espelhar o modo da prova, exigir revisão e fonte para fatos atuais');
+  if (!m.aiProfile || m.aiProfile.questionMode !== rules.questionType || m.aiProfile.answerPolicy !== expectedPolicy || m.aiProfile.formatEvidenceVerified !== true || m.aiProfile.revisionRequired !== true || m.aiProfile.currentFactsNeedSource !== true) errors.push('aiProfile deve espelhar o formato comprovado da prova, exigir revisão e fonte para fatos atuais');
 
   return errors;
 }
