@@ -104,3 +104,16 @@ Todo aplicativo real deve receber o código público permanente `DC-APP-NNNN` no
 ## Pacote de conteúdo antes do cadastro central
 
 O manifesto pode ser scaffoldado durante o desenvolvimento, mas o adaptador central só prepara o pacote de cadastro quando `contentPackage` estiver preenchido com versão, contagens de matérias/tópicos/questões, uma linha de rastreabilidade e um hash por questão, SHA-256 do manifesto, fontes HTTPS e `reviewStatus: pending`. O template deixa `contentPackage: null` intencionalmente para evitar que um app vazio seja cadastrado.
+
+## 10. Formato da prova e padrão de cobrança — validação obrigatória
+
+A quantidade e o tipo de alternativas não podem ser inferidos apenas pelo nome da banca. Para cada cargo e edição, o manifesto deve declarar:
+- `examRules.questionType`: múltipla escolha ou certo/errado;
+- `optionCount` e `optionLabels`: rótulos exatos e ordem das alternativas (por exemplo A–D, A–E, A–F ou Certo/Errado);
+- `answerPolicy`: regra de resposta (uma correta ou julgamento);
+- `scoring`: modo de pontuação, valor de acerto, erro, branco, anulação e existência de penalização negativa;
+- `formatEvidence`: URLs oficiais do edital, caderno de prova e gabarito, nome da banca e declaração de conferência contra as três fontes.
+
+O gerador bloqueia rótulos incompatíveis com o número de alternativas; múltipla escolha fora da faixa A–F; certo/errado sem exatamente Certo e Errado; penalização negativa sem valor negativo explícito; ausência de edital, prova ou gabarito oficial como evidência; e divergência entre a banca do manifesto e a banca indicada na evidência.
+
+Em pré-edital, a configuração reproduz o último concurso comparável comprovado e permanece identificada como referência histórica. Em pós-edital, usa a prova e o gabarito oficiais da edição atual. A IA só recebe o perfil como formato verificado depois desses gates. Qualquer alteração posterior de banca, formato ou pontuação gera nova edição e QA; nunca se converte automaticamente um formato em outro.
