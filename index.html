@@ -2615,6 +2615,8 @@ const RadarDoctor = {
   },
   async _resolveCurrentProduct(){
     const bridge=window.DOCTOR_PLATFORM_BRIDGE;
+    const bridgedProductId=String(bridge?.productId||'').trim();
+    if(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(bridgedProductId)){this.currentProductUuid=bridgedProductId;return bridgedProductId;}
     try{
       const bridgeProduct=bridge?.getProductCatalog?.();
       if(Array.isArray(bridgeProduct)){
@@ -2623,7 +2625,7 @@ const RadarDoctor = {
       }
     }catch(_){}
     const slug=encodeURIComponent(String(EXAM_CONFIG.platformProductSlug||EXAM_CONFIG.productId||'').trim());
-    const rows=await this._fetch('products?select=id,slug,status&slug=eq.'+slug+'&status=eq.published&limit=1');
+    const rows=await this._fetch('products?select=id,slug,status&slug=eq.'+slug+'&limit=1');
     const id=Array.isArray(rows)&&rows[0]?.id?String(rows[0].id):null;
     this.currentProductUuid=id;
     return id;
