@@ -105,6 +105,7 @@ preEdital.app.officialEditalUrl='https://www.gov.br/pf/pt-br/acesso-a-informacao
 preEdital.app.officialLastExamUrl='https://www.gov.br/pf/pt-br/acesso-a-informacao/servidores/concursos/provas-e-gabaritos-de-concursos-anteriores';
 preEdital.radarAllowedHosts=['gov.br','cebraspe.org.br'];
 preEdital.radarSources=[preEdital.app.officialEditalUrl,preEdital.app.officialLastExamUrl];
+preEdital.examRules.formatEvidence={...preEdital.examRules.formatEvidence,editalUrl:preEdital.app.officialEditalUrl,examUrl:preEdital.app.officialLastExamUrl,answerKeyUrl:preEdital.app.officialLastExamUrl,boardName:'Cebraspe'};
 preEdital.edition={...preEdital.edition,id:'pf-agente-edital-2025-historico',contestId:'pf-carreira-policial-agente',mode:'pre-edital',basis:'last-official-edital-and-exam',sourceType:'previous-edital',editalNumber:preEdital.app.editalNumber,publicationDate:preEdital.app.editalPublishDate,editalUrl:preEdital.app.officialEditalUrl,examUrl:preEdital.app.officialLastExamUrl,boardName:'Cebraspe',boardStatus:'historical-reference',boardEvidenceUrl:'https://www.cebraspe.org.br/',supersedesEditionId:null,changeSet:[]};
 
 assert.deepEqual(validateManifest(preEdital),[]);
