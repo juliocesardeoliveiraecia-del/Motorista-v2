@@ -1,31 +1,21 @@
 # Doctor Core — Motorista Legislativo
 
-Aplicativo derivado do Doctor Core, configurado para o concurso de **Agente Legislativo — Motorista Legislativo**, da Câmara Municipal de Ipameri/GO, Edital nº 02/2026, banca Instituto Verbena/UFG.
+Aplicativo Doctor Core configurado para o concurso de **Agente Legislativo — Motorista Legislativo**, da Câmara Municipal de Ipameri/GO, com referência ao Edital nº 02/2026 e ao Instituto Verbena/UFG.
 
-## Estado atual
+## Estado de produção conferido em 11/11/2026
 
-- Core: **1.12.13**.
-- Ambiente configurado: **Supabase staging**.
-- Bridge central: habilitada na branch de homologação.
+- Core: **1.12.17**.
+- Conteúdo: **2026.3**.
+- Ambiente: Supabase de produção.
 - Produto no catálogo: `draft`.
 - Aplicativo no catálogo: `maintenance`.
-- URL comercial do app: ainda não publicada.
-- Checkout do aplicativo: desativado; pagamentos e concessão de acesso pertencem ao Doctor Pay central.
-- Esta branch/PR não representa publicação em produção.
+- URL técnica do app: `https://motorista.doctorconcursos.com.br`.
+- Checkout: não liberado para venda.
+- Gate editorial central: ativo; publicação e ativação permanecem bloqueadas até aprovação humana de todo o conteúdo elegível.
 
-## Funcionalidades do Core
+O deploy técnico READY não significa que o produto esteja comercialmente liberado.
 
-- PWA instalável e experiência offline.
-- Prática de questões, histórico, revisão e Caderno de Erros.
-- Simulados com cronômetro e distribuição fiel ao edital.
-- Flashcards e ferramentas de estudo.
-- Caderno Doctor, Gravador Doctor, Redação Doctor e Radar Doctor, conforme disponibilidade do produto.
-- Doctor IA via Groq, sujeita a confirmação de idade, aviso de dados e chave própria do usuário.
-- Sessão central por usuário/aplicativo e sincronização versionada.
-- Central de Suporte integrada à Plataforma Doctor.
-- Gate de integridade de questões, revisão de conteúdo gerado por IA e rastreabilidade.
-
-## Estrutura da prova
+## Configuração oficial da prova
 
 | Matéria | Questões | Peso/questão | Pontos |
 |---|---:|---:|---:|
@@ -35,37 +25,35 @@ Aplicativo derivado do Doctor Core, configurado para o concurso de **Agente Legi
 | Conhecimentos Específicos | 25 | 3 | 75 |
 | **Total** | **40** | — | **100** |
 
-Duração: 4 horas. Quatro alternativas (A–D). Nota mínima: 60 pontos.
+Duração: 4 horas. A prova de referência usa quatro alternativas (A–D). A distribuição oficial do simulado é de 40 questões.
 
-## Integridade do conteúdo
+## Banco estático e rastreabilidade
 
-O banco estático atual contém 32 questões (8 Português, 6 RLM, 6 Realidade, 12 Específicos), abaixo das 40 exigidas pelo edital. Por isso, o simulado oficial permanece bloqueado até completar a distribuição e revisar todas as questões elegíveis.
+O pacote de conteúdo 2026.3 contém **47 questões únicas**:
+- 10 de Língua Portuguesa;
+- 6 de Raciocínio Lógico-Matemático;
+- 6 de Realidade de Goiás e Ipameri;
+- 25 de Conhecimentos Específicos.
 
-Uma questão só pode chegar ao aluno se tiver ID único, matéria válida, alternativas sem duplicidade, gabarito válido, explicações alinhadas, ausência de quarentena e revisão independente quando gerada por IA. A auditoria estrutural não substitui a revisão factual e editorial.
+As 47 questões estão registradas na rastreabilidade de produção, vinculadas a tópicos e protegidas por fingerprint SHA-256. **Todas permanecem com revisão editorial pendente.** Um tópico suplementar ainda precisa de alinhamento explícito ao edital. O hash comprova integridade do bloco de conteúdo; não comprova correção factual nem aprovação editorial.
 
-Comandos de auditoria:
-```bash
-node tools/audit-content.mjs
-node tools/audit-content.mjs --release
-```
+Por isso, o simulado oficial e a publicação comercial continuam sujeitos aos gates de completude e revisão. Não confundir 47 questões disponíveis no banco com a distribuição oficial de 40 questões do simulado.
 
-## Sincronização e uso offline
+## Funcionalidades do Core
 
-A bridge usa o mesmo Supabase Auth da Plataforma e as RPCs autenticadas `claim_device_session_v1`, `heartbeat_device_session_v1`, `get_app_snapshot_v1` e `save_app_snapshot_v1`.
+- PWA instalável e experiência offline, com atualização controlada do Service Worker.
+- Prática de questões, histórico, revisão e Caderno de Erros.
+- Simulados com cronômetro e distribuição configurada pelo edital.
+- Flashcards e ferramentas de estudo.
+- Caderno Doctor, Gravador Doctor, Redação Doctor e Radar Doctor, conforme homologação e disponibilidade do produto.
+- Doctor IA via Groq (G-R-O-Q), com chave do próprio usuário e salvaguardas de transparência e dados.
+- Sessão central por usuário/aplicativo e sincronização versionada.
+- Central de Suporte integrada à Plataforma.
+- Rastreabilidade, fingerprints e bloqueios de publicação.
 
-A fila local só é limpa após confirmação do servidor. Snapshots têm revisão monotônica e limite de 256 KB. Chaves de API, tokens e dados binários de áudio não entram no snapshot. O Gravador usa o bucket privado `recordings` e sincroniza metadados; o arquivo é transferido sob demanda.
+## Configuração de novos produtos
 
-A sessão única é aplicada pelo servidor quando online. Um dispositivo totalmente offline não recebe revogação em tempo real: o lease previamente validado tem validade máxima de 72 horas e é revalidado ao reconectar.
-
-## IA / Groq
-
-O app não fornece chave compartilhada. O fluxo implementado é BYOK, com chave administrada pelo usuário e armazenada localmente. O app exige confirmação de 18 anos e ciência do envio de conteúdo ao provedor; não promete cota gratuita fixa nem retenção zero.
-
-**Pendência jurídica:** os documentos públicos da Groq não esclarecem de forma inequívoca o uso de contas pessoais BYOK por alunos em aplicativo comercial de terceiro. Não declarar o modelo formalmente aprovado até receber confirmação escrita da Groq. Consulte `docs/DOCTOR-CORE-GROQ-LEGAL-STANDARD.md`.
-
-## Gerar um novo produto
-
-Use o manifesto de exemplo e a fábrica de configuração para validar o edital e gerar `product-context.js`, `manifest.json` e `version.json`:
+Use o manifesto de exemplo e a fábrica de configuração para validar edital, banca e regras:
 
 ```bash
 cp templates/product-manifest.example.json product-manifest.json
@@ -74,17 +62,29 @@ node tools/scaffold-product.mjs --manifest product-manifest.json
 node tools/scaffold-product.mjs --manifest product-manifest.json --out-dir . --apply --force
 ```
 
-O gerador não cria questões, assets, repositório GitHub ou projeto Vercel; conteúdo e identidade visual continuam sendo preparados e revisados separadamente.
+A fábrica gera `product-context.js`, `manifest.json` e `version.json`. Ela valida slugs, datas, cores, distribuição, modalidade da prova, hosts oficiais e proporções do Radar. Não cria questões, gabaritos, assets, repositório GitHub ou projeto Vercel.
 
-## Produção em massa
+## Produção em massa — 50+ aplicativos
 
-Um novo aplicativo deve alterar apenas:
-- Product Context: concurso, órgão, cargo, banca, edital, regras e identidade;
+Um novo app deve mudar apenas:
+- Product Context: concurso, órgão, cargo, banca, edital e regras;
 - Product Content: matérias, tópicos, questões, gabaritos, explicações e fontes;
 - Assets: ícones, imagens e identidade visual.
 
 A lógica do Core não deve ser copiada nem reescrita por concurso. Consulte `CORE-MASS-PRODUCTION.md` e `docs/CORE-MASS-PRODUCTION-CONTRACT.md`.
 
-## Segurança
+## Offline e sincronização
 
-Nunca versionar Groq API keys, Supabase service-role keys, tokens de pagamento ou outros segredos. O cliente usa somente configuração pública do Supabase. Não habilitar checkout, publicar produto ou promover staging para produção sem homologação funcional e autorização.
+A fila local só deve ser limpa após confirmação do servidor. Snapshots têm revisão monotônica e limite de 256 KB. Chaves de API, tokens e dados binários de áudio não entram no snapshot. O Gravador usa o bucket privado `recordings` e sincroniza metadados; o arquivo é transferido sob demanda.
+
+A sessão única é aplicada pelo servidor quando online. Um dispositivo totalmente offline não recebe revogação em tempo real: o lease previamente validado tem validade máxima de 72 horas e é revalidado ao reconectar.
+
+## IA / Groq
+
+O app não fornece chave compartilhada. O fluxo BYOK usa chave administrada pelo usuário e armazenada localmente; a chave não deve ser sincronizada, enviada em logs, URLs ou repositórios. O app exige confirmação de 18 anos e ciência do envio de conteúdo ao provedor. Não prometer cota gratuita fixa nem retenção zero.
+
+**Pendência jurídica:** o uso de contas pessoais BYOK por alunos em aplicativo comercial de terceiro ainda requer confirmação escrita da Groq. Não declarar formalmente aprovado até essa confirmação. Consulte `docs/DOCTOR-CORE-GROQ-LEGAL-STANDARD.md`.
+
+## Segurança e publicação
+
+Nunca versionar chaves Groq, Supabase service-role, tokens de pagamento ou outros segredos. O cliente usa somente configuração pública do Supabase. Não habilitar checkout, publicar produto ou ativar aplicativo sem homologação funcional, revisão editorial e autorização de lançamento.
