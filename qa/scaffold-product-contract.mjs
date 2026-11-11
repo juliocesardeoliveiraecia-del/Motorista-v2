@@ -23,7 +23,7 @@ assert.ok(currentProductContext.includes("traceabilityCount: 47"));
 assert.ok(currentProductContext.includes("hashCount: 47"));
 assert.ok(currentProductContext.includes("reviewStatus: 'pending'"));
 assert.ok(currentProductContext.includes("manifestSha256: '50e8a5dc7cf30290ab04564831d91d0de9ae5bc75af7a684b89a48cffdb53a44'"));
-assert.ok(template.contentPackage === null, 'New app template must require content package to be filled before central registration');
+assert.ok(manifest.contentPackage === null, 'New app template must require content package to be filled before central registration');
 assert.deepEqual(validateManifest(manifest),[]);
 const outputs=buildOutputs(manifest);
 assert.ok(outputs['product-context.js'].includes('"provider": "supabase-versioned-snapshot-v1"'));
