@@ -19,6 +19,7 @@ jobs:
       - run: node qa/question-content-audit.mjs
       - run: node qa/content-registry-migration-contract.mjs
       - run: node qa/radar-draft-product-contract.mjs
+      - run: node qa/question-topic-mapping-contract.mjs
       - run: node qa/question-answer-contract.mjs
       - run: node qa/ai-generation-contract.mjs
       - name: Block release when the official question distribution is incomplete
