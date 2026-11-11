@@ -37,7 +37,8 @@ const EXAM_CONFIG = {
     optionCount: 4,
     optionLabels: ['A','B','C','D'],
     answerPolicy: 'single-correct',
-    scoring: { correct: 'subject-weight', incorrectPoints: 0, blankPoints: 0 },
+    scoring: { correct: 'subject-weight', mode: 'weighted-by-subject', incorrectPoints: 0, blankPoints: 0, annulledPoints: 0, negativeMarking: false, penaltyDescription: 'Conforme quadro de pesos do edital; sem desconto por erro.' },
+    formatEvidence: { editalUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/9-edital/167-edital-de-abertura-n%C2%BA-02-2026.html', examUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/sistema/provas_gabaritos/Provas_gabaritos_finais_Ipameri_2026.html', answerKeyUrl: 'https://sistemas.institutoverbena.ufg.br/2026/concurso-camara-ipameri/sistema/provas_gabaritos/Provas_gabaritos_finais_Ipameri_2026.html', boardName: 'Instituto Verbena / UFG', verifiedAgainst: ['edital','official-exam','official-answer-key'] },
     passingScore: { type: 'points', value: 60 }
   },
 
@@ -125,6 +126,7 @@ const EXAM_CONFIG = {
   aiProfile: {
     questionMode: 'multiple-choice',
     answerPolicy: 'single-correct',
+    formatEvidenceVerified: true,
     revisionRequired: true,
     currentFactsNeedSource: true,
     radar: { contestShare: 0.70, promotionShare: 0.30, discoveryShare: 0.00, officialFirst: true },

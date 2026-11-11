@@ -31,7 +31,7 @@ function makeHarness(alwaysReturnTwo=false){
     QUESTIONS:questions,
     Store:{state:{aiQuestions:saved},save(){}},
     DoctorQuestionIntegrity:{auditBank(){}},
-    EXAM_CONFIG:{aiProfile:{revisionRequired:true}},
+    EXAM_CONFIG:{aiProfile:{revisionRequired:true,formatEvidenceVerified:true}},
     ExamRules:{optionCount:4},
     DoctorAICore:{
       context:()=> 'contexto',

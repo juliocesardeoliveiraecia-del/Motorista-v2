@@ -61,4 +61,10 @@ must('Same-view refreshes replace the current history entry instead of trapping 
 must('Back and Home derive navigation depth from the owned browser history state with a safe Home fallback', index.includes('Number(history.state.navIndex)') && index.includes('currentIndex > 0 && history.state?.doctorCore') && index.includes('history.go(-currentIndex)'));
 must('Every ordinary internal page receives the shared bottom Back control while an active simulado retains its explicit confirmed exit', index.includes("this.currentView !== 'home' && this.currentView !== 'simuladoRunning'") && index.includes('id="page-back-bottom"') && index.includes("if (confirm('Sair do simulado?"));
 must('Exam option labels follow the product-specific banca rules', index.includes('ExamRules.optionLabels?.[i]'));
+must('Exam format must be verified before AI question generation', index.includes("formatEvidenceVerified !== true") && index.includes("reason:'exam-format-unverified'"));
+must('Certo/Errado prompt creates judgement items with exact labels', index.includes('Cada questão deve apresentar uma afirmação objetiva para julgamento') && index.includes('exatamente Certo e Errado'));
+must('Certo/Errado rendering does not duplicate labels as option text', index.includes("ExamRules.questionType === 'true-false' ? '' : opt") && index.includes("ExamRules.questionType === 'true-false' ? '' : escapeSimuladoHtml(opt)"));
+must('Simulado print instructions adapt to Certo/Errado', index.includes('Julgue cada afirmação como Certo ou Errado.') && index.includes('Marque Certo ou Errado em cada item.'));
+must('Simulado scoring consumes explicit banca scoring mode and blank points', index.includes('ExamRules.scoring.mode') && index.includes('ExamRules.scoring.blankPoints') && index.includes('ExamRules.scoring.incorrectPoints'));
+must('Exam scoring receives the official negative-marking configuration', index.includes('negativeMarking: Boolean(EXAM_CONFIG.examRules?.scoring?.negativeMarking') && index.includes('penaltyDescription: String(EXAM_CONFIG.examRules?.scoring?.penaltyDescription'));
 console.log('CORE STATIC QA: OK');

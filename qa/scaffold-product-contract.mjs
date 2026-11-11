@@ -62,10 +62,30 @@ cebraspe.app.alternativesPerQuestion=2;
 cebraspe.examRules.optionCount=2;
 cebraspe.examRules.optionLabels=['Certo','Errado'];
 cebraspe.examRules.questionType='true-false';
+cebraspe.examRules.formatEvidence.boardName='Banca Exemplo';
+cebraspe.examRules.scoring={correct:'1 ponto',mode:'net-score',incorrectPoints:-1,blankPoints:0,annulledPoints:0,negativeMarking:true,penaltyDescription:'Item errado anula item certo, conforme regra desta fixture'};
 cebraspe.examRules.answerPolicy='true-false';
 cebraspe.aiProfile.questionMode='true-false';
 cebraspe.aiProfile.answerPolicy='true-false';
 assert.deepEqual(validateManifest(cebraspe),[]);
+
+const sixOptions=structuredClone(manifest);
+sixOptions.app.alternativesPerQuestion=6;
+sixOptions.examRules.optionCount=6;
+sixOptions.examRules.optionLabels=['A','B','C','D','E','F'];
+assert.deepEqual(validateManifest(sixOptions),[]);
+
+const wrongOptionLabels=structuredClone(manifest);
+wrongOptionLabels.examRules.optionLabels=['A','B','C','D','F'];
+assert.ok(validateManifest(wrongOptionLabels).some(x=>x.includes('alternativas sequenciais')));
+
+const missingFormatEvidence=structuredClone(manifest);
+missingFormatEvidence.examRules.formatEvidence.answerKeyUrl='';
+assert.ok(validateManifest(missingFormatEvidence).some(x=>x.includes('answerKeyUrl')));
+
+const guessedScoring=structuredClone(manifest);
+guessedScoring.examRules.scoring.negativeMarking=true;
+assert.ok(validateManifest(guessedScoring).some(x=>x.includes('incorrectPoints deve ser negativo')));
 
 
 const preEdital=structuredClone(manifest);
@@ -85,6 +105,7 @@ preEdital.app.officialEditalUrl='https://www.gov.br/pf/pt-br/acesso-a-informacao
 preEdital.app.officialLastExamUrl='https://www.gov.br/pf/pt-br/acesso-a-informacao/servidores/concursos/provas-e-gabaritos-de-concursos-anteriores';
 preEdital.radarAllowedHosts=['gov.br','cebraspe.org.br'];
 preEdital.radarSources=[preEdital.app.officialEditalUrl,preEdital.app.officialLastExamUrl];
+preEdital.examRules.formatEvidence={...preEdital.examRules.formatEvidence,editalUrl:preEdital.app.officialEditalUrl,examUrl:preEdital.app.officialLastExamUrl,answerKeyUrl:preEdital.app.officialLastExamUrl,boardName:'Cebraspe'};
 preEdital.edition={...preEdital.edition,id:'pf-agente-edital-2025-historico',contestId:'pf-carreira-policial-agente',mode:'pre-edital',basis:'last-official-edital-and-exam',sourceType:'previous-edital',editalNumber:preEdital.app.editalNumber,publicationDate:preEdital.app.editalPublishDate,editalUrl:preEdital.app.officialEditalUrl,examUrl:preEdital.app.officialLastExamUrl,boardName:'Cebraspe',boardStatus:'historical-reference',boardEvidenceUrl:'https://www.cebraspe.org.br/',supersedesEditionId:null,changeSet:[]};
 
 assert.deepEqual(validateManifest(preEdital),[]);
