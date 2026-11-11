@@ -634,8 +634,8 @@
         </form>
         <p data-doctor-gate-error role="status" style="min-height:20px;margin:12px 0;color:#ffd27a;font-size:12px"></p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px">
-          <a href="https://www.doctorconcursos.com.br/" target="_blank" rel="noopener noreferrer" style="color:#9cc8ff">Criar conta / contratar acesso</a>
-          <a href="https://www.doctorconcursos.com.br/" target="_blank" rel="noopener noreferrer" style="color:#9cc8ff">Recuperar senha</a>
+          <a href="https://www.doctorconcursos.com.br/?account=signup" target="_blank" rel="noopener noreferrer" style="color:#9cc8ff">Criar conta / contratar acesso</a>
+          <a href="https://www.doctorconcursos.com.br/?account=recovery" target="_blank" rel="noopener noreferrer" style="color:#9cc8ff">Recuperar senha</a>
         </div>
         <p style="margin:18px 0 0;color:#8296b0;font-size:11px;line-height:1.45">Seus dados de estudo permanecem neste dispositivo. A sincronização só será considerada concluída após confirmação do servidor.</p>
       </section>`;
