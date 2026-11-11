@@ -68,6 +68,7 @@ const EXAM_CONFIG = {
   appIconSizes: [48, 72, 96, 128, 144, 192, 256, 512, 1024],
 
   // Doctor Core V1 — identidade estável do produto e versão de conteúdo
+  appCode: 'DC-APP-0001', // código permanente do cadastro mestre Doctor Concursos
   appId: 'doctor-motorista-legislativo',
   productId: 'motorista-legislativo',
   // Slug comercial real no catálogo central. Mantém productId local estável para não perder dados offline.

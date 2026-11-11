@@ -8,6 +8,15 @@ assert.deepEqual(validateManifest(manifest),[]);
 const outputs=buildOutputs(manifest);
 assert.ok(outputs['product-context.js'].includes('"provider": "supabase-versioned-snapshot-v1"'));
 assert.ok(outputs['product-context.js'].includes('"sessionPolicy": "single-active-device"'));
+assert.ok(outputs['product-context.js'].includes('"appCode": null'));
+
+const registeredApp=structuredClone(manifest);
+registeredApp.app.appCode='DC-APP-0042';
+assert.deepEqual(validateManifest(registeredApp),[]);
+assert.ok(buildOutputs(registeredApp)['product-context.js'].includes('"appCode": "DC-APP-0042"'));
+const invalidAppCode=structuredClone(manifest);
+invalidAppCode.app.appCode='motorista-legislativo';
+assert.ok(validateManifest(invalidAppCode).some(x=>x.includes('app.appCode')));
 assert.ok(outputs['manifest.json'].includes('"short_name": "Concurso Exemplo"'));
 assert.ok(outputs['version.json'].includes('"version": "1.0.0"'));
 assert.doesNotThrow(()=>new vm.Script(outputs['product-context.js']));

@@ -5,6 +5,7 @@
   "contentVersion": "2027.1",
   "description": "Aplicativo de estudos configurado para um concurso público.",
   "app": {
+    "appCode": null,
     "appId": "doctor-concurso-exemplo",
     "productId": "concurso-exemplo",
     "platformProductSlug": "concurso-exemplo-2027",
