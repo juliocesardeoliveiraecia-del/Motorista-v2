@@ -2623,7 +2623,7 @@ const RadarDoctor = {
       }
     }catch(_){}
     const slug=encodeURIComponent(String(EXAM_CONFIG.platformProductSlug||EXAM_CONFIG.productId||'').trim());
-    const rows=await this._fetch('products?select=id,slug,status&slug=eq.'+slug+'&status=eq.published&limit=1');
+    const rows=await this._fetch('products?select=id,slug,status&slug=eq.'+slug+'&limit=1');
     const id=Array.isArray(rows)&&rows[0]?.id?String(rows[0].id):null;
     this.currentProductUuid=id;
     return id;
