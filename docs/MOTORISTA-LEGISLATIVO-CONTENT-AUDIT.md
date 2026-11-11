@@ -59,3 +59,19 @@ No commit `014844c01bafb4c86ee820948fc3cf008994f6cd`, os três workflows — Doc
 ## Limite de liberação
 
 A aprovação do gate demonstra que o pacote cumpre a distribuição estrutural e os contratos automatizados. Antes de publicação comercial, ainda deve ocorrer revisão editorial independente das questões, verificação de atualidade das normas citadas e teste funcional do simulado em dispositivo.
+
+
+## Registro central do conteúdo — produção 2026-11-11
+
+A migração `20261111010740_motorista_content_registry_traceability` foi aplicada ao Supabase de produção de forma aditiva e idempotente. O registro central agora contém:
+- 4 matérias e 39 tópicos vinculados à versão de contexto do produto;
+- 1 contexto de produto e 1 versão de contexto em estado `draft`, pois o produto permanece em pré-edital;
+- 47 registros de rastreabilidade, associados ao ID estável da questão e à matéria;
+- estado editorial `pending` para as 47 questões, sem aprovação automática;
+- índice único por produto + ID de questão para impedir duplicação em reimportações.
+
+O mapeamento individual de questão para tópico ainda está pendente. A migração registra isso explicitamente em `metadata.topicAssignment`; não atribui tópicos por inferência e não declara revisão factual independente concluída. As URLs do último edital e da última prova são registradas como fontes de referência do escopo, não como prova de que cada gabarito foi validado.
+
+O contrato `qa/content-registry-migration-contract.mjs` compara o conjunto de IDs do pacote estático com os IDs da migração e bloqueia divergências ou aprovação editorial automática. O workflow Doctor Core QA executa esse contrato em cada PR.
+
+**Limite:** o registro central melhora a governança e a rastreabilidade, mas não substitui revisão humana das 47 questões, nem altera o estado comercial do produto.
