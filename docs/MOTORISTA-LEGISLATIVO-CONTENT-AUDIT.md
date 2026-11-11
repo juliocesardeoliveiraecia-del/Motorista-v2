@@ -75,3 +75,14 @@ O mapeamento individual de questão para tópico ainda está pendente. A migraç
 O contrato `qa/content-registry-migration-contract.mjs` compara o conjunto de IDs do pacote estático com os IDs da migração e bloqueia divergências ou aprovação editorial automática. O workflow Doctor Core QA executa esse contrato em cada PR.
 
 **Limite:** o registro central melhora a governança e a rastreabilidade, mas não substitui revisão humana das 47 questões, nem altera o estado comercial do produto.
+
+
+## Mapeamento questão → tópico — 2026-11-11
+
+A migração `20261111011923_map_motorista_questions_to_topics` vinculou os 47 IDs estáveis às matérias e tópicos correspondentes:
+- 39 tópicos derivados da estrutura do edital-base;
+- 1 tópico complementar de Poder Legislativo municipal para a questão `real-4`, explicitamente marcado como `supplemental_pending_edital_alignment`, pois não aparece como tópico autônomo na lista-base registrada;
+- 47 vínculos questão→tópico, sem alterar o gabarito, texto ou explicação;
+- as 47 questões permanecem com `review_status=pending` até revisão factual/editorial independente.
+
+O QA `qa/question-topic-mapping-contract.mjs` verifica que cada ID do pacote possui exatamente um vínculo na migração, que o tópico complementar permanece identificado e que nenhuma questão é aprovada automaticamente.
