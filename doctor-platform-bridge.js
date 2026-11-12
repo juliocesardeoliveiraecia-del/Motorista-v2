@@ -318,9 +318,6 @@
     }
 
     let claimed = Array.isArray(claimData) ? claimData[0] : claimData;
-    if (claimed && !claimed.session_id && claimed.status === 'claimed') {
-      claimed = { session_id: claimed.session_id };
-    }
     if (claimed?.status === 'pending' && claimed.request_id) {
       const handoff = await waitForSessionRequest(db, claimed.request_id);
       if (!handoff.ok) return handoff;
@@ -835,7 +832,7 @@
         const verified = await claimCurrentSession();
         if (!verified.ok) {
           status.textContent = messageFor(verified.reason);
-          await db.auth.signOut();
+          await db.auth.signOut({ scope: 'local' });
           return;
         }
         overlay.remove();
