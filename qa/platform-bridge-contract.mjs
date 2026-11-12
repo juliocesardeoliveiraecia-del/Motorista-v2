@@ -70,5 +70,5 @@ console.log('DOCTOR PLATFORM BRIDGE QA: OK');
 must('Legal search is a highlighted first-class Doctor tool', index.includes('home-legal-search') && index.includes('Buscador de Lei Seca Doctor'));
 must('Legal search has a dedicated view and navigation binding', index.includes('Views.legalSearch') && index.includes('Views.bind.legalSearch'));
 must('Legal search is independent from GROQ and validates legal-only queries', read('legal-search.js').includes('isLegalQuery') && !read('legal-search.js').includes('GroqAI'));
-must('Legal search uses LexML and exposes official legislation sources', read('legal-search.js').includes('www.lexml.gov.br/busca/SRU') && index.includes('legislacao/portal-legis/busca-avancada'));
-must('Legal search client is loaded and precached by the service worker', index.includes('legal-search.js?v=1.0.0') && sw.includes('./legal-search.js?v=1.0.0'));
+must('Legal search uses LexML and exposes official legislation sources', read('api/legal-search.js').includes('www.lexml.gov.br/busca/SRU') && read('legal-search.js').includes('/api/legal-search?') && index.includes('legislacao/portal-legis/busca-avancada'));
+must('Legal search client is loaded and precached by the service worker', index.includes('legal-search.js?v=1.0.0') && sw.includes('./legal-search.js?v=1.0.0') && sw.slice(sw.indexOf('const CORE_ASSETS'),sw.indexOf('const CACHE_PREFIX')).includes('./legal-search.js?v=1.0.0'));
