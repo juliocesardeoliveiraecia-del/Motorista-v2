@@ -35,6 +35,12 @@ create table if not exists public.device_session_requests (
 );
 create index if not exists device_session_requests_user_created_idx
   on public.device_session_requests(user_id, created_at desc);
+create index if not exists device_session_requests_active_session_idx
+  on public.device_session_requests(active_session_id);
+create index if not exists device_session_requests_app_id_idx
+  on public.device_session_requests(app_id);
+create index if not exists device_session_requests_new_session_idx
+  on public.device_session_requests(new_session_id);
 create unique index if not exists device_session_requests_one_pending_user_uidx
   on public.device_session_requests(user_id) where status = 'pending';
 alter table public.device_session_requests enable row level security;
@@ -109,7 +115,6 @@ begin
     raise exception 'invalid app or device identity';
   end if;
   perform pg_advisory_xact_lock(hashtextextended(v_user_id::text, 0));
-
   if not public.is_admin() and not exists (
     select 1 from public.access_grants ag
     join public.products p on p.id=ag.product_id and p.status='published'
@@ -121,16 +126,11 @@ begin
   if public.is_admin() and not exists(select 1 from public.apps a where a.id=p_app_id) then
     raise exception 'app not found';
   end if;
-
-  update public.device_session_requests
-    set status='expired', decided_at=now()
+  update public.device_session_requests set status='expired', decided_at=now()
   where user_id=v_user_id and status='pending' and expires_at<=now();
-
-  select * into v_active
-  from public.device_sessions
+  select * into v_active from public.device_sessions
   where user_id=v_user_id and app_id is not null and revoked_at is null
-  order by last_seen_at desc limit 1
-  for update;
+  order by last_seen_at desc limit 1 for update;
 
   if found and v_active.device_id = p_device_id then
     if v_active.app_id = p_app_id then
@@ -150,6 +150,18 @@ begin
     return jsonb_build_object('status','claimed','session_id',v_session_id,'app_id',p_app_id);
   end if;
 
+  -- Recover automatically when the previous device has been offline or closed long enough.
+  if found and v_active.last_seen_at < now() - interval '3 minutes' then
+    update public.device_sessions set revoked_at=now() where id=v_active.id;
+    insert into public.device_sessions(user_id,device_id,device_name,platform,app_id,last_seen_at,revoked_at)
+    values(v_user_id,p_device_id,nullif(left(coalesce(p_device_name,''),120),''),
+      nullif(left(coalesce(p_platform,''),80),''),p_app_id,now(),null)
+    on conflict on constraint device_sessions_user_device_app_key do update
+      set device_name=excluded.device_name,platform=excluded.platform,last_seen_at=now(),revoked_at=null
+    returning id into v_session_id;
+    return jsonb_build_object('status','claimed','session_id',v_session_id,'app_id',p_app_id,'recovered_stale_session',true);
+  end if;
+
   if found then
     insert into public.device_session_requests(
       user_id,active_session_id,app_id,device_id,device_name,platform,status,expires_at
@@ -158,11 +170,9 @@ begin
       nullif(left(coalesce(p_device_name,''),120),''),
       nullif(left(coalesce(p_platform,''),80),''),'pending',now()+interval '30 seconds'
     ) returning id into v_request_id;
-    return jsonb_build_object(
-      'status','pending','request_id',v_request_id,
+    return jsonb_build_object('status','pending','request_id',v_request_id,
       'active_device_name',coalesce(v_active.device_name,'Outro dispositivo'),
-      'expires_at',now()+interval '30 seconds'
-    );
+      'expires_at',now()+interval '30 seconds');
   end if;
 
   insert into public.device_sessions(user_id,device_id,device_name,platform,app_id,last_seen_at,revoked_at)
@@ -324,7 +334,9 @@ begin
 end;
 $$;
 
-revoke all on function public.broadcast_device_session_event() from public, anon, authenticated;
+revoke execute on function public.broadcast_device_session_event() from anon;
+revoke execute on function public.broadcast_device_session_event() from authenticated;
+revoke execute on function public.broadcast_device_session_event() from public;
 revoke all on function public.request_device_session_v1(uuid,text,text,text) from public, anon;
 revoke all on function public.resolve_device_session_request_v1(uuid,text) from public, anon;
 revoke all on function public.get_device_session_request_v1(uuid) from public, anon;
