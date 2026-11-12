@@ -1123,6 +1123,7 @@ const ICONS = {
   car: svgIcon('<path d="M4 16V11.5l2-5A2 2 0 0 1 7.8 5.2h8.4A2 2 0 0 1 18 6.5l2 5V16"/><path d="M4 16h16v2.5a1 1 0 0 1-1 1H17a1 1 0 0 1-1-1V17H8v1.5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><circle cx="7.5" cy="16" r="1.4"/><circle cx="16.5" cy="16" r="1.4"/>'),
   target: svgIcon('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/>'),
   clipboard: svgIcon('<rect x="5.5" y="4" width="13" height="17" rx="2"/><rect x="9" y="2" width="6" height="3.5" rx="1"/><path d="M8.5 11.5l2 2 4-4.5"/>'),
+  headset: svgIcon('<path d="M3.5 13v-1a8.5 8.5 0 0 1 17 0v1"/><rect x="3" y="12" width="4" height="7" rx="1.5"/><rect x="17" y="12" width="4" height="7" rx="1.5"/><path d="M17 19a3 3 0 0 1-3 3h-2"/>'),
   gear: svgIcon('<circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H2.5a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3H8.9a1.7 1.7 0 0 0 1-1.6V2.5a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.6 1h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1z"/>'),
   chevronRight: svgIcon('<path d="M9 6l6 6-6 6"/>'),
   arrowLeft: svgIcon('<path d="M19 12H5M11 6l-6 6 6 6"/>'),
@@ -4475,7 +4476,6 @@ Views.settings = function () {
   const groqEntryStatus = legalReady && s.groqValidation === 'ok' ? 'IA ativa' : (hasKey ? 'Configuração pendente' : 'IA não configurada');
   const groqEntrySummary = legalReady && s.groqValidation === 'ok' ? 'Sua IA está configurada e pronta para uso.' : 'Configure sua chave e permissões para ativar os recursos inteligentes.';
   return `
-    <button class="btn btn-ghost btn-sm" id="back-home">← Voltar para o Doctor</button>
     <h2>⚙️ Configurações</h2>
     <p class="settings-intro">Gerencie o aplicativo, seu dispositivo e sua conta. As configurações de IA ficam em uma página própria.</p>
     <section class="card settings-ai-entry" aria-labelledby="settings-ai-title">
@@ -4494,19 +4494,20 @@ Views.settings = function () {
     <div class="card"><h3>🎨 Aparência</h3><button class="btn btn-outline btn-block" id="toggle-theme-btn">Alternar tema (${s.theme === 'dark' ? 'escuro' : 'claro'})</button></div>
     <div class="card"><h3>💾 Dados e sincronização</h3><p class="muted">Seus dados locais continuam disponíveis offline. ${CoreSync.status().remoteConfigured ? (CoreSync.status().queued?`Há <strong>${CoreSync.status().queued}</strong> alteração(ões) aguardando sincronização.`:'Nenhuma alteração aguardando sincronização.') : 'A sincronização com a plataforma Doctor ainda não está conectada; os dados permanecem salvos neste dispositivo.'}</p><button class="btn btn-outline btn-block" id="sync-now">🔄 Sincronizar informações</button><button class="btn btn-danger btn-block" id="reset-progress">Zerar progresso</button></div>
     <div class="settings-section-heading"><span>02</span><div><strong>Conta e suporte</strong><small>Acesso, segurança e atendimento</small></div></div>
+    <div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>
+    <section class="card doctor-support-entry" aria-labelledby="doctor-support-entry-title">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="doctor-support-entry-icon" aria-hidden="true" style="width:42px;height:42px;flex:0 0 42px;display:inline-flex;align-items:center;justify-content:center;border-radius:12px;background:rgba(8,124,244,.12);color:#087cf4">${ICONS.headset}</span>
+        <div style="flex:1;min-width:0"><h3 id="doctor-support-entry-title" style="margin:0 0 4px">Central de Suporte</h3><p class="muted" style="margin:0">Dúvidas, sugestões, reclamações e problemas no aplicativo.</p></div>
+      </div>
+      <button class="btn btn-primary btn-block" id="open-doctor-support" type="button" style="margin-top:14px">Acessar suporte <span aria-hidden="true">→</span></button>
+    </section>
     <section class="card doctor-account-card" aria-labelledby="doctor-account-title">
       <h3 id="doctor-account-title">🔐 Sua conta Doctor</h3>
       <p class="muted">Encerre sua sessão com segurança neste dispositivo. Seus estudos, anotações e progresso salvos não serão apagados.</p>
       <button class="btn btn-danger btn-block" id="doctor-sign-out" type="button">↪ Sair da conta</button>
     </section>
-<div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>
-    <section class="card doctor-support-entry" aria-labelledby="doctor-support-entry-title">
-      <div style="display:flex;align-items:center;gap:12px">
-        <span aria-hidden="true" style="font-size:1.8rem">🛟</span>
-        <div style="flex:1;min-width:0"><h3 id="doctor-support-entry-title" style="margin:0 0 4px">Central de Suporte</h3><p class="muted" style="margin:0">Dúvidas, sugestões, reclamações e problemas no aplicativo.</p></div>
-      </div>
-      <button class="btn btn-primary btn-block" id="open-doctor-support" type="button" style="margin-top:14px">Acessar suporte <span aria-hidden="true">→</span></button>
-    </section>
+    <button class="btn btn-ghost btn-sm" id="back-home">← Voltar para o Doctor</button>
 `;
 };
 
