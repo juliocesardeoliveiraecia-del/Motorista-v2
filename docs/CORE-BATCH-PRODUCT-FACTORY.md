@@ -64,11 +64,12 @@ O Core exibe a preparação pré-edital, usa o último edital + última prova co
 
 Todos os aplicativos derivados devem herdar a política global de uma sessão ativa por conta, não uma sessão por aplicativo:
 - a restrição é aplicada no Supabase por usuário, com trava transacional e índice único;
-- um novo dispositivo solicita transferência e o dispositivo ativo recebe confirmação em tempo real;
-- manter a sessão atual cancela a nova tentativa; transferir revoga a anterior e autoriza a nova;
-- sem resposta, a transferência expira e a sessão atual permanece protegida;
-- uma sessão sem heartbeat por mais de 3 minutos pode ser recuperada automaticamente para evitar bloqueio após fechamento ou perda de conexão;
+- o último login autenticado assume a sessão imediatamente e revoga a sessão anterior, sem exigir confirmação;
+- o banco transmite a revogação por canal privado Realtime; o dispositivo anterior fecha o acesso imediatamente ao receber o evento;
+- heartbeat no servidor funciona como contingência se o WebSocket cair;
+- uma sessão abandonada pode ser substituída após o prazo de inatividade configurado;
 - o mesmo dispositivo mantém um identificador estável entre produtos no mesmo domínio/origem;
-- clientes antigos que ainda chamam a RPC legada falham de forma fechada quando existe outro dispositivo ativo.
+- a revogação remove a licença local da sessão e encerra apenas a autenticação local daquele dispositivo;
+- dados de estudo offline permanecem preservados e sincronizações protegidas exigem sessão ativa no servidor.
 
-O scaffold declara `single-active-device-global-account-confirmed-handoff`. O bridge global e as RPCs de handoff são parte obrigatória do Core e devem ser mantidos em todas as derivações. O modo offline preserva os dados locais; a revogação é aplicada assim que o dispositivo volta a se comunicar com o servidor.
+O scaffold declara `single-active-device-global-account-last-login-wins`. O bridge e as RPCs de sessão são parte obrigatória do Core e devem ser mantidos em todas as derivações.
