@@ -29,11 +29,13 @@
     const q=String(query||'').trim();
     if(q.length<3)throw new Error('Digite pelo menos 3 caracteres para pesquisar.');
     if(!isLegalQuery(q))throw new Error('Este buscador é exclusivo para legislação. Informe uma lei, artigo, estatuto, decreto, resolução ou assunto jurídico, como trânsito, servidor público ou licitação.');
-    const safe=q.replace(/"/g,' ');
-    const cql='dc.title any "'+safe+'" or dc.subject any "'+safe+'"';
-    const params=new URLSearchParams({operation:'searchRetrieve',version:'1.1',query:cql,startRecord:String(start),maximumRecords:'30',recordSchema:'dc'});
-    const response=await fetch(ENDPOINT+'?'+params.toString(),{headers:{Accept:'application/xml, text/xml'},cache:'no-store'});
-    if(!response.ok)throw new Error('A base LexML está temporariamente indisponível (HTTP '+response.status+').');
+    const params=new URLSearchParams({q,scope,type});
+    const response=await fetch('/api/legal-search?'+params.toString(),{headers:{Accept:'application/xml, text/xml'},cache:'no-store'});
+    if(!response.ok){
+      const body=await response.text();let message='A base LexML está temporariamente indisponível (HTTP '+response.status+').';
+      try{message=JSON.parse(body).error||message;}catch(_){}
+      throw new Error(message);
+    }
     const xml=await response.text();
     if(/<!doctype html|captcha|verificação de segurança/i.test(xml.slice(0,1200)))throw new Error('A base LexML solicitou uma verificação temporária. Use o acesso oficial abaixo para continuar.');
     let records=recordsFromXml(xml);
