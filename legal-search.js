@@ -3,7 +3,7 @@
   'use strict';
   const ENDPOINT='https://www.lexml.gov.br/busca/SRU';
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const legalTerms=/\b(lei|leis|art(?:igo)?s?\.?|decreto|decretos|resolu[cç][aã]o|resolu[cç][oõ]es|estatuto|c[oó]digo|constitui[cç][aã]o|emenda|portaria|norma|normas|regulamento|regimento|instru[cç][aã]o normativa|medida provis[oó]ria|direito|legisla[cç][aã]o|tr[aâ]nsito|servidor|licita[cç][aã]o|administra[cç][aã]o p[uú]blica|penal|constitucional|eleitoral|tribut[aá]rio|ambiental|consumidor|educa[cç][aã]o|sa[uú]de|previd[eê]ncia|trabalho|improbidade|seguran[cç]a p[uú]blica)\b/i;
+  const legalTerms=/\b(lei|leis|art(?:igo)?s?\.?|decreto|decretos|resolu[cç][aã]o|resolu[cç][oõ]es|estatuto|c[oó]digo|constitui[cç][aã]o|emenda|portaria|norma|normas|regulamento|regimento|instru[cç][aã]o normativa|medida provis[oó]ria|direito|legisla[cç][aã]o|tr[aâ]nsito|servidor|licita[cç][aã]o|administra[cç][aã]o p[uú]blica|penal|constitucional|eleitoral|tribut[aá]rio|ambiental|consumidor|educa[cç][aã]o|sa[uú]de|previd[eê]ncia|trabalho|improbidade|seguran[cç]a p[uú]blica|dire[cç][aã]o defensiva|processo administrativo|direitos humanos|crime|contraven[cç][aã]o|compet[eê]ncia|responsabilidade civil|poder de pol[ií]cia|licenciamento|habilita[cç][aã]o|infra[cç][oõ]es|penalidade|servidor p[uú]blico|c[oó]digo de [aá]guas|c[oó]digo florestal)\b/i;
   function isLegalQuery(q){return legalTerms.test(q);}
   function scopeFilter(scope,r){
     if(scope==='all')return true;
