@@ -75,12 +75,12 @@ must('Radar Doctor ticker is not removed at runtime', !index.includes('doctor-ra
 must('No service-role key or private payment token is present in bridge', !/(service_role|sb_secret_|sk_live_|access_token\s*[:=])/i.test(bridge));
 console.log('DOCTOR PLATFORM BRIDGE QA: OK');
 
-must('Legal search is a highlighted first-class Doctor tool', index.includes('home-legal-search') && index.includes('Buscador de Lei Seca Doctor'));
+must('Doctor Search is a highlighted first-class unified search tool', index.includes('home-legal-search') && index.includes('Doctor Search'));
 must('Legal search has a dedicated view and navigation binding', index.includes('Views.legalSearch') && index.includes('Views.bind.legalSearch'));
-must('Legal search is independent from GROQ and validates legal-only queries', read('legal-search.js').includes('isLegalQuery') && !read('legal-search.js').includes('GroqAI'));
-must('Legal search uses LexML and exposes official legislation sources', read('api/legal-search.js').includes('www.lexml.gov.br/busca/SRU') && read('legal-search.js').includes('/api/legal-search?') && index.includes('legislacao/portal-legis/busca-avancada'));
+must('Doctor Search routes legal queries and searches local study data without GROQ', read('legal-search.js').includes('isLegalQuery') && read('legal-search.js').includes('searchLocal') && read('legal-search.js').includes('Store?.state') && !read('legal-search.js').includes('GroqAI'));
+must('Doctor Search preserves the official LexML and Planalto legal-search adapters', read('api/legal-search.js').includes('www.lexml.gov.br/busca/SRU') && read('legal-search.js').includes('/api/legal-search?') && read('api/legal-search.js').includes('www4.planalto.gov.br/legislacao/legis-federal/constituicao'));
 must('Legal search client is loaded and precached by the service worker', index.includes('legal-search.js?v=1.2.0') && sw.includes('./legal-search.js?v=1.2.0') && sw.slice(sw.indexOf('const CORE_ASSETS'),sw.indexOf('const CACHE_PREFIX')).includes('./legal-search.js?v=1.2.0'));
 new vm.Script(read('legal-search.js'), { filename: 'legal-search.js' });
 new vm.Script(read('api/legal-search.js'), { filename: 'api/legal-search.js' });
 must('Legal reader API and browser client parse successfully', true);
-must('Doctor Search routes legal queries and supports local study-content search', read('legal-search.js').includes("mode=read&document=cf88&article=") && read('api/legal-search.js').includes("mode||'')==='read'") && read('api/legal-search.js').includes('www4.planalto.gov.br/legislacao/legis-federal/constituicao') && index.includes('TEXTO INTEGRAL · LEITURA NO APP') && index.includes('r.content'));
+must('Doctor Search provides a single search bar, voice input, and in-app results', index.includes('id="legal-search-query"') && index.includes('id="legal-search-mic"') && index.includes('SpeechRecognition') && index.includes('requestSubmit()') && index.includes('r.local||r.content') && read('legal-search.js').includes('mode=read&document=cf88&article=') && read('legal-search.js').includes('searchLocal'));
