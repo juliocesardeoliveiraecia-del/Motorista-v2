@@ -5,6 +5,7 @@ const ASSETS = [
   './production-config.js?v=1.12.19', './doctor-platform-bridge.js?v=1.12.19-platform-5', './legal-search.js?v=1.0.0', './legal-search.js?v=1.0.0', './legal-search.js?v=1.0.0',
   './product-context.js?v=2026.3', './product-content.js?v=2026.3',
   './doctor-core-quality.js?v=1.12.19', './calculator-scientific.js?v=1.12.19',
+  './legal-search.js?v=1.0.0',
   './doctor-core-icon.svg', './assets/icons/products/motorista-legislativo.svg?v=1.3.0',
   './assets/icons/icon-palette.json', './assets/icons/icon-generator.js?v=1.3.0',
   './assets/images/ipameri-chamber-green.svg?v=20261028-2',
