@@ -4504,7 +4504,7 @@ Views.settings = function () {
       <p class="muted">Encerre sua sessão com segurança neste dispositivo. Seus estudos, anotações e progresso salvos não serão apagados.</p>
       <button class="btn btn-danger btn-block" id="doctor-sign-out" type="button">↪ Sair da conta</button>
     </section>
-    <div class="card"><h3>🧠 Doctor AI Core</h3><p class="muted">Motor de IA ${DoctorAICore.VERSION}. Geração, revisão, redação e Radar usam o perfil deste concurso. Questões e flashcards passam por revisão automática antes de serem entregues.</p></div><div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>
+<div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>
     <section class="card doctor-support-card" aria-labelledby="doctor-support-title">
       <style>
         .doctor-support-card{border:1px solid rgba(245,190,35,.55);background:linear-gradient(145deg,rgba(245,190,35,.09),transparent 58%);padding:clamp(16px,4vw,24px)}
@@ -4641,6 +4641,7 @@ Views.aiSettings = function () {
 
       <p class="muted center" style="margin-top:14px">Sua chave fica armazenada no armazenamento local deste navegador, não é incluída nos snapshots de sincronização do Doctor e é enviada diretamente à API da Groq quando você utiliza a IA. Não a compartilhe nem a use em aparelho público.</p>
     </div>
+    <div class="card"><h3>🧠 Doctor AI Core</h3><p class="muted">Motor de IA ${DoctorAICore.VERSION}. Geração, revisão, redação e Radar usam o perfil deste concurso. Questões e flashcards passam por revisão automática antes de serem entregues.</p></div>
   `;
 };
 
