@@ -221,8 +221,15 @@
       .on('broadcast', { event: 'session_revoked' }, message => {
         const payload = message?.payload || message;
         if (payload?.session_id && payload.session_id === currentSessionId) loseSession();
-      })
-      .subscribe();
+      });
+    await new Promise(resolve => {
+      let settled = false;
+      const finish = () => { if (settled) return; settled = true; resolve(); };
+      realtimeChannel.subscribe((status) => {
+        if (status === 'SUBSCRIBED' || status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') finish();
+      });
+      setTimeout(finish, 5000);
+    });
   }
 
   async function waitForSessionRequest(db, requestId) {
