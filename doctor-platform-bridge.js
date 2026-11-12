@@ -373,8 +373,14 @@
 
   function loseSession() {
     currentSessionId = null;
+    currentLease = null;
+    try { localStorage.removeItem(storageKey()); } catch (_) {}
     if (heartbeatTimer) clearInterval(heartbeatTimer);
     heartbeatTimer = null;
+    if (realtimeChannel && client) {
+      try { client.removeChannel(realtimeChannel); } catch (_) {}
+      realtimeChannel = null;
+    }
     renderGate({ reason: 'session-revoked' }, () => window.location.reload());
   }
 
@@ -752,7 +758,7 @@
       'offline-no-valid-access': 'Para abrir este aplicativo sem internet, primeiro é necessário validar seu acesso quando estiver conectado.',
       'session-revoked': 'Sua sessão foi transferida para outro dispositivo. Seus estudos locais foram preservados; entre novamente para continuar.',
       'session-already-active': 'O dispositivo que já estava conectado manteve a sessão. Por segurança, este acesso foi cancelado.',
-      'session-request-expired': 'Não houve confirmação no dispositivo que já estava conectado. A sessão anterior foi mantida; tente novamente quando estiver com aquele dispositivo.',
+      'session-request-expired': 'Não houve confirmação no dispositivo que já estava conectado. A sessão anterior foi mantida. Se ele estiver desligado ou sem internet, aguarde até 3 minutos desde a última atividade e tente novamente.',
       'app_catalog_link_missing': 'O vínculo deste aplicativo no catálogo central ainda não foi configurado.',
       'central_auth_not_configured': 'A autenticação central ainda não foi configurada neste aplicativo.'
     };
