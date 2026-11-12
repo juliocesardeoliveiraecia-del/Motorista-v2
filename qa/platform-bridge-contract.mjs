@@ -58,6 +58,9 @@ must('Support is a dedicated page launched from settings, not an embedded settin
   index.includes("Views.bind.support = function") &&
   index.includes("id=\"doctor-support-form\"") &&
   !index.slice(index.indexOf("Views.settings = function"), index.indexOf("Views.support = function")).includes('id="doctor-support-form"'));
+const settingsView = index.slice(index.indexOf("Views.settings = function"), index.indexOf("Views.support = function"));
+must('Support entry uses a dedicated inline SVG headset icon, not a platform emoji', settingsView.includes('headset: svgIcon(') && settingsView.includes('${ICONS.headset}') && !settingsView.includes('>🛟</span>'));
+must('Sign-out is the final settings action before the return-to-home button', settingsView.indexOf('id="open-doctor-support"') < settingsView.indexOf('id="doctor-sign-out"') && settingsView.indexOf('id="doctor-sign-out"') < settingsView.indexOf('id="back-home"') && settingsView.indexOf('id="back-home"') > settingsView.indexOf('id="doctor-sign-out"'));
 must('App support submits centrally with validated UUID identity', bridge.includes("functions.invoke('doctor-support-submit'") && index.includes('window.DOCTOR_PLATFORM_BRIDGE.submitSupport') && index.includes('ENVIAR CHAMADO'));
 must('App support no longer depends on the user mail client', !index.includes('mailto:doctorconcursoschat@gmail.com'));
 must('Radar Doctor ticker is not removed at runtime', !index.includes('doctor-radar-removal-runtime') && !index.includes("getElementById('radar-ticker-mount')?.remove()") && index.includes('get_radar_feed'));
