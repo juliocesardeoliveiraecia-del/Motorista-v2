@@ -33,6 +33,7 @@ must('Product context declares the implemented versioned snapshot adapter', cont
 must('Core boot waits for access validation', index.includes('window.DOCTOR_PLATFORM_BRIDGE.bootstrap()') && index.includes('renderGate(result, startDoctorCore)'));
 must('Authentication uses the shared Supabase Auth session', bridge.includes('auth.signInWithPassword') && bridge.includes('auth.getUser'));
 must('Device session uses the account-wide authenticated handoff RPC', bridge.includes("rpc('request_device_session_v1'") && bridge.includes("rpc('resolve_device_session_request_v1'") && bridge.includes("rpc('get_device_session_request_v1'") && bridge.includes('p_app_id: target.appId'));
+must('Login recovers if PostgREST schema cache temporarily misses the new session RPC', bridge.includes("rpc('claim_device_session_v1'") && bridge.includes("message.includes('schema cache')"));
 must('Active device receives private realtime revocation events', bridge.includes("doctor-session:' + currentUserId") && bridge.includes("event: 'session_revoked'"));
 must('Revoked device clears its lease and signs out locally', bridge.includes("localStorage.removeItem(storageKey())") && bridge.includes("signOut({ scope: 'local' })"));
 must('Device identity is shared across apps on the same browser origin', bridge.includes("const deviceKey = () => 'doctor-platform-device-global'") && !bridge.includes('store?.state?.deviceSession?.id'));
