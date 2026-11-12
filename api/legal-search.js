@@ -18,11 +18,11 @@ function extractConstitutionArticle(html,article){
   const next=nextRe.exec(clean);
   if(!next)return '';
   const fragment=clean.slice(start,next.index)
-    .replace(/<br\\s*\\/?\s*>/gi,'\n')
-    .replace(/<\\/(p|div|li|tr|h[1-6])\\s*>/gi,'\n')
-    .replace(/<li\\b[^>]*>/gi,'• ')
+    .replace(/<br\s*\/?\s*>/gi,'\n')
+    .replace(/<\/(p|div|li|tr|h[1-6])\s*>/gi,'\n')
+    .replace(/<li\b[^>]*>/gi,'• ')
     .replace(/<[^>]+>/g,' ');
-  return decodeHtmlEntities(fragment).replace(/[\\t\\f\\v ]+/g,' ').replace(/ *\\n */g,'\n').replace(/\\n{3,}/g,'\n\n').trim();
+  return decodeHtmlEntities(fragment).replace(/[\t\f\v ]+/g,' ').replace(/ *\n */g,'\n').replace(/\n{3,}/g,'\n\n').trim();
 }
 async function readOfficialText(req,res){
   const document=String(req.query.document||'');
