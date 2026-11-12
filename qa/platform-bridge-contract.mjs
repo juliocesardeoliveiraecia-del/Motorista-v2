@@ -66,3 +66,9 @@ must('App support no longer depends on the user mail client', !index.includes('m
 must('Radar Doctor ticker is not removed at runtime', !index.includes('doctor-radar-removal-runtime') && !index.includes("getElementById('radar-ticker-mount')?.remove()") && index.includes('get_radar_feed'));
 must('No service-role key or private payment token is present in bridge', !/(service_role|sb_secret_|sk_live_|access_token\s*[:=])/i.test(bridge));
 console.log('DOCTOR PLATFORM BRIDGE QA: OK');
+
+must('Legal search is a highlighted first-class Doctor tool', index.includes('home-legal-search') && index.includes('Buscador de Lei Seca Doctor'));
+must('Legal search has a dedicated view and navigation binding', index.includes('Views.legalSearch') && index.includes('Views.bind.legalSearch'));
+must('Legal search is independent from GROQ and validates legal-only queries', read('legal-search.js').includes('isLegalQuery') && !read('legal-search.js').includes('GroqAI'));
+must('Legal search uses LexML and exposes official legislation sources', read('legal-search.js').includes('www.lexml.gov.br/busca/SRU') && index.includes('legislacao/portal-legis/busca-avancada'));
+must('Legal search client is loaded and precached by the service worker', index.includes('legal-search.js?v=1.0.0') && sw.includes('./legal-search.js?v=1.0.0'));
