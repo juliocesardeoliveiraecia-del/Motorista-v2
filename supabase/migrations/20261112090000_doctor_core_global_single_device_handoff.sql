@@ -107,7 +107,6 @@ as $$
 declare
   v_user_id uuid := auth.uid();
   v_active public.device_sessions%rowtype;
-  v_request_id uuid;
   v_session_id uuid;
 begin
   if v_user_id is null then raise exception 'not authenticated'; end if;
@@ -126,53 +125,26 @@ begin
   if public.is_admin() and not exists(select 1 from public.apps a where a.id=p_app_id) then
     raise exception 'app not found';
   end if;
-  update public.device_session_requests set status='expired', decided_at=now()
-  where user_id=v_user_id and status='pending' and expires_at<=now();
+
+  update public.device_session_requests
+    set status='cancelled', decided_at=now()
+  where user_id=v_user_id and status='pending';
+
   select * into v_active from public.device_sessions
   where user_id=v_user_id and app_id is not null and revoked_at is null
-  order by last_seen_at desc limit 1 for update;
+  limit 1 for update;
 
-  if found and v_active.device_id = p_device_id then
-    if v_active.app_id = p_app_id then
-      update public.device_sessions set last_seen_at=now(),
-        device_name=nullif(left(coalesce(p_device_name,''),120),''),
-        platform=nullif(left(coalesce(p_platform,''),80),'')
-      where id=v_active.id;
-      return jsonb_build_object('status','claimed','session_id',v_active.id,'app_id',p_app_id);
-    end if;
-    update public.device_sessions set revoked_at=now() where id=v_active.id;
-    insert into public.device_sessions(user_id,device_id,device_name,platform,app_id,last_seen_at,revoked_at)
-    values(v_user_id,p_device_id,nullif(left(coalesce(p_device_name,''),120),''),
-      nullif(left(coalesce(p_platform,''),80),''),p_app_id,now(),null)
-    on conflict on constraint device_sessions_user_device_app_key do update
-      set device_name=excluded.device_name,platform=excluded.platform,last_seen_at=now(),revoked_at=null
-    returning id into v_session_id;
-    return jsonb_build_object('status','claimed','session_id',v_session_id,'app_id',p_app_id);
-  end if;
-
-  -- Recover automatically when the previous device has been offline or closed long enough.
-  if found and v_active.last_seen_at < now() - interval '3 minutes' then
-    update public.device_sessions set revoked_at=now() where id=v_active.id;
-    insert into public.device_sessions(user_id,device_id,device_name,platform,app_id,last_seen_at,revoked_at)
-    values(v_user_id,p_device_id,nullif(left(coalesce(p_device_name,''),120),''),
-      nullif(left(coalesce(p_platform,''),80),''),p_app_id,now(),null)
-    on conflict on constraint device_sessions_user_device_app_key do update
-      set device_name=excluded.device_name,platform=excluded.platform,last_seen_at=now(),revoked_at=null
-    returning id into v_session_id;
-    return jsonb_build_object('status','claimed','session_id',v_session_id,'app_id',p_app_id,'recovered_stale_session',true);
+  if found and v_active.device_id=p_device_id and v_active.app_id=p_app_id then
+    update public.device_sessions set last_seen_at=now(),
+      device_name=nullif(left(coalesce(p_device_name,''),120),''),
+      platform=nullif(left(coalesce(p_platform,''),80),'')
+    where id=v_active.id;
+    return jsonb_build_object('status','claimed','session_id',v_active.id,'app_id',p_app_id);
   end if;
 
   if found then
-    insert into public.device_session_requests(
-      user_id,active_session_id,app_id,device_id,device_name,platform,status,expires_at
-    ) values (
-      v_user_id,v_active.id,p_app_id,p_device_id,
-      nullif(left(coalesce(p_device_name,''),120),''),
-      nullif(left(coalesce(p_platform,''),80),''),'pending',now()+interval '30 seconds'
-    ) returning id into v_request_id;
-    return jsonb_build_object('status','pending','request_id',v_request_id,
-      'active_device_name',coalesce(v_active.device_name,'Outro dispositivo'),
-      'expires_at',now()+interval '30 seconds');
+    update public.device_sessions set revoked_at=now()
+    where id=v_active.id and revoked_at is null;
   end if;
 
   insert into public.device_sessions(user_id,device_id,device_name,platform,app_id,last_seen_at,revoked_at)
@@ -181,6 +153,7 @@ begin
   on conflict on constraint device_sessions_user_device_app_key do update
     set device_name=excluded.device_name,platform=excluded.platform,last_seen_at=now(),revoked_at=null
   returning id into v_session_id;
+
   return jsonb_build_object('status','claimed','session_id',v_session_id,'app_id',p_app_id);
 end;
 $$;
