@@ -248,7 +248,10 @@ begin
   if p_app_id is null or length(btrim(coalesce(p_device_id,'')))<8 or length(p_device_id)>180 then
     raise exception 'invalid app or device identity';
   end if;
+
+  -- Serialize account-wide claims so simultaneous logins cannot leave two active sessions.
   perform pg_advisory_xact_lock(hashtextextended(v_user_id::text,0));
+
   if not public.is_admin() and not exists (
     select 1 from public.access_grants ag
     join public.products p on p.id=ag.product_id and p.status='published'
@@ -260,21 +263,32 @@ begin
   if public.is_admin() and not exists(select 1 from public.apps where id=p_app_id) then
     raise exception 'app not found';
   end if;
+
   select * into v_active from public.device_sessions
     where user_id=v_user_id and app_id is not null and revoked_at is null
     order by last_seen_at desc limit 1 for update;
-  if found and v_active.device_id<>p_device_id then
-    raise exception 'active session on another device; use secure handoff';
+
+  if found and v_active.device_id=p_device_id and v_active.app_id=p_app_id then
+    update public.device_sessions set last_seen_at=now(),
+      device_name=nullif(left(coalesce(p_device_name,''),120),''),
+      platform=nullif(left(coalesce(p_platform,''),80),'')
+    where id=v_active.id;
+    return query select v_active.id,p_app_id,now();
+    return;
   end if;
-  if found and v_active.app_id<>p_app_id then
-    update public.device_sessions set revoked_at=now() where id=v_active.id;
+
+  if found then
+    update public.device_sessions set revoked_at=now()
+    where id=v_active.id and revoked_at is null;
   end if;
+
   insert into public.device_sessions(user_id,device_id,device_name,platform,app_id,last_seen_at,revoked_at)
   values(v_user_id,p_device_id,nullif(left(coalesce(p_device_name,''),120),''),
     nullif(left(coalesce(p_platform,''),80),''),p_app_id,now(),null)
   on conflict on constraint device_sessions_user_device_app_key do update
     set device_name=excluded.device_name,platform=excluded.platform,last_seen_at=now(),revoked_at=null
   returning id into v_session_id;
+
   return query select v_session_id,p_app_id,now();
 end;
 $$;
