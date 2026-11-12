@@ -8,7 +8,7 @@ function decodeHtmlEntities(value){
   });
 }
 function extractConstitutionArticle(html,article){
-  const clean=String(html||'').replace(/<!--[\s\S]*?-->/g,' ').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ');
+  const clean=String(html||'').replace(/<!--[\s\S]*?-->/g,' ').replace(/<(del|s)\b[^>]*>[\s\S]*?<\/\1>/gi,' ').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ');
   const ordinal=article===1?'[ºo°]?':'[ºo°]?';
   const startRe=new RegExp('Art\\.?\\s*'+article+ordinal+'(?![\\d])','i');
   const start=clean.search(startRe);
@@ -29,7 +29,7 @@ async function readOfficialText(req,res){
   const article=Number(req.query.article);
   if(document!=='cf88'||!Number.isInteger(article)||article<1||article>250)
     return res.status(400).json({error:'Documento ou artigo não suportado para leitura integrada.'});
-  const url='https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm';
+  const url='https://www4.planalto.gov.br/legislacao/legis-federal/constituicao';
   try{
     const upstream=await fetch(url,{headers:{Accept:'text/html','User-Agent':'Doctor-Concursos-Legal-Reader/1.0'},signal:AbortSignal.timeout(12000)});
     if(!upstream.ok)return res.status(502).json({error:'A fonte oficial da Constituição está temporariamente indisponível.'});
