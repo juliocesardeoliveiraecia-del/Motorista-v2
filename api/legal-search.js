@@ -10,7 +10,7 @@ module.exports=async function handler(req,res){
   const type=String(req.query.type||'all');
   if(!['all','lei','decreto','resolu','estatuto','constitui','portaria'].includes(type))return res.status(400).json({error:'Tipo de norma inválido.'});
   const safe=q.replace(/"/g,' ');
-  const cql='dc.title any "'+safe+'" or dc.subject any "'+safe+'"';
+  const cql='dc.title any "'+safe+'" or dc.subject any "'+safe+'" or dc.description any "'+safe+'"';
   const params=new URLSearchParams({operation:'searchRetrieve',version:'1.1',query:cql,startRecord:'1',maximumRecords:'30',recordSchema:'dc'});
   try{
     const upstream=await fetch('https://www.lexml.gov.br/busca/SRU?'+params.toString(),{headers:{Accept:'application/xml, text/xml','User-Agent':'Doctor-Concursos-Legal-Search/1.0'},signal:AbortSignal.timeout(12000)});
