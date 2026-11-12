@@ -1,5 +1,5 @@
 // service-worker.js — network-first com preservação do último shell offline válido.
-const CACHE_NAME = 'motorista-ipameri-v1.13.15-support-page';
+const CACHE_NAME = 'motorista-ipameri-v1.13.16-support-icon-settings-order';
 const ASSETS = [
   './', './index.html', './manifest.json?v=1.13.3-platform-bridge', './version.json',
   './production-config.js?v=1.12.18', './doctor-platform-bridge.js?v=1.12.18-platform-5',
