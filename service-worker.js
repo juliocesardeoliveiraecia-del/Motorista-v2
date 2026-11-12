@@ -28,7 +28,7 @@ const CORE_ASSETS = [
   './production-config.js?v=1.12.19', './doctor-platform-bridge.js?v=1.12.19-platform-5',
   './product-context.js?v=1.12.19-context-2', './product-content.js?v=1.12.19',
   './doctor-core-quality.js?v=1.12.19', './calculator-scientific.js?v=1.12.19',
-  './assets/icons/icon-generator.js?v=1.3.0'
+  './assets/icons/icon-generator.js?v=1.3.0', './legal-search.js?v=1.0.0'
 ];
 const CACHE_PREFIX = 'motorista-ipameri-';
 const NETWORK_TIMEOUT_MS = 3500;
