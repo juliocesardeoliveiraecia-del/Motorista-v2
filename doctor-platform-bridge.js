@@ -381,6 +381,11 @@
       try { client.removeChannel(realtimeChannel); } catch (_) {}
       realtimeChannel = null;
     }
+    // End only this device's Auth session so a refresh cannot silently reclaim
+    // the account and kick the device that just signed in elsewhere.
+    if (client?.auth?.signOut) {
+      client.auth.signOut({ scope: 'local' }).catch(() => {});
+    }
     renderGate({ reason: 'session-revoked' }, () => window.location.reload());
   }
 
