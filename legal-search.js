@@ -29,6 +29,15 @@
     const q=String(query||'').trim();
     if(q.length<3)throw new Error('Digite pelo menos 3 caracteres para pesquisar.');
     if(!isLegalQuery(q))throw new Error('Este buscador é exclusivo para legislação. Informe uma lei, artigo, estatuto, decreto, resolução ou assunto jurídico, como trânsito, servidor público ou licitação.');
+    const articleMatch=q.match(/\\b(?:art(?:igo)?\\.?\\s*)(\\d{1,3})\\s*(?:º|°|o)?/i);
+    const constitutionMatch=/constitui[cç][aã]o|\\bcf\\s*\\/?\\s*88\\b/i.test(q);
+    if(articleMatch&&constitutionMatch){
+      const article=Number(articleMatch[1]);
+      const response=await fetch('/api/legal-search?mode=read&document=cf88&article='+article,{headers:{Accept:'application/json'},cache:'no-store'});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(data.error||'Não foi possível carregar o texto oficial da Constituição.');
+      return {records:[{title:data.document+' — Art. '+data.article,content:data.content,source:data.source,sourceUrl:data.sourceUrl,date:data.retrievedAt,type:'Texto oficial integral'}],total:1,source:data.source,retrievedAt:data.retrievedAt,readingMode:'in-app'};
+    }
     const params=new URLSearchParams({q,scope,type});
     const response=await fetch('/api/legal-search?'+params.toString(),{headers:{Accept:'application/xml, text/xml'},cache:'no-store'});
     if(!response.ok){
