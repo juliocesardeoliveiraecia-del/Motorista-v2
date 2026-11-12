@@ -13,7 +13,7 @@ function must(label, condition) {
 }
 
 must('Platform bridge is loaded before the Core runtime', index.indexOf('doctor-platform-bridge.js') > 0 && index.indexOf('doctor-platform-bridge.js') < index.indexOf('window.DOCTOR_CORE_RUNTIME'));
-must('Platform bridge is cached by the PWA service worker', sw.includes("'./doctor-platform-bridge.js?v="+JSON.parse(read('version.json')).version+"-platform-3'"));
+must('Platform bridge is cached by the PWA service worker', sw.includes("'./doctor-platform-bridge.js?v="+JSON.parse(read('version.json')).version+"-platform-4'"));
 const environment = config.match(/environment:\s*'([^']+)'/)?.[1] || '';
 const supabaseMatch = config.match(/supabase:\s*\{\s*enabled:\s*(true|false),\s*url:\s*(['"])(.*?)\2,\s*publishableKey:\s*(['"])(.*?)\4\s*\}/);
 const runtimeUrl = supabaseMatch?.[3] || '';
