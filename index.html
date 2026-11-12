@@ -384,6 +384,19 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 
 /* ===== GROQ SETUP — fluxo guiado e profissional ===== */
 .groq-setup-card{overflow:hidden}
+.settings-intro{margin:-2px 0 16px;color:var(--text-muted);font-size:13px;line-height:1.5}
+.settings-section-heading{display:flex;align-items:center;gap:11px;margin:22px 2px 10px}
+.settings-section-heading>span{display:grid;place-items:center;width:29px;height:29px;border-radius:9px;background:var(--blue-dark);color:#fff;font-size:11px;font-weight:900}
+.settings-section-heading strong{display:block;font-size:13px;letter-spacing:.02em}
+.settings-section-heading small{display:block;margin-top:2px;color:var(--text-muted);font-size:11px}
+.groq-legal-notice{border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin:14px 0;background:var(--surface)}
+.groq-legal-notice>summary{cursor:pointer;list-style:none;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.groq-legal-notice>summary::-webkit-details-marker{display:none}
+.groq-legal-notice>summary:after{content:'＋';color:var(--text-muted);font-size:16px}
+.groq-legal-notice[open]>summary:after{content:'−'}
+.groq-legal-content{padding-top:12px}
+.groq-legal-notice:not([open]){background:rgba(32,184,107,.06);border-color:rgba(32,184,107,.28)}
+
 .groq-hero{background:linear-gradient(135deg,#0b0d12,#151b27);border:1px solid rgba(255,210,26,.28);border-radius:16px;padding:18px;margin-bottom:14px;color:#fff}
 .groq-hero h3{margin:0 0 7px;font-size:19px}.groq-hero p{margin:0;color:#dfe5ee;font-size:13px;line-height:1.55}
 .groq-step{display:flex;gap:12px;align-items:flex-start;margin:12px 0}.groq-step-num{width:28px;height:28px;border-radius:50%;background:#ffd21a;color:#111;display:flex;align-items:center;justify-content:center;font-weight:900;flex:0 0 auto}.groq-step-body{flex:1;min-width:0}.groq-step-body strong{display:block;margin-bottom:3px}.groq-step-body span{display:block;color:var(--text-muted);font-size:12px;line-height:1.45}
@@ -4457,6 +4470,8 @@ Views.settings = function () {
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">← Voltar para o Doctor</button>
     <h2>⚙️ Configurações</h2>
+    <p class="settings-intro">Centralize aqui sua conta, inteligência artificial, preferências e funcionamento do aplicativo.</p>
+    <div class="settings-section-heading"><span>01</span><div><strong>Inteligência artificial</strong><small>Conexão segura, privacidade e recursos inteligentes</small></div></div>
     <div class="card groq-setup-card">
       <div class="groq-hero">
         <h3>🤖 Ative a IA Doctor com sua chave da Groq</h3>
@@ -4474,15 +4489,17 @@ Views.settings = function () {
         <div class="groq-key-field"><input type="password" id="groq-key" class="input-core" placeholder="gsk_..." value="${s.groqApiKey || ''}" autocomplete="off" spellcheck="false"><button type="button" class="groq-key-eye" id="groq-key-eye" aria-label="Mostrar ou ocultar chave">👁️</button></div>
       </div>
 
-      <div class="groq-legal-notice" style="border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0;background:var(--surface)">
-        <h4 style="margin:0 0 8px">Aviso de uso de IA e dados</h4>
+      <details class="groq-legal-notice" ${legalReady ? '' : 'open'}>
+        <summary>${legalReady ? 'Privacidade e consentimentos — confirmação registrada' : 'Leia o aviso de uso de IA e dados'}</summary>
+        <div class="groq-legal-content">
         <p style="font-size:.88rem;line-height:1.5;margin:0 0 9px">Quando você pedir geração de questões, flashcards, análise de redação ou transcrição, o texto, áudio ou conteúdo necessário à solicitação será enviado à Groq para processamento. Segundo a documentação atual da Groq, entradas e saídas de inferência não são retidas por padrão, mas podem ser registradas temporariamente por até 30 dias para confiabilidade e prevenção de abuso; metadados de uso são coletados. Dados retidos ficam em infraestrutura nos Estados Unidos. A Groq informa que clientes podem habilitar Zero Data Retention nas configurações da própria conta; o Doctor não controla essa configuração.</p>
         <p style="font-size:.88rem;line-height:1.5;margin:0 0 9px">Não envie CPF, documentos, dados financeiros, informações de saúde, senhas, segredos ou dados pessoais de terceiros. A chave é guardada no armazenamento local do navegador deste dispositivo (não é um cofre criptográfico) e usada para chamadas diretas à Groq. Evite dispositivos compartilhados. Se suspeitar de exposição, apague a chave deste app e revogue-a também na GroqCloud.</p>
         <label style="display:flex;gap:9px;align-items:flex-start;font-size:.9rem;margin:10px 0"><input id="groq-age-confirm" type="checkbox" ${s.groqAdultConfirmed === true ? 'checked' : ''} style="margin-top:3px;flex:0 0 auto"><span>Confirmo que tenho <strong>18 anos ou mais</strong> e que esta conta/chave da Groq está sob meu controle.</span></label>
         <label style="display:flex;gap:9px;align-items:flex-start;font-size:.9rem;margin:10px 0"><input id="groq-data-confirm" type="checkbox" ${s.groqDataDisclosureAccepted === true && s.groqLegalNoticeVersion === GROQ_LEGAL_NOTICE_VERSION ? 'checked' : ''} style="margin-top:3px;flex:0 0 auto"><span>Li e compreendi este aviso. Autorizo o envio à Groq do conteúdo que eu escolher inserir para executar a função de IA solicitada e entendo que o tratamento de dados pela Groq segue os termos e controles próprios dela.</span></label>
         <p style="font-size:.8rem;line-height:1.45;margin:9px 0 0">Documentos oficiais: <a href="https://console.groq.com/docs/legal/services-agreement" target="_blank" rel="noopener noreferrer">Contrato de Serviços</a> · <a href="https://console.groq.com/docs/your-data" target="_blank" rel="noopener noreferrer">Tratamento de dados</a> · <a href="https://groq.com/trademark-policy" target="_blank" rel="noopener noreferrer">Política de marcas</a>.</p>
         <p style="font-size:.8rem;line-height:1.45;margin:9px 0 0"><strong>Independência:</strong> Doctor Concursos não é afiliado, patrocinado, certificado ou endossado pela Groq LLC. Groq é marca da Groq LLC e/ou de suas afiliadas.</p>
-      </div>
+        </div>
+      </details>
 
       <button class="btn btn-primary btn-block groq-save" id="save-key">💾 SALVAR E VALIDAR CHAVE</button>
       <button class="btn btn-outline btn-block" id="groq-disable-ai" type="button" style="margin-top:8px">Desativar IA e apagar a chave deste dispositivo</button>
@@ -4509,10 +4526,12 @@ Views.settings = function () {
 
       <p class="muted center" style="margin-top:14px">Sua chave fica armazenada no armazenamento local deste navegador, não é incluída nos snapshots de sincronização do Doctor e é enviada diretamente à API da Groq quando você utiliza a IA. Não a compartilhe nem a use em aparelho público.</p>
     </div>
+    <div class="settings-section-heading"><span>02</span><div><strong>Dispositivo e experiência</strong><small>Instalação, aparência e sincronização</small></div></div>
     <div class="card"><h3>📱 Sessão e dispositivo</h3><p class="muted">O controle de uma sessão por aplicativo depende da conexão segura com a plataforma Doctor.</p><div class="subj-row"><span>Estado da sessão</span><strong>${CoreSync.status().remoteConfigured ? "Conectado à plataforma" : "Somente neste dispositivo"}</strong></div></div>
     <div class="card" id="doctor-install-settings-card"><h3>📲 Instalar o aplicativo</h3><p class="muted">Instale o Doctor Core na tela inicial do celular ou como aplicativo no computador. Esta opção permanece disponível aqui nas Configurações, mesmo depois da instalação.</p><button class="doctor-install-settings-btn" id="doctor-install-settings" type="button" aria-label="Instalar aplicativo Doctor ou ver opções de instalação"><span class="install-symbol" aria-hidden="true">⬇</span><span>Instalar aplicativo</span></button><p class="muted" style="font-size:.82rem;margin:10px 0 0">Se o navegador não abrir a instalação automaticamente, mostraremos como instalar pelo menu do navegador.</p></div>
     <div class="card"><h3>🎨 Aparência</h3><button class="btn btn-outline btn-block" id="toggle-theme-btn">Alternar tema (${s.theme === 'dark' ? 'escuro' : 'claro'})</button></div>
     <div class="card"><h3>💾 Dados e sincronização</h3><p class="muted">Seus dados locais continuam disponíveis offline. ${CoreSync.status().remoteConfigured ? (CoreSync.status().queued?`Há <strong>${CoreSync.status().queued}</strong> alteração(ões) aguardando sincronização.`:'Nenhuma alteração aguardando sincronização.') : 'A sincronização com a plataforma Doctor ainda não está conectada; os dados permanecem salvos neste dispositivo.'}</p><button class="btn btn-outline btn-block" id="sync-now">🔄 Sincronizar informações</button><button class="btn btn-danger btn-block" id="reset-progress">Zerar progresso</button></div>
+    <div class="settings-section-heading"><span>03</span><div><strong>Conta e suporte</strong><small>Acesso, segurança e atendimento</small></div></div>
     <section class="card doctor-account-card" aria-labelledby="doctor-account-title">
       <h3 id="doctor-account-title">🔐 Sua conta Doctor</h3>
       <p class="muted">Encerre sua sessão com segurança neste dispositivo. Seus estudos, anotações e progresso salvos não serão apagados.</p>
