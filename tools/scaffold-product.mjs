@@ -203,7 +203,7 @@ export function buildOutputs(m) {
     editorialMode:isPreEdital ? 'last-edital-last-exam-plus-banca' : 'edital-plus-banca', aiProfile:m.aiProfile,
     radarShareRatio:{contest:m.aiProfile.radar.contestShare,promotion:m.aiProfile.radar.promotionShare,discovery:m.aiProfile.radar.discoveryShare},
     radarSources:[...new Set([...m.radarSources,a.officialEditalUrl,a.officialLastExamUrl].filter(Boolean))], sync:{enabled:true,provider:'supabase-versioned-snapshot-v1'},
-    sessionPolicy:'single-active-device',
+    sessionPolicy:'single-active-device-global-account-confirmed-handoff',
     primaryColor:a.primaryColor, primaryColorMid:a.primaryColorMid,
     accentColor:a.accentColor, accentColorDark:a.accentColorDark,
     platformCatalog:[{productId:a.productId,appId:a.appId,name:a.productName,shortName:a.appTitle,status:'draft',url:'',current:true}]
