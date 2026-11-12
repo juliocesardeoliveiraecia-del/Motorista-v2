@@ -384,6 +384,19 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 
 /* ===== GROQ SETUP — fluxo guiado e profissional ===== */
 .groq-setup-card{overflow:hidden}
+.settings-ai-entry{border:1px solid var(--border);padding:17px;display:grid;gap:15px}
+.settings-ai-entry-copy{display:flex;align-items:center;gap:12px}
+.settings-ai-entry-icon,.settings-ai-page-icon{display:grid;place-items:center;flex:0 0 auto;width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#17263a,#263d59);color:#ffd21a;font-size:21px;font-weight:900}
+.settings-ai-entry h3{margin:0 0 4px;font-size:16px}
+.settings-ai-entry p{margin:0;color:var(--text-muted);font-size:12px;line-height:1.45}
+.settings-ai-entry-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.settings-ai-entry-status{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;color:var(--text-muted)}
+.settings-ai-entry-status i{width:9px;height:9px;border-radius:50%;background:#e0a526;display:inline-block}
+.settings-ai-entry-status.ok i{background:#20b86b;box-shadow:0 0 0 4px rgba(32,184,107,.12)}
+.settings-ai-page-head{display:flex;align-items:flex-start;gap:13px;margin:14px 0 18px}
+.settings-ai-page-head h2{margin:0 0 5px}
+.settings-ai-page-head p{margin:0;font-size:13px;line-height:1.5}
+@media(max-width:420px){.settings-ai-entry-foot{align-items:stretch}.settings-ai-entry-foot .btn{width:100%}}
 .settings-intro{margin:-2px 0 16px;color:var(--text-muted);font-size:13px;line-height:1.5}
 .settings-section-heading{display:flex;align-items:center;gap:11px;margin:22px 2px 10px}
 .settings-section-heading>span{display:grid;place-items:center;width:29px;height:29px;border-radius:9px;background:var(--blue-dark);color:#fff;font-size:11px;font-weight:900}
@@ -2472,7 +2485,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     });
     document.getElementById('notes-toggle')?.addEventListener('click', () => this.render('notes'));
     document.getElementById('recorder-toggle')?.addEventListener('click', () => this.render('recorderPick'));
-    document.getElementById('settings-toggle')?.addEventListener('click', () => this.render('settings'));
+    document.getElementById('settings-toggle')?.addEventListener('click', () => this.render('aiSettings'));
     // V1.9.9+ — Splash com duração mínima para reforçar a sensação de
     // inicialização/atualização. A versão fica visível antes mesmo do JS
     // terminar o boot, evitando a impressão de que a atualização não entrou.
@@ -2513,7 +2526,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     b.innerHTML=`<span class="ai-mini-dot"></span><span class="ai-mini-text">${has?'IA ativa':'IA'}</span>`;
     b.title=has?'IA Doctor ativa · GROQ configurada · abrir status':'IA Doctor não configurada · toque para configurar';
     b.setAttribute('aria-label',b.title);
-    b.onclick=()=>this.render('settings');
+    b.onclick=()=>this.render('aiSettings');
   },
 
   toggleTheme() {
@@ -3304,6 +3317,7 @@ Views.pickSubject = function () {
 
 Views.bind.pickSubject = function () {
   document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
+  document.getElementById('open-ai-settings')?.addEventListener('click', () => UI.render('aiSettings'));
   document.querySelectorAll('.pick-card').forEach(el => {
     el.addEventListener('click', () => {
       UI.practiceSubject = el.dataset.subject;
@@ -3403,7 +3417,7 @@ Views.bind.practice = function () {
     UI.render('practice');
   });
   const generate=async(btn,advance)=>{
-    if(!GroqAI.hasKey()){UI.toast('Cadastre sua chave da Groq em Configurações.','warn');UI.render('settings');return;}
+    if(!GroqAI.hasKey()){UI.toast('Cadastre sua chave da Groq em Configurações.','warn');UI.render('aiSettings');return;}
     if(Quiz.hasMoreFresh(subjectId)){UI.toast('Conclua todas as questões disponíveis desta matéria antes de gerar mais.','warn');return;}
     if(!navigator.onLine){UI.toast('A geração de novas questões exige internet. Seus estudos offline continuam disponíveis.','warn');return;}
     const original=btn.innerHTML;
@@ -3493,7 +3507,7 @@ Views.bind.flashcardsSubject = function () {
     UI.render('flashcardsSession');
   });
   document.getElementById('fc-generate')?.addEventListener('click', async (e) => {
-    if (!GroqAI.hasKey()) { UI.toast('Cadastre sua chave da Groq em Configurações.', 'warn'); UI.render('settings'); return; }
+    if (!GroqAI.hasKey()) { UI.toast('Cadastre sua chave da Groq em Configurações.', 'warn'); UI.render('aiSettings'); return; }
     const btn = e.target;
     btn.innerHTML = iconEl('bot') + ' Gerando...';
     btn.disabled = true;
@@ -3763,7 +3777,7 @@ Views.bind.simuladoSetup = function () {
     const quota=Store.state.simuladoQuota||{},nextAllowed=Number(quota.nextAllowedAt||0);
     if(nextAllowed>Date.now()){UI.toast('Você já gerou o simulado semanal. O próximo estará disponível em '+new Date(nextAllowed).toLocaleDateString('pt-BR')+'.','warn');UI.render('simuladoSetup');return;}
     if(!navigator.onLine){UI.toast('A pesquisa do edital e a geração exigem internet. Seus estudos offline continuam disponíveis.','warn');return;}
-    if(!GroqAI.hasKey()){UI.toast('Configure sua chave GROQ e aceite o aviso de uso de dados nas Configurações.','warn');UI.render('settings');return;}
+    if(!GroqAI.hasKey()){UI.toast('Configure sua chave GROQ e aceite o aviso de uso de dados nas Configurações.','warn');UI.render('aiSettings');return;}
     const btn=e.currentTarget,original=btn.innerHTML,status=document.getElementById('simulado-generation-status');
     btn.disabled=true;
     const progress=message=>{btn.textContent='⏳ '+message;if(status){status.hidden=false;status.textContent=message;}};
@@ -4442,13 +4456,13 @@ Views.bind.essay=function(){
   const draftSave=()=>{if(!UI._editingEssayId)CoreEssay.draft(titleEl?.value||'',bodyEl?.value||'');const txt=bodyEl?.value||'';const w=txt.trim()?txt.trim().split(/\s+/).length:0;const l=CoreEssay.countLines(txt,70);if(count)count.textContent=`${w} palavras`;const st=document.getElementById('essay-word-stat');if(st)st.textContent=w;const ls=document.getElementById('essay-lines');if(ls)ls.textContent=l;const cs=document.getElementById('essay-chars');if(cs)cs.textContent=txt.length;};
   titleEl?.addEventListener('input',draftSave);bodyEl?.addEventListener('input',draftSave);
   document.querySelectorAll('audio[data-essay-audio]').forEach(async a=>{try{const blob=await AudioDB.get(a.dataset.essayAudio);if(blob){const url=URL.createObjectURL(blob);a.src=url;a.addEventListener('emptied',()=>URL.revokeObjectURL(url),{once:true});}}catch(e){}});
-  document.querySelectorAll('[data-transcribe-audio]').forEach(el=>el.addEventListener('click',async()=>{if(!GroqAI.hasKey()){UI.toast('Configure sua chave GROQ em Configurações para transcrever o áudio.','warn');UI.render('settings');return;}el.disabled=true;el.textContent='⏳ Transcrevendo...';const r=await CoreEssay.transcribeAudio(el.dataset.transcribeAudio);if(r.ok){UI.toast('📝 Áudio transcrito e salvo.','success');UI.render('essay');}else{el.disabled=false;el.textContent='📝 Tentar novamente';UI.toast(r.error||'Não foi possível transcrever o áudio.','warn');}}));
-  document.querySelectorAll('[data-use-audio]').forEach(el=>el.addEventListener('click',async()=>{const r=Store.state.recordings.find(x=>x.id===el.dataset.useAudio);if(!r)return;if(!r.transcript){if(!GroqAI.hasKey()){UI.toast('Configure sua chave GROQ em Configurações para transcrever o áudio.','warn');UI.render('settings');return;}el.disabled=true;el.textContent='⏳ Transcrevendo...';const t=await CoreEssay.transcribeAudio(r.id);if(!t.ok){el.disabled=false;UI.toast(t.error||'Não foi possível transcrever o áudio.','warn');return;}}const rec=Store.state.recordings.find(x=>x.id===el.dataset.useAudio);CoreEssay.attachAudio(rec.audioId);Store.state.essayDraft.title=Store.state.essayDraft.title||rec.name||'Rascunho de redação';Store.state.essayDraft.body=rec.transcript||'';Store.state.essayDraft.updatedAt=new Date().toISOString();Store.save();UI.toast('✍️ Texto enviado para o editor da Redação Doctor.','success');UI.render('essay');setTimeout(()=>document.getElementById('essay-body')?.focus(),50); }));
+  document.querySelectorAll('[data-transcribe-audio]').forEach(el=>el.addEventListener('click',async()=>{if(!GroqAI.hasKey()){UI.toast('Configure sua chave GROQ em Configurações para transcrever o áudio.','warn');UI.render('aiSettings');return;}el.disabled=true;el.textContent='⏳ Transcrevendo...';const r=await CoreEssay.transcribeAudio(el.dataset.transcribeAudio);if(r.ok){UI.toast('📝 Áudio transcrito e salvo.','success');UI.render('essay');}else{el.disabled=false;el.textContent='📝 Tentar novamente';UI.toast(r.error||'Não foi possível transcrever o áudio.','warn');}}));
+  document.querySelectorAll('[data-use-audio]').forEach(el=>el.addEventListener('click',async()=>{const r=Store.state.recordings.find(x=>x.id===el.dataset.useAudio);if(!r)return;if(!r.transcript){if(!GroqAI.hasKey()){UI.toast('Configure sua chave GROQ em Configurações para transcrever o áudio.','warn');UI.render('aiSettings');return;}el.disabled=true;el.textContent='⏳ Transcrevendo...';const t=await CoreEssay.transcribeAudio(r.id);if(!t.ok){el.disabled=false;UI.toast(t.error||'Não foi possível transcrever o áudio.','warn');return;}}const rec=Store.state.recordings.find(x=>x.id===el.dataset.useAudio);CoreEssay.attachAudio(rec.audioId);Store.state.essayDraft.title=Store.state.essayDraft.title||rec.name||'Rascunho de redação';Store.state.essayDraft.body=rec.transcript||'';Store.state.essayDraft.updatedAt=new Date().toISOString();Store.save();UI.toast('✍️ Texto enviado para o editor da Redação Doctor.','success');UI.render('essay');setTimeout(()=>document.getElementById('essay-body')?.focus(),50); }));
   document.getElementById('essay-save')?.addEventListener('click',()=>{const body=bodyEl.value;if(!body.trim()){UI.toast('Escreva sua redação antes de salvar.','warn');return;}CoreEssay.save(titleEl.value,body,UI._editingEssayId);UI._editingEssayId=null;CoreEssay.clearDraft();UI.toast('Redação salva.','success');UI.render('essay');});
   document.getElementById('essay-clear')?.addEventListener('click',()=>{if(confirm('Limpar o texto atual?')){titleEl.value='';bodyEl.value='';draftSave();}});
-  document.getElementById('essay-teach')?.addEventListener('click',async e=>{if(!GroqAI.hasKey()){UI.render('settings');return;}e.currentTarget.disabled=true;e.currentTarget.textContent='🤖 Preparando aula...';const r=await DoctorAICore.teachEssay();e.currentTarget.disabled=false;e.currentTarget.textContent='🤖 Ensinar como fazer';const box=document.getElementById('essay-ai-result');box.innerHTML=r.ok?`<div class="ai-mini-result"><strong>Professor de Redação Doctor</strong><div>${r.content.replace(/</g,'&lt;')}</div></div>`:`<div class="ai-mini-result">Não foi possível consultar a IA agora.</div>`;});
-  document.getElementById('essay-topic')?.addEventListener('click',async()=>{if(!GroqAI.hasKey()){UI.render('settings');return;}const r=await DoctorAICore.call({messages:[{role:'system',content:'Você é o Professor de Redação Doctor.'},{role:'user',content:`${DoctorAICore.context()}\nSugira 3 temas de redação plausíveis para este concurso. Não diga que são oficiais.`}],temperature:0.35});document.getElementById('essay-ai-result').innerHTML=r.ok?`<div class="ai-mini-result"><strong>Temas para treinar</strong><div>${r.content.replace(/</g,'&lt;')}</div></div>`:'<div class="ai-mini-result">Não foi possível consultar a IA agora.</div>';});
-  document.getElementById('essay-analyze')?.addEventListener('click',async e=>{if(!GroqAI.hasKey()){UI.render('settings');return;}const b=bodyEl.value;if(!b.trim()){UI.toast('Escreva sua redação antes de analisar.','warn');return;}e.currentTarget.disabled=true;e.currentTarget.textContent='🤖 Analisando...';const r=await DoctorAICore.analyzeEssay(titleEl.value,b);e.currentTarget.disabled=false;e.currentTarget.textContent='🤖 Analisar com Professor Doctor';const box=document.getElementById('essay-ai-result');if(!r.ok){box.innerHTML='<div class="ai-mini-result">A análise não pôde ser concluída agora.</div>';return;}const x=r.result;box.innerHTML=`<div class="card essay-result"><h3>Resultado da análise</h3><div class="stat center"><div class="stat-value">${Number(x.score||0).toFixed(0)}/100</div><div class="stat-label">avaliação estimada pela IA — não é nota oficial</div></div><p>${String(x.summary||'').replace(/</g,'&lt;')}</p><h4>Pontos fortes</h4><ul>${(x.strengths||[]).map(v=>`<li>${String(v).replace(/</g,'&lt;')}</li>`).join('')}</ul><h4>O que melhorar</h4><ul>${(x.improvements||[]).map(v=>`<li>${String(v).replace(/</g,'&lt;')}</li>`).join('')}</ul></div>`;});
+  document.getElementById('essay-teach')?.addEventListener('click',async e=>{if(!GroqAI.hasKey()){UI.render('aiSettings');return;}e.currentTarget.disabled=true;e.currentTarget.textContent='🤖 Preparando aula...';const r=await DoctorAICore.teachEssay();e.currentTarget.disabled=false;e.currentTarget.textContent='🤖 Ensinar como fazer';const box=document.getElementById('essay-ai-result');box.innerHTML=r.ok?`<div class="ai-mini-result"><strong>Professor de Redação Doctor</strong><div>${r.content.replace(/</g,'&lt;')}</div></div>`:`<div class="ai-mini-result">Não foi possível consultar a IA agora.</div>`;});
+  document.getElementById('essay-topic')?.addEventListener('click',async()=>{if(!GroqAI.hasKey()){UI.render('aiSettings');return;}const r=await DoctorAICore.call({messages:[{role:'system',content:'Você é o Professor de Redação Doctor.'},{role:'user',content:`${DoctorAICore.context()}\nSugira 3 temas de redação plausíveis para este concurso. Não diga que são oficiais.`}],temperature:0.35});document.getElementById('essay-ai-result').innerHTML=r.ok?`<div class="ai-mini-result"><strong>Temas para treinar</strong><div>${r.content.replace(/</g,'&lt;')}</div></div>`:'<div class="ai-mini-result">Não foi possível consultar a IA agora.</div>';});
+  document.getElementById('essay-analyze')?.addEventListener('click',async e=>{if(!GroqAI.hasKey()){UI.render('aiSettings');return;}const b=bodyEl.value;if(!b.trim()){UI.toast('Escreva sua redação antes de analisar.','warn');return;}e.currentTarget.disabled=true;e.currentTarget.textContent='🤖 Analisando...';const r=await DoctorAICore.analyzeEssay(titleEl.value,b);e.currentTarget.disabled=false;e.currentTarget.textContent='🤖 Analisar com Professor Doctor';const box=document.getElementById('essay-ai-result');if(!r.ok){box.innerHTML='<div class="ai-mini-result">A análise não pôde ser concluída agora.</div>';return;}const x=r.result;box.innerHTML=`<div class="card essay-result"><h3>Resultado da análise</h3><div class="stat center"><div class="stat-value">${Number(x.score||0).toFixed(0)}/100</div><div class="stat-label">avaliação estimada pela IA — não é nota oficial</div></div><p>${String(x.summary||'').replace(/</g,'&lt;')}</p><h4>Pontos fortes</h4><ul>${(x.strengths||[]).map(v=>`<li>${String(v).replace(/</g,'&lt;')}</li>`).join('')}</ul><h4>O que melhorar</h4><ul>${(x.improvements||[]).map(v=>`<li>${String(v).replace(/</g,'&lt;')}</li>`).join('')}</ul></div>`;});
   document.querySelectorAll('[data-essay-edit]').forEach(el=>el.addEventListener('click',()=>{UI._editingEssayId=el.dataset.essayEdit;UI.render('essay');}));
   document.querySelectorAll('[data-essay-delete]').forEach(el=>el.addEventListener('click',()=>{if(confirm('Excluir esta redação?')){CoreEssay.remove(el.dataset.essayDelete);UI.render('essay');}}));
 };
@@ -4457,11 +4471,10 @@ Views.bind.essay=function(){
 Views.settings = function () {
   const s = Store.state;
   const legalReady = GroqAI.isLegalReady();
-  const hasStoredKey = !!String(s.groqApiKey || '').trim();
   const hasKey = !!GroqAI.getKey();
-  const groqState = !legalReady ? 'bad' : (s.groqValidation === 'ok' ? 'ok' : (s.groqValidation === 'checking' ? 'checking' : 'bad'));
-  const statusTitle = !legalReady ? (hasStoredKey ? 'Confirmação necessária para ativar a IA' : 'Leia e confirme o aviso antes de ativar') : (groqState === 'ok' ? 'Groq funcionando corretamente' : (groqState === 'checking' ? 'Verificando sua chave…' : (hasKey ? 'Chave salva, mas ainda não validada' : 'IA ainda não configurada')));
-  const statusSub = !legalReady ? 'A chave já salva será preservada. Para usar a IA, confirme que tem 18 anos ou mais e leia o aviso de dados abaixo.' : (groqState === 'ok' ? 'Sua chave foi validada e a IA Doctor está pronta para uso.' : (groqState === 'checking' ? 'Aguarde alguns segundos.' : (hasKey ? 'Clique em “Salvar chave” para fazer a verificação automática.' : 'Configure sua chave para liberar os recursos de IA.')));
+  const groqEntryClass = legalReady && s.groqValidation === 'ok' ? 'ok' : 'attention';
+  const groqEntryStatus = legalReady && s.groqValidation === 'ok' ? 'IA ativa' : (hasKey ? 'Configuração pendente' : 'IA não configurada');
+  const groqEntrySummary = legalReady && s.groqValidation === 'ok' ? 'Sua IA está configurada e pronta para uso.' : 'Configure sua chave e permissões para ativar os recursos inteligentes.';
   // Identidade obrigatória do produto, resolvida pelo perfil e não digitada pelo usuário.
   const supportAppName = String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || '').trim();
   const supportAppId = String(window.DOCTOR_PLATFORM_BRIDGE?.appId || '').trim();
@@ -4471,61 +4484,16 @@ Views.settings = function () {
     <button class="btn btn-ghost btn-sm" id="back-home">← Voltar para o Doctor</button>
     <h2>⚙️ Configurações</h2>
     <p class="settings-intro">Centralize aqui sua conta, inteligência artificial, preferências e funcionamento do aplicativo.</p>
-    <div class="settings-section-heading"><span>01</span><div><strong>Inteligência artificial</strong><small>Conexão segura, privacidade e recursos inteligentes</small></div></div>
-    <div class="card groq-setup-card">
-      <div class="groq-hero">
-        <h3>🤖 Ative a IA Doctor com sua chave da Groq</h3>
-        <p>O Doctor AI usa a infraestrutura de inferência da Groq para executar modelos de inteligência artificial. Você cria e administra sua própria conta e chave na GroqCloud. As solicitações são enviadas diretamente do seu navegador à API oficial da Groq; a chave fica neste dispositivo e não integra a sincronização de estudos do Doctor.</p>
+    <section class="card settings-ai-entry" aria-labelledby="settings-ai-title">
+      <div class="settings-ai-entry-copy">
+        <span class="settings-ai-entry-icon" aria-hidden="true">✦</span>
+        <div><h3 id="settings-ai-title">Configuração de IA</h3><p>${groqEntrySummary}</p></div>
       </div>
-
-      <div class="groq-step"><div class="groq-step-num">1</div><div class="groq-step-body"><strong>Crie ou entre na sua conta GroqCloud</strong><span>A conta, a chave e os limites são administrados diretamente por você na Groq. Os Cloud Services da Groq exigem idade mínima de 18 anos. Consulte as condições e a disponibilidade do plano na própria plataforma.</span></div></div>
-
-      <a class="groq-get-key" href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer">🔑 ACESSAR A GROQCLOUD E CRIAR SUA CHAVE</a>
-
-      <div class="groq-step"><div class="groq-step-num">2</div><div class="groq-step-body"><strong>Copie sua API Key</strong><span>Na página de API Keys da GroqCloud, crie uma chave e copie o valor gerado.</span></div></div>
-
-      <div class="field">
-        <div class="groq-key-label"><label for="groq-key">Cole sua chave GROQ aqui</label><small>Começa normalmente com <strong>gsk_</strong></small></div>
-        <div class="groq-key-field"><input type="password" id="groq-key" class="input-core" placeholder="gsk_..." value="${s.groqApiKey || ''}" autocomplete="off" spellcheck="false"><button type="button" class="groq-key-eye" id="groq-key-eye" aria-label="Mostrar ou ocultar chave">👁️</button></div>
+      <div class="settings-ai-entry-foot">
+        <span class="settings-ai-entry-status ${groqEntryClass}"><i aria-hidden="true"></i>${groqEntryStatus}</span>
+        <button class="btn btn-primary" id="open-ai-settings" type="button">Configurar IA <span aria-hidden="true">→</span></button>
       </div>
-
-      <details class="groq-legal-notice" ${legalReady ? '' : 'open'}>
-        <summary>${legalReady ? 'Privacidade e consentimentos — confirmação registrada' : 'Leia o aviso de uso de IA e dados'}</summary>
-        <div class="groq-legal-content">
-        <p style="font-size:.88rem;line-height:1.5;margin:0 0 9px">Quando você pedir geração de questões, flashcards, análise de redação ou transcrição, o texto, áudio ou conteúdo necessário à solicitação será enviado à Groq para processamento. Segundo a documentação atual da Groq, entradas e saídas de inferência não são retidas por padrão, mas podem ser registradas temporariamente por até 30 dias para confiabilidade e prevenção de abuso; metadados de uso são coletados. Dados retidos ficam em infraestrutura nos Estados Unidos. A Groq informa que clientes podem habilitar Zero Data Retention nas configurações da própria conta; o Doctor não controla essa configuração.</p>
-        <p style="font-size:.88rem;line-height:1.5;margin:0 0 9px">Não envie CPF, documentos, dados financeiros, informações de saúde, senhas, segredos ou dados pessoais de terceiros. A chave é guardada no armazenamento local do navegador deste dispositivo (não é um cofre criptográfico) e usada para chamadas diretas à Groq. Evite dispositivos compartilhados. Se suspeitar de exposição, apague a chave deste app e revogue-a também na GroqCloud.</p>
-        <label style="display:flex;gap:9px;align-items:flex-start;font-size:.9rem;margin:10px 0"><input id="groq-age-confirm" type="checkbox" ${s.groqAdultConfirmed === true ? 'checked' : ''} style="margin-top:3px;flex:0 0 auto"><span>Confirmo que tenho <strong>18 anos ou mais</strong> e que esta conta/chave da Groq está sob meu controle.</span></label>
-        <label style="display:flex;gap:9px;align-items:flex-start;font-size:.9rem;margin:10px 0"><input id="groq-data-confirm" type="checkbox" ${s.groqDataDisclosureAccepted === true && s.groqLegalNoticeVersion === GROQ_LEGAL_NOTICE_VERSION ? 'checked' : ''} style="margin-top:3px;flex:0 0 auto"><span>Li e compreendi este aviso. Autorizo o envio à Groq do conteúdo que eu escolher inserir para executar a função de IA solicitada e entendo que o tratamento de dados pela Groq segue os termos e controles próprios dela.</span></label>
-        <p style="font-size:.8rem;line-height:1.45;margin:9px 0 0">Documentos oficiais: <a href="https://console.groq.com/docs/legal/services-agreement" target="_blank" rel="noopener noreferrer">Contrato de Serviços</a> · <a href="https://console.groq.com/docs/your-data" target="_blank" rel="noopener noreferrer">Tratamento de dados</a> · <a href="https://groq.com/trademark-policy" target="_blank" rel="noopener noreferrer">Política de marcas</a>.</p>
-        <p style="font-size:.8rem;line-height:1.45;margin:9px 0 0"><strong>Independência:</strong> Doctor Concursos não é afiliado, patrocinado, certificado ou endossado pela Groq LLC. Groq é marca da Groq LLC e/ou de suas afiliadas.</p>
-        </div>
-      </details>
-
-      <button class="btn btn-primary btn-block groq-save" id="save-key">💾 SALVAR E VALIDAR CHAVE</button>
-      <button class="btn btn-outline btn-block" id="groq-disable-ai" type="button" style="margin-top:8px">Desativar IA e apagar a chave deste dispositivo</button>
-
-      <div class="groq-status-box ${groqState}" id="groq-status-box">
-        <span class="groq-status-dot"></span>
-        <div><div class="groq-status-text">${statusTitle}</div><div class="groq-status-sub">${statusSub}</div></div>
-      </div>
-
-      <details class="groq-help">
-        <summary>🔎 COMO CONSEGUIR SUA CHAVE — veja o passo a passo</summary>
-        <ol>
-          <li>Toque no botão amarelo <strong>“Obtenha sua chave gratuita”</strong> acima.</li>
-          <li>Na GroqCloud, entre na sua conta ou crie uma conta. A página oficial informa opções por Google, GitHub, SSO ou e-mail.</li>
-          <li>Depois de entrar, acesse a área <strong>API Keys</strong>.</li>
-          <li>Crie uma nova API Key e copie a chave gerada. <strong>Não compartilhe essa chave com outras pessoas.</strong></li>
-          <li>Volte para este aplicativo, cole a chave no campo acima e toque em <strong>“Salvar chave”</strong>.</li>
-          <li>O Doctor fará a verificação automaticamente. <strong>🔴 vermelho pulsando</strong> significa que a IA ainda não está validada; <strong>🟢 verde</strong> significa que a chave está funcionando.</li>
-          <li>Se algum dia sua chave deixar de funcionar, volte aqui, substitua a chave e salve novamente.</li>
-        </ol>
-        <p class="free-note"><strong>A Groq pode oferecer uma modalidade gratuita, sujeita a limites por modelo, solicitações, tokens e áudio.</strong> Os limites e a disponibilidade podem mudar. Ao atingir uma cota, a API pode responder com limite temporário (HTTP 429); consulte o painel da sua conta para saber quando poderá tentar novamente. Planos e eventuais cobranças são definidos diretamente pela Groq, não pelo Doctor Concursos.</p>
-        <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer">Abrir a página oficial de API Keys da GroqCloud →</a>
-      </details>
-
-      <p class="muted center" style="margin-top:14px">Sua chave fica armazenada no armazenamento local deste navegador, não é incluída nos snapshots de sincronização do Doctor e é enviada diretamente à API da Groq quando você utiliza a IA. Não a compartilhe nem a use em aparelho público.</p>
-    </div>
+    </section>
     <div class="settings-section-heading"><span>02</span><div><strong>Dispositivo e experiência</strong><small>Instalação, aparência e sincronização</small></div></div>
     <div class="card"><h3>📱 Sessão e dispositivo</h3><p class="muted">O controle de uma sessão por aplicativo depende da conexão segura com a plataforma Doctor.</p><div class="subj-row"><span>Estado da sessão</span><strong>${CoreSync.status().remoteConfigured ? "Conectado à plataforma" : "Somente neste dispositivo"}</strong></div></div>
     <div class="card" id="doctor-install-settings-card"><h3>📲 Instalar o aplicativo</h3><p class="muted">Instale o Doctor Core na tela inicial do celular ou como aplicativo no computador. Esta opção permanece disponível aqui nas Configurações, mesmo depois da instalação.</p><button class="doctor-install-settings-btn" id="doctor-install-settings" type="button" aria-label="Instalar aplicativo Doctor ou ver opções de instalação"><span class="install-symbol" aria-hidden="true">⬇</span><span>Instalar aplicativo</span></button><p class="muted" style="font-size:.82rem;margin:10px 0 0">Se o navegador não abrir a instalação automaticamente, mostraremos como instalar pelo menu do navegador.</p></div>
@@ -4608,6 +4576,80 @@ Views.settings = function () {
     </section>`;
 };
 
+
+Views.aiSettings = function () {
+  const s = Store.state;
+  const legalReady = GroqAI.isLegalReady();
+  const hasStoredKey = !!String(s.groqApiKey || '').trim();
+  const hasKey = !!GroqAI.getKey();
+  const groqState = !legalReady ? 'bad' : (s.groqValidation === 'ok' ? 'ok' : (s.groqValidation === 'checking' ? 'checking' : 'bad'));
+  const statusTitle = !legalReady ? (hasStoredKey ? 'Confirmação necessária para ativar a IA' : 'Leia e confirme o aviso antes de ativar') : (groqState === 'ok' ? 'Groq funcionando corretamente' : (groqState === 'checking' ? 'Verificando sua chave…' : (hasKey ? 'Chave salva, mas ainda não validada' : 'IA ainda não configurada')));
+  const statusSub = !legalReady ? 'A chave já salva será preservada. Para usar a IA, confirme que tem 18 anos ou mais e leia o aviso de dados abaixo.' : (groqState === 'ok' ? 'Sua chave foi validada e a IA Doctor está pronta para uso.' : (groqState === 'checking' ? 'Aguarde alguns segundos.' : (hasKey ? 'Clique em “Salvar chave” para fazer a verificação automática.' : 'Configure sua chave para liberar os recursos de IA.')));
+  return `
+    <button class="btn btn-ghost btn-sm" id="back-settings">← Voltar para Configurações</button>
+    <div class="settings-ai-page-head"><span class="settings-ai-page-icon">✦</span><div><h2>Configuração de IA</h2><p class="muted">Gerencie a conexão da IA Doctor, sua chave e as permissões de uso em um só lugar.</p></div></div>
+        <div class="card groq-setup-card">
+      <div class="groq-hero">
+        <h3>🤖 Ative a IA Doctor com sua chave da Groq</h3>
+        <p>O Doctor AI usa a infraestrutura de inferência da Groq para executar modelos de inteligência artificial. Você cria e administra sua própria conta e chave na GroqCloud. As solicitações são enviadas diretamente do seu navegador à API oficial da Groq; a chave fica neste dispositivo e não integra a sincronização de estudos do Doctor.</p>
+      </div>
+
+      <div class="groq-step"><div class="groq-step-num">1</div><div class="groq-step-body"><strong>Crie ou entre na sua conta GroqCloud</strong><span>A conta, a chave e os limites são administrados diretamente por você na Groq. Os Cloud Services da Groq exigem idade mínima de 18 anos. Consulte as condições e a disponibilidade do plano na própria plataforma.</span></div></div>
+
+      <a class="groq-get-key" href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer">🔑 ACESSAR A GROQCLOUD E CRIAR SUA CHAVE</a>
+
+      <div class="groq-step"><div class="groq-step-num">2</div><div class="groq-step-body"><strong>Copie sua API Key</strong><span>Na página de API Keys da GroqCloud, crie uma chave e copie o valor gerado.</span></div></div>
+
+      <div class="field">
+        <div class="groq-key-label"><label for="groq-key">Cole sua chave GROQ aqui</label><small>Começa normalmente com <strong>gsk_</strong></small></div>
+        <div class="groq-key-field"><input type="password" id="groq-key" class="input-core" placeholder="gsk_..." value="${s.groqApiKey || ''}" autocomplete="off" spellcheck="false"><button type="button" class="groq-key-eye" id="groq-key-eye" aria-label="Mostrar ou ocultar chave">👁️</button></div>
+      </div>
+
+      <details class="groq-legal-notice" ${legalReady ? '' : 'open'}>
+        <summary>${legalReady ? 'Privacidade e consentimentos — confirmação registrada' : 'Leia o aviso de uso de IA e dados'}</summary>
+        <div class="groq-legal-content">
+        <p style="font-size:.88rem;line-height:1.5;margin:0 0 9px">Quando você pedir geração de questões, flashcards, análise de redação ou transcrição, o texto, áudio ou conteúdo necessário à solicitação será enviado à Groq para processamento. Segundo a documentação atual da Groq, entradas e saídas de inferência não são retidas por padrão, mas podem ser registradas temporariamente por até 30 dias para confiabilidade e prevenção de abuso; metadados de uso são coletados. Dados retidos ficam em infraestrutura nos Estados Unidos. A Groq informa que clientes podem habilitar Zero Data Retention nas configurações da própria conta; o Doctor não controla essa configuração.</p>
+        <p style="font-size:.88rem;line-height:1.5;margin:0 0 9px">Não envie CPF, documentos, dados financeiros, informações de saúde, senhas, segredos ou dados pessoais de terceiros. A chave é guardada no armazenamento local do navegador deste dispositivo (não é um cofre criptográfico) e usada para chamadas diretas à Groq. Evite dispositivos compartilhados. Se suspeitar de exposição, apague a chave deste app e revogue-a também na GroqCloud.</p>
+        <label style="display:flex;gap:9px;align-items:flex-start;font-size:.9rem;margin:10px 0"><input id="groq-age-confirm" type="checkbox" ${s.groqAdultConfirmed === true ? 'checked' : ''} style="margin-top:3px;flex:0 0 auto"><span>Confirmo que tenho <strong>18 anos ou mais</strong> e que esta conta/chave da Groq está sob meu controle.</span></label>
+        <label style="display:flex;gap:9px;align-items:flex-start;font-size:.9rem;margin:10px 0"><input id="groq-data-confirm" type="checkbox" ${s.groqDataDisclosureAccepted === true && s.groqLegalNoticeVersion === GROQ_LEGAL_NOTICE_VERSION ? 'checked' : ''} style="margin-top:3px;flex:0 0 auto"><span>Li e compreendi este aviso. Autorizo o envio à Groq do conteúdo que eu escolher inserir para executar a função de IA solicitada e entendo que o tratamento de dados pela Groq segue os termos e controles próprios dela.</span></label>
+        <p style="font-size:.8rem;line-height:1.45;margin:9px 0 0">Documentos oficiais: <a href="https://console.groq.com/docs/legal/services-agreement" target="_blank" rel="noopener noreferrer">Contrato de Serviços</a> · <a href="https://console.groq.com/docs/your-data" target="_blank" rel="noopener noreferrer">Tratamento de dados</a> · <a href="https://groq.com/trademark-policy" target="_blank" rel="noopener noreferrer">Política de marcas</a>.</p>
+        <p style="font-size:.8rem;line-height:1.45;margin:9px 0 0"><strong>Independência:</strong> Doctor Concursos não é afiliado, patrocinado, certificado ou endossado pela Groq LLC. Groq é marca da Groq LLC e/ou de suas afiliadas.</p>
+        </div>
+      </details>
+
+      <button class="btn btn-primary btn-block groq-save" id="save-key">💾 SALVAR E VALIDAR CHAVE</button>
+      <button class="btn btn-outline btn-block" id="groq-disable-ai" type="button" style="margin-top:8px">Desativar IA e apagar a chave deste dispositivo</button>
+
+      <div class="groq-status-box ${groqState}" id="groq-status-box">
+        <span class="groq-status-dot"></span>
+        <div><div class="groq-status-text">${statusTitle}</div><div class="groq-status-sub">${statusSub}</div></div>
+      </div>
+
+      <details class="groq-help">
+        <summary>🔎 COMO CONSEGUIR SUA CHAVE — veja o passo a passo</summary>
+        <ol>
+          <li>Toque no botão amarelo <strong>“Obtenha sua chave gratuita”</strong> acima.</li>
+          <li>Na GroqCloud, entre na sua conta ou crie uma conta. A página oficial informa opções por Google, GitHub, SSO ou e-mail.</li>
+          <li>Depois de entrar, acesse a área <strong>API Keys</strong>.</li>
+          <li>Crie uma nova API Key e copie a chave gerada. <strong>Não compartilhe essa chave com outras pessoas.</strong></li>
+          <li>Volte para este aplicativo, cole a chave no campo acima e toque em <strong>“Salvar chave”</strong>.</li>
+          <li>O Doctor fará a verificação automaticamente. <strong>🔴 vermelho pulsando</strong> significa que a IA ainda não está validada; <strong>🟢 verde</strong> significa que a chave está funcionando.</li>
+          <li>Se algum dia sua chave deixar de funcionar, volte aqui, substitua a chave e salve novamente.</li>
+        </ol>
+        <p class="free-note"><strong>A Groq pode oferecer uma modalidade gratuita, sujeita a limites por modelo, solicitações, tokens e áudio.</strong> Os limites e a disponibilidade podem mudar. Ao atingir uma cota, a API pode responder com limite temporário (HTTP 429); consulte o painel da sua conta para saber quando poderá tentar novamente. Planos e eventuais cobranças são definidos diretamente pela Groq, não pelo Doctor Concursos.</p>
+        <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer">Abrir a página oficial de API Keys da GroqCloud →</a>
+      </details>
+
+      <p class="muted center" style="margin-top:14px">Sua chave fica armazenada no armazenamento local deste navegador, não é incluída nos snapshots de sincronização do Doctor e é enviada diretamente à API da Groq quando você utiliza a IA. Não a compartilhe nem a use em aparelho público.</p>
+    </div>
+  `;
+};
+
+Views.bind.aiSettings = function () {
+  document.getElementById('back-settings')?.addEventListener('click', () => UI.back());
+  Views.bind.settings();
+};
+
 Views.bind.settings = function () {
   document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
   // O botão fixo nas Configurações usa o mesmo fluxo PWA do botão flutuante da tela inicial.
@@ -4682,7 +4724,7 @@ Views.bind.settings = function () {
     Store.state.groqValidation='checking';
     Store.save();
     GroqAI.setKey(v);
-    UI.render('settings');
+    UI.render('aiSettings');
     const result=await GroqAI.testConnection();
     Store.state.groqValidation=result.ok?'ok':'bad';
     Store.save();
@@ -4690,7 +4732,7 @@ Views.bind.settings = function () {
     else if(result.status===401 || result.status===403){ UI.toast('🔴 A chave não foi aceita pela GROQ. Confira a chave e tente novamente.','warn'); }
     else if(result.error?.name==='AbortError'){ UI.toast('🟡 A verificação demorou demais. Confira sua internet e tente novamente.','warn'); }
     else { UI.toast('🔴 Não foi possível validar a chave agora. Confira a internet e tente novamente.','warn'); }
-    UI.render('settings');
+    UI.render('aiSettings');
   });
   document.getElementById('groq-disable-ai')?.addEventListener('click', () => {
     if (!confirm('Desativar a IA neste dispositivo e apagar a chave Groq salva localmente? Isso não revoga a chave na GroqCloud.')) return;
@@ -4702,9 +4744,9 @@ Views.bind.settings = function () {
     Store.state.groqValidation='bad';
     Store.save();
     UI.toast('IA desativada e chave apagada deste dispositivo. Se necessário, revogue a chave também na GroqCloud.','success');
-    UI.render('settings');
+    UI.render('aiSettings');
   });
-  document.getElementById('toggle-theme-btn')?.addEventListener('click', () => { UI.toggleTheme(); UI.render('settings'); });
+  document.getElementById('toggle-theme-btn')?.addEventListener('click', () => { UI.toggleTheme(); UI.render('aiSettings'); });
   document.getElementById('doctor-sign-out')?.addEventListener('click', async (event) => {
     const button = event.currentTarget;
     if (!window.DOCTOR_PLATFORM_BRIDGE?.signOut) {
@@ -4722,7 +4764,7 @@ Views.bind.settings = function () {
       UI.toast('Não foi possível encerrar a sessão: ' + String(error?.message || error), 'error');
     }
   });
-  document.getElementById('sync-now')?.addEventListener('click', async () => { const r=await CoreSync.flush(); if(r.ok && r.unsupportedEntities?.length) UI.toast('Progresso, questões e anotações sincronizados. Gravações de áudio continuam neste dispositivo até a integração segura do armazenamento.','warn'); else if(r.ok) UI.toast('🔄 Informações sincronizadas.','success'); else if(r.reason==='sync-not-enabled') UI.toast('A sincronização central ainda está em homologação. Seus dados continuam salvos neste dispositivo.','warn'); else if(r.reason==='platform-not-connected') UI.toast('A Plataforma ainda não está conectada a este aplicativo. Seus dados continuam salvos neste dispositivo.','warn'); else UI.toast('Não foi possível sincronizar agora. Seus dados locais foram preservados.','warn'); UI.render('settings'); });
+  document.getElementById('sync-now')?.addEventListener('click', async () => { const r=await CoreSync.flush(); if(r.ok && r.unsupportedEntities?.length) UI.toast('Progresso, questões e anotações sincronizados. Gravações de áudio continuam neste dispositivo até a integração segura do armazenamento.','warn'); else if(r.ok) UI.toast('🔄 Informações sincronizadas.','success'); else if(r.reason==='sync-not-enabled') UI.toast('A sincronização central ainda está em homologação. Seus dados continuam salvos neste dispositivo.','warn'); else if(r.reason==='platform-not-connected') UI.toast('A Plataforma ainda não está conectada a este aplicativo. Seus dados continuam salvos neste dispositivo.','warn'); else UI.toast('Não foi possível sincronizar agora. Seus dados locais foram preservados.','warn'); UI.render('aiSettings'); });
   document.getElementById('reset-progress')?.addEventListener('click', () => { if (confirm('Zerar todo o progresso? Essa ação não pode ser desfeita.')) { Store.reset(); UI.toast('Progresso zerado.', 'warn'); UI.render('home'); } });
 };
 
