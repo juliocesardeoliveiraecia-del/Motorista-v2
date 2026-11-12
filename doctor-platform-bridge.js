@@ -10,10 +10,10 @@
   const supaConfig = config.integrations?.supabase || {};
   const platformConfig = config.integrations?.platform || {};
   const OFFLINE_GRACE_MS = 72 * 60 * 60 * 1000;
-  const HEARTBEAT_MS = 2 * 60 * 1000;
+  const HEARTBEAT_MS = 25 * 1000;
   const slug = () => String(window.EXAM_CONFIG?.platformProductSlug || window.EXAM_CONFIG?.productId || '').trim();
   const storageKey = () => 'doctor-platform-lease:' + (slug() || 'unknown');
-  const deviceKey = () => 'doctor-platform-device:' + (slug() || 'unknown');
+  const deviceKey = () => 'doctor-platform-device-global';
 
   let client = null;
   let clientPromise = null;
@@ -37,14 +37,6 @@
   }
 
   function deviceId() {
-    const store = window.DOCTOR_CORE_RUNTIME?.Store;
-    const coreDeviceId = store?.state?.deviceSession?.id;
-    if (coreDeviceId) return String(coreDeviceId);
-    if (store?.state?.deviceSession) {
-      store.state.deviceSession.id = 'device-' + crypto.randomUUID();
-      try { store.save(); } catch (_) {}
-      return store.state.deviceSession.id;
-    }
     try {
       let value = localStorage.getItem(deviceKey());
       if (!value) {
@@ -53,7 +45,8 @@
       }
       return value;
     } catch (_) {
-      return 'doctor-device-' + crypto.randomUUID();
+      if (!fallbackDeviceId) fallbackDeviceId = 'doctor-device-' + crypto.randomUUID();
+      return fallbackDeviceId;
     }
   }
 
@@ -126,6 +119,145 @@
     return { productId: data.id, productStatus: data.status, appId: relation.app_id, app };
   }
 
+
+  let realtimeChannel = null;
+  let takeoverOverlay = null;
+  let fallbackDeviceId = null;
+
+  function showSessionNotice(title, message, actions) {
+    const overlay = document.createElement('div');
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:30000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(3,10,20,.82);font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#fff;';
+    const panel = document.createElement('section');
+    panel.style.cssText = 'width:min(100%,440px);padding:24px;border:1px solid rgba(255,255,255,.16);border-radius:18px;background:#0b1b2e;box-shadow:0 20px 70px rgba(0,0,0,.45)';
+    const brand = document.createElement('div');
+    brand.textContent = 'DOCTOR CONCURSOS · SEGURANÇA DA CONTA';
+    brand.style.cssText = 'font-size:10px;font-weight:800;letter-spacing:.13em;color:#f5c400';
+    const heading = document.createElement('h2');
+    heading.textContent = title;
+    heading.style.cssText = 'margin:12px 0 8px;font-size:23px;line-height:1.2';
+    const body = document.createElement('p');
+    body.textContent = message;
+    body.style.cssText = 'margin:0 0 18px;color:#c6d3e3;font-size:14px;line-height:1.5';
+    panel.append(brand, heading, body);
+    (actions || []).forEach(action => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = action.label;
+      button.style.cssText = 'width:100%;margin-top:10px;padding:13px;border:0;border-radius:10px;background:' + (action.primary ? '#f5c400' : '#203954') + ';color:' + (action.primary ? '#071322' : '#fff') + ';font-weight:800;font-size:14px;cursor:pointer';
+      button.addEventListener('click', action.onClick);
+      panel.appendChild(button);
+    });
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+
+  function closeTakeoverOverlay() {
+    if (takeoverOverlay?.isConnected) takeoverOverlay.remove();
+    takeoverOverlay = null;
+  }
+
+  async function handleTakeoverRequest(payload) {
+    const requestId = payload?.request_id;
+    if (!requestId || takeoverOverlay?.isConnected || !currentSessionId) return;
+    const deviceName = String(payload.device_name || 'Outro dispositivo').slice(0, 120);
+    takeoverOverlay = showSessionNotice(
+      'Tentativa de acesso à sua conta',
+      deviceName + ' está tentando entrar na sua conta Doctor Concursos. Se você mantiver esta sessão, a nova tentativa será cancelada.',
+      [
+        { label: 'MANTER NESTE DISPOSITIVO', primary: true, onClick: async () => {
+          const buttons = takeoverOverlay?.querySelectorAll('button') || [];
+          buttons.forEach(button => { button.disabled = true; });
+          try {
+            const db = await getClient();
+            const { error } = await db.rpc('resolve_device_session_request_v1', {
+              p_request_id: requestId, p_decision: 'keep'
+            });
+            if (error) throw error;
+            closeTakeoverOverlay();
+            showSessionNotice('Acesso protegido', 'A tentativa no outro dispositivo foi cancelada. Você continua conectado aqui.', [
+              { label: 'CONTINUAR ESTUDANDO', primary: true, onClick: event => event.currentTarget?.closest('[role="dialog"]')?.remove() }
+            ]);
+          } catch (_) {
+            buttons.forEach(button => { button.disabled = false; });
+          }
+        }},
+        { label: 'TRANSFERIR PARA O OUTRO DISPOSITIVO', primary: false, onClick: async () => {
+          const buttons = takeoverOverlay?.querySelectorAll('button') || [];
+          buttons.forEach(button => { button.disabled = true; });
+          try {
+            const db = await getClient();
+            const { data, error } = await db.rpc('resolve_device_session_request_v1', {
+              p_request_id: requestId, p_decision: 'transfer'
+            });
+            if (error) throw error;
+            if ((Array.isArray(data) ? data[0] : data)?.status === 'approved') {
+              closeTakeoverOverlay();
+              loseSession();
+            } else {
+              closeTakeoverOverlay();
+            }
+          } catch (_) {
+            buttons.forEach(button => { button.disabled = false; });
+          }
+        }}
+      ]
+    );
+  }
+
+  async function startSessionRealtime() {
+    if (!currentUserId || !client) return;
+    if (realtimeChannel) {
+      try { await client.removeChannel(realtimeChannel); } catch (_) {}
+      realtimeChannel = null;
+    }
+    try { await client.realtime.setAuth(); } catch (_) {}
+    realtimeChannel = client.channel('doctor-session:' + currentUserId, { config: { private: true } })
+      .on('broadcast', { event: 'takeover_requested' }, message => {
+        handleTakeoverRequest(message?.payload || message).catch(() => {});
+      })
+      .on('broadcast', { event: 'session_revoked' }, message => {
+        const payload = message?.payload || message;
+        if (payload?.session_id && payload.session_id === currentSessionId) loseSession();
+      })
+      .subscribe();
+  }
+
+  async function waitForSessionRequest(db, requestId) {
+    closeTakeoverOverlay();
+    takeoverOverlay = showSessionNotice(
+      'Aguardando confirmação',
+      'Sua conta já está conectada em outro dispositivo. Uma solicitação foi enviada para a sessão ativa. Ela tem 30 segundos para autorizar a transferência.',
+      []
+    );
+    const started = Date.now();
+    while (Date.now() - started < 33000) {
+      const { data, error } = await db.rpc('get_device_session_request_v1', { p_request_id: requestId });
+      if (error) throw error;
+      const status = (Array.isArray(data) ? data[0] : data) || {};
+      if (status.status === 'approved' && status.session_id) {
+        closeTakeoverOverlay();
+        return { ok: true, sessionId: status.session_id };
+      }
+      if (status.status === 'denied') {
+        closeTakeoverOverlay();
+        await db.auth.signOut({ scope: 'local' });
+        return { ok: false, reason: 'session-already-active' };
+      }
+      if (status.status === 'expired' || status.status === 'cancelled') {
+        closeTakeoverOverlay();
+        await db.auth.signOut({ scope: 'local' });
+        return { ok: false, reason: 'session-request-expired' };
+      }
+      await new Promise(resolve => setTimeout(resolve, 900));
+    }
+    closeTakeoverOverlay();
+    await db.auth.signOut({ scope: 'local' });
+    return { ok: false, reason: 'session-request-expired' };
+  }
+
   async function claimCurrentSession() {
     if (!navigator.onLine) {
       const lease = validOfflineLease();
@@ -156,7 +288,7 @@
       return { ok: false, reason: 'app-not-available' };
     }
 
-    const { data: claimData, error: claimError } = await db.rpc('claim_device_session_v1', {
+    const { data: claimData, error: claimError } = await db.rpc('request_device_session_v1', {
       p_app_id: target.appId,
       p_device_id: deviceId(),
       p_device_name: (navigator.platform || 'Dispositivo') + ' · ' + (navigator.userAgent || '').slice(0, 72),
@@ -168,7 +300,15 @@
       throw claimError;
     }
 
-    const claimed = Array.isArray(claimData) ? claimData[0] : claimData;
+    let claimed = Array.isArray(claimData) ? claimData[0] : claimData;
+    if (claimed?.status === 'pending' && claimed.request_id) {
+      const handoff = await waitForSessionRequest(db, claimed.request_id);
+      if (!handoff.ok) return handoff;
+      claimed = { session_id: handoff.sessionId };
+    }
+    if (claimed?.status && claimed.status !== 'claimed' && !claimed.session_id) {
+      return { ok: false, reason: 'session-not-confirmed' };
+    }
     if (!claimed?.session_id) return { ok: false, reason: 'session-not-confirmed' };
 
     let endsAt = null;
@@ -197,6 +337,7 @@
     };
     writeJson(storageKey(), currentLease);
     startHeartbeat();
+    startSessionRealtime().catch(() => {});
     return { ok: true, offline: false, sessionId: currentSessionId, appId: currentAppId, admin: isAdmin };
   }
 
@@ -603,6 +744,8 @@
       'app-not-published': 'Este aplicativo ainda não foi publicado no catálogo Doctor Concursos.',
       'offline-no-valid-access': 'Para abrir este aplicativo sem internet, primeiro é necessário validar seu acesso quando estiver conectado.',
       'session-revoked': 'Sua sessão foi transferida para outro dispositivo. Seus estudos locais foram preservados; entre novamente para continuar.',
+      'session-already-active': 'O dispositivo que já estava conectado manteve a sessão. Por segurança, este acesso foi cancelado.',
+      'session-request-expired': 'Não houve confirmação no dispositivo que já estava conectado. A sessão anterior foi mantida; tente novamente quando estiver com aquele dispositivo.',
       'app_catalog_link_missing': 'O vínculo deste aplicativo no catálogo central ainda não foi configurado.',
       'central_auth_not_configured': 'A autenticação central ainda não foi configurada neste aplicativo.'
     };
