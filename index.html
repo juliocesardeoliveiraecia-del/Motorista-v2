@@ -4483,7 +4483,7 @@ Views.settings = function () {
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">← Voltar para o Doctor</button>
     <h2>⚙️ Configurações</h2>
-    <p class="settings-intro">Centralize aqui sua conta, inteligência artificial, preferências e funcionamento do aplicativo.</p>
+    <p class="settings-intro">Gerencie o aplicativo, seu dispositivo e sua conta. As configurações de IA ficam em uma página própria.</p>
     <section class="card settings-ai-entry" aria-labelledby="settings-ai-title">
       <div class="settings-ai-entry-copy">
         <span class="settings-ai-entry-icon" aria-hidden="true">✦</span>
@@ -4494,12 +4494,12 @@ Views.settings = function () {
         <button class="btn btn-primary" id="open-ai-settings" type="button">Configurar IA <span aria-hidden="true">→</span></button>
       </div>
     </section>
-    <div class="settings-section-heading"><span>02</span><div><strong>Dispositivo e experiência</strong><small>Instalação, aparência e sincronização</small></div></div>
+    <div class="settings-section-heading"><span>01</span><div><strong>Dispositivo e experiência</strong><small>Instalação, aparência e sincronização</small></div></div>
     <div class="card"><h3>📱 Sessão e dispositivo</h3><p class="muted">O controle de uma sessão por aplicativo depende da conexão segura com a plataforma Doctor.</p><div class="subj-row"><span>Estado da sessão</span><strong>${CoreSync.status().remoteConfigured ? "Conectado à plataforma" : "Somente neste dispositivo"}</strong></div></div>
     <div class="card" id="doctor-install-settings-card"><h3>📲 Instalar o aplicativo</h3><p class="muted">Instale o Doctor Core na tela inicial do celular ou como aplicativo no computador. Esta opção permanece disponível aqui nas Configurações, mesmo depois da instalação.</p><button class="doctor-install-settings-btn" id="doctor-install-settings" type="button" aria-label="Instalar aplicativo Doctor ou ver opções de instalação"><span class="install-symbol" aria-hidden="true">⬇</span><span>Instalar aplicativo</span></button><p class="muted" style="font-size:.82rem;margin:10px 0 0">Se o navegador não abrir a instalação automaticamente, mostraremos como instalar pelo menu do navegador.</p></div>
     <div class="card"><h3>🎨 Aparência</h3><button class="btn btn-outline btn-block" id="toggle-theme-btn">Alternar tema (${s.theme === 'dark' ? 'escuro' : 'claro'})</button></div>
     <div class="card"><h3>💾 Dados e sincronização</h3><p class="muted">Seus dados locais continuam disponíveis offline. ${CoreSync.status().remoteConfigured ? (CoreSync.status().queued?`Há <strong>${CoreSync.status().queued}</strong> alteração(ões) aguardando sincronização.`:'Nenhuma alteração aguardando sincronização.') : 'A sincronização com a plataforma Doctor ainda não está conectada; os dados permanecem salvos neste dispositivo.'}</p><button class="btn btn-outline btn-block" id="sync-now">🔄 Sincronizar informações</button><button class="btn btn-danger btn-block" id="reset-progress">Zerar progresso</button></div>
-    <div class="settings-section-heading"><span>03</span><div><strong>Conta e suporte</strong><small>Acesso, segurança e atendimento</small></div></div>
+    <div class="settings-section-heading"><span>02</span><div><strong>Conta e suporte</strong><small>Acesso, segurança e atendimento</small></div></div>
     <section class="card doctor-account-card" aria-labelledby="doctor-account-title">
       <h3 id="doctor-account-title">🔐 Sua conta Doctor</h3>
       <p class="muted">Encerre sua sessão com segurança neste dispositivo. Seus estudos, anotações e progresso salvos não serão apagados.</p>
@@ -4646,7 +4646,7 @@ Views.aiSettings = function () {
 };
 
 Views.bind.aiSettings = function () {
-  document.getElementById('back-settings')?.addEventListener('click', () => UI.back());
+  document.getElementById('back-settings')?.addEventListener('click', () => UI.render('settings'));
   Views.bind.settings();
 };
 
