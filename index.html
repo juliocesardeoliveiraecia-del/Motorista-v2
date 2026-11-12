@@ -2485,7 +2485,7 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
     });
     document.getElementById('notes-toggle')?.addEventListener('click', () => this.render('notes'));
     document.getElementById('recorder-toggle')?.addEventListener('click', () => this.render('recorderPick'));
-    document.getElementById('settings-toggle')?.addEventListener('click', () => this.render('aiSettings'));
+    document.getElementById('settings-toggle')?.addEventListener('click', () => this.render('settings'));
     // V1.9.9+ — Splash com duração mínima para reforçar a sensação de
     // inicialização/atualização. A versão fica visível antes mesmo do JS
     // terminar o boot, evitando a impressão de que a atualização não entrou.
@@ -4646,7 +4646,7 @@ Views.aiSettings = function () {
 };
 
 Views.bind.aiSettings = function () {
-  document.getElementById('back-settings')?.addEventListener('click', () => UI.render('settings'));
+  document.getElementById('back-settings')?.addEventListener('click', () => UI.render('settings', { replaceHistory: true }));
   Views.bind.settings();
 };
 
@@ -4746,7 +4746,7 @@ Views.bind.settings = function () {
     UI.toast('IA desativada e chave apagada deste dispositivo. Se necessário, revogue a chave também na GroqCloud.','success');
     UI.render('aiSettings');
   });
-  document.getElementById('toggle-theme-btn')?.addEventListener('click', () => { UI.toggleTheme(); UI.render('aiSettings'); });
+  document.getElementById('toggle-theme-btn')?.addEventListener('click', () => { UI.toggleTheme(); UI.render('settings'); });
   document.getElementById('doctor-sign-out')?.addEventListener('click', async (event) => {
     const button = event.currentTarget;
     if (!window.DOCTOR_PLATFORM_BRIDGE?.signOut) {
@@ -4764,7 +4764,7 @@ Views.bind.settings = function () {
       UI.toast('Não foi possível encerrar a sessão: ' + String(error?.message || error), 'error');
     }
   });
-  document.getElementById('sync-now')?.addEventListener('click', async () => { const r=await CoreSync.flush(); if(r.ok && r.unsupportedEntities?.length) UI.toast('Progresso, questões e anotações sincronizados. Gravações de áudio continuam neste dispositivo até a integração segura do armazenamento.','warn'); else if(r.ok) UI.toast('🔄 Informações sincronizadas.','success'); else if(r.reason==='sync-not-enabled') UI.toast('A sincronização central ainda está em homologação. Seus dados continuam salvos neste dispositivo.','warn'); else if(r.reason==='platform-not-connected') UI.toast('A Plataforma ainda não está conectada a este aplicativo. Seus dados continuam salvos neste dispositivo.','warn'); else UI.toast('Não foi possível sincronizar agora. Seus dados locais foram preservados.','warn'); UI.render('aiSettings'); });
+  document.getElementById('sync-now')?.addEventListener('click', async () => { const r=await CoreSync.flush(); if(r.ok && r.unsupportedEntities?.length) UI.toast('Progresso, questões e anotações sincronizados. Gravações de áudio continuam neste dispositivo até a integração segura do armazenamento.','warn'); else if(r.ok) UI.toast('🔄 Informações sincronizadas.','success'); else if(r.reason==='sync-not-enabled') UI.toast('A sincronização central ainda está em homologação. Seus dados continuam salvos neste dispositivo.','warn'); else if(r.reason==='platform-not-connected') UI.toast('A Plataforma ainda não está conectada a este aplicativo. Seus dados continuam salvos neste dispositivo.','warn'); else UI.toast('Não foi possível sincronizar agora. Seus dados locais foram preservados.','warn'); UI.render('settings'); });
   document.getElementById('reset-progress')?.addEventListener('click', () => { if (confirm('Zerar todo o progresso? Essa ação não pode ser desfeita.')) { Store.reset(); UI.toast('Progresso zerado.', 'warn'); UI.render('home'); } });
 };
 
