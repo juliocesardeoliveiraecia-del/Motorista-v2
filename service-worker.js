@@ -1,8 +1,8 @@
 // service-worker.js — network-first com preservação do último shell offline válido.
-const CACHE_NAME = 'motorista-ipameri-v1.13.13-login-rpc-cache-recovery';
+const CACHE_NAME = 'motorista-ipameri-v1.13.14-session-audit-fix';
 const ASSETS = [
   './', './index.html', './manifest.json?v=1.13.3-platform-bridge', './version.json',
-  './production-config.js?v=1.12.18', './doctor-platform-bridge.js?v=1.12.18-platform-4',
+  './production-config.js?v=1.12.18', './doctor-platform-bridge.js?v=1.12.18-platform-5',
   './product-context.js?v=2026.3', './product-content.js?v=2026.3',
   './doctor-core-quality.js?v=1.12.18', './calculator-scientific.js?v=1.12.18',
   './doctor-core-icon.svg', './assets/icons/products/motorista-legislativo.svg?v=1.3.0',
@@ -24,7 +24,7 @@ const ASSETS = [
 ];
 const CORE_ASSETS = [
   './index.html', './manifest.json?v=1.13.3-platform-bridge', './version.json',
-  './production-config.js?v=1.12.18', './doctor-platform-bridge.js?v=1.12.18-platform-4',
+  './production-config.js?v=1.12.18', './doctor-platform-bridge.js?v=1.12.18-platform-5',
   './product-context.js?v=1.12.18-context-2', './product-content.js?v=1.12.18',
   './doctor-core-quality.js?v=1.12.18', './calculator-scientific.js?v=1.12.18',
   './assets/icons/icon-generator.js?v=1.3.0'
