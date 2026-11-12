@@ -3317,7 +3317,6 @@ Views.pickSubject = function () {
 
 Views.bind.pickSubject = function () {
   document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
-  document.getElementById('open-ai-settings')?.addEventListener('click', () => UI.render('aiSettings'));
   document.querySelectorAll('.pick-card').forEach(el => {
     el.addEventListener('click', () => {
       UI.practiceSubject = el.dataset.subject;
@@ -4652,6 +4651,7 @@ Views.bind.aiSettings = function () {
 
 Views.bind.settings = function () {
   document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
+  document.getElementById('open-ai-settings')?.addEventListener('click', () => UI.render('aiSettings'));
   // O botão fixo nas Configurações usa o mesmo fluxo PWA do botão flutuante da tela inicial.
   document.getElementById('doctor-install-settings')?.addEventListener('click', async (event) => {
     event.preventDefault();
