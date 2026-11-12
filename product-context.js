@@ -141,7 +141,7 @@ const EXAM_CONFIG = {
     'https://institutoverbena.ufg.br/'
   ],
   sync: { enabled: true, provider: 'supabase-versioned-snapshot-v1' },
-  sessionPolicy: 'single-active-device-global-account-confirmed-handoff',
+  sessionPolicy: 'single-active-device-global-account-last-login-wins',
   // Identidade visual — os mesmos valores que já estavam fixos no CSS.
   // Trocar aqui muda a cor do app inteiro sem mexer em nenhum outro arquivo.
   primaryColor: '#0A192F',
