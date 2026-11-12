@@ -1458,6 +1458,10 @@ const Store = {
   }
 };
 
+// Exposição somente de leitura/consulta para módulos externos do Core, como o Doctor Search.
+// O estado continua sendo persistido e alterado exclusivamente pelo Store original.
+window.Store = Store;
+
 const Quiz = {
   shuffle(arr) {
     const a = [...arr];
