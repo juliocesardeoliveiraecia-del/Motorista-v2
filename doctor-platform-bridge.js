@@ -295,19 +295,32 @@
       return { ok: false, reason: 'app-not-available' };
     }
 
-    const { data: claimData, error: claimError } = await db.rpc('request_device_session_v1', {
+    const sessionArgs = {
       p_app_id: target.appId,
       p_device_id: deviceId(),
       p_device_name: (navigator.platform || 'Dispositivo') + ' · ' + (navigator.userAgent || '').slice(0, 72),
       p_platform: 'web-pwa'
-    });
+    };
+    let { data: claimData, error: claimError } = await db.rpc('request_device_session_v1', sessionArgs);
     if (claimError) {
       const message = String(claimError.message || '').toLowerCase();
       if (message.includes('active app access required')) return { ok: false, reason: 'access-required' };
-      throw claimError;
+      // Recovery for a temporarily stale PostgREST schema cache: the legacy
+      // RPC now enforces the same account-wide last-login-wins policy.
+      const missingNewRpc = message.includes('schema cache') ||
+        (message.includes('could not find the function') && message.includes('request_device_session_v1'));
+      if (missingNewRpc) {
+        const fallback = await db.rpc('claim_device_session_v1', sessionArgs);
+        claimData = fallback.data;
+        claimError = fallback.error;
+      }
+      if (claimError) throw claimError;
     }
 
     let claimed = Array.isArray(claimData) ? claimData[0] : claimData;
+    if (claimed && !claimed.session_id && claimed.status === 'claimed') {
+      claimed = { session_id: claimed.session_id };
+    }
     if (claimed?.status === 'pending' && claimed.request_id) {
       const handoff = await waitForSessionRequest(db, claimed.request_id);
       if (!handoff.ok) return handoff;
