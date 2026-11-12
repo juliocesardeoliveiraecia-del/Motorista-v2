@@ -4474,11 +4474,6 @@ Views.settings = function () {
   const groqEntryClass = legalReady && s.groqValidation === 'ok' ? 'ok' : 'attention';
   const groqEntryStatus = legalReady && s.groqValidation === 'ok' ? 'IA ativa' : (hasKey ? 'Configuração pendente' : 'IA não configurada');
   const groqEntrySummary = legalReady && s.groqValidation === 'ok' ? 'Sua IA está configurada e pronta para uso.' : 'Configure sua chave e permissões para ativar os recursos inteligentes.';
-  // Identidade obrigatória do produto, resolvida pelo perfil e não digitada pelo usuário.
-  const supportAppName = String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || '').trim();
-  const supportAppId = String(window.DOCTOR_PLATFORM_BRIDGE?.appId || '').trim();
-  const supportProductId = String(window.DOCTOR_PLATFORM_BRIDGE?.productId || '').trim();
-  const supportIdentityReady = !!(supportAppName && supportAppId && supportProductId);
   return `
     <button class="btn btn-ghost btn-sm" id="back-home">← Voltar para o Doctor</button>
     <h2>⚙️ Configurações</h2>
