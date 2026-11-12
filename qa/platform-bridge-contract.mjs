@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import vm from 'node:vm';
 
 const read = path => fs.readFileSync(path, 'utf8');
 const index = read('index.html');
@@ -6,6 +7,13 @@ const bridge = read('doctor-platform-bridge.js');
 const sw = read('service-worker.js');
 const config = read('production-config.js');
 const context = read('product-context.js');
+
+const inlineScripts = [...index.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)]
+  .filter(match => !/\\bsrc\\s*=/.test(match[1]) && !/\\btype\\s*=\\s*['"]application\\/(?:json|ld\\+json)['"]/.test(match[1]));
+for (const [i, match] of inlineScripts.entries()) new vm.Script(match[2], { filename: 'index.html:inline-script-' + i });
+must('All inline scripts in the Core HTML parse successfully', inlineScripts.length > 0);
+must('Legal search view uses valid template literal delimiters', !index.slice(index.indexOf('// ---------------- BUSCADOR DE LEI SECA DOCTOR ----------------'), index.indexOf('// ---------------- CONFIGURAÇÕES ----------------')).includes('\\\\`'));
+
 
 function must(label, condition) {
   if (!condition) throw new Error('FAIL: ' + label);
