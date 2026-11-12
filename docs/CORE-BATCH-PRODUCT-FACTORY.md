@@ -59,3 +59,16 @@ A fábrica também aceita produtos em fase pré-edital. Nesse modo, o manifesto 
 - incluir os hosts oficiais correspondentes em `radarAllowedHosts`.
 
 O Core exibe a preparação pré-edital, usa o último edital + última prova como base e mantém a banca como perfil de cobrança. Quando sair edital novo, o manifesto muda para `post-edital` com a nova data e os documentos oficiais. O modo pré-edital não inventa cronograma, prova ou edital futuro.
+
+## Política global de sessão do Doctor Core
+
+Todos os aplicativos derivados devem herdar a política global de uma sessão ativa por conta, não uma sessão por aplicativo:
+- a restrição é aplicada no Supabase por usuário, com trava transacional e índice único;
+- um novo dispositivo solicita transferência e o dispositivo ativo recebe confirmação em tempo real;
+- manter a sessão atual cancela a nova tentativa; transferir revoga a anterior e autoriza a nova;
+- sem resposta, a transferência expira e a sessão atual permanece protegida;
+- uma sessão sem heartbeat por mais de 3 minutos pode ser recuperada automaticamente para evitar bloqueio após fechamento ou perda de conexão;
+- o mesmo dispositivo mantém um identificador estável entre produtos no mesmo domínio/origem;
+- clientes antigos que ainda chamam a RPC legada falham de forma fechada quando existe outro dispositivo ativo.
+
+O scaffold declara `single-active-device-global-account-confirmed-handoff`. O bridge global e as RPCs de handoff são parte obrigatória do Core e devem ser mantidos em todas as derivações. O modo offline preserva os dados locais; a revogação é aplicada assim que o dispositivo volta a se comunicar com o servidor.
