@@ -4505,7 +4505,26 @@ Views.settings = function () {
       <button class="btn btn-danger btn-block" id="doctor-sign-out" type="button">↪ Sair da conta</button>
     </section>
 <div class="card"><h3>ℹ️ Doctor Core</h3><p class="muted">${EXAM_CONFIG.coreVersion} · conteúdo ${EXAM_CONFIG.contentVersion} · ${EXAM_CONFIG.banca}</p></div>
-    <section class="card doctor-support-card" aria-labelledby="doctor-support-title">
+    <section class="card doctor-support-entry" aria-labelledby="doctor-support-entry-title">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span aria-hidden="true" style="font-size:1.8rem">🛟</span>
+        <div style="flex:1;min-width:0"><h3 id="doctor-support-entry-title" style="margin:0 0 4px">Central de Suporte</h3><p class="muted" style="margin:0">Dúvidas, sugestões, reclamações e problemas no aplicativo.</p></div>
+      </div>
+      <button class="btn btn-primary btn-block" id="open-doctor-support" type="button" style="margin-top:14px">Acessar suporte <span aria-hidden="true">→</span></button>
+    </section>
+`;
+};
+
+
+Views.support = function () {
+  const supportAppName = String(EXAM_CONFIG.appTitle || EXAM_CONFIG.productName || '').trim();
+  const supportAppId = String(window.DOCTOR_PLATFORM_BRIDGE?.appId || '').trim();
+  const supportProductId = String(window.DOCTOR_PLATFORM_BRIDGE?.productId || '').trim();
+  const supportIdentityReady = !!(supportAppName && supportAppId && supportProductId);
+  return `
+    <button class="btn btn-ghost btn-sm" id="back-settings-from-support">← Voltar para Configurações</button>
+    <div class="settings-ai-page-head"><span class="settings-ai-page-icon" aria-hidden="true">🛟</span><div><h2>Central de Suporte</h2><p class="muted">Estamos aqui para ajudar. Envie sua solicitação diretamente à equipe Doctor.</p></div></div>
+        <section class="card doctor-support-card" aria-labelledby="doctor-support-title">
       <style>
         .doctor-support-card{border:1px solid rgba(245,190,35,.55);background:linear-gradient(145deg,rgba(245,190,35,.09),transparent 58%);padding:clamp(16px,4vw,24px)}
         .doctor-support-kicker{display:inline-flex;align-items:center;gap:7px;font-size:.76rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent,#f5be23);margin-bottom:8px}
@@ -4570,11 +4589,11 @@ Views.settings = function () {
           <button class="btn btn-primary btn-block" id="doctor-support-email" type="submit" ${supportIdentityReady ? '' : 'disabled'}>✉️ ENVIAR CHAMADO</button>
           <button class="btn btn-outline btn-block" type="button" disabled title="O canal será ativado quando o número oficial for definido">💬 WhatsApp — em breve</button>
         </div>
-        <p class="doctor-support-note muted">Ao tocar em “Enviar por e-mail”, o aplicativo abrirá o programa de e-mail do seu dispositivo com a mensagem preenchida para <strong>doctorconcursoschat@gmail.com</strong>. Revise e toque em enviar no seu e-mail. O WhatsApp será ativado quando o número oficial estiver definido.</p>
+        <p class="doctor-support-note muted">Seu chamado será registrado diretamente na Central de Suporte Doctor. A equipe receberá a solicitação com a identificação deste aplicativo e poderá responder pelo e-mail informado. O WhatsApp será ativado quando o canal oficial estiver disponível.</p>
       </form>
-    </section>`;
+    </section>
+  `;
 };
-
 
 Views.aiSettings = function () {
   const s = Store.state;
@@ -4645,24 +4664,8 @@ Views.aiSettings = function () {
   `;
 };
 
-Views.bind.aiSettings = function () {
-  document.getElementById('back-settings')?.addEventListener('click', () => UI.render('settings', { replaceHistory: true }));
-  Views.bind.settings();
-};
-
-Views.bind.settings = function () {
-  document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
-  document.getElementById('open-ai-settings')?.addEventListener('click', () => UI.render('aiSettings'));
-  // O botão fixo nas Configurações usa o mesmo fluxo PWA do botão flutuante da tela inicial.
-  document.getElementById('doctor-install-settings')?.addEventListener('click', async (event) => {
-    event.preventDefault();
-    const button = event.currentTarget;
-    if (window.DoctorInstall?.requestInstall) {
-      await window.DoctorInstall.requestInstall();
-    } else {
-      UI.toast('A instalação ainda está sendo preparada. Aguarde alguns segundos ou use o menu do navegador: “Instalar aplicativo” / “Adicionar à tela inicial”.', 'info');
-    }
-  });
+Views.bind.support = function () {
+  document.getElementById('back-settings-from-support')?.addEventListener('click', () => UI.render('settings', { replaceHistory: true }));
   document.getElementById('doctor-support-form')?.addEventListener('submit', async e => {
       e.preventDefault();
       const form = e.currentTarget;
@@ -4706,6 +4709,27 @@ Views.bind.settings = function () {
         submit.textContent = oldLabel;
       }
     });
+};
+
+Views.bind.aiSettings = function () {
+  document.getElementById('back-settings')?.addEventListener('click', () => UI.render('settings', { replaceHistory: true }));
+  Views.bind.settings();
+};
+
+Views.bind.settings = function () {
+  document.getElementById('back-home')?.addEventListener('click', () => UI.render('home'));
+  document.getElementById('open-ai-settings')?.addEventListener('click', () => UI.render('aiSettings'));
+  document.getElementById('open-doctor-support')?.addEventListener('click', () => UI.render('support'));
+  // O botão fixo nas Configurações usa o mesmo fluxo PWA do botão flutuante da tela inicial.
+  document.getElementById('doctor-install-settings')?.addEventListener('click', async (event) => {
+    event.preventDefault();
+    const button = event.currentTarget;
+    if (window.DoctorInstall?.requestInstall) {
+      await window.DoctorInstall.requestInstall();
+    } else {
+      UI.toast('A instalação ainda está sendo preparada. Aguarde alguns segundos ou use o menu do navegador: “Instalar aplicativo” / “Adicionar à tela inicial”.', 'info');
+    }
+  });
     document.getElementById('groq-key-eye')?.addEventListener('click', () => {
     const input=document.getElementById('groq-key');
     if(!input) return;
