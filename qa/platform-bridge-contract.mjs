@@ -51,6 +51,13 @@ must('Unsupported audio mutations remain queued after partial sync', index.inclu
 must('Local device identity remains stable across product slugs', bridge.includes('doctor-platform-device-global'));
 must('Core preserves local sync queue until server confirmation', /if\(r\?\.ok\)\{const keep=new Set\(r\.unsupportedEntities\|\|\[\]\);Store\.state\.syncQueue=Store\.state\.syncQueue\.filter\(item=>keep\.has\(item\?\.entity\)\);/.test(index));
 must('Product policy enforces one active device globally with last-login-wins', context.includes("sessionPolicy: 'single-active-device-global-account-last-login-wins'"));
+must('Support is a dedicated page launched from settings, not an embedded settings form',
+  index.includes("id=\"open-doctor-support\"") &&
+  index.includes("Views.support = function") &&
+  index.includes("id=\"back-settings-from-support\"") &&
+  index.includes("Views.bind.support = function") &&
+  index.includes("id=\"doctor-support-form\"") &&
+  !index.slice(index.indexOf("Views.settings = function"), index.indexOf("Views.support = function")).includes('id="doctor-support-form"'));
 must('App support submits centrally with validated UUID identity', bridge.includes("functions.invoke('doctor-support-submit'") && index.includes('window.DOCTOR_PLATFORM_BRIDGE.submitSupport') && index.includes('ENVIAR CHAMADO'));
 must('App support no longer depends on the user mail client', !index.includes('mailto:doctorconcursoschat@gmail.com'));
 must('Radar Doctor ticker is not removed at runtime', !index.includes('doctor-radar-removal-runtime') && !index.includes("getElementById('radar-ticker-mount')?.remove()") && index.includes('get_radar_feed'));
