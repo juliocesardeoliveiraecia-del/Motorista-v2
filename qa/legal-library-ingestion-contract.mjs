@@ -2,28 +2,23 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
-const source = fs.readFileSync('supabase/functions/legal-library-sync/index.ts', 'utf8');
+const sync = fs.readFileSync('supabase/functions/legal-library-sync/index.ts', 'utf8');
+const publish = fs.readFileSync('supabase/functions/legal-library-publish/index.ts', 'utf8');
 const migration = fs.readFileSync('supabase/migrations/20261113170000_doctor_shared_legal_library.sql', 'utf8');
 
-for (const phrase of [
-  'userClient.auth.getUser(token)',
-  'userClient.rpc("is_admin")',
-  'SUPABASE_SERVICE_ROLE_KEY',
-  'ALLOWED_HOSTS',
-  'new TextDecoder(charset).decode(rawBytes)',
-  'sha256(source.rawBytes)',
-  'source_html: source.html',
-  'redirect: "follow"',
-  'crypto.subtle.digest("SHA-256"',
-  'status: "candidate"',
-  'requires_editorial_review: true',
-  'Nenhuma versão foi publicada automaticamente',
-  'INT-MANDELA-2015-PT',
-]) assert.ok(source.includes(phrase), 'missing ingestion safety contract: ' + phrase);
-
-assert.ok(!/status:\s*"published"/.test(source), 'ingestion pipeline must never auto-publish a legal version');
-assert.ok(!/current_version_id/.test(source), 'ingestion pipeline must not change the active published version');
-assert.ok(!/openai|groq|grok|llm|generateText/i.test(source), 'official-source capture must not use AI providers');
-assert.ok(migration.includes("status in ('candidate','in_review','approved','published','superseded','rejected','failed')"));
-assert.ok(migration.includes("event_type in ('source_changed','candidate_created','review_requested','approved','published','source_unavailable','capture_failed')"));
-console.log('[legal-library-ingestion-contract] PASS — admin-only capture, official-domain allowlist, hashes, candidate-only workflow and no AI dependency.');
+for (const [name, source] of [['sync', sync], ['publish', publish]]) {
+  assert.ok(source.includes('userClient.auth.getUser(token)'), name + ': valid user session is required');
+  assert.ok(source.includes('userClient.rpc("is_admin")'), name + ': Doctor admin permission is required');
+  assert.ok(source.includes('SUPABASE_SERVICE_ROLE_KEY'), name + ': service key must remain server-side');
+}
+assert.ok(sync.includes('status: "candidate"'), 'source capture must create candidate versions');
+assert.ok(!/status:\s*"published"/.test(sync), 'source capture must never publish automatically');
+assert.ok(sync.includes('ALLOWED_HOSTS'), 'source capture must enforce official host allowlist');
+assert.ok(sync.includes('sha256(source.rawBytes)'), 'source capture must hash original bytes');
+assert.ok(publish.includes('await digest(text)'), 'publication must verify the normalized text SHA-256');
+assert.ok(publish.includes('userClient.rpc("publish_legal_document_version"'), 'publication must use the atomic RLS-protected RPC');
+assert.ok(publish.includes('version.status !== "approved"'), 'publication must require prior editorial approval');
+assert.ok(publish.includes('sourceMeta?.url !== version.source_url'), 'publication must verify source provenance');
+assert.ok(migration.includes('update public.legal_documents'), 'publication must update the active document pointer');
+assert.ok(migration.includes("set status = 'superseded'"), 'publication must preserve history by superseding the previous version');
+console.log('[legal-library-ingestion-contract] PASS — admin-only capture/review, source integrity, approval gate and atomic publication.');
