@@ -6,7 +6,7 @@
 <script src="assets/icons/icon-generator.js?v=1.3.0"></script>
 <script src="product-content.js?v=2026.3"></script>
 <script src="./doctor-platform-bridge.js?v=1.12.19-platform-5"></script>
-<script src="./legal-search.js?v=1.2.1"></script>
+<script src="./legal-search.js?v=1.2.1"></script>\n<script src="./vade-mecum.js?v=1.0.0"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
 <meta name="doctor-core-version" content="1.12.19">
@@ -902,6 +902,9 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 @media(max-width:420px){.legal-search-filters{grid-template-columns:1fr}.legal-search-feature{gap:10px;padding:14px}.legal-search-feature-mark{flex-basis:46px;width:46px;height:46px;font-size:32px}.legal-search-feature-copy strong{font-size:14px}}
 </style>
 <style id="simulado-answer-lock-v1">.q-option.answered-locked{opacity:.82;cursor:default;pointer-events:none}.simulado-progress{margin:10px 0;padding:12px;border-radius:12px;background:rgba(0,0,0,.06);font-size:.92rem}</style>
+<style id="vade-mecum-doctor-v1">
+.vade-library{padding-bottom:24px}.vade-hero{padding:22px 18px;border-radius:20px;background:linear-gradient(145deg,#08172b,#173b65 68%,#1d5274);color:#fff;text-align:left;margin:8px 0 16px;box-shadow:0 12px 28px rgba(4,18,36,.18)}.vade-hero-top{display:flex;align-items:center;gap:13px}.vade-emblem{width:58px;height:58px;display:grid;place-items:center;flex:0 0 auto;border-radius:17px;background:linear-gradient(145deg,#ffe58a,#e5b72e);color:#14243a;font-family:Georgia,serif;font-size:37px;font-weight:900;box-shadow:inset 0 1px 0 #fff8}.vade-eyebrow{font-size:10px;letter-spacing:.14em;font-weight:900;color:#f9dc79}.vade-hero h2{font-size:24px;margin:5px 0}.vade-hero p{font-size:12px;line-height:1.55;color:#e2eaf5;margin:8px 0 0}.vade-promise{display:inline-flex;margin-top:13px;padding:7px 10px;border:1px solid #e8c75c66;border-radius:30px;color:#ffe28a;font-size:10px;font-weight:800}.vade-search{padding:14px;margin-bottom:14px}.vade-search label{display:block;font-size:12px;font-weight:800;margin-bottom:8px}.vade-search-row{display:flex;gap:8px}.vade-search-row input{min-width:0;flex:1;height:48px;padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:var(--bg);color:var(--text);font:inherit}.vade-search-row button{min-width:48px;border:0;border-radius:11px;background:#e8bd3c;color:#14243a;font-size:20px;font-weight:900}.vade-search-note{font-size:10px;color:var(--text-muted);margin:8px 0 0}.vade-shelf-title{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:900;color:var(--text-muted);margin:18px 2px 10px}.vade-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.vade-book{overflow:hidden;border:1px solid var(--border);border-radius:15px;background:var(--surface);min-width:0}.vade-book-cover{min-height:158px;padding:13px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;position:relative;isolation:isolate}.vade-book-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(125deg,#ffffff18,transparent 42%,#0003);z-index:-1}.vade-book-cover.constitution{background:linear-gradient(145deg,#081b35,#1d4773 60%,#b28b35)}.vade-book-cover.adct{background:linear-gradient(145deg,#102c52,#28628c 60%,#d0b45e)}.vade-book-cover.human{background:linear-gradient(145deg,#191b45,#414c86 65%,#c5a65c)}.vade-book-cover.traffic{background:linear-gradient(145deg,#102d25,#24634b 60%,#c4a13c)}.vade-cover-kicker{font-size:8px;letter-spacing:.14em;font-weight:900;opacity:.85}.vade-cover-symbol{font-family:Georgia,serif;font-size:40px;line-height:1;text-shadow:0 3px 10px #0004}.vade-cover-title{font-family:Georgia,serif;font-size:16px;font-weight:800;line-height:1.12;max-width:95%;text-shadow:0 2px 8px #0005}.vade-cover-subtitle{font-size:8px;letter-spacing:.08em;margin-top:5px;opacity:.85}.vade-book-info{padding:11px}.vade-book-info strong{font-size:12px;line-height:1.3;display:block}.vade-book-info p{font-size:10px;line-height:1.4;color:var(--text-muted);margin:5px 0 9px}.vade-book-status{display:inline-flex;font-size:9px;font-weight:800;padding:5px 7px;border-radius:20px;background:rgba(194,145,35,.13);color:var(--text-muted)}.vade-open{width:100%;margin-top:9px;min-height:36px;border:1px solid var(--border);border-radius:9px;background:transparent;color:var(--text);font-size:11px;font-weight:800}.vade-results{display:grid;gap:9px;margin-top:12px}.vade-result{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}.vade-result button{border:0;background:transparent;color:var(--text);text-align:left;padding:0;width:100%;font:inherit}.vade-result small{display:block;color:var(--text-muted);font-size:10px;margin-top:5px}.vade-reader{padding:15px;margin-top:12px}.vade-reader h3{margin:4px 0 8px}.vade-reader p{font-size:12px;line-height:1.6;color:var(--text-muted)}.vade-reader-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.8}.vade-empty{padding:15px;text-align:center;border:1px dashed var(--border);border-radius:12px;color:var(--text-muted);font-size:11px;line-height:1.55}.vade-home-feature .legal-search-feature-copy strong{font-size:17px}@media(max-width:360px){.vade-grid{gap:8px}.vade-book-cover{min-height:140px;padding:10px}.vade-cover-title{font-size:14px}}
+</style>
 </head>
 <body>
 <div id="splash" aria-label="Carregando Doctor Concursos"><img class="logo" id="splash-logo" alt="Doctor Concursos"><div id="splash-text"></div>
@@ -3055,10 +3058,10 @@ Views.home = function () {
       ${wrongCount > 0 ? `<button class="btn btn-ghost btn-sm" id="home-pontos-fracos">Ver pontos fracos</button>` : ''}
     </div>
 
-    <div class="section-title legal-search-section-title">A ferramenta de estudo em destaque</div>
-    <button type="button" class="card legal-search-feature" id="home-legal-search" aria-label="Abrir Doctor Search">
+    <div class="section-title legal-search-section-title">Biblioteca jurídica Doctor</div>
+    <button type="button" class="card legal-search-feature vade-mecum-home" id="home-legal-search" aria-label="Abrir Vade-Mécum Doctor">
       <span class="legal-search-feature-mark" aria-hidden="true">§</span>
-      <span class="legal-search-feature-copy"><strong>Doctor Search</strong><span>Uma única busca para encontrar legislação, questões, matérias, anotações e seus materiais de estudo. Pesquise digitando ou falando.</span><em>Busca inteligente · Gratuito</em></span>
+      <span class="legal-search-feature-copy"><strong>Vade-Mécum Doctor</strong><span>Biblioteca de leis, códigos, constituições e normas oficiais. Leia e pesquise dentro do próprio aplicativo.</span><em>Lei seca · Biblioteca gratuita · Leitura no app</em></span>
       <span class="legal-search-feature-arrow" aria-hidden="true">→</span>
     </button>
     <div class="section-title">Outras ferramentas Doctor</div>
@@ -4486,77 +4489,9 @@ Views.bind.essay=function(){
   document.querySelectorAll('[data-essay-delete]').forEach(el=>el.addEventListener('click',()=>{if(confirm('Excluir esta redação?')){CoreEssay.remove(el.dataset.essayDelete);UI.render('essay');}}));
 };
 
-// ---------------- BUSCADOR DE LEI SECA DOCTOR ----------------
-Views.legalSearch = function () {
-  return `
-    <section class="legal-search-page doctor-search-page">
-      <button class="btn btn-ghost btn-sm" id="legal-search-back" type="button">← Voltar</button>
-      <div class="legal-search-hero"><div class="legal-search-emblem" aria-hidden="true">⌕</div><div class="legal-search-kicker">PESQUISA INTELIGENTE DO ECOSSISTEMA</div><h2>Doctor Search</h2><p>Pesquise matérias, questões, anotações, flashcards, gravações, redações e legislação em um só lugar.</p><span class="legal-search-independent">Busca local gratuita · sem consumir GROQ</span></div>
-      <form class="card legal-search-form doctor-search-form" id="legal-search-form">
-        <label class="doctor-search-label" for="legal-search-query">O que você está procurando?</label>
-        <div class="doctor-search-input-row"><input id="legal-search-query" name="query" type="search" minlength="2" maxlength="180" placeholder="Digite ou fale sua pesquisa..." autocomplete="off" required><button type="button" class="doctor-search-mic" id="legal-search-mic" aria-label="Pesquisar por voz" title="Pesquisar por voz"><span aria-hidden="true">🎙</span></button></div>
-        <button class="btn btn-primary btn-block" id="legal-search-submit" type="submit">⌕ Pesquisar</button>
-        <p class="legal-search-hint" id="legal-search-voice-hint">Toque no microfone e fale. Também é possível usar o microfone do teclado do celular.</p>
-      </form>
-      <div id="legal-search-status" class="legal-search-status" role="status" aria-live="polite">Uma busca só. O Doctor identifica onde procurar e reúne os resultados disponíveis.</div><div id="legal-search-results" class="legal-search-results" aria-live="polite"></div>
-      <p class="legal-search-disclaimer">Os resultados pessoais são pesquisados no próprio dispositivo. A legislação online depende de conexão e das fontes oficiais integradas.</p>
-    </section>`;
-};
-Views.bind.legalSearch = function () {
-  document.getElementById('legal-search-back')?.addEventListener('click', () => UI.back());
-  const form=document.getElementById('legal-search-form'),input=document.getElementById('legal-search-query'),status=document.getElementById('legal-search-status'),results=document.getElementById('legal-search-results'),submit=document.getElementById('legal-search-submit'),mic=document.getElementById('legal-search-mic'),voiceHint=document.getElementById('legal-search-voice-hint');
-  const renderRecords=data=>{
-    if(!data.records.length){status.textContent='Não encontrei esse termo no conteúdo disponível. Tente uma expressão diferente ou pesquise o nome da matéria.';return;}
-    status.textContent=data.records.length+' resultado(s) · '+data.source+(data.notice?' · '+data.notice:'');
-    results.innerHTML=data.records.map((r,i)=>{
-      const meta=[r.type,r.date&&r.local?'Salvo no dispositivo':r.date,r.publisher].filter(Boolean).join(' · ');
-      if(r.local||r.content)return '<article class="card legal-search-result"><div class="legal-search-result-index">'+(r.local?'CONTEÚDO DO SEU DOCTOR':'TEXTO INTEGRAL · LEITURA NO APP')+'</div><h3>'+DoctorLegalSearch.esc(r.title)+'</h3>'+(meta?'<p class="legal-search-result-meta">'+DoctorLegalSearch.esc(meta)+'</p>':'')+'<div class="legal-search-reader-text">'+DoctorLegalSearch.esc(r.content||r.description||'')+'</div>'+(r.source?'<p class="legal-search-reader-source">'+DoctorLegalSearch.esc(r.source)+'</p>':'')+'</article>';
-      const href=DoctorLegalSearch.officialUrl(r);
-      return '<article class="card legal-search-result"><div class="legal-search-result-index">REFERÊNCIA JURÍDICA '+(i+1)+'</div><h3>'+DoctorLegalSearch.esc(r.title)+'</h3>'+(meta?'<p class="legal-search-result-meta">'+DoctorLegalSearch.esc(meta)+'</p>':'')+(r.description?'<p>'+DoctorLegalSearch.esc(r.description)+'</p>':'')+'<a href="'+DoctorLegalSearch.esc(href)+'" target="_blank" rel="noopener noreferrer">Consultar referência na fonte oficial ↗</a></article>';
-    }).join('');
-  };
-  form?.addEventListener('submit',async event=>{
-    event.preventDefault();const query=input.value.trim();
-    if(query.length<2){status.textContent='Digite pelo menos 2 caracteres.';input.focus();return;}
-    results.innerHTML='';status.textContent='Pesquisando no conteúdo do Doctor...';submit.disabled=true;submit.textContent='Pesquisando...';
-    try{const data=await DoctorLegalSearch.search({query});renderRecords(data);}
-    catch(error){status.textContent=error.message||'Não foi possível concluir a pesquisa.';}
-    finally{submit.disabled=false;submit.textContent='⌕ Pesquisar';}
-  });
-  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  let recognition=null,listening=false;
-  const stopListening=()=>{listening=false;mic?.classList.remove('is-listening');mic?.setAttribute('aria-label','Pesquisar por voz');};
-  const useKeyboardDictation=()=>{
-    voiceHint.textContent='O reconhecimento de voz deste navegador não está disponível. O campo foi ativado: toque no microfone do teclado do celular para ditar.';
-    input.focus();input.click();
-  };
-  mic?.addEventListener('click',()=>{
-    if(!SpeechRecognition){useKeyboardDictation();return;}
-    if(listening){try{recognition?.stop();}catch(_){}stopListening();return;}
-    try{
-      recognition=new SpeechRecognition();
-      recognition.lang='pt-BR';recognition.interimResults=true;recognition.maxAlternatives=1;recognition.continuous=false;
-      recognition.onstart=()=>{listening=true;mic.classList.add('is-listening');mic.setAttribute('aria-label','Parar reconhecimento de voz');voiceHint.textContent='Ouvindo... fale sua pesquisa. Toque novamente para parar.';};
-      recognition.onresult=event=>{
-        let transcript='';
-        for(let i=event.resultIndex;i<event.results.length;i++)transcript+=event.results[i][0].transcript;
-        if(transcript)input.value=transcript.trim();
-        const finalResult=event.results[event.results.length-1];
-        if(finalResult?.isFinal){stopListening();if(input.value.trim().length>=2)form.requestSubmit();}
-      };
-      recognition.onerror=event=>{
-        const code=event.error||'unknown';stopListening();
-        if(code==='not-allowed'||code==='service-not-allowed')voiceHint.textContent='Permissão de microfone negada. Autorize o microfone para este site nas configurações do navegador. Você também pode usar o microfone do teclado.';
-        else if(code==='audio-capture')voiceHint.textContent='Nenhum microfone foi encontrado. Verifique a permissão e o microfone do aparelho.';
-        else if(code==='network')voiceHint.textContent='O serviço de voz do navegador não conseguiu conectar. Use o microfone do teclado ou tente novamente com internet.';
-        else {voiceHint.textContent='Não foi possível reconhecer a fala neste navegador. Abrindo o campo para ditado pelo teclado.';useKeyboardDictation();}
-      };
-      recognition.onnomatch=()=>{voiceHint.textContent='Não entendi a fala. Tente novamente, falando um pouco mais perto do microfone.';};
-      recognition.onend=()=>{stopListening();};
-      recognition.start();
-    }catch(error){stopListening();useKeyboardDictation();}
-  });
-};
+// ---------------- VADE-MÉCUM DOCTOR ----------------
+Views.legalSearch = function () { return window.DoctorVadeMecum.render(); };
+Views.bind.legalSearch = function () { window.DoctorVadeMecum.bind(UI); };
  
 // ---------------- CONFIGURAÇÕES ----------------
 Views.settings = function () {
