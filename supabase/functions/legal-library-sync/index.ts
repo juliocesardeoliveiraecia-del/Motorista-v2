@@ -166,8 +166,12 @@ async function resolveDocumentSource(_doc: LegalDocument, sourceHtml: string, so
 
 function validateExtractedText(doc: LegalDocument, text: string) {
   if (text.length < 1200) throw new Error("Texto extraído abaixo do tamanho mínimo de segurança.");
-  if (!/\bArt\.?\s*\d+|\bArtigo\s+\d+/i.test(text)) {
+  const isMandela = doc.document_id === "INT-MANDELA-2015-PT";
+  if (!isMandela && !/\bArt\.?\s*\d+|\bArtigo\s+\d+/i.test(text)) {
     throw new Error("Não foi encontrada estrutura mínima de artigos; captura bloqueada.");
+  }
+  if (isMandela && (!/REGRA\s+1\b/i.test(text) || !/REGRA\s+122\b/i.test(text))) {
+    throw new Error("O PDF não contém a sequência completa das Regras de Mandela (1 a 122).");
   }
   const id = doc.document_id;
   if (id === "BR-CF-1988" && !/CONSTITUIÇÃO DA REPÚBLICA FEDERATIVA DO BRASIL/i.test(text)) {
@@ -199,8 +203,11 @@ function validateExtractedText(doc: LegalDocument, text: string) {
   if (expectedTitle && !expectedTitle.test(text)) {
     throw new Error("A captura não corresponde ao título oficial esperado: " + id);
   }
-  if (id === "INT-UDHR-1948-PT" && !/DECLARAÇÃO UNIVERSAL DOS DIREITOS HUMANOS/i.test(text)) {
-    throw new Error("A captura não corresponde à DUDH.");
+  if (id === "INT-UDHR-1948-PT" && (!/DECLARAÇÃO UNIVERSAL DOS DIREITOS HUMANOS/i.test(text) || !/ARTIGO\s+30\b/i.test(text))) {
+    throw new Error("A captura não corresponde à DUDH completa (artigos 1 a 30).");
+  }
+  if (id === "INT-MANDELA-2015-PT" && !/REGRAS MÍNIMAS DAS NAÇÕES UNIDAS|REGRAS DE MANDELA/i.test(text)) {
+    throw new Error("A captura não corresponde às Regras de Mandela.");
   }
 }
 
@@ -316,18 +323,22 @@ Deno.serve(async (req: Request) => {
         results.push({ document_id: doc.document_id, status: "unchanged", check: "conditional-http-304" });
         continue;
       }
-      const resolved = await resolveDocumentSource(doc, landing.html, landing.finalUrl);
-      const source = resolved.html
-        ? { ...landing, finalUrl: resolved.url }
-        : await fetchOfficial(resolved.url, dailyCheck ? {
-          etag: lastVersion?.source_etag,
-          lastModified: lastVersion?.source_last_modified,
-        } : {});
+      const resolved = landing.html
+        ? await resolveDocumentSource(doc, landing.html, landing.finalUrl)
+        : { url: landing.finalUrl, html: undefined };
+      const source = landing.normalizedText
+        ? landing
+        : resolved.html
+          ? { ...landing, finalUrl: resolved.url }
+          : await fetchOfficial(resolved.url, dailyCheck ? {
+            etag: lastVersion?.source_etag,
+            lastModified: lastVersion?.source_last_modified,
+          } : {});
       if (source.notModified) {
         results.push({ document_id: doc.document_id, status: "unchanged", check: "conditional-http-304" });
         continue;
       }
-      const extracted = extractHtml(source.html);
+      const extracted = source.normalizedText || extractHtml(source.html || "");
       validateExtractedText(doc, extracted);
       const rawHash = await sha256(source.rawBytes);
       const textHash = await sha256(extracted);
@@ -363,7 +374,8 @@ Deno.serve(async (req: Request) => {
           source_landing_etag: landing.etag,
           source_landing_last_modified: landing.lastModified,
         },
-        source_html: source.html,
+        source_format: source.contentType.includes("pdf") ? "application/pdf" : "text/html",
+        source_html: source.html || null,
         source_bytes_base64: encodeBase64(source.rawBytes),
         normalized_text: extracted,
         sha256_text: textHash,
