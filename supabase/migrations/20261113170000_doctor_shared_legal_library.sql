@@ -58,7 +58,7 @@ alter table public.legal_documents
 create or replace function public.prevent_published_legal_version_mutation()
 returns trigger
 language plpgsql
-as $
+as $$
 begin
   if tg_op = 'DELETE' then
     if old.status in ('published','superseded') then
@@ -91,7 +91,7 @@ begin
   end if;
   return new;
 end;
-$;
+$$;
 
 drop trigger if exists legal_versions_immutable_guard on public.legal_document_versions;
 create trigger legal_versions_immutable_guard
