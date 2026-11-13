@@ -181,7 +181,7 @@ Deno.serve(async (req: Request) => {
 
   if (action === "preview") {
     const offset = Math.max(0, Math.floor(Number(payload.offset) || 0));
-    const limit = Math.min(30000, Math.max(1000, Math.floor(Number(payload.limit) || 30000)));
+    const limit = Math.min(80000, Math.max(1000, Math.floor(Number(payload.limit) || 80000)));
     if (offset > text.length) return response({ error: "Trecho solicitado fora do documento." }, 416);
     const nextOffset = offset + limit < text.length ? offset + limit : null;
     return response({
