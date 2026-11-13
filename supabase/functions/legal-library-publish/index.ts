@@ -113,8 +113,9 @@ Deno.serve(async (req: Request) => {
   try { pack = JSON.parse(await file.text()); }
   catch { return response({ error: "Pacote jurídico não é um JSON válido." }, 409); }
   const text = typeof pack.normalized_text === "string" ? pack.normalized_text : "";
+  const sourceMeta = pack.source as { url?: unknown } | undefined;
   if (pack.document_id !== version.document_id || pack.sha256_text !== version.content_sha256 ||
-      pack.source?.url !== version.source_url || typeof pack.source_html !== "string" || text.length < 1200) {
+      sourceMeta?.url !== version.source_url || typeof pack.source_html !== "string" || text.length < 1200) {
     return response({ error: "Pacote, documento, origem ou metadados de integridade não conferem." }, 409);
   }
   if (await digest(text) !== version.content_sha256) {
