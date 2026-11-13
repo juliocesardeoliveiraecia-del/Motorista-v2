@@ -297,12 +297,6 @@ Deno.serve(async (req: Request) => {
   let candidates = 0;
   for (const doc of selected) {
     try {
-      // Mandela Rules currently points to a PDF. Keep it blocked until a reproducible,
-      // text-preserving official Portuguese extraction adapter is reviewed.
-      if (doc.document_id === "INT-MANDELA-2015-PT") {
-        throw new Error("Fonte oficial em PDF; extração textual automática ainda não homologada.");
-      }
-
       const { data: lastVersion } = await service
         .from("legal_document_versions")
         .select("source_etag,source_last_modified,change_summary")
@@ -379,7 +373,7 @@ Deno.serve(async (req: Request) => {
         source_bytes_base64: encodeBase64(source.rawBytes),
         normalized_text: extracted,
         sha256_text: textHash,
-        extraction: { method: "DOMParser.textContent", pipeline_version: "1.0.0" },
+        extraction: { method: source.contentType.includes("pdf") ? "pdfjs.getTextContent" : "DOMParser.textContent", pipeline_version: "1.1.0" },
       });
 
       const { error: uploadError } = await service.storage.from(BUCKET).upload(storagePath, packageBody, {
