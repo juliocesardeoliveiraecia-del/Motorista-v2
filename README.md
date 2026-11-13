@@ -45,7 +45,8 @@ Por isso, o simulado oficial e a publicação comercial continuam sujeitos aos g
 - Prática de questões, histórico, revisão e Caderno de Erros.
 - Simulados com cronômetro e distribuição configurada pelo edital.
 - Flashcards e ferramentas de estudo.
-- Caderno Doctor, Gravador Doctor, Redação Doctor e Radar Doctor, conforme homologação e disponibilidade do produto.
+- Caderno Doctor, Gravador Doctor e Redação Doctor, conforme homologação e disponibilidade do produto.
+- Radar Doctor: descontinuado no Motorista Legislativo atual; não integra a interface, navegação ou recursos ativos. Uma eventual retomada dependerá de decisão futura e homologação própria.
 - Doctor IA via Groq (G-R-O-Q), com chave do próprio usuário e salvaguardas de transparência e dados.
 - Sessão central por usuário/aplicativo e sincronização versionada.
 - Central de Suporte integrada à Plataforma.
