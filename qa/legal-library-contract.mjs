@@ -14,7 +14,7 @@ if (!errors.length) {
   if (!manifest.documents.every(d => d.status === 'planned')) errors.push('un-ingested content cannot be marked published/validated');
   if (!migration.includes('foreign key (document_id, current_version_id)')) errors.push('current version must belong to its legal document');
   if (!migration.includes('prevent_published_legal_version_mutation')) errors.push('published legal versions must be immutable');
-  if (!migration.includes("status in ('published','superseded')")) errors.push('published/superseded version protection is missing');
+  if (!migration.includes("old.status in ('published','superseded')")) errors.push('published/superseded version protection is missing');
   if (!migration.includes('alter table public.legal_document_versions enable row level security')) errors.push('RLS must be enabled on legal versions');
   if (!migration.includes('revoke insert, update, delete on public.legal_documents, public.legal_document_versions from anon, authenticated')) errors.push('client roles must not write legal source records');
   const run = spawnSync(process.execPath, [required[2], required[0]], { encoding: 'utf8' });
