@@ -29,7 +29,7 @@ assert.ok(source.includes('bridge.getAuthenticatedClient()'),'legal library sync
 assert.ok(source.includes(".eq('status','published')"),'only published legal versions may sync to students');
 assert.ok(source.includes('crypto.subtle.digest'),'downloaded legal text must pass SHA-256 integrity verification');
 assert.ok(source.includes('validateAndPublishEligible')&&source.includes('readVerifiedFullText'),'admin console must support a complete verified batch publication workflow');
-assert.ok(source.includes('validateLegalText')&&source.includes('REGRA\\s+122')&&source.includes('ARTIGO\\\\s+30'),'batch publication must enforce legal structure and completeness markers for international texts');
+assert.ok(source.includes('validateLegalText')&&source.includes('REGRA\\s+122')&&source.includes('ARTIGO\\s+30'),'batch publication must enforce legal structure and completeness markers for international texts');
 assert.ok(source.includes('vade-admin-validate-publish'),'batch publication action must be exposed only inside the admin review panel');
 assert.ok(source.includes('versões offline já armazenadas foram preservadas'),'sync failures must preserve existing offline content');
 const view=library.render();
