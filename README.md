@@ -64,7 +64,7 @@ node tools/scaffold-product.mjs --manifest product-manifest.json --out-dir . --a
 
 A fábrica gera `product-context.js`, `manifest.json` e `version.json`. Ela valida slugs, datas, cores, distribuição, modalidade da prova, hosts oficiais e proporções do Radar. Não cria questões, gabaritos, assets, repositório GitHub ou projeto Vercel.
 
-## Produção em massa — 50+ aplicativos
+## Produção em massa — capacidade aberta e contínua
 
 Um novo app deve mudar apenas:
 - Product Context: concurso, órgão, cargo, banca, edital e regras;
