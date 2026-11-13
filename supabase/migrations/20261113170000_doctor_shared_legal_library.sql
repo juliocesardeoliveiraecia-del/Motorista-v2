@@ -195,7 +195,7 @@ returns jsonb
 language plpgsql
 security invoker
 set search_path = public, pg_temp
-as $
+as $$
 declare
   selected_version public.legal_document_versions%rowtype;
   previous_version_id uuid;
@@ -263,7 +263,7 @@ begin
     'previous_version_id', previous_version_id
   );
 end;
-$;
+$$;
 
 revoke all on function public.publish_legal_document_version(uuid, text) from public, anon;
 grant execute on function public.publish_legal_document_version(uuid, text) to authenticated;
