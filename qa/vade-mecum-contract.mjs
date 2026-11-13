@@ -23,7 +23,7 @@ const ctb=library.search('trânsito');
 assert.ok(ctb.some(d=>d.id==='BR-CTB-1997'),'search should find CTB from the local catalog');
 const rights=library.search('direitos humanos');
 assert.ok(rights.some(d=>d.id==='INT-UDHR-1948-PT'),'search should find the DUDH shelf');
-assert.deepEqual(library.search('xyz-nao-existe'),[],'unknown terms should not return invented records');
+assert.equal(library.search('xyz-nao-existe').length,0,'unknown terms should not return invented records');
 assert.ok(!/\bfetch\s*\(|XMLHttpRequest|window\.open|location\.href/i.test(source),'Vade-Mécum must not make remote searches or redirect the student');
 const view=library.render();
 assert.ok(view.includes('Vade-Mécum Doctor'));
