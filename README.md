@@ -89,3 +89,18 @@ O app não fornece chave compartilhada. O fluxo BYOK usa chave administrada pelo
 ## Segurança e publicação
 
 Nunca versionar chaves Groq, Supabase service-role, tokens de pagamento ou outros segredos. O cliente usa somente configuração pública do Supabase. Não habilitar checkout, publicar produto ou ativar aplicativo sem homologação funcional, revisão editorial e autorização de lançamento.
+
+## Identidade visual oficial — Departamento Doctor Avatares
+
+Este aplicativo é consumidor do sistema central de avatares do Doctor Concursos. Não criar, redesenhar ou manter uma evolução paralela do personagem.
+
+Regras:
+- Usar somente arquivos aprovados e registrados no manifesto central `avatar-system/manifest.json` do repositório Doctor-Concursos.
+- Preservar rosto, cabelo, óculos, formato da cabeça e proporções do Doctor em todos os níveis.
+- Não usar URL externa, imagem de preview, miniatura ampliada ou arquivo sem checksum.
+- Não copiar imagens para este app sem registrar a versão e o hash da origem.
+- O Nível 10 só pode substituir o avatar atual do app depois da aprovação visual e do teste em celular/tablet/desktop.
+- Até a integração dos assets oficiais, manter a implementação atual sem substituição improvisada.
+
+A integração visual será concluída após a publicação do catálogo central com os dez níveis individuais e os respectivos arquivos aprovados.
+
