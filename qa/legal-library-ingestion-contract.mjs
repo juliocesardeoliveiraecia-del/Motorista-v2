@@ -18,7 +18,8 @@ assert.ok(sync.includes('If-None-Match'), 'daily checks must use conditional HTT
 assert.ok(sync.includes('triggerType === "scheduled_daily"'), 'daily checks must be distinguishable from weekly full audits');
 assert.ok(!/status:\s*"published"/.test(sync), 'source capture must never publish automatically');
 assert.ok(sync.includes('ALLOWED_HOSTS'), 'source capture must enforce official host allowlist');
-assert.ok(sync.includes('normaatualizada-pl'), 'CTB must resolve to the updated full-text HTML, not its metadata page');
+assert.ok(sync.includes('normaatualizada'), 'Câmara legal landing pages must resolve to the updated full-text HTML');
+assert.ok(sync.includes('expectedTitles'), 'each Brazilian code must be checked against its expected official title');
 assert.ok(sync.includes('sha256(source.rawBytes)'), 'source capture must hash original bytes');
 assert.ok(sync.includes('source_bytes_base64: encodeBase64(source.rawBytes)'), 'source package must preserve exact original bytes');
 assert.ok(publish.includes('await digest(text)'), 'publication must verify the normalized text SHA-256');
