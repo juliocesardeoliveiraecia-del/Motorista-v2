@@ -9,7 +9,7 @@ for (let level = 1; level <= 10; level += 1) {
 const index=fs.readFileSync('index.html','utf8');
 const exactRequests=[...index.matchAll(/(?:src|href)="([^"]+)"/g)]
   .map(match=>match[1])
-  .filter(path=>path.includes('?v=')&&!path.startsWith('http'))
+  .filter(path=>path.includes('?v=')&&!path.startsWith('http')&&!path.includes('${'))
   .map(path=>path.startsWith('./')?path.slice(2):path);
 for(const asset of exactRequests){
   const present=sw.includes(asset)||sw.includes('./'+asset);
