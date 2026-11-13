@@ -75,7 +75,7 @@ must('Radar Doctor ticker is not removed at runtime', !index.includes('doctor-ra
 must('No service-role key or private payment token is present in bridge', !/(service_role|sb_secret_|sk_live_|access_token\s*[:=])/i.test(bridge));
 console.log('DOCTOR PLATFORM BRIDGE QA: OK');
 
-must('Vade-Mécum Doctor replaces the former Doctor Search home entry', index.includes('home-legal-search') && index.includes('Vade-Mécum Doctor') && !index.includes('Doctor Search'));
+must('Vade-Mécum Doctor replaces the former Doctor Search home entry', index.includes('home-legal-search') && index.includes('Vade-Mécum Doctor') && index.includes('Biblioteca jurídica Doctor'));
 must('Vade-Mécum has a dedicated in-app view and navigation binding', index.includes('Views.legalSearch') && index.includes('Views.bind.legalSearch') && index.includes('window.DoctorVadeMecum.render()') && index.includes('window.DoctorVadeMecum.bind(UI)'));
 const vadeMecum = read('vade-mecum.js');
 must('Vade-Mécum search stays local and does not invoke GROQ or remote endpoints', vadeMecum.includes('function search(query)') && !vadeMecum.includes('fetch(') && !vadeMecum.includes('XMLHttpRequest') && !vadeMecum.includes('window.open') && !vadeMecum.includes('location.href') && !vadeMecum.includes('GroqAI'));
