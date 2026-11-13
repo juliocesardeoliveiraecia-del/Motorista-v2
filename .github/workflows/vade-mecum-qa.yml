@@ -5,21 +5,36 @@ on:
     paths:
       - "vade-mecum.js"
       - "index.html"
+      - "service-worker.js"
+      - "data/legal-library/**"
+      - "docs/VADE-MECUM-DOCTOR-ARCHITECTURE.md"
+      - "docs/VADE-MECUM-DOCTOR-RELEASE-PACKAGE.md"
+      - "tools/validate-legal-library.mjs"
       - "qa/vade-mecum-contract.mjs"
+      - "qa/legal-library-contract.mjs"
       - ".github/workflows/vade-mecum-qa.yml"
   pull_request:
     paths:
       - "vade-mecum.js"
       - "index.html"
+      - "service-worker.js"
+      - "data/legal-library/**"
+      - "docs/VADE-MECUM-DOCTOR-ARCHITECTURE.md"
+      - "docs/VADE-MECUM-DOCTOR-RELEASE-PACKAGE.md"
+      - "tools/validate-legal-library.mjs"
       - "qa/vade-mecum-contract.mjs"
-      - ".github/workflows/vade-mecum-qa.yml"
+      - "qa/legal-library-contract.mjs"
 jobs:
-  local-library-contract:
+  vade-mecum-quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Validate Vade-Mécum local-only contract
+      - name: Validate Vade-Mécum local-only contract and offline cache
         run: node qa/vade-mecum-contract.mjs
+      - name: Validate official legal library manifest
+        run: node tools/validate-legal-library.mjs
+      - name: Validate legal library publication gates
+        run: node qa/legal-library-contract.mjs
