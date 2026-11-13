@@ -150,7 +150,7 @@
       '<button class="btn btn-ghost btn-sm" id="vade-back" type="button">← Voltar</button>'+
       '<header class="vade-hero"><div class="vade-hero-top"><div class="vade-emblem" aria-hidden="true">§</div><div><div class="vade-eyebrow">BIBLIOTECA JURÍDICA DIGITAL</div><h2>Vade-Mécum Doctor</h2><div style="font-size:10px;color:#dce7f4">Lei seca. Conhecimento na fonte.</div></div></div><p>Leia, consulte e estude normas, leis, códigos e constituições sem sair do aplicativo. O texto oficial é a base; explicações e resumos nunca o substituem.</p><span class="vade-promise">ACERVO GRATUITO · FONTES OFICIAIS</span></header>'+
       '<form class="card vade-search" id="vade-search-form"><label for="vade-query">Pesquisar dentro da biblioteca</label><div class="vade-search-row"><input id="vade-query" type="search" minlength="2" maxlength="180" placeholder="Ex.: art. 5º, CTB, direitos fundamentais..." autocomplete="off"><button type="submit" aria-label="Pesquisar na biblioteca">⌕</button></div><p class="vade-search-note">A pesquisa consulta somente os textos e documentos armazenados no aplicativo. Não envia você para outros sites.</p></form>'+
-      '<div id="vade-status" class="legal-search-status" role="status" aria-live="polite">Acervo inicial organizado. Os textos integrais estão sendo preparados para leitura local e uso offline.</div><button class="btn btn-outline btn-sm" id="vade-sync" type="button">↻ Atualizar acervo oficial</button><div id="vade-results" class="vade-results" aria-live="polite"></div><div id="vade-reader"></div>'+
+      '<div id="vade-status" class="legal-search-status" role="status" aria-live="polite">Acervo inicial organizado. Os textos integrais estão sendo preparados para leitura local e uso offline.</div><button class="btn btn-outline btn-sm" id="vade-sync" type="button">↻ Atualizar acervo oficial</button><button class="btn btn-outline btn-sm" id="vade-admin-review" type="button" hidden>Área editorial · revisar candidatas</button><div id="vade-admin-panel" hidden></div><div id="vade-results" class="vade-results" aria-live="polite"></div><div id="vade-reader"></div>'+
       '<div class="vade-shelf-title">Constituição e organização do Estado</div><div class="vade-grid">'+documents.filter(d=>d.category==='Constituição').map(bookMarkup).join('')+'</div>'+
       '<div class="vade-shelf-title">Trânsito e mobilidade</div><div class="vade-grid">'+documents.filter(d=>d.category==='Trânsito e Mobilidade').map(bookMarkup).join('')+'</div>'+
       '<div class="vade-shelf-title">Códigos e legislação penal</div><div class="vade-grid">'+documents.filter(d=>['Direito Penal','Processo Penal'].includes(d.category)).map(bookMarkup).join('')+'</div>'+
@@ -186,7 +186,7 @@
   }
   function bind(UI){
     document.getElementById('vade-back')?.addEventListener('click',()=>UI.back());
-    const syncStatus=document.getElementById('vade-syncStatus');
+    const syncStatus=document.getElementById('vade-status');
     const syncButton=document.getElementById('vade-sync');
     const sync=async()=>{
       if(syncButton)syncButton.disabled=true;
@@ -204,6 +204,110 @@
       }finally{if(syncButton)syncButton.disabled=false;}
     };
     syncButton?.addEventListener('click',sync);
+
+    const adminButton=document.getElementById('vade-admin-review');
+    const adminPanel=document.getElementById('vade-admin-panel');
+    let adminClient=null;
+    async function invokeEditorial(body){
+      if(!adminClient)throw new Error('Sessão administrativa não validada.');
+      const {data,error}=await adminClient.functions.invoke('legal-library-publish',{body});
+      if(error)throw error;
+      if(data?.error)throw new Error(data.error);
+      return data;
+    }
+    async function loadEditorialQueue(){
+      if(!adminClient||!adminPanel)return;
+      adminPanel.hidden=false;
+      adminPanel.innerHTML='<section class="card" style="padding:16px;margin:12px 0"><strong>Carregando versões para revisão...</strong></section>';
+      const {data:rows,error}=await adminClient.from('legal_document_versions')
+        .select('id,document_id,version_label,source_url,source_retrieved_at,content_sha256,status,change_summary')
+        .in('status',['candidate','in_review','approved'])
+        .order('source_retrieved_at',{ascending:false}).limit(40);
+      if(error)throw error;
+      const titleById=new Map(documents.map(doc=>[doc.id,doc.title]));
+      adminPanel.innerHTML='<section class="card" style="padding:16px;margin:12px 0;border:1px solid var(--border-color,#d9dee7)">'+
+        '<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><strong>Revisão editorial do Vade-Mécum</strong><p style="margin:5px 0;color:var(--text-secondary,#667085);font-size:13px">As candidatas ainda não aparecem para os alunos. Pré-visualize o texto completo, confira fonte e hash, registre sua decisão e só então publique.</p></div><button type="button" class="btn btn-ghost btn-sm" id="vade-admin-refresh">Atualizar fila</button></div>'+
+        (rows||[]).length?'<div style="display:grid;gap:8px;margin-top:12px">'+rows.map(row=>'<article style="padding:10px;border:1px solid var(--border-color,#d9dee7);border-radius:10px"><strong>'+esc(titleById.get(row.document_id)||row.document_id)+'</strong><div style="font-size:12px;color:var(--text-secondary,#667085);margin:4px 0">'+esc(row.status)+' · '+esc(row.version_label||'versão candidata')+' · '+esc(row.source_retrieved_at?new Date(row.source_retrieved_at).toLocaleString('pt-BR'):'data não informada')+'</div><div style="font-size:11px;word-break:break-all;color:var(--text-secondary,#667085)">SHA-256: '+esc(row.content_sha256)+'</div><a href="'+esc(row.source_url)+'" target="_blank" rel="noopener noreferrer" style="font-size:12px">Abrir fonte oficial</a><div style="margin-top:8px"><button type="button" class="btn btn-outline btn-sm" data-vade-preview="'+esc(row.id)+'">Pré-visualizar e revisar</button></div></article>').join('')+'</div>':'<p style="margin-top:12px">Não há versões candidatas ou aprovadas aguardando decisão.</p>'+
+        '<div id="vade-admin-preview" style="margin-top:14px"></div></section>';
+      document.getElementById('vade-admin-refresh')?.addEventListener('click',()=>loadEditorialQueue().catch(showEditorialError));
+      adminPanel.querySelectorAll('[data-vade-preview]').forEach(button=>button.addEventListener('click',()=>openEditorialPreview(button.getAttribute('data-vade-preview')).catch(showEditorialError)));
+    }
+    function showEditorialError(error){
+      const target=document.getElementById('vade-admin-preview')||adminPanel;
+      if(target)target.innerHTML='<div class="vade-empty">Não foi possível concluir a revisão: '+esc(error?.message||String(error))+'</div>';
+    }
+    async function openEditorialPreview(versionId){
+      const target=document.getElementById('vade-admin-preview');
+      if(!target)return;
+      target.innerHTML='<p>Verificando bytes originais, extração e SHA-256...</p>';
+      let offset=0, nextOffset=0, totalChars=0, fullText='', metadata=null, currentStatus='candidate';
+      const rowButton=adminPanel.querySelector('[data-vade-preview="'+CSS.escape(versionId)+'"]');
+      const row=rowButton?.closest('article');
+      currentStatus=row?.querySelector('strong')?.textContent||'candidate';
+      async function loadChunk(next){
+        const result=await invokeEditorial({action:'preview',version_id:versionId,offset:next,limit:80000});
+        if(result.integrity_verified!==true)throw new Error('A verificação de integridade não foi confirmada.');
+        metadata=result;
+        offset=result.offset;
+        nextOffset=result.next_offset;
+        totalChars=result.total_chars;
+        fullText+=result.preview_text||'';
+        renderPreview();
+      }
+      function renderPreview(){
+        const complete=nextOffset===null;
+        const noteValue=document.getElementById('vade-review-note')?.value||'';
+        target.innerHTML='<div style="border-top:1px solid var(--border-color,#d9dee7);padding-top:12px">'+
+          '<strong>Pré-visualização verificada · '+esc(titleByIdFor(versionId))+'</strong>'+
+          '<p style="font-size:12px;color:var(--text-secondary,#667085);word-break:break-all">Fonte: '+esc(metadata.source_url)+'<br>SHA-256 do texto: '+esc(metadata.content_sha256)+'<br>SHA-256 da origem: '+esc(metadata.source_sha256)+'<br>Formato: '+esc(metadata.source_format)+' · '+totalChars.toLocaleString('pt-BR')+' caracteres</p>'+
+          '<div style="max-height:360px;overflow:auto;border:1px solid var(--border-color,#d9dee7);border-radius:8px;padding:10px;white-space:pre-wrap;font:12px/1.55 ui-monospace,monospace">'+esc(fullText)+'</div>'+
+          '<p style="font-size:12px;margin:8px 0">'+(complete?'Leitura integral carregada.':'Trecho carregado até '+fullText.length.toLocaleString('pt-BR')+' de '+totalChars.toLocaleString('pt-BR')+' caracteres.')+'</p>'+
+          (complete?'':'<button type="button" class="btn btn-outline btn-sm" id="vade-preview-next">Carregar próximo trecho</button>')+
+          '<label style="display:block;margin-top:12px;font-size:13px">Nota da revisão / justificativa<textarea id="vade-review-note" rows="3" style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid var(--border-color,#d9dee7);border-radius:8px;background:var(--surface,#fff);color:inherit" placeholder="Registre o que foi conferido: atualização, integridade, fonte e vigência...">'+esc(noteValue)+'</textarea></label>'+
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">'+
+          (currentStatus==='approved'?'<button type="button" class="btn btn-primary btn-sm" id="vade-publish-version" '+(!complete?'disabled':'')+'>Publicar para os alunos</button>':'<button type="button" class="btn btn-primary btn-sm" id="vade-approve-version" '+(!complete?'disabled':'')+'>Aprovar revisão</button><button type="button" class="btn btn-ghost btn-sm" id="vade-reject-version" '+(!complete?'disabled':'')+'>Rejeitar candidata</button>')+
+          '</div><p style="font-size:11px;color:var(--text-secondary,#667085);margin-top:8px">A publicação só acontece após aprovação explícita. A versão anterior, quando existir, será preservada no histórico.</p></div>';
+        document.getElementById('vade-preview-next')?.addEventListener('click',()=>loadChunk(nextOffset).catch(showEditorialError));
+        document.getElementById('vade-approve-version')?.addEventListener('click',()=>decide('approve').catch(showEditorialError));
+        document.getElementById('vade-reject-version')?.addEventListener('click',()=>decide('reject').catch(showEditorialError));
+        document.getElementById('vade-publish-version')?.addEventListener('click',()=>decide('publish').catch(showEditorialError));
+      }
+      function titleByIdFor(id){
+        const row=adminPanel.querySelector('[data-vade-preview="'+CSS.escape(id)+'"]')?.closest('article');
+        return row?.querySelector('strong')?.textContent||id;
+      }
+      async function decide(action){
+        const note=document.getElementById('vade-review-note')?.value?.trim()||'';
+        if(note.length<5)throw new Error('Escreva uma justificativa de pelo menos cinco caracteres.');
+        if(action==='publish'&&!global.confirm('Confirmar publicação desta versão para os alunos?'))return;
+        target.innerHTML='<p>Registrando decisão editorial com nova conferência de integridade...</p>';
+        const result=await invokeEditorial({action,version_id:versionId,review_note:note});
+        target.innerHTML='<div class="vade-empty">'+esc(result.note||'Decisão registrada.')+'</div>';
+        await loadEditorialQueue();
+        if(action==='approve'){
+          const nextButton=adminPanel.querySelector('[data-vade-preview="'+CSS.escape(versionId)+'"]');
+          nextButton?.click();
+        }
+      }
+      await loadChunk(0);
+    }
+    async function initializeEditorialAccess(){
+      try{
+        const bridge=global.DOCTOR_PLATFORM_BRIDGE;
+        if(!bridge?.getAuthenticatedClient)return;
+        const client=await bridge.getAuthenticatedClient();
+        const {data,error}=await client.rpc('is_admin');
+        if(error||data!==true)return;
+        adminClient=client;
+        if(adminButton)adminButton.hidden=false;
+      }catch(_){}
+    }
+    adminButton?.addEventListener('click',()=>{
+      if(!adminPanel)return;
+      if(!adminPanel.hidden){adminPanel.hidden=true;return;}
+      loadEditorialQueue().catch(showEditorialError);
+    });
+    initializeEditorialAccess();
     hydrateLocalDocuments().then(count=>{
       if(syncStatus&&count)syncStatus.textContent=count+' documento(s) oficial(is) disponível(is) offline. Verificando atualizações...';
       sync().catch(()=>{});
