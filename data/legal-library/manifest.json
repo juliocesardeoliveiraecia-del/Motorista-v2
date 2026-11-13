@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "library_id": "doctor-vade-mecum-br",
+  "library_name": "Vade-Mécum Doctor",
+  "language": "pt-BR",
+  "access_policy": "free_official_sources_only",
+  "update_policy": {
+    "online_change_detection": "daily",
+    "full_integrity_audit_days": 7,
+    "urgent_change_handling": "priority_candidate_validation",
+    "never_replace_last_valid_version_on_failure": true,
+    "show_last_verified_at": true
+  },
+  "documents": [
+    {
+      "document_id": "BR-CF-1988",
+      "slug": "constituicao-federal",
+      "official_title": "Constituição da República Federativa do Brasil de 1988",
+      "display_title": "Constituição Federal",
+      "category": "constitution",
+      "document_type": "constitution",
+      "jurisdiction": "BR",
+      "priority": "P0",
+      "status": "planned",
+      "source": {"authority": "Câmara dos Deputados", "kind": "official_government_portal", "url": "https://www2.camara.leg.br/atividade-legislativa/legislacao/constituicao1988"},
+      "cover": {"asset": null, "style_key": "constitution-navy-gold", "original_doctor_artwork_required": true},
+      "offline": {"eligible": true, "preferred_format": "structured_text", "pdf_is_optional_companion": true},
+      "versions": []
+    },
+    {
+      "document_id": "BR-ADCT-1988",
+      "slug": "ato-disposicoes-constitucionais-transitorias",
+      "official_title": "Ato das Disposições Constitucionais Transitórias",
+      "display_title": "ADCT",
+      "category": "constitution",
+      "document_type": "constitutional_transitional_provisions",
+      "jurisdiction": "BR",
+      "priority": "P0",
+      "status": "planned",
+      "source": {"authority": "Câmara dos Deputados", "kind": "official_government_portal", "url": "https://www2.camara.leg.br/atividade-legislativa/legislacao/constituicao1988"},
+      "cover": {"asset": null, "style_key": "constitution-adct-blue", "original_doctor_artwork_required": true},
+      "offline": {"eligible": true, "preferred_format": "structured_text", "pdf_is_optional_companion": true},
+      "versions": []
+    },
+    {
+      "document_id": "INT-UDHR-1948-PT",
+      "slug": "declaracao-universal-direitos-humanos",
+      "official_title": "Declaração Universal dos Direitos Humanos",
+      "display_title": "Declaração Universal dos Direitos Humanos",
+      "category": "human_rights_international_documents",
+      "document_type": "international_declaration",
+      "jurisdiction": "INTERNATIONAL",
+      "priority": "P0",
+      "status": "planned",
+      "source": {"authority": "Nações Unidas no Brasil", "kind": "official_international_organization", "url": "https://brasil.un.org/pt-br/66717-declaracao-universal-dos-direitos-humanos"},
+      "cover": {"asset": null, "style_key": "human-rights-indigo-gold", "original_doctor_artwork_required": true},
+      "offline": {"eligible": true, "preferred_format": "structured_text", "pdf_is_optional_companion": true},
+      "versions": []
+    },
+    {
+      "document_id": "BR-CTB-1997",
+      "slug": "codigo-transito-brasileiro",
+      "official_title": "Lei nº 9.503, de 23 de setembro de 1997",
+      "display_title": "Código de Trânsito Brasileiro",
+      "category": "codes_and_traffic",
+      "document_type": "federal_law_compiled",
+      "jurisdiction": "BR",
+      "priority": "P0",
+      "status": "planned",
+      "norm_number": "9.503",
+      "norm_year": 1997,
+      "source": {"authority": "Presidência da República — Portal da Legislação", "kind": "official_federal_legislation", "url": "https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm"},
+      "cover": {"asset": null, "style_key": "traffic-green-black-gold", "original_doctor_artwork_required": true},
+      "offline": {"eligible": true, "preferred_format": "structured_text", "pdf_is_optional_companion": true},
+      "versions": []
+    }
+  ],
+  "product_collections": [
+    {
+      "product_slug": "motorista-legislativo-ipameri",
+      "document_ids": ["BR-CF-1988", "BR-ADCT-1988", "BR-CTB-1997", "INT-UDHR-1948-PT"],
+      "notes": "Coleção inicial de estruturação; pertinência de cada documento ao edital deve ser confirmada antes de publicação."
+    }
+  ]
+}
