@@ -86,6 +86,16 @@ Sanitizar HTML antes de renderizar; não executar scripts de documentos; não in
 
 Biblioteca nacional central; cada app declara coleção própria. Normas estaduais/municipais entram em coleções específicas sem alterar o acervo nacional.
 
+## Implementação técnica na branch de homologação
+
+- \`legal-library-sync\`: Edge Function protegida por JWT e permissão de administrador Doctor. Captura apenas domínios oficiais permitidos, preserva bytes originais, HTML e texto normalizado, calcula hashes e cria versões candidatas. Nunca publica automaticamente.
+- \`legal-library-publish\`: exige revisão administrativa, verifica novamente hash dos bytes originais, reproduz a extração do HTML e confere o hash do texto normalizado. A publicação usa RPC transacional com RLS: a versão anterior vira \`superseded\` e a nova passa a ser a versão corrente na mesma transação.
+- \`vade-mecum.js\`: consulta somente versões publicadas, baixa o pacote privado pelo cliente Supabase autenticado, valida SHA-256 e grava cada obra no IndexedDB. Em falha, mantém a última cópia local íntegra.
+- \`doctor-platform-bridge.js\`: expõe apenas o cliente Supabase da sessão já autenticada; não entrega chave de serviço nem token administrativo ao módulo jurídico.
+- O pacote offline contém o HTML oficial de origem e o texto normalizado para permitir conferência e leitura sem rede. A pesquisa continua local e não usa GROQ.
+
+**Limite operacional atual:** as funções e a migração estão no repositório/PR, ainda não implantadas no Supabase. O banco de produção permanece sem as tabelas/bucket da biblioteca; portanto, a sincronização real e a publicação de textos ainda não foram executadas. O agendamento diário/semanal também permanece pendente de configuração segura no Vault/Cron.
+
 ## Gates antes de produção
 
 - [ ] Fontes oficiais validadas.
