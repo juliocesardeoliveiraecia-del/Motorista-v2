@@ -38,7 +38,7 @@ A expansão para Código Penal, Código Civil, CPP, CPC, ECA, LGPD, improbidade,
 - Constituição e ADCT — Câmara dos Deputados: https://www2.camara.leg.br/a-camara/atividade-legislativa/legislacao/constituicao1988
   - A página oficial informa a Constituição atualizada até a EC nº 141/2026 e o ADCT até a EC nº 139/2026. O coletor deve resolver o link HTML específico de cada obra a partir dessa página e registrar a revisão encontrada; não presumir que os dois textos tenham a mesma data de atualização.
 - Legislação federal — Portal da Legislação/Planalto: https://www4.planalto.gov.br/legislacao
-- CTB — Planalto: https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm
+- CTB — Planalto: https://www2.camara.leg.br/legin/fed/lei/1997/lei-9503-23-setembro-1997-372348-norma-pl.html
 - DUDH em português — Nações Unidas no Brasil: https://brasil.un.org/pt-br/66717-declaracao-universal-dos-direitos-humanos
 
 A fonte primária específica fica registrada no manifesto. Divergências entre portais oficiais bloqueiam a promoção até reconciliação.
