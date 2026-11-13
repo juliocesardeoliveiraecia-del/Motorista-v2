@@ -27,7 +27,7 @@ assert.ok(manifest.contentPackage === null, 'New app template must require conte
 assert.deepEqual(validateManifest(manifest),[]);
 const outputs=buildOutputs(manifest);
 assert.ok(outputs['product-context.js'].includes('"provider": "supabase-versioned-snapshot-v1"'));
-assert.ok(outputs['product-context.js'].includes('"sessionPolicy": "single-active-device"'));
+assert.ok(outputs['product-context.js'].includes('"sessionPolicy": "single-active-device-global-account-last-login-wins"'));
 assert.ok(outputs['product-context.js'].includes('"appCode": null'));
 
 const registeredApp=structuredClone(manifest);
