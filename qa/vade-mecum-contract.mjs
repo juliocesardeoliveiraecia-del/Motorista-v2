@@ -29,7 +29,7 @@ assert.ok(source.includes('bridge.getAuthenticatedClient()'),'legal library sync
 assert.ok(source.includes(".eq('status','published')"),'only published legal versions may sync to students');
 assert.ok(source.includes('crypto.subtle.digest'),'downloaded legal text must pass SHA-256 integrity verification');
 assert.ok(source.includes('validateAndPublishEligible')&&source.includes('readVerifiedFullText'),'admin console must support a complete verified batch publication workflow');
-assert.ok(source.includes('validateLegalText')&&source.includes('REGRA\\\\s+122')&&source.includes('ARTIGO\\\\s+30'),'batch publication must enforce legal structure and completeness markers for international texts');
+assert.ok(source.includes('validateLegalText')&&source.includes('REGRA\\s+122')&&source.includes('ARTIGO\\\\s+30'),'batch publication must enforce legal structure and completeness markers for international texts');
 assert.ok(source.includes('vade-admin-validate-publish'),'batch publication action must be exposed only inside the admin review panel');
 assert.ok(source.includes('versões offline já armazenadas foram preservadas'),'sync failures must preserve existing offline content');
 const view=library.render();
@@ -37,9 +37,9 @@ for (const phrase of ['Vade-Mécum Doctor','Pesquisar dentro da biblioteca','Nã
 assert.ok(!view.includes('Doctor Search'));
 
 const worker=fs.readFileSync('service-worker.js','utf8');
-assert.ok(worker.includes("'./vade-mecum.js?v=1.1.0'"),'service worker must cache Vade-Mécum module');
-assert.ok(worker.includes("const CACHE_NAME = 'motorista-ipameri-v1.13.24-vade-mecum-offline-sync'"),'cache version must be bumped for the new module');
+assert.ok(worker.includes("'./vade-mecum.js?v=1.2.0'"),'service worker must cache Vade-Mécum module');
+assert.ok(worker.includes("const CACHE_NAME = 'motorista-ipameri-v1.13.25-vade-mecum-offline-sync'"),'cache version must be bumped for the new module');
 const index=fs.readFileSync('index.html','utf8');
-assert.ok(index.includes('./vade-mecum.js?v=1.1.0'),'app shell must load the Vade-Mécum module');
+assert.ok(index.includes('./vade-mecum.js?v=1.2.0'),'app shell must load the Vade-Mécum module');
 
 console.log('[vade-mecum-contract] PASS — local catalog, honest text status, no remote search, app integration and offline shell cache.');
