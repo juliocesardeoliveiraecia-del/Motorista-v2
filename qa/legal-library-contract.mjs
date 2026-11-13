@@ -18,7 +18,7 @@ if (!errors.length) {
   if (!migration.includes('security invoker')) errors.push('legal publication RPC must use caller permissions and RLS');
   if (!migration.includes('public.is_admin()')) errors.push('legal editorial actions must be restricted to Doctor admins');
   if (!migration.includes('status <> \'approved\'')) errors.push('only approved legal versions may be published');
-  if (!migration.includes('as $' + String.fromCharCode(10) + 'begin') || !migration.includes('end;' + String.fromCharCode(10) + '$;')) errors.push('legal version trigger must use valid PostgreSQL dollar quoting');
+  if (!migration.includes('as $$' + String.fromCharCode(10) + 'begin') || !migration.includes('end;' + String.fromCharCode(10) + '$$;')) errors.push('legal version trigger must use valid PostgreSQL dollar quoting');
   if ((migration.split('as $$').length - 1) !== 2 || (migration.split('$$;').length - 1) !== 2) errors.push('both PostgreSQL functions must use balanced dollar quoting');
   if (!migration.includes("new.status not in ('published','superseded')")) errors.push('published versions must not be reverted to editable states');
   if (!migration.includes('new.published_at is distinct from old.published_at')) errors.push('published timestamp must be immutable');
