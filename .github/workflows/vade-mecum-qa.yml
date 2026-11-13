@@ -46,3 +46,8 @@ jobs:
         run: node qa/legal-library-contract.mjs
       - name: Validate official-source ingestion security contract
         run: node qa/legal-library-ingestion-contract.mjs
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check Supabase legal library Edge Function
+        run: deno check supabase/functions/legal-library-sync/index.ts
