@@ -23,6 +23,8 @@ on:
       - "service-worker.js"
       - "data/legal-library/**"
       - "supabase/migrations/**"
+      - "supabase/functions/legal-library-sync/**"
+      - "qa/legal-library-ingestion-contract.mjs"
       - "docs/VADE-MECUM-DOCTOR-ARCHITECTURE.md"
       - "docs/VADE-MECUM-DOCTOR-RELEASE-PACKAGE.md"
       - "tools/validate-legal-library.mjs"
