@@ -118,32 +118,9 @@ async function fetchOfficial(
   };
 }
 
-async function resolveDocumentSource(doc: LegalDocument, landingHtml: string, landingUrl: string) {
-  const landingBasedIds = new Set([
-    "BR-CF-1988", "BR-ADCT-1988", "BR-CTB-1997", "BR-CP-1940",
-    "BR-CPP-1941", "BR-LEP-1984", "BR-ECA-1990", "BR-CC-2002",
-    "BR-CDC-1990", "BR-LMP-2006", "BR-ESTATUTO-IDOSO-2003",
-  ]);
-  if (!landingBasedIds.has(doc.document_id)) {
-    return { url: landingUrl, html: landingHtml };
-  }
-  const page = new DOMParser().parseFromString(landingHtml, "text/html");
-  const anchors = Array.from(page.querySelectorAll("a[href]")) as Array<{ getAttribute(name: string): string | null; textContent: string | null }>;
-  const match = anchors.find((anchor) => {
-    const href = anchor.getAttribute("href") || "";
-    const label = (anchor.textContent || "").toLowerCase();
-    if (doc.document_id === "BR-CF-1988") {
-      return href.toLowerCase().includes("constituicaotextoatualizado") || (label.includes("formato html") && !href.toLowerCase().includes("adct"));
-    }
-    if (doc.document_id === "BR-ADCT-1988") {
-      return href.toLowerCase().includes("constituicao-adct") || (label.includes("formato html") && href.toLowerCase().includes("adct"));
-    }
-    return href.toLowerCase().includes("normaatualizada") || label.includes("texto atualizado");
-  });
-  if (!match) throw new Error("Não foi possível localizar o link HTML oficial específico desta obra.");
-  const url = new URL(match.getAttribute("href") || "", landingUrl).toString();
-  if (!isAllowedUrl(url)) throw new Error("Link HTML resolvido fora dos domínios oficiais permitidos.");
-  return { url };
+async function resolveDocumentSource(_doc: LegalDocument, sourceHtml: string, sourceUrl: string) {
+  // The catalog now points directly to the official updated HTML for each Brazilian law.
+  return { url: sourceUrl, html: sourceHtml };
 }
 
 function validateExtractedText(doc: LegalDocument, text: string) {
@@ -157,6 +134,12 @@ function validateExtractedText(doc: LegalDocument, text: string) {
   }
   if (id === "BR-ADCT-1988" && !/DISPOSIÇÕES CONSTITUCIONAIS TRANSITÓRIAS/i.test(text)) {
     throw new Error("A captura não corresponde ao ADCT.");
+  }
+  if (id === "BR-CF-1988" && !/EMENDA CONSTITUCIONAL Nº 141|EC Nº 141/i.test(text)) {
+    throw new Error("A captura da Constituição não comprova a atualização até a EC 141/2026.");
+  }
+  if (id === "BR-ADCT-1988" && !/EMENDA CONSTITUCIONAL Nº 139|EC Nº 139/i.test(text)) {
+    throw new Error("A captura do ADCT não comprova a atualização até a EC 139/2026.");
   }
   if (id === "BR-CTB-1997" && !/CÓDIGO DE TRÂNSITO BRASILEIRO|LEI Nº 9\.503/i.test(text)) {
     throw new Error("A captura não corresponde ao CTB.");
@@ -283,11 +266,10 @@ Deno.serve(async (req: Request) => {
         source_landing_etag?: string;
         source_landing_last_modified?: string;
       };
-      const isConstitutionPage = doc.document_id === "BR-CF-1988" || doc.document_id === "BR-ADCT-1988";
       const dailyCheck = triggerType === "scheduled_daily";
       const landing = await fetchOfficial(doc.official_source_url, dailyCheck ? {
-        etag: isConstitutionPage ? lastSummary.source_landing_etag : lastVersion?.source_etag,
-        lastModified: isConstitutionPage ? lastSummary.source_landing_last_modified : lastVersion?.source_last_modified,
+        etag: lastVersion?.source_etag,
+        lastModified: lastVersion?.source_last_modified,
       } : {});
       if (landing.notModified) {
         results.push({ document_id: doc.document_id, status: "unchanged", check: "conditional-http-304" });
