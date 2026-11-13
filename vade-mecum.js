@@ -29,6 +29,7 @@
   // CTB source uses the Câmara's current updated HTML text, never the metadata landing page itself.
   // Other compiled Brazilian laws follow the same official updated-HTML resolver and title verification.
   // Each source-specific title matcher is validated before a candidate can enter the private bucket.
+  // All Brazilian statutes now point directly at the official updated HTML version.
   const LOCAL_DB_NAME='doctor-vade-mecum-offline-v1';
   const LOCAL_STORE='documents';
   function openLocalDb(){
