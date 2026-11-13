@@ -63,7 +63,7 @@ A aprovação do gate demonstra que o pacote cumpre a distribuição estrutural 
 
 ## Registro central do conteúdo — produção 2026-11-11
 
-A migração `20261111010740_motorista_content_registry_traceability` foi aplicada ao Supabase de produção de forma aditiva e idempotente. O registro central agora contém:
+A migração `20261113004249_motorista_content_registry_traceability` foi aplicada ao Supabase de produção de forma aditiva e idempotente. O registro central agora contém:
 - 4 matérias e 40 tópicos vinculados à versão de contexto do produto (39 do edital-base + 1 complementar);
 - 1 contexto de produto e 1 versão de contexto em estado `draft`, pois o produto permanece em pré-edital;
 - 47 registros de rastreabilidade, associados ao ID estável da questão e à matéria;
@@ -79,7 +79,7 @@ O contrato `qa/content-registry-migration-contract.mjs` compara o conjunto de ID
 
 ## Mapeamento questão → tópico — 2026-11-11
 
-A migração `20261111011923_map_motorista_questions_to_topics` vinculou os 47 IDs estáveis às matérias e tópicos correspondentes:
+A migração `20261113004306_map_motorista_questions_to_topics` vinculou os 47 IDs estáveis às matérias e tópicos correspondentes:
 - 39 tópicos derivados da estrutura do edital-base;
 - 1 tópico complementar de Poder Legislativo municipal para a questão `real-4`, explicitamente marcado como `supplemental_pending_edital_alignment`, pois não aparece como tópico autônomo na lista-base registrada;
 - 47 vínculos questão→tópico, sem alterar o gabarito, texto ou explicação;
@@ -90,6 +90,6 @@ O QA `qa/question-topic-mapping-contract.mjs` verifica que cada ID do pacote pos
 
 ## Fingerprints SHA-256 — pacote 2026.3
 
-A migração `20261111013355_motorista_question_content_hashes_2026_3` registrou SHA-256 dos blocos exatos das 47 questões no metadado `contentHash`, com algoritmo e versão de fingerprint identificados. Os hashes foram calculados no PostgreSQL com pgcrypto e correspondem ao pacote 2026.3 publicado no repositório.
+A migração `20261113004310_motorista_question_content_hashes_2026_3` registrou SHA-256 dos blocos exatos das 47 questões no metadado `contentHash`, com algoritmo e versão de fingerprint identificados. Os hashes foram calculados no PostgreSQL com pgcrypto e correspondem ao pacote 2026.3 publicado no repositório.
 
 Isso permite detectar divergência entre o pacote versionado e o registro central. O hash é controle de integridade, não prova de correção factual nem aprovação editorial. As 47 questões permanecem pendentes.
