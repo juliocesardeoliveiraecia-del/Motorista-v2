@@ -92,7 +92,7 @@ A sessão única é garantida no servidor quando há conexão. Um dispositivo to
 
 Todo aplicativo derivado deve herdar o aviso, a confirmação de idade mínima de 18 anos, a ciência do envio de prompts/áudio/textos ao provedor, o disclaimer de não afiliação, a atribuição de marca, o aviso de retenção/localização de dados e a opção de desativar/apagar a chave local. Nunca prometer cota gratuita fixa ou retenção zero. Nunca sincronizar API keys. O contrato BYOK permanece sujeito à confirmação escrita da Groq; consulte `docs/DOCTOR-CORE-GROQ-LEGAL-STANDARD.md` antes de qualquer release.
 
-## Regra para 50+ aplicativos
+## Regra para produção contínua e sem limite predefinido
 
 O primeiro aplicativo serve como homologação do motor. Os próximos devem ser gerados por pacote:
 
