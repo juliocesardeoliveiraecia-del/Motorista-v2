@@ -174,6 +174,28 @@
   }
   function bind(UI){
     document.getElementById('vade-back')?.addEventListener('click',()=>UI.back());
+    const status=document.getElementById('vade-status');
+    const syncButton=document.getElementById('vade-sync');
+    const sync=async()=>{
+      if(syncButton)syncButton.disabled=true;
+      if(status)status.textContent='Verificando versões oficiais publicadas...';
+      try{
+        const localCount=await hydrateLocalDocuments();
+        const result=await syncPublishedDocuments();
+        if(status){
+          if(result.offline)status.textContent=localCount+' documento(s) disponível(is) offline. Sem conexão; nenhuma cópia local foi alterada.';
+          else if(!result.published)status.textContent=localCount+' documento(s) disponível(is) offline. Ainda não há textos integrais publicados no acervo central.';
+          else status.textContent=result.downloaded+' nova(s) versão(ões) baixada(s); '+result.unchanged+' já estavam atualizadas. '+localCount+' documento(s) local(is) recuperado(s).';
+        }
+      }catch(error){
+        if(status)status.textContent='Não foi possível sincronizar agora. As versões offline já armazenadas foram preservadas. '+String(error?.message||'');
+      }finally{if(syncButton)syncButton.disabled=false;}
+    };
+    syncButton?.addEventListener('click',sync);
+    hydrateLocalDocuments().then(count=>{
+      if(status&&count)status.textContent=count+' documento(s) oficial(is) disponível(is) offline. Verificando atualizações...';
+      sync().catch(()=>{});
+    });
     document.querySelectorAll('[data-vade-open]').forEach(button=>button.addEventListener('click',()=>showDocument(button.getAttribute('data-vade-open'))));
     const form=document.getElementById('vade-search-form'),input=document.getElementById('vade-query'),status=document.getElementById('vade-status'),results=document.getElementById('vade-results');
     form?.addEventListener('submit',event=>{
