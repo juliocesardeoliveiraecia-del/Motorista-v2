@@ -15,7 +15,10 @@ assert.ok(sync.includes('status: "candidate"'), 'source capture must create cand
 assert.ok(!/status:\s*"published"/.test(sync), 'source capture must never publish automatically');
 assert.ok(sync.includes('ALLOWED_HOSTS'), 'source capture must enforce official host allowlist');
 assert.ok(sync.includes('sha256(source.rawBytes)'), 'source capture must hash original bytes');
+assert.ok(sync.includes('source_bytes_base64: encodeBase64(source.rawBytes)'), 'source package must preserve exact original bytes');
 assert.ok(publish.includes('await digest(text)'), 'publication must verify the normalized text SHA-256');
+assert.ok(publish.includes('await digest(sourceBytes)'), 'publication must verify the original source bytes SHA-256');
+assert.ok(publish.includes('extractHtml(pack.source_html as string) !== text'), 'publication must reproduce extracted text from the original HTML');
 assert.ok(publish.includes('userClient.rpc("publish_legal_document_version"'), 'publication must use the atomic RLS-protected RPC');
 assert.ok(publish.includes('version.status !== "approved"'), 'publication must require prior editorial approval');
 assert.ok(publish.includes('sourceMeta?.url !== version.source_url'), 'publication must verify source provenance');
