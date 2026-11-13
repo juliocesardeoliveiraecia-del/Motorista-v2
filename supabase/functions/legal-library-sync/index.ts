@@ -77,16 +77,28 @@ async function fetchOfficial(url: string) {
   if (!contentType.includes("text/html") && !contentType.includes("application/xhtml+xml")) {
     throw new Error("Formato não suportado para extração automática: " + (contentType || "desconhecido"));
   }
-  const html = await result.text();
-  if (html.length < 1200 || /captcha|cloudflare|access denied|verificação de segurança/i.test(html.slice(0, 2500))) {
-    throw new Error("A resposta não parece conter o texto oficial integral.");
+  const rawBytes = new Uint8Array(await result.arrayBuffer());
+  const prefix = new TextDecoder("windows-1252").decode(rawBytes.slice(0, 4096));
+  const metaCharset = prefix.match(/<meta[^>]+charset=["']?([^"'\s/>;]+)/i)?.[1];
+  const headerCharset = contentType.match(/charset=([^;\s]+)/i)?.[1];
+  const charset = (headerCharset || metaCharset || "utf-8").replace(/["']/g, "").toLowerCase();
+  let html: string;
+  try {
+    html = new TextDecoder(charset).decode(rawBytes);
+  } catch {
+    throw new Error("Codificação da fonte oficial não reconhecida: " + charset);
+  }
+  if (html.includes("\uFFFD") || html.length < 1200 || /captcha|cloudflare|access denied|verificação de segurança/i.test(html.slice(0, 2500))) {
+    throw new Error("A resposta não parece conter o texto oficial integral ou apresentou erro de codificação.");
   }
   return {
     html,
+    rawBytes,
     finalUrl: result.url,
     etag: result.headers.get("etag"),
     lastModified: result.headers.get("last-modified"),
     contentType,
+    charset,
   };
 }
 
@@ -130,8 +142,8 @@ function validateExtractedText(doc: LegalDocument, text: string) {
   }
 }
 
-async function sha256(value: string) {
-  const bytes = new TextEncoder().encode(value);
+async function sha256(value: string | Uint8Array) {
+  const bytes = typeof value === "string" ? new TextEncoder().encode(value) : value;
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
@@ -205,7 +217,7 @@ Deno.serve(async (req: Request) => {
         : await fetchOfficial(resolved.url);
       const extracted = extractHtml(source.html);
       validateExtractedText(doc, extracted);
-      const rawHash = await sha256(source.html);
+      const rawHash = await sha256(source.rawBytes);
       const textHash = await sha256(extracted);
 
       const { data: duplicate } = await service
@@ -234,8 +246,10 @@ Deno.serve(async (req: Request) => {
           etag: source.etag,
           last_modified: source.lastModified,
           content_type: source.contentType,
+          charset: source.charset || "utf-8",
           sha256_raw: rawHash,
         },
+        source_html: source.html,
         normalized_text: extracted,
         sha256_text: textHash,
         extraction: { method: "DOMParser.textContent", pipeline_version: "1.0.0" },
