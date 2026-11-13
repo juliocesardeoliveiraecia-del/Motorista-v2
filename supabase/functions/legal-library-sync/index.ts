@@ -402,7 +402,7 @@ Deno.serve(async (req: Request) => {
             source_landing_etag: landing.etag,
             source_landing_last_modified: landing.lastModified,
             sha256_text: textHash,
-            extraction_method: "DOMParser.textContent",
+            extraction_method: source.contentType.includes("pdf") ? "pdfjs.getTextContent" : "DOMParser.textContent",
             pipeline_version: "1.0.0",
             source_content_type: source.contentType,
             requires_editorial_review: true,
