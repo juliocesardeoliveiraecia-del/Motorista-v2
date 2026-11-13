@@ -51,7 +51,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; font-family: var(--font); background: var(--bg); color: var(--text); }
 body { padding-bottom: 0; }
-#main-view { padding-bottom: calc(var(--radar-reserve, 52px) + 16px); }
+/* Radar Doctor descontinuado neste produto: sem reserva de espaço no layout. */
 button { font-family: inherit; cursor: pointer; }
 h1, h2, h3 { margin: 0 0 8px; }
 p { margin: 0 0 8px; }
@@ -461,8 +461,7 @@ button:disabled { opacity: .52; cursor: not-allowed; filter: none !important; tr
 
 @media(max-width:600px){
   body { padding-bottom: 0; }
-  #main-view { padding-bottom: calc(var(--radar-reserve, 52px) + 12px); }
-  #radar-ticker-mount { bottom: 0; }
+  /* Sem espaço reservado para recursos descontinuados. */
   .app-footer { min-height: 62px; padding: 8px 10px; }
   .footer-logo { width: 30px; }
   .footer-company { font-size: 11px; }
@@ -4832,91 +4831,12 @@ if (window.DOCTOR_PLATFORM_BRIDGE?.bootstrap) {
 </script>
 
 <script>
-/* Compatibilidade histórica desativada: o Radar foi removido do produto. */
+/* Radar Doctor descontinuado no Motorista Legislativo. O código legado permanece inativo para permitir eventual reintrodução controlada no Core. */
 (function(){
-  const mount = document.getElementById('radar-ticker-mount');
-  const footer = document.querySelector('.app-footer');
-  const mainView = document.getElementById('main-view');
-  if(!mount || !footer || !mainView) return;
-
-  let docked = false;
-  let ticking = false;
-  const GAP = 12;
-
-  function radarHeight(){
-    return Math.max(40, Math.ceil(mount.getBoundingClientRect().height || 40));
-  }
-
-  // Reserva espaço real para o Radar em TODA página. Isso impede que
-  // conteúdo de Caderno, Gravador, Redação, Configurações etc. fique
-  // escondido atrás do letreiro.
-  function reserveRadarSpace(){
-    const h = radarHeight();
-    document.documentElement.style.setProperty('--radar-reserve', `${h + GAP}px`);
-    mainView.style.paddingBottom = `${h + GAP + 16}px`;
-  }
-
-  function updateRadarDock(){
-    ticking = false;
-    reserveRadarSpace();
-    const h = radarHeight();
-    const footerTopViewport = footer.getBoundingClientRect().top;
-    const footerTopDocument = footerTopViewport + window.scrollY;
-    const trigger = window.innerHeight + 8;
-
-    if(!docked && footerTopViewport <= trigger){
-      // No final do conteúdo o Radar deixa de flutuar e passa a fazer
-      // parte do fluxo da página, imediatamente antes do rodapé.
-      docked = true;
-      mount.classList.add('radar-at-footer');
-      mount.style.position = 'absolute';
-      mount.style.left = '0';
-      mount.style.right = '0';
-      mount.style.bottom = 'auto';
-      mount.style.top = `${Math.max(0, footerTopDocument - h)}px`;
-    } else if(docked && footerTopViewport > window.innerHeight + h + 32){
-      // Voltou a existir bastante conteúdo abaixo: Radar volta a ficar
-      // fixo, sempre disponível, sem sobrepor o conteúdo.
-      docked = false;
-      mount.classList.remove('radar-at-footer');
-      mount.style.position = 'fixed';
-      mount.style.top = '';
-      mount.style.bottom = '0px';
-      mount.style.left = '0';
-      mount.style.right = '0';
-    } else if(docked){
-      mount.style.top = `${Math.max(0, footerTopDocument - h)}px`;
-    }
-  }
-
-  function schedule(){
-    if(!ticking){
-      ticking = true;
-      requestAnimationFrame(updateRadarDock);
-    }
-  }
-
-  window.addEventListener('scroll', schedule, {passive:true});
-  window.addEventListener('resize', schedule);
-  window.addEventListener('load', schedule);
-  document.addEventListener('visibilitychange', schedule);
-
-  if(window.ResizeObserver){
-    const ro = new ResizeObserver(schedule);
-    ro.observe(footer);
-    ro.observe(mount);
-    ro.observe(mainView);
-  }
-
-  // UI.render troca o conteúdo de #main-view dinamicamente.
-  // Um pequeno observador garante que TODAS as páginas recebam a mesma
-  // reserva de espaço sem precisar adicionar código em cada View.
-  if(window.MutationObserver){
-    new MutationObserver(schedule).observe(mainView, {childList:true, subtree:true});
-  }
-
-  reserveRadarSpace();
-  schedule();
+  document.documentElement.style.removeProperty("--radar-reserve");
+  const mainView=document.getElementById("main-view");
+  if(mainView) mainView.style.paddingBottom="";
+  document.getElementById("radar-ticker-mount")?.remove();
 })();
 </script>
 <script src="./doctor-core-quality.js?v=1.12.19" defer></script>
