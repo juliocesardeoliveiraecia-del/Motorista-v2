@@ -69,12 +69,12 @@
     if(!target||typeof record.content!=='string'||!record.content.trim())return false;
     target.content=record.content;
     target.version=record.version_label||record.version_id||null;
-    target.lastVerifiedAt=record.last_verified_at||null;
+    target.lastVerifiedAt=record.published_at||null;
     target.source=record.authority||target.source;
     target.sourceUrl=record.source_url||target.sourceUrl;
     target.status='Texto oficial validado · disponível offline';
     const status=document.querySelector('[data-vade-book-status="'+esc(target.id)+'"]');
-    if(status)status.textContent='Disponível offline · '+(target.lastVerifiedAt?new Date(target.lastVerifiedAt).toLocaleDateString('pt-BR'):'versão validada');
+    if(status)status.textContent='Disponível offline · '+(target.lastVerifiedAt?'publicada em '+new Date(target.lastVerifiedAt).toLocaleDateString('pt-BR'):'versão publicada');
     const button=document.querySelector('[data-vade-open="'+esc(target.id)+'"]');
     if(button)button.textContent='Abrir leitura';
     return true;
@@ -102,7 +102,7 @@
     if(!current.length)return {published:0,downloaded:0,unchanged:0};
     const versionIds=current.map(item=>item.current_version_id);
     const {data:versions,error:versionsError}=await client.from('legal_document_versions')
-      .select('id,document_id,version_label,source_url,source_retrieved_at,content_sha256,storage_path,status')
+      .select('id,document_id,version_label,source_url,source_retrieved_at,published_at,content_sha256,storage_path,status')
       .in('id',versionIds).eq('status','published');
     if(versionsError)throw versionsError;
     const versionById=new Map((versions||[]).map(item=>[item.id,item]));
@@ -123,7 +123,7 @@
       const record={
         document_id:doc.document_id,version_id:version.id,version_label:version.version_label,
         content:pack.normalized_text,sha256:actualHash,authority:doc.authority,
-        source_url:version.source_url,last_verified_at:version.source_retrieved_at||pack.source?.retrieved_at||null
+        source_url:version.source_url,published_at:version.published_at||null
       };
       await saveLocalDocument(record);
       applyLocalDocument(record);
@@ -167,7 +167,7 @@
     if(!doc.content){
       reader.innerHTML='<section class="card vade-reader"><div class="legal-search-result-index">OBRA CATALOGADA · TEXTO INTEGRAL EM PREPARAÇÃO</div><h3>'+esc(doc.title)+'</h3><p>'+esc(doc.officialTitle)+'</p><p>Fonte oficial prevista: '+esc(doc.source)+'.</p><div class="vade-empty">Estamos preparando a cópia integral oficial, a navegação por artigos e a versão offline desta obra. Ela só será liberada para leitura quando o texto for capturado, conferido e validado. Nenhum resumo ou link externo será apresentado como substituto da lei seca.</div><button type="button" class="btn btn-ghost btn-sm" id="vade-close-reader" style="margin-top:12px">Fechar</button></section>';
     }else{
-      reader.innerHTML='<section class="card vade-reader"><div class="legal-search-result-index">LEI SECA · TEXTO ARMAZENADO NO APLICATIVO</div><h3>'+esc(doc.title)+'</h3><p>'+esc(doc.officialTitle)+' · '+esc(doc.source)+(doc.version?' · '+esc(doc.version):'')+(doc.lastVerifiedAt?' · conferido em '+esc(new Date(doc.lastVerifiedAt).toLocaleString('pt-BR')):'')+'</p><div class="vade-reader-text">'+esc(doc.content)+'</div><button type="button" class="btn btn-ghost btn-sm" id="vade-close-reader" style="margin-top:12px">Fechar leitura</button></section>';
+      reader.innerHTML='<section class="card vade-reader"><div class="legal-search-result-index">LEI SECA · TEXTO ARMAZENADO NO APLICATIVO</div><h3>'+esc(doc.title)+'</h3><p>'+esc(doc.officialTitle)+' · '+esc(doc.source)+(doc.version?' · '+esc(doc.version):'')+(doc.lastVerifiedAt?' · publicada em '+esc(new Date(doc.lastVerifiedAt).toLocaleString('pt-BR')):'')+'</p><div class="vade-reader-text">'+esc(doc.content)+'</div><button type="button" class="btn btn-ghost btn-sm" id="vade-close-reader" style="margin-top:12px">Fechar leitura</button></section>';
     }
     document.getElementById('vade-close-reader')?.addEventListener('click',()=>{activeDocument=null;reader.innerHTML='';});
     reader.scrollIntoView({behavior:'smooth',block:'start'});
