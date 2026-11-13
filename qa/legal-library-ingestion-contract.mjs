@@ -27,7 +27,10 @@ assert.ok(sync.includes('sha256(source.rawBytes)'), 'source capture must hash or
 assert.ok(sync.includes('source_bytes_base64: encodeBase64(source.rawBytes)'), 'source package must preserve exact original bytes');
 assert.ok(publish.includes('await digest(text)'), 'publication must verify the normalized text SHA-256');
 assert.ok(publish.includes('await digest(sourceBytes)'), 'publication must verify the original source bytes SHA-256');
-assert.ok(publish.includes('extractHtml(pack.source_html as string) !== text'), 'publication must reproduce extracted text from the original HTML');
+assert.ok(sync.includes('extractPdfText(rawBytes)'), 'official PDF sources must be parsed as text, not OCR');
+assert.ok(sync.includes('source_format: source.contentType.includes("pdf")'), 'source package must record HTML or PDF format');
+assert.ok(publish.includes('await extractPdfText(sourceBytes)'), 'publication must reproduce PDF text from original bytes');
+assert.ok(publish.includes('reproducedText !== text'), 'publication must reproduce the extracted text before approval');
 assert.ok(publish.includes('userClient.rpc("publish_legal_document_version"'), 'publication must use the atomic RLS-protected RPC');
 assert.ok(publish.includes('version.status !== "approved"'), 'publication must require prior editorial approval');
 assert.ok(publish.includes('sourceMeta?.url !== version.source_url'), 'publication must verify source provenance');
@@ -41,5 +44,6 @@ assert.ok(schedule.includes('x-doctor-cron-token'), 'cron must send only the res
 assert.ok(!schedule.includes('SUPABASE_SERVICE_ROLE_KEY'), 'service-role credentials must never be stored in the cron request');
 assert.equal((batchSchedule.match(/net\.http_post\(/g) || []).length, 14, 'daily and weekly schedules must enqueue seven bounded batches each');
 assert.ok(batchSchedule.includes('timeout_milliseconds := 120000'), 'bounded source batches must have sufficient HTTP timeout');
-assert.ok(!batchSchedule.includes('INT-MANDELA-2015-PT'), 'known PDF-only source must stay out of automatic HTML extraction');
+assert.ok(batchSchedule.includes('INT-MANDELA-2015-PT'), 'official Mandela PDF must be included in bounded scheduled checks');
+assert.ok(manifest.documents.find(doc => doc.document_id === 'INT-UDHR-1948-PT')?.source?.url?.endsWith('.pdf'), 'DUDH must use the official Portuguese PDF source');
 console.log('[legal-library-ingestion-contract] PASS — admin-only capture/review, source integrity, approval gate and atomic publication.');
