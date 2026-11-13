@@ -61,14 +61,16 @@ No commit `014844c01bafb4c86ee820948fc3cf008994f6cd`, os três workflows — Doc
 A aprovação do gate demonstra que o pacote cumpre a distribuição estrutural e os contratos automatizados. Antes de publicação comercial, ainda deve ocorrer revisão editorial independente das questões, verificação de atualidade das normas citadas e teste funcional do simulado em dispositivo.
 
 
-## Registro central do conteúdo — produção 2026-11-11
+## Registro central do conteúdo — aplicado e conferido no Supabase em 2026-11-13
 
-A migração `20261113004249_motorista_content_registry_traceability` foi aplicada ao Supabase de produção de forma aditiva e idempotente. O registro central agora contém:
-- 4 matérias e 40 tópicos vinculados à versão de contexto do produto (39 do edital-base + 1 complementar);
+A sequência de migrations `20261113004249`, `20261113004303`, `20261113004306`, `20261113004307` e `20261113004310` foi aplicada ao Supabase de produção. A conferência direta do banco confirmou:
+- 4 matérias e 40 tópicos cadastrados; 4 vínculos de matéria e 40 vínculos de tópico na versão de contexto (39 do edital-base + 1 complementar);
 - 1 contexto de produto e 1 versão de contexto em estado `draft`, pois o produto permanece em pré-edital;
-- 47 registros de rastreabilidade, associados ao ID estável da questão e à matéria;
+- 47 registros de rastreabilidade, associados ao ID estável da questão, matéria e tópico;
 - estado editorial `pending` para as 47 questões, sem aprovação automática;
-- índice único por produto + ID de questão para impedir duplicação em reimportações.
+- 47 hashes SHA-256 conferidos e índice único por produto + ID de questão para impedir duplicação em reimportações.
+
+A leitura pós-migration confirmou 47 IDs únicos, 47/47 pendentes, 0 aprovadas, 47/47 com hash, 47/47 com tópico e versão `2026.3`. O produto continua `draft`, o app `maintenance` e a versão do contexto `draft`; nenhum aluno foi alterado e nenhuma questão foi aprovada.
 
 As 47 questões estão vinculadas a um tópico por classificação editorial. O tópico complementar de Poder Legislativo municipal permanece marcado como pendente de alinhamento com o edital vigente. As 47 questões continuam com revisão factual/editorial independente pendente; as URLs do último edital e da última prova são referências de escopo, não prova de validação individual de cada gabarito.
 
