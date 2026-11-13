@@ -21,6 +21,104 @@
     {id:"BR-ESTATUTO-IDOSO-2003",title:"Estatuto da Pessoa Idosa",officialTitle:"Lei nº 10.741, de 1º de outubro de 2003",category:"Legislação Especial",cover:"law",symbol:"⚖",subtitle:"LEGISLAÇÃO ESPECIAL",description:"Direitos assegurados às pessoas idosas.",source:"Presidência da República — Planalto",sourceUrl:"https://www.planalto.gov.br/ccivil_03/leis/2003/l10.741.htm",status:'Fonte oficial catalogada · texto integral em preparação',content:'',version:null},
     {id:"INT-MANDELA-2015-PT",title:"Regras de Mandela",officialTitle:"Regras Mínimas das Nações Unidas para o Tratamento de Presos",category:"Direitos Humanos",cover:"human",symbol:"⚖",subtitle:"DIREITOS HUMANOS",description:"Padrões internacionais para o tratamento de pessoas presas.",source:"Nações Unidas / UNODC",sourceUrl:"https://www.unodc.org/documents/justice-and-prison-reform/Nelson_Mandela_Rules-P-ebook.pdf",status:'Fonte oficial catalogada · texto integral em preparação',content:'',version:null}
   ];
+  const LOCAL_DB_NAME='doctor-vade-mecum-offline-v1';
+  const LOCAL_STORE='documents';
+  function openLocalDb(){
+    return new Promise((resolve,reject)=>{
+      if(!global.indexedDB){reject(new Error('Armazenamento offline não disponível neste navegador.'));return;}
+      const request=global.indexedDB.open(LOCAL_DB_NAME,1);
+      request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains(LOCAL_STORE))db.createObjectStore(LOCAL_STORE,{keyPath:'document_id'});};
+      request.onsuccess=()=>resolve(request.result);
+      request.onerror=()=>reject(request.error||new Error('Falha ao abrir biblioteca offline.'));
+    });
+  }
+  function requestResult(request){
+    return new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error||new Error('Falha no armazenamento offline.'));});
+  }
+  async function readLocalDocuments(){
+    const db=await openLocalDb();
+    try{const tx=db.transaction(LOCAL_STORE,'readonly');return await requestResult(tx.objectStore(LOCAL_STORE).getAll());}
+    finally{db.close();}
+  }
+  async function saveLocalDocument(record){
+    const db=await openLocalDb();
+    try{
+      await new Promise((resolve,reject)=>{
+        const tx=db.transaction(LOCAL_STORE,'readwrite');
+        tx.objectStore(LOCAL_STORE).put(record);
+        tx.oncomplete=()=>resolve();
+        tx.onerror=()=>reject(tx.error||new Error('Não foi possível salvar a versão offline.'));
+        tx.onabort=()=>reject(tx.error||new Error('Gravação offline cancelada.'));
+      });
+    }finally{db.close();}
+  }
+  function applyLocalDocument(record){
+    const target=documents.find(doc=>doc.id===record.document_id);
+    if(!target||typeof record.content!=='string'||!record.content.trim())return false;
+    target.content=record.content;
+    target.version=record.version_label||record.version_id||null;
+    target.lastVerifiedAt=record.last_verified_at||null;
+    target.source=record.authority||target.source;
+    target.sourceUrl=record.source_url||target.sourceUrl;
+    target.status='Texto oficial validado · disponível offline';
+    const status=document.querySelector('[data-vade-book-status="'+esc(target.id)+'"]');
+    if(status)status.textContent='Disponível offline · '+(target.lastVerifiedAt?new Date(target.lastVerifiedAt).toLocaleDateString('pt-BR'):'versão validada');
+    const button=document.querySelector('[data-vade-open="'+esc(target.id)+'"]');
+    if(button)button.textContent='Abrir leitura';
+    return true;
+  }
+  async function hydrateLocalDocuments(){
+    try{const records=await readLocalDocuments();records.forEach(applyLocalDocument);return records.length;}
+    catch(_){return 0;}
+  }
+  async function digestText(value){
+    const bytes=new TextEncoder().encode(value);
+    const buffer=bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);
+    const digest=await global.crypto.subtle.digest('SHA-256',buffer);
+    return Array.from(new Uint8Array(digest)).map(byte=>byte.toString(16).padStart(2,'0')).join('');
+  }
+  async function syncPublishedDocuments(){
+    if(!global.navigator?.onLine)return {offline:true,downloaded:0,unchanged:0};
+    const bridge=global.DOCTOR_PLATFORM_BRIDGE;
+    if(!bridge?.getAuthenticatedClient)throw new Error('Valide seu acesso online para sincronizar a biblioteca jurídica.');
+    const client=await bridge.getAuthenticatedClient();
+    const {data:catalog,error:catalogError}=await client.from('legal_documents')
+      .select('document_id,display_title,authority,official_source_url,current_version_id')
+      .eq('is_active',true);
+    if(catalogError)throw catalogError;
+    const current=(catalog||[]).filter(item=>item.current_version_id);
+    if(!current.length)return {published:0,downloaded:0,unchanged:0};
+    const versionIds=current.map(item=>item.current_version_id);
+    const {data:versions,error:versionsError}=await client.from('legal_document_versions')
+      .select('id,document_id,version_label,source_url,source_retrieved_at,content_sha256,storage_path,status')
+      .in('id',versionIds).eq('status','published');
+    if(versionsError)throw versionsError;
+    const versionById=new Map((versions||[]).map(item=>[item.id,item]));
+    let downloaded=0,unchanged=0;
+    for(const doc of current){
+      const version=versionById.get(doc.current_version_id);
+      if(!version||!version.storage_path)continue;
+      const localRecords=await readLocalDocuments();
+      const existing=localRecords.find(item=>item.document_id===doc.document_id);
+      if(existing?.version_id===version.id){unchanged++;continue;}
+      const {data:file,error:fileError}=await client.storage.from('legal-library').download(version.storage_path);
+      if(fileError||!file)throw fileError||new Error('Pacote jurídico não disponível no armazenamento privado.');
+      const pack=JSON.parse(await file.text());
+      if(pack.document_id!==doc.document_id||typeof pack.normalized_text!=='string'||!pack.normalized_text.trim())throw new Error('Pacote jurídico inconsistente: '+doc.document_id);
+      const actualHash=await digestText(pack.normalized_text);
+      if(actualHash!==version.content_sha256||actualHash!==pack.sha256_text)throw new Error('A integridade do texto não confere. A cópia offline anterior foi preservada.');
+      if(pack.source?.url!==version.source_url)throw new Error('A origem registrada no pacote não confere com a versão publicada.');
+      const record={
+        document_id:doc.document_id,version_id:version.id,version_label:version.version_label,
+        content:pack.normalized_text,sha256:actualHash,authority:doc.authority,
+        source_url:version.source_url,last_verified_at:version.source_retrieved_at||pack.source?.retrieved_at||null
+      };
+      await saveLocalDocument(record);
+      applyLocalDocument(record);
+      downloaded++;
+    }
+    return {published:current.length,downloaded,unchanged};
+  }
   // Um pacote oficial local pode ser incorporado futuramente sem alterar a interface.
   const supplied=Array.isArray(global.DOCTOR_VADE_MECUM_DOCUMENTS)?global.DOCTOR_VADE_MECUM_DOCUMENTS:[];
   supplied.forEach(incoming=>{
