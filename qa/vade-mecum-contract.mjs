@@ -24,6 +24,11 @@ assert.ok(library.search('regras de mandela').some(d=>d.id==='INT-MANDELA-2015-P
 assert.ok(library.search('direitos humanos').some(d=>d.id==='INT-UDHR-1948-PT'));
 assert.equal(library.search('xyz-nao-existe').length,0);
 assert.ok(!/\bfetch\s*\(|XMLHttpRequest|window\.open|location\.href/i.test(source),'search module must not fetch remote content or redirect');
+assert.ok(source.includes('indexedDB.open(LOCAL_DB_NAME'),'legal text packages must be stored in IndexedDB for offline use');
+assert.ok(source.includes('bridge.getAuthenticatedClient()'),'legal library sync must reuse the authenticated Doctor session');
+assert.ok(source.includes(".eq('status','published')"),'only published legal versions may sync to students');
+assert.ok(source.includes('crypto.subtle.digest'),'downloaded legal text must pass SHA-256 integrity verification');
+assert.ok(source.includes('versões offline já armazenadas foram preservadas'),'sync failures must preserve existing offline content');
 const view=library.render();
 for (const phrase of ['Vade-Mécum Doctor','Pesquisar dentro da biblioteca','Não envia você para outros sites']) assert.ok(view.includes(phrase));
 assert.ok(!view.includes('Doctor Search'));
@@ -32,6 +37,6 @@ const worker=fs.readFileSync('service-worker.js','utf8');
 assert.ok(worker.includes("'./vade-mecum.js?v=1.1.0'"),'service worker must cache Vade-Mécum module');
 assert.ok(worker.includes("const CACHE_NAME = 'motorista-ipameri-v1.13.24-vade-mecum-offline-sync'"),'cache version must be bumped for the new module');
 const index=fs.readFileSync('index.html','utf8');
-assert.ok(index.includes('./vade-mecum.js?v=1.0.0'),'app shell must load the Vade-Mécum module');
+assert.ok(index.includes('./vade-mecum.js?v=1.1.0'),'app shell must load the Vade-Mécum module');
 
 console.log('[vade-mecum-contract] PASS — local catalog, honest text status, no remote search, app integration and offline shell cache.');
