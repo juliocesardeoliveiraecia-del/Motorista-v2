@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { PGlite } from '@electric-sql/pglite';
 
 const migration = fs.readFileSync('supabase/migrations/20261113170000_doctor_shared_legal_library.sql', 'utf8');
+const hardening = fs.readFileSync('supabase/migrations/20261113195000_harden_legal_library_policies_and_indexes.sql', 'utf8');
 const db = new PGlite();
 
 try {
@@ -21,6 +22,7 @@ try {
   ].join('\n');
   await db.exec(bootstrap);
   await db.exec(migration);
+  await db.exec(hardening);
 
   const tables = await db.query("select table_name from information_schema.tables where table_schema='public' and table_name in ('legal_documents','legal_document_versions','legal_update_runs','legal_change_events')");
   assert.equal(tables.rows.length, 4, 'all four legal library tables must be created');
@@ -28,6 +30,13 @@ try {
   const bucket = await db.query("select id, public from storage.buckets where id='legal-library'");
   assert.equal(bucket.rows.length, 1, 'private legal bucket must be created');
   assert.equal(bucket.rows[0].public, false, 'legal bucket must remain private');
+
+  const selectPolicies = await db.query("select count(*)::int as count from pg_policies where schemaname='public' and tablename='legal_document_versions' and cmd='SELECT'");
+  assert.equal(selectPolicies.rows[0].count, 1, 'published and admin reads must share one permissive policy');
+  const fkIndexes = await db.query("select count(*)::int as count from pg_indexes where schemaname='public' and indexname in ('legal_events_run_id_idx','legal_events_version_id_idx','legal_documents_current_version_fk_idx')");
+  assert.equal(fkIndexes.rows[0].count, 3, 'all legal foreign keys must have covering indexes');
+  const triggerFunction = await db.query("select proconfig from pg_proc where proname='prevent_published_legal_version_mutation'");
+  assert.ok(String(triggerFunction.rows[0].proconfig).includes('search_path=public, pg_temp'), 'trigger function must have a fixed search_path');
 
   const docs = await db.query("select count(*)::int as count from public.legal_documents");
   assert.equal(docs.rows[0].count, 13, 'initial catalog must seed thirteen documents');
@@ -57,7 +66,7 @@ try {
 
   const events = await db.query("select count(*)::int as count from public.legal_change_events where event_type='published'");
   assert.equal(events.rows[0].count, 1, 'publication event must be recorded');
-  console.log('[legal-library-migration-contract] PASS — migration executes, private bucket/catalog are created, and publication is atomic.');
+  console.log('[legal-library-migration-contract] PASS — migrations execute, private bucket/catalog are created, RLS is consolidated, FK indexes exist, and publication is atomic.');
 } finally {
   await db.close();
 }
