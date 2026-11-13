@@ -14,6 +14,9 @@ if (!errors.length) {
   if (!manifest.documents.every(d => d.status === 'planned')) errors.push('un-ingested content cannot be marked published/validated');
   if (!migration.includes('foreign key (document_id, current_version_id)')) errors.push('current version must belong to its legal document');
   if (!migration.includes('prevent_published_legal_version_mutation')) errors.push('published legal versions must be immutable');
+  if (!migration.includes('as $\\nbegin') || !migration.includes('end;\\n$;')) errors.push('legal version trigger must use valid PostgreSQL dollar quoting');
+  if (!migration.includes("new.status not in ('published','superseded')")) errors.push('published versions must not be reverted to editable states');
+  if (!migration.includes('new.published_at is distinct from old.published_at')) errors.push('published timestamp must be immutable');
   if (!migration.includes("old.status in ('published','superseded')")) errors.push('published/superseded version protection is missing');
   if (!migration.includes('alter table public.legal_document_versions enable row level security')) errors.push('RLS must be enabled on legal versions');
   if (!migration.includes('revoke insert, update, delete on public.legal_documents, public.legal_document_versions from anon, authenticated')) errors.push('client roles must not write legal source records');
