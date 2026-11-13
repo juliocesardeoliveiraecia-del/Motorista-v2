@@ -119,7 +119,7 @@ async function fetchOfficial(
 }
 
 async function resolveDocumentSource(doc: LegalDocument, landingHtml: string, landingUrl: string) {
-  if (doc.document_id !== "BR-CF-1988" && doc.document_id !== "BR-ADCT-1988") {
+  if (doc.document_id !== "BR-CF-1988" && doc.document_id !== "BR-ADCT-1988" && doc.document_id !== "BR-CTB-1997") {
     return { url: landingUrl, html: landingHtml };
   }
   const page = new DOMParser().parseFromString(landingHtml, "text/html");
@@ -130,7 +130,10 @@ async function resolveDocumentSource(doc: LegalDocument, landingHtml: string, la
     if (doc.document_id === "BR-CF-1988") {
       return href.toLowerCase().includes("constituicaotextoatualizado") || (label.includes("formato html") && !href.toLowerCase().includes("adct"));
     }
-    return href.toLowerCase().includes("constituicao-adct") || (label.includes("formato html") && href.toLowerCase().includes("adct"));
+    if (doc.document_id === "BR-ADCT-1988") {
+      return href.toLowerCase().includes("constituicao-adct") || (label.includes("formato html") && href.toLowerCase().includes("adct"));
+    }
+    return href.toLowerCase().includes("normaatualizada-pl") || label.includes("texto atualizado");
   });
   if (!match) throw new Error("Não foi possível localizar o link HTML oficial específico desta obra.");
   const url = new URL(match.getAttribute("href") || "", landingUrl).toString();
