@@ -235,19 +235,19 @@
     }
     function validateLegalText(documentId,text){
       const checks={
-        'BR-CF-1988':[/CONSTITUIÇÃO DA REPÚBLICA FEDERATIVA DO BRASIL/i, /Art\\.?\\s*1º/i, /EMENDA CONSTITUCIONAL Nº 141|EC Nº 141/i],
-        'BR-ADCT-1988':[/ATO DAS DISPOSIÇÕES CONSTITUCIONAIS TRANSITÓRIAS/i, /Art\\.?\\s*1º/i, /EMENDA CONSTITUCIONAL Nº 136|EC Nº 136/i],
-        'BR-CTB-1997':[/CÓDIGO DE TRÂNSITO BRASILEIRO|LEI Nº 9\\.503/i, /Art\\.?\\s*1º/i],
-        'BR-CP-1940':[/CÓDIGO PENAL|DECRETO-LEI Nº 2\\.848/i, /Art\\.?\\s*1º/i],
-        'BR-CPP-1941':[/CÓDIGO DE PROCESSO PENAL|DECRETO-LEI Nº 3\\.689|3\\.689/i, /Art\\.?\\s*1º/i],
-        'BR-LEP-1984':[/LEI DE EXECUÇÃO PENAL|LEI Nº 7\\.210/i, /Art\\.?\\s*1º/i],
-        'BR-ECA-1990':[/ESTATUTO DA CRIANÇA E DO ADOLESCENTE|LEI Nº 8\\.069|8\\.069/i, /Art\\.?\\s*1º/i],
-        'BR-CC-2002':[/CÓDIGO CIVIL|LEI Nº 10\\.406/i, /Art\\.?\\s*1º/i],
-        'BR-CDC-1990':[/CÓDIGO DE DEFESA DO CONSUMIDOR|LEI Nº 8\\.078|8\\.078/i, /Art\\.?\\s*1º/i],
-        'BR-LMP-2006':[/LEI MARIA DA PENHA|LEI Nº 11\\.340|11\\.340/i, /Art\\.?\\s*1º/i],
-        'BR-ESTATUTO-IDOSO-2003':[/ESTATUTO DA PESSOA IDOSA|LEI Nº 10\\.741/i, /Art\\.?\\s*1º/i],
-        'INT-UDHR-1948-PT':[/DECLARAÇÃO UNIVERSAL DOS DIREITOS HUMANOS/i, /ARTIGO\\s+1\\b/i, /ARTIGO\\s+30\\b/i],
-        'INT-MANDELA-2015-PT':[/REGRAS MÍNIMAS DAS NAÇÕES UNIDAS|REGRAS DE MANDELA/i, /REGRA\\s+1\\b/i, /REGRA\\s+122\\b/i]
+        'BR-CF-1988':[/CONSTITUIÇÃO DA REPÚBLICA FEDERATIVA DO BRASIL/i, /Art\.?\s*1º/i, /EMENDA CONSTITUCIONAL Nº 141|EC Nº 141/i],
+        'BR-ADCT-1988':[/ATO DAS DISPOSIÇÕES CONSTITUCIONAIS TRANSITÓRIAS/i, /Art\.?\s*1º/i, /EMENDA CONSTITUCIONAL Nº 136|EC Nº 136/i],
+        'BR-CTB-1997':[/CÓDIGO DE TRÂNSITO BRASILEIRO|LEI Nº 9\.503/i, /Art\.?\s*1º/i],
+        'BR-CP-1940':[/CÓDIGO PENAL|DECRETO-LEI Nº 2\.848/i, /Art\.?\s*1º/i],
+        'BR-CPP-1941':[/CÓDIGO DE PROCESSO PENAL|DECRETO-LEI Nº 3\.689|3\.689/i, /Art\.?\s*1º/i],
+        'BR-LEP-1984':[/LEI DE EXECUÇÃO PENAL|LEI Nº 7\.210/i, /Art\.?\s*1º/i],
+        'BR-ECA-1990':[/ESTATUTO DA CRIANÇA E DO ADOLESCENTE|LEI Nº 8\.069|8\.069/i, /Art\.?\s*1º/i],
+        'BR-CC-2002':[/CÓDIGO CIVIL|LEI Nº 10\.406/i, /Art\.?\s*1º/i],
+        'BR-CDC-1990':[/CÓDIGO DE DEFESA DO CONSUMIDOR|LEI Nº 8\.078|8\.078/i, /Art\.?\s*1º/i],
+        'BR-LMP-2006':[/LEI MARIA DA PENHA|LEI Nº 11\.340|11\.340/i, /Art\.?\s*1º/i],
+        'BR-ESTATUTO-IDOSO-2003':[/ESTATUTO DA PESSOA IDOSA|LEI Nº 10\.741/i, /Art\.?\s*1º/i],
+        'INT-UDHR-1948-PT':[/DECLARAÇÃO UNIVERSAL DOS DIREITOS HUMANOS/i, /ARTIGO\s+1\b/i, /ARTIGO\s+30\b/i],
+        'INT-MANDELA-2015-PT':[/REGRAS MÍNIMAS DAS NAÇÕES UNIDAS|REGRAS DE MANDELA/i, /REGRA\s+1\b/i, /REGRA\s+122\b/i]
       };
       if(!text||text.length<1200)throw new Error('Texto integral abaixo do mínimo de segurança.');
       const required=checks[documentId];
