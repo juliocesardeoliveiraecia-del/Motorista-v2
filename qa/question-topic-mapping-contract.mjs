@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 const content = fs.readFileSync(new URL('../product-content.js', import.meta.url), 'utf8');
-const migration = fs.readFileSync(new URL('../supabase/migrations/20261111011923_map_motorista_questions_to_topics.sql', import.meta.url), 'utf8');
+const migration = fs.readFileSync(new URL('../supabase/migrations/20261113004306_map_motorista_questions_to_topics.sql', import.meta.url), 'utf8');
 const ids = [...content.matchAll(/id:\s*'([^']+)',\s*subjectId:\s*'([^']+)'/g)].map(m => m[1]);
 const failures = [];
 if (ids.length !== 47 || new Set(ids).size !== 47) failures.push('O pacote deve conter 47 IDs únicos.');
