@@ -38,7 +38,17 @@ A expansão para Código Penal, Código Civil, CPP, CPC, ECA, LGPD, improbidade,
 - Constituição e ADCT — Câmara dos Deputados: https://www2.camara.leg.br/a-camara/atividade-legislativa/legislacao/constituicao1988
   - A página oficial informa a Constituição atualizada até a EC nº 141/2026 e o ADCT até a EC nº 139/2026. O coletor deve resolver o link HTML específico de cada obra a partir dessa página e registrar a revisão encontrada; não presumir que os dois textos tenham a mesma data de atualização.
 - Legislação federal — Portal da Legislação/Planalto: https://www4.planalto.gov.br/legislacao
-- CTB — Planalto: https://www2.camara.leg.br/legin/fed/lei/1997/lei-9503-23-setembro-1997-372348-norma-pl.html
+- CTB — Câmara dos Deputados (página oficial da norma; o coletor resolve o link Texto Atualizado HTML): https://www2.camara.leg.br/legin/fed/lei/1997/lei-9503-23-setembro-1997-372348-norma-pl.html
+- Código Penal — Câmara dos Deputados: https://www2.camara.leg.br/legin/fed/declei/1940-1949/decreto-lei-2848-7-dezembro-1940-412868-norma-pe.html
+- Código de Processo Penal — Câmara dos Deputados: https://www2.camara.leg.br/legin/fed/declei/1940-1949/decreto-lei-3689-3-outubro-1941-322206-norma-pe.html
+- Lei de Execução Penal — Câmara dos Deputados: https://www2.camara.leg.br/legin/fed/lei/1980-1987/lei-7210-11-julho-1984-356938-norma-pl.html
+- ECA — Câmara dos Deputados: https://www2.camara.leg.br/legin/fed/lei/1990/lei-8069-13-julho-1990-372211-norma-pl.html
+- Código Civil — Câmara dos Deputados: https://www2.camara.leg.br/legin/fed/lei/2002/lei-10406-10-janeiro-2002-432893-norma-pl.html
+- Código de Defesa do Consumidor — Câmara dos Deputados: https://www2.camara.leg.br/legin/fed/lei/1990/lei-8078-11-setembro-1990-365086-norma-pl.html
+- Lei Maria da Penha — Câmara dos Deputados: https://www2.camara.leg.br/legin/fed/lei/2006/lei-11340-7-agosto-2006-545133-norma-pl.html
+- Estatuto da Pessoa Idosa — Câmara dos Deputados: https://www2.camara.leg.br/legin/fed/lei/2003/lei-10741-1-outubro-2003-497511-norma-pl.html
+- DUDH — Nações Unidas Brasil: https://brasil.un.org/pt-br/66717-declaracao-universal-dos-direitos-humanos
+- Regras de Mandela — UNODC (PDF; captura textual automática permanece bloqueada até homologação de extração).
 - DUDH em português — Nações Unidas no Brasil: https://brasil.un.org/pt-br/66717-declaracao-universal-dos-direitos-humanos
 
 A fonte primária específica fica registrada no manifesto. Divergências entre portais oficiais bloqueiam a promoção até reconciliação.
