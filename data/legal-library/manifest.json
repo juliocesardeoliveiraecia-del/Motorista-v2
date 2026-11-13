@@ -90,7 +90,7 @@
       "priority": "P0",
       "status": "planned",
       "source": {
-        "authority": "Nações Unidas no Brasil",
+        "authority": "OHCHR / Nações Unidas",
         "kind": "official_international_organization",
         "url": "https://www.ohchr.org/en/UDHR/Documents/UDHR_Translations/por.pdf",
         "latest_revision_note": "Fonte oficial em PDF; extração textual por PDF.js, com validação de título, artigos/regras e reprodução integral antes da publicação.",
@@ -121,7 +121,7 @@
       "norm_number": "9.503",
       "norm_year": 1997,
       "source": {
-        "authority": "Presidência da República — Portal da Legislação",
+        "authority": "Câmara dos Deputados",
         "kind": "official_federal_legislation",
         "url": "https://www2.camara.leg.br/legin/fed/lei/1997/lei-9503-23-setembro-1997-372348-normaatualizada-pl.html",
         "latest_revision_note": "Texto atualizado oficial da Câmara dos Deputados em HTML; a versão só será candidata após verificação do título, integridade e vigência.",
@@ -150,7 +150,7 @@
       "priority": "P1",
       "status": "planned",
       "source": {
-        "authority": "Presidência da República — Planalto",
+        "authority": "Câmara dos Deputados",
         "kind": "official_federal_legislation",
         "url": "https://www2.camara.leg.br/legin/fed/declei/1940-1949/decreto-lei-2848-7-dezembro-1940-412868-normaatualizada-pe.html",
         "latest_revision_note": "Texto atualizado oficial da Câmara dos Deputados em HTML; a versão só será candidata após verificação do título, integridade e vigência.",
@@ -179,7 +179,7 @@
       "priority": "P1",
       "status": "planned",
       "source": {
-        "authority": "Presidência da República — Planalto",
+        "authority": "Câmara dos Deputados",
         "kind": "official_federal_legislation",
         "url": "https://www2.camara.leg.br/legin/fed/declei/1940-1949/decreto-lei-3689-3-outubro-1941-322206-normaatualizada-pe.html",
         "latest_revision_note": "Texto atualizado oficial da Câmara dos Deputados em HTML; a versão só será candidata após verificação do título, integridade e vigência.",
@@ -208,7 +208,7 @@
       "priority": "P1",
       "status": "planned",
       "source": {
-        "authority": "Presidência da República — Planalto",
+        "authority": "Câmara dos Deputados",
         "kind": "official_federal_legislation",
         "url": "https://www2.camara.leg.br/legin/fed/lei/1980-1987/lei-7210-11-julho-1984-356938-normaatualizada-pl.html",
         "latest_revision_note": "Texto atualizado oficial da Câmara dos Deputados em HTML; a versão só será candidata após verificação do título, integridade e vigência.",
@@ -237,7 +237,7 @@
       "priority": "P1",
       "status": "planned",
       "source": {
-        "authority": "Presidência da República — Planalto",
+        "authority": "Câmara dos Deputados",
         "kind": "official_federal_legislation",
         "url": "https://www2.camara.leg.br/legin/fed/lei/1990/lei-8069-13-julho-1990-372211-normaatualizada-pl.html",
         "latest_revision_note": "Texto atualizado oficial da Câmara dos Deputados em HTML; a versão só será candidata após verificação do título, integridade e vigência.",
@@ -266,7 +266,7 @@
       "priority": "P2",
       "status": "planned",
       "source": {
-        "authority": "Presidência da República — Planalto",
+        "authority": "Câmara dos Deputados",
         "kind": "official_federal_legislation",
         "url": "https://www2.camara.leg.br/legin/fed/lei/2002/lei-10406-10-janeiro-2002-432893-normaatualizada-pl.html",
         "latest_revision_note": "Texto atualizado oficial da Câmara dos Deputados em HTML; a versão só será candidata após verificação do título, integridade e vigência.",
@@ -295,7 +295,7 @@
       "priority": "P2",
       "status": "planned",
       "source": {
-        "authority": "Presidência da República — Planalto",
+        "authority": "Câmara dos Deputados",
         "kind": "official_federal_legislation",
         "url": "https://www2.camara.leg.br/legin/fed/lei/1990/lei-8078-11-setembro-1990-365086-normaatualizada-pl.html",
         "latest_revision_note": "Texto atualizado oficial da Câmara dos Deputados em HTML; a versão só será candidata após verificação do título, integridade e vigência.",
@@ -324,7 +324,7 @@
       "priority": "P2",
       "status": "planned",
       "source": {
-        "authority": "Presidência da República — Planalto",
+        "authority": "Câmara dos Deputados",
         "kind": "official_federal_legislation",
         "url": "https://www2.camara.leg.br/legin/fed/lei/2006/lei-11340-7-agosto-2006-545133-normaatualizada-pl.html",
         "latest_revision_note": "Texto atualizado oficial da Câmara dos Deputados em HTML; a versão só será candidata após verificação do título, integridade e vigência.",
@@ -353,7 +353,7 @@
       "priority": "P2",
       "status": "planned",
       "source": {
-        "authority": "Presidência da República — Planalto",
+        "authority": "Câmara dos Deputados",
         "kind": "official_federal_legislation",
         "url": "https://www2.camara.leg.br/legin/fed/lei/2003/lei-10741-1-outubro-2003-497511-normaatualizada-pl.html",
         "latest_revision_note": "Texto atualizado oficial da Câmara dos Deputados em HTML; a versão só será candidata após verificação do título, integridade e vigência.",
@@ -382,7 +382,7 @@
       "priority": "P1",
       "status": "planned",
       "source": {
-        "authority": "Nações Unidas / UNODC",
+        "authority": "UNODC / Nações Unidas",
         "kind": "official_international_organization",
         "url": "https://www.unodc.org/documents/justice-and-prison-reform/Nelson_Mandela_Rules-P-ebook.pdf",
         "latest_revision_note": "Fonte oficial em PDF; extração textual por PDF.js, com validação de título, artigos/regras e reprodução integral antes da publicação.",
