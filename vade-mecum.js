@@ -32,6 +32,7 @@
   // All Brazilian statutes now point directly at the official updated HTML version.
   // UN PDFs are extracted with PDF.js and rechecked byte-for-byte before editorial publication.
   // PDF text is accepted only when the complete expected article/rule range is present.
+  // Constitution and ADCT revision gates follow the latest amendment applicable to each text separately.
   const LOCAL_DB_NAME='doctor-vade-mecum-offline-v1';
   const LOCAL_STORE='documents';
   function openLocalDb(){
