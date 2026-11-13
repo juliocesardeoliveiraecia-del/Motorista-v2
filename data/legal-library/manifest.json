@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "library_id": "doctor-vade-mecum-br",
-  "library_name": "Vade-Mécum Doctor",
+  "library_name": "Vade-Mécum Doctor — Biblioteca Jurídica",
   "language": "pt-BR",
   "access_policy": "free_official_sources_only",
   "update_policy": {
@@ -9,7 +9,16 @@
     "full_integrity_audit_days": 7,
     "urgent_change_handling": "priority_candidate_validation",
     "never_replace_last_valid_version_on_failure": true,
-    "show_last_verified_at": true
+    "show_last_verified_at": true,
+    "source_refresh": "check_official_source_etag_last_modified_and_sha256",
+    "publish_gate": [
+      "complete_text_capture",
+      "official_source_provenance",
+      "sha256_integrity",
+      "structured_navigation",
+      "offline_search_test",
+      "legal_editorial_review"
+    ]
   },
   "documents": [
     {
@@ -22,9 +31,21 @@
       "jurisdiction": "BR",
       "priority": "P0",
       "status": "planned",
-      "source": {"authority": "Câmara dos Deputados", "kind": "official_government_portal", "url": "https://www2.camara.leg.br/atividade-legislativa/legislacao/constituicao1988"},
-      "cover": {"asset": null, "style_key": "constitution-navy-gold", "original_doctor_artwork_required": true},
-      "offline": {"eligible": true, "preferred_format": "structured_text", "pdf_is_optional_companion": true},
+      "source": {
+        "authority": "Câmara dos Deputados",
+        "kind": "official_government_portal",
+        "url": "https://www2.camara.leg.br/atividade-legislativa/legislacao/constituicao1988"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "constitution-navy-gold",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
       "versions": []
     },
     {
@@ -37,9 +58,21 @@
       "jurisdiction": "BR",
       "priority": "P0",
       "status": "planned",
-      "source": {"authority": "Câmara dos Deputados", "kind": "official_government_portal", "url": "https://www2.camara.leg.br/atividade-legislativa/legislacao/constituicao1988"},
-      "cover": {"asset": null, "style_key": "constitution-adct-blue", "original_doctor_artwork_required": true},
-      "offline": {"eligible": true, "preferred_format": "structured_text", "pdf_is_optional_companion": true},
+      "source": {
+        "authority": "Câmara dos Deputados",
+        "kind": "official_government_portal",
+        "url": "https://www2.camara.leg.br/atividade-legislativa/legislacao/constituicao1988"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "constitution-adct-blue",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
       "versions": []
     },
     {
@@ -52,9 +85,21 @@
       "jurisdiction": "INTERNATIONAL",
       "priority": "P0",
       "status": "planned",
-      "source": {"authority": "Nações Unidas no Brasil", "kind": "official_international_organization", "url": "https://brasil.un.org/pt-br/66717-declaracao-universal-dos-direitos-humanos"},
-      "cover": {"asset": null, "style_key": "human-rights-indigo-gold", "original_doctor_artwork_required": true},
-      "offline": {"eligible": true, "preferred_format": "structured_text", "pdf_is_optional_companion": true},
+      "source": {
+        "authority": "Nações Unidas no Brasil",
+        "kind": "official_international_organization",
+        "url": "https://brasil.un.org/pt-br/66717-declaracao-universal-dos-direitos-humanos"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "human-rights-indigo-gold",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
       "versions": []
     },
     {
@@ -69,17 +114,286 @@
       "status": "planned",
       "norm_number": "9.503",
       "norm_year": 1997,
-      "source": {"authority": "Presidência da República — Portal da Legislação", "kind": "official_federal_legislation", "url": "https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm"},
-      "cover": {"asset": null, "style_key": "traffic-green-black-gold", "original_doctor_artwork_required": true},
-      "offline": {"eligible": true, "preferred_format": "structured_text", "pdf_is_optional_companion": true},
+      "source": {
+        "authority": "Presidência da República — Portal da Legislação",
+        "kind": "official_federal_legislation",
+        "url": "https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "traffic-green-black-gold",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
+      "versions": []
+    },
+    {
+      "document_id": "BR-CP-1940",
+      "slug": "codigo-penal",
+      "official_title": "Decreto-Lei nº 2.848, de 7 de dezembro de 1940",
+      "display_title": "Código Penal",
+      "category": "criminal_law",
+      "document_type": "federal_decree_law",
+      "jurisdiction": "BR",
+      "priority": "P1",
+      "status": "planned",
+      "source": {
+        "authority": "Presidência da República — Planalto",
+        "kind": "official_federal_legislation",
+        "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "legal-reference-neutral",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
+      "versions": []
+    },
+    {
+      "document_id": "BR-CPP-1941",
+      "slug": "codigo-processo-penal",
+      "official_title": "Decreto-Lei nº 3.689, de 3 de outubro de 1941",
+      "display_title": "Código de Processo Penal",
+      "category": "criminal_law",
+      "document_type": "federal_decree_law",
+      "jurisdiction": "BR",
+      "priority": "P1",
+      "status": "planned",
+      "source": {
+        "authority": "Presidência da República — Planalto",
+        "kind": "official_federal_legislation",
+        "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del3689.htm"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "legal-reference-neutral",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
+      "versions": []
+    },
+    {
+      "document_id": "BR-LEP-1984",
+      "slug": "lei-execucao-penal",
+      "official_title": "Lei nº 7.210, de 11 de julho de 1984",
+      "display_title": "Lei de Execução Penal",
+      "category": "criminal_law",
+      "document_type": "federal_law_compiled",
+      "jurisdiction": "BR",
+      "priority": "P1",
+      "status": "planned",
+      "source": {
+        "authority": "Presidência da República — Planalto",
+        "kind": "official_federal_legislation",
+        "url": "https://www.planalto.gov.br/ccivil_03/leis/l7210.htm"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "legal-reference-neutral",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
+      "versions": []
+    },
+    {
+      "document_id": "BR-ECA-1990",
+      "slug": "estatuto-crianca-adolescente",
+      "official_title": "Lei nº 8.069, de 13 de julho de 1990",
+      "display_title": "Estatuto da Criança e do Adolescente",
+      "category": "special_legislation",
+      "document_type": "federal_law_compiled",
+      "jurisdiction": "BR",
+      "priority": "P1",
+      "status": "planned",
+      "source": {
+        "authority": "Presidência da República — Planalto",
+        "kind": "official_federal_legislation",
+        "url": "https://www.planalto.gov.br/ccivil_03/leis/l8069compilado.htm"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "legal-reference-neutral",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
+      "versions": []
+    },
+    {
+      "document_id": "BR-CC-2002",
+      "slug": "codigo-civil",
+      "official_title": "Lei nº 10.406, de 10 de janeiro de 2002",
+      "display_title": "Código Civil",
+      "category": "civil_law",
+      "document_type": "federal_law_compiled",
+      "jurisdiction": "BR",
+      "priority": "P2",
+      "status": "planned",
+      "source": {
+        "authority": "Presidência da República — Planalto",
+        "kind": "official_federal_legislation",
+        "url": "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "legal-reference-neutral",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
+      "versions": []
+    },
+    {
+      "document_id": "BR-CDC-1990",
+      "slug": "codigo-defesa-consumidor",
+      "official_title": "Lei nº 8.078, de 11 de setembro de 1990",
+      "display_title": "Código de Defesa do Consumidor",
+      "category": "special_legislation",
+      "document_type": "federal_law_compiled",
+      "jurisdiction": "BR",
+      "priority": "P2",
+      "status": "planned",
+      "source": {
+        "authority": "Presidência da República — Planalto",
+        "kind": "official_federal_legislation",
+        "url": "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "legal-reference-neutral",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
+      "versions": []
+    },
+    {
+      "document_id": "BR-LMP-2006",
+      "slug": "lei-maria-penha",
+      "official_title": "Lei nº 11.340, de 7 de agosto de 2006",
+      "display_title": "Lei Maria da Penha",
+      "category": "special_legislation",
+      "document_type": "federal_law_compiled",
+      "jurisdiction": "BR",
+      "priority": "P2",
+      "status": "planned",
+      "source": {
+        "authority": "Presidência da República — Planalto",
+        "kind": "official_federal_legislation",
+        "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11340.htm"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "legal-reference-neutral",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
+      "versions": []
+    },
+    {
+      "document_id": "BR-ESTATUTO-IDOSO-2003",
+      "slug": "estatuto-pessoa-idosa",
+      "official_title": "Lei nº 10.741, de 1º de outubro de 2003",
+      "display_title": "Estatuto da Pessoa Idosa",
+      "category": "special_legislation",
+      "document_type": "federal_law_compiled",
+      "jurisdiction": "BR",
+      "priority": "P2",
+      "status": "planned",
+      "source": {
+        "authority": "Presidência da República — Planalto",
+        "kind": "official_federal_legislation",
+        "url": "https://www.planalto.gov.br/ccivil_03/leis/2003/l10.741.htm"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "legal-reference-neutral",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
+      "versions": []
+    },
+    {
+      "document_id": "INT-MANDELA-2015-PT",
+      "slug": "regras-de-mandela",
+      "official_title": "Regras Mínimas das Nações Unidas para o Tratamento de Presos (Regras de Mandela)",
+      "display_title": "Regras de Mandela",
+      "category": "human_rights_international_documents",
+      "document_type": "united_nations_standard",
+      "jurisdiction": "INTERNATIONAL",
+      "priority": "P1",
+      "status": "planned",
+      "source": {
+        "authority": "Nações Unidas / UNODC",
+        "kind": "official_international_organization",
+        "url": "https://www.unodc.org/documents/justice-and-prison-reform/Nelson_Mandela_Rules-P-ebook.pdf"
+      },
+      "cover": {
+        "asset": null,
+        "style_key": "legal-reference-neutral",
+        "original_doctor_artwork_required": true
+      },
+      "offline": {
+        "eligible": true,
+        "preferred_format": "structured_text",
+        "pdf_is_optional_companion": true
+      },
       "versions": []
     }
   ],
   "product_collections": [
     {
       "product_slug": "motorista-legislativo-ipameri",
-      "document_ids": ["BR-CF-1988", "BR-ADCT-1988", "BR-CTB-1997", "INT-UDHR-1948-PT"],
-      "notes": "Coleção inicial de estruturação; pertinência de cada documento ao edital deve ser confirmada antes de publicação."
+      "document_ids": [
+        "BR-CF-1988",
+        "BR-ADCT-1988",
+        "BR-CTB-1997",
+        "INT-UDHR-1948-PT",
+        "BR-CP-1940",
+        "BR-CPP-1941",
+        "BR-LEP-1984",
+        "BR-ECA-1990",
+        "BR-CC-2002",
+        "BR-CDC-1990",
+        "BR-LMP-2006",
+        "BR-ESTATUTO-IDOSO-2003",
+        "INT-MANDELA-2015-PT"
+      ],
+      "notes": "Acervo ampliado em trilhas temáticas. Obras fora do escopo direto do edital ficam em biblioteca complementar; só publicar texto offline após captura integral, conferência de integridade, versão e validação editorial/jurídica."
     }
   ]
 }
