@@ -23,6 +23,9 @@ assert.ok(sync.includes('ALLOWED_HOSTS'), 'source capture must enforce official 
 const brazilianLawIds = ['BR-CF-1988','BR-ADCT-1988','BR-CTB-1997','BR-CP-1940','BR-CPP-1941','BR-LEP-1984','BR-ECA-1990','BR-CC-2002','BR-CDC-1990','BR-LMP-2006','BR-ESTATUTO-IDOSO-2003'];
 assert.ok(brazilianLawIds.every(id => manifest.documents.find(doc => doc.document_id === id)?.source?.url?.includes('normaatualizada')), 'all Brazilian law sources must point directly to updated official HTML');
 assert.ok(sync.includes('expectedTitles'), 'each Brazilian code must be checked against its expected official title');
+assert.ok(sync.includes('EC Nº 141'), 'Constitution capture must prove the current EC 141 revision');
+assert.ok(sync.includes('EC Nº 136'), 'ADCT capture must prove its latest applicable EC 136 revision');
+assert.ok(sync.includes('REGRA\\s+122'), 'Mandela PDF capture must prove the full 122-rule range');
 assert.ok(sync.includes('sha256(source.rawBytes)'), 'source capture must hash original bytes');
 assert.ok(sync.includes('source_bytes_base64: encodeBase64(source.rawBytes)'), 'source package must preserve exact original bytes');
 assert.ok(publish.includes('await digest(text)'), 'publication must verify the normalized text SHA-256');
