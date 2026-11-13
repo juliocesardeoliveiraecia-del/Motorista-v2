@@ -6,19 +6,15 @@ for (let level = 1; level <= 10; level += 1) {
   const asset = './assets/doctor/evolution/doctor-level-' + String(level).padStart(2, '0') + '.svg';
   must('Doctor evolution level ' + level + ' is precached', sw.includes(asset));
 }
-const coreVersion = JSON.parse(fs.readFileSync('version.json', 'utf8')).version;
-const manifestVersion = JSON.parse(fs.readFileSync('manifest.json', 'utf8')).version;
-for (const asset of [
-  './manifest.json?v=' + manifestVersion,
-  './doctor-platform-bridge.js?v=' + coreVersion + '-platform-1',
-  './product-context.js?v=' + coreVersion + '-context-1',
-  './product-content.js?v=' + coreVersion,
-  './doctor-core-quality.js?v=' + coreVersion,
-  './calculator-scientific.js?v=' + coreVersion,
-  './assets/icons/icon-generator.js?v=1.3.0',
-  './assets/icons/products/motorista-legislativo.svg?v=1.3.0',
-  './assets/images/motorista-legislativo-banner.svg?v=20261028-2'
-]) must('Exact versioned request is precached: ' + asset, sw.includes(asset));
+const index=fs.readFileSync('index.html','utf8');
+const exactRequests=[...index.matchAll(/(?:src|href)="([^"]+\\?v=[^"]+)"/g)]
+  .map(match=>match[1].replace(/^\\.\\//,''))
+  .filter(path=>!/^https?:\\/\\//i.test(path));
+for(const asset of exactRequests){
+  const normalized=asset.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&');
+  const present=sw.includes(asset)||sw.includes('./'+asset);
+  must('Exact versioned request from index is precached: '+asset,present);
+}
 must('Product hero and edital artwork are precached', sw.includes('./assets/images/ipameri-chamber-green.svg?v=20261028-2') && sw.includes('./assets/images/motorista-legislativo-edital.svg'));
 must('Critical app shell is explicitly declared',/const CORE_ASSETS\s*=\s*\[[\s\S]*?\.\/index\.html[\s\S]*?\.\/product-content\.js[\s\S]*?\]/.test(sw));
 must('Offline update reuses assets from the previous app cache',/previousNames[\s\S]*?previousResponse\(asset\)[\s\S]*?cache\.put\(asset, response\.clone\(\)\)/.test(sw));
