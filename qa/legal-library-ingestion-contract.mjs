@@ -26,6 +26,9 @@ assert.ok(sync.includes('expectedTitles'), 'each Brazilian code must be checked 
 assert.ok(sync.includes('EC Nº 141'), 'Constitution capture must prove the current EC 141 revision');
 assert.ok(sync.includes('EC Nº 136'), 'ADCT capture must prove its latest applicable EC 136 revision');
 assert.ok(sync.includes('REGRA\\s+122'), 'Mandela PDF capture must prove the full 122-rule range');
+const app = fs.readFileSync('vade-mecum.js', 'utf8');
+assert.ok(app.includes('initializeEditorialAccess') && app.includes('vade-admin-review'), 'admin-only editorial console must be hidden from students and shown only after is_admin');
+assert.ok(app.includes("action:'preview'") && app.includes("action,version_id:versionId,review_note:note"), 'editorial console must use the protected preview/decision Edge Function');
 assert.ok(sync.includes('sha256(source.rawBytes)'), 'source capture must hash original bytes');
 assert.ok(sync.includes('source_bytes_base64: encodeBase64(source.rawBytes)'), 'source package must preserve exact original bytes');
 assert.ok(publish.includes('await digest(text)'), 'publication must verify the normalized text SHA-256');
@@ -34,6 +37,9 @@ assert.ok(sync.includes('extractPdfText(rawBytes)'), 'official PDF sources must 
 assert.ok(sync.includes('source_format: source.contentType.includes("pdf")'), 'source package must record HTML or PDF format');
 assert.ok(publish.includes('await extractPdfText(sourceBytes)'), 'publication must reproduce PDF text from original bytes');
 assert.ok(publish.includes('reproducedText !== text'), 'publication must reproduce the extracted text before approval');
+assert.ok(publish.includes('action === "preview"') && publish.includes('action === "reject"'), 'admin review must support verified preview and explicit rejection');
+assert.ok(publish.includes('action === "approve"') && publish.includes('action === "publish"'), 'approval and publication must be separate explicit actions');
+assert.ok(publish.includes('next_offset: nextOffset'), 'admin preview must support complete text review in chunks');
 assert.ok(publish.includes('userClient.rpc("publish_legal_document_version"'), 'publication must use the atomic RLS-protected RPC');
 assert.ok(publish.includes('version.status !== "approved"'), 'publication must require prior editorial approval');
 assert.ok(publish.includes('sourceMeta?.url !== version.source_url'), 'publication must verify source provenance');
