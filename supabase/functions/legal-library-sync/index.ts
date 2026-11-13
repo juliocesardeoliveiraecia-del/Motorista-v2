@@ -213,7 +213,7 @@ Deno.serve(async (req: Request) => {
       const landing = await fetchOfficial(doc.official_source_url);
       const resolved = await resolveDocumentSource(doc, landing.html, landing.finalUrl);
       const source = resolved.html
-        ? { html: resolved.html, finalUrl: resolved.url, etag: landing.etag, lastModified: landing.lastModified, contentType: landing.contentType }
+        ? { html: resolved.html, rawBytes: landing.rawBytes, finalUrl: resolved.url, etag: landing.etag, lastModified: landing.lastModified, contentType: landing.contentType, charset: landing.charset }
         : await fetchOfficial(resolved.url);
       const extracted = extractHtml(source.html);
       validateExtractedText(doc, extracted);
