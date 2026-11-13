@@ -41,6 +41,7 @@ create table if not exists public.legal_document_versions (
   published_at timestamptz,
   created_at timestamptz not null default now(),
   unique(document_id, version_label),
+  unique(document_id, id),
   unique(storage_path),
   check (content_sha256 is null or content_sha256 ~ '^[a-f0-9]{64}$')
 );
@@ -49,8 +50,48 @@ alter table public.legal_documents
   drop constraint if exists legal_documents_current_version_fk;
 alter table public.legal_documents
   add constraint legal_documents_current_version_fk
-  foreign key (current_version_id) references public.legal_document_versions(id)
-  on delete set null;
+  foreign key (document_id, current_version_id)
+  references public.legal_document_versions(document_id, id)
+  on delete restrict;
+
+-- A published version is immutable: corrections create a new version instead of rewriting history.
+create or replace function public.prevent_published_legal_version_mutation()
+returns trigger
+language plpgsql
+as $
+begin
+  if tg_op = 'DELETE' then
+    if old.status in ('published','superseded') then
+      raise exception 'Published legal versions cannot be deleted; create a new version instead';
+    end if;
+    return old;
+  end if;
+
+  if old.status in ('published','superseded') and (
+    new.document_id is distinct from old.document_id or
+    new.version_label is distinct from old.version_label or
+    new.source_url is distinct from old.source_url or
+    new.source_retrieved_at is distinct from old.source_retrieved_at or
+    new.source_published_at is distinct from old.source_published_at or
+    new.effective_from is distinct from old.effective_from or
+    new.effective_until is distinct from old.effective_until or
+    new.source_etag is distinct from old.source_etag or
+    new.source_last_modified is distinct from old.source_last_modified or
+    new.content_sha256 is distinct from old.content_sha256 or
+    new.storage_path is distinct from old.storage_path or
+    new.content_format is distinct from old.content_format or
+    new.change_summary is distinct from old.change_summary
+  ) then
+    raise exception 'Published legal version content and provenance are immutable';
+  end if;
+  return new;
+end;
+$;
+
+drop trigger if exists legal_versions_immutable_guard on public.legal_document_versions;
+create trigger legal_versions_immutable_guard
+  before update or delete on public.legal_document_versions
+  for each row execute function public.prevent_published_legal_version_mutation();
 
 create table if not exists public.legal_update_runs (
   id uuid primary key default gen_random_uuid(),
