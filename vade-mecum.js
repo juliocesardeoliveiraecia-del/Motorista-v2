@@ -23,6 +23,7 @@
   ];
   // Student sync accepts only published, hash-verified packages; failed updates never replace local last-known-good text.
   // Legal packages are stored per document in IndexedDB; no shell-wide pre-cache of the entire legal corpus.
+  // Server-side read policies are consolidated; the legal sync module never widens student access.
   const LOCAL_DB_NAME='doctor-vade-mecum-offline-v1';
   const LOCAL_STORE='documents';
   function openLocalDb(){
