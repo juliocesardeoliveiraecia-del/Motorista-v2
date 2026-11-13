@@ -11,7 +11,6 @@ const exactRequests=[...index.matchAll(/(?:src|href)="([^"]+\\?v=[^"]+)"/g)]
   .map(match=>match[1].replace(/^\\.\\//,''))
   .filter(path=>!/^https?:\\/\\//i.test(path));
 for(const asset of exactRequests){
-  const normalized=asset.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&');
   const present=sw.includes(asset)||sw.includes('./'+asset);
   must('Exact versioned request from index is precached: '+asset,present);
 }
