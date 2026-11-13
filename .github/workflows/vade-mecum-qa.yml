@@ -10,6 +10,7 @@ on:
       - "data/legal-library/**"
       - "supabase/migrations/**"
       - "supabase/functions/legal-library-sync/**"
+      - "supabase/functions/legal-library-publish/**"
       - "qa/legal-library-ingestion-contract.mjs"
       - "docs/VADE-MECUM-DOCTOR-ARCHITECTURE.md"
       - "docs/VADE-MECUM-DOCTOR-RELEASE-PACKAGE.md"
@@ -26,6 +27,7 @@ on:
       - "data/legal-library/**"
       - "supabase/migrations/**"
       - "supabase/functions/legal-library-sync/**"
+      - "supabase/functions/legal-library-publish/**"
       - "qa/legal-library-ingestion-contract.mjs"
       - "docs/VADE-MECUM-DOCTOR-ARCHITECTURE.md"
       - "docs/VADE-MECUM-DOCTOR-RELEASE-PACKAGE.md"
@@ -52,4 +54,4 @@ jobs:
         with:
           deno-version: v2.x
       - name: Type-check Supabase legal library Edge Function
-        run: deno check supabase/functions/legal-library-sync/index.ts
+        run: deno check supabase/functions/legal-library-sync/index.ts supabase/functions/legal-library-publish/index.ts
