@@ -395,7 +395,7 @@ Deno.serve(async (req: Request) => {
     changes_detected: changes,
     candidates_created: candidates,
     errors: results.filter((item) => item.status === "blocked"),
-    summary: { initiated_by: userData.user.id, results },
+    summary: { initiated_by: initiatedBy, trigger_type: triggerType, mode: payload.mode || "manual", results },
   }).eq("id", run.id);
 
   return response({
