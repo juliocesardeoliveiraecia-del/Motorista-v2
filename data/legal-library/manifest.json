@@ -34,7 +34,9 @@
       "source": {
         "authority": "Câmara dos Deputados",
         "kind": "official_government_portal",
-        "url": "https://www2.camara.leg.br/a-camara/atividade-legislativa/legislacao/constituicao1988"
+        "url": "https://www2.camara.leg.br/a-camara/atividade-legislativa/legislacao/constituicao1988",
+        "latest_revision_note": "Página oficial consultada em 2026-11-13: Constituição atualizada até a Emenda Constitucional nº 141/2026.",
+        "latest_revision_checked_at": "2026-11-13"
       },
       "cover": {
         "asset": null,
@@ -61,7 +63,9 @@
       "source": {
         "authority": "Câmara dos Deputados",
         "kind": "official_government_portal",
-        "url": "https://www2.camara.leg.br/a-camara/atividade-legislativa/legislacao/constituicao1988"
+        "url": "https://www2.camara.leg.br/a-camara/atividade-legislativa/legislacao/constituicao1988",
+        "latest_revision_note": "Página oficial consultada em 2026-11-13: ADCT atualizado até a Emenda Constitucional nº 139/2026.",
+        "latest_revision_checked_at": "2026-11-13"
       },
       "cover": {
         "asset": null,
