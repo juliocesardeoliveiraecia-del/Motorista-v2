@@ -2,7 +2,7 @@
 const CACHE_NAME = 'motorista-ipameri-v1.13.24-vade-mecum-offline-sync';
 const ASSETS = [
   './', './index.html', './manifest.json?v=1.13.3-platform-bridge', './version.json',
-  './production-config.js?v=1.12.19', './doctor-platform-bridge.js?v=1.12.20-platform-6', './legal-search.js?v=1.2.1',
+  './production-config.js?v=1.12.19', './doctor-platform-bridge.js?v=1.12.19-platform-6', './legal-search.js?v=1.2.1',
   './vade-mecum.js?v=1.1.0',
   './product-context.js?v=2026.3-appid3', './product-content.js?v=2026.3',
   './doctor-core-quality.js?v=1.12.19', './calculator-scientific.js?v=1.12.19',
@@ -25,7 +25,7 @@ const ASSETS = [
 ];
 const CORE_ASSETS = [
   './index.html', './manifest.json?v=1.13.3-platform-bridge', './version.json',
-  './production-config.js?v=1.12.19', './doctor-platform-bridge.js?v=1.12.20-platform-6',
+  './production-config.js?v=1.12.19', './doctor-platform-bridge.js?v=1.12.19-platform-6',
   './product-context.js?v=2026.3-appid3', './product-content.js?v=2026.3',
   './doctor-core-quality.js?v=1.12.19', './calculator-scientific.js?v=1.12.19',
   './assets/icons/icon-generator.js?v=1.3.0', './legal-search.js?v=1.2.1',
