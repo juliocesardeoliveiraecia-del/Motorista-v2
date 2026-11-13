@@ -7,6 +7,7 @@ const migration = fs.readFileSync('supabase/migrations/20261113170000_doctor_sha
 const hardening = fs.readFileSync('supabase/migrations/20261113195000_harden_legal_library_policies_and_indexes.sql', 'utf8');
 const ctbSourceUpdate = fs.readFileSync('supabase/migrations/20261113203000_update_ctb_official_source.sql', 'utf8');
 const remainingSourcesUpdate = fs.readFileSync('supabase/migrations/20261113210000_update_remaining_official_sources.sql', 'utf8');
+const directSourcesUpdate = fs.readFileSync('supabase/migrations/20261113213000_use_direct_updated_legal_text_urls.sql', 'utf8');
 const db = new PGlite();
 
 try {
@@ -27,6 +28,7 @@ try {
   await db.exec(hardening);
   await db.exec(ctbSourceUpdate);
   await db.exec(remainingSourcesUpdate);
+  await db.exec(directSourcesUpdate);
 
   const tables = await db.query("select table_name from information_schema.tables where table_schema='public' and table_name in ('legal_documents','legal_document_versions','legal_update_runs','legal_change_events')");
   assert.equal(tables.rows.length, 4, 'all four legal library tables must be created');
