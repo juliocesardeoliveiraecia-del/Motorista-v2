@@ -143,6 +143,14 @@ function validateExtractedText(doc: LegalDocument, text: string) {
   }
 }
 
+function encodeBase64(bytes: Uint8Array) {
+  let binary = "";
+  for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+  }
+  return btoa(binary);
+}
+
 async function sha256(value: string | Uint8Array) {
   const bytes = typeof value === "string" ? new TextEncoder().encode(value) : value;
   const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
@@ -252,6 +260,7 @@ Deno.serve(async (req: Request) => {
           sha256_raw: rawHash,
         },
         source_html: source.html,
+        source_bytes_base64: encodeBase64(source.rawBytes),
         normalized_text: extracted,
         sha256_text: textHash,
         extraction: { method: "DOMParser.textContent", pipeline_version: "1.0.0" },
