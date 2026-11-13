@@ -146,6 +146,127 @@ create policy "Authenticated users can read published legal versions"
 
 -- Operational runs and editorial events are server-side only.
 revoke all on public.legal_update_runs, public.legal_change_events from anon, authenticated;
+
+-- Editorial access is restricted to the existing Doctor master-admin permission.
+drop policy if exists "Admins can read all legal versions" on public.legal_document_versions;
+create policy "Admins can read all legal versions"
+  on public.legal_document_versions for select to authenticated
+  using (public.is_admin());
+
+drop policy if exists "Admins can update legal documents" on public.legal_documents;
+create policy "Admins can update legal documents"
+  on public.legal_documents for update to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+drop policy if exists "Admins can update legal versions" on public.legal_document_versions;
+create policy "Admins can update legal versions"
+  on public.legal_document_versions for update to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+drop policy if exists "Admins can read legal update runs" on public.legal_update_runs;
+create policy "Admins can read legal update runs"
+  on public.legal_update_runs for select to authenticated
+  using (public.is_admin());
+
+drop policy if exists "Admins can read legal change events" on public.legal_change_events;
+create policy "Admins can read legal change events"
+  on public.legal_change_events for select to authenticated
+  using (public.is_admin());
+
+drop policy if exists "Admins can insert legal change events" on public.legal_change_events;
+create policy "Admins can insert legal change events"
+  on public.legal_change_events for insert to authenticated
+  with check (public.is_admin());
+
+grant update on public.legal_documents, public.legal_document_versions to authenticated;
+grant select on public.legal_update_runs, public.legal_change_events to authenticated;
+grant insert on public.legal_change_events to authenticated;
+
+-- Publication is atomic: the previous active version is superseded and the new
+-- approved version becomes current in the same database transaction.
+create or replace function public.publish_legal_document_version(
+  p_version_id uuid,
+  p_review_note text default null
+)
+returns jsonb
+language plpgsql
+security invoker
+set search_path = public, pg_temp
+as $
+declare
+  selected_version public.legal_document_versions%rowtype;
+  previous_version_id uuid;
+begin
+  if auth.uid() is null or not public.is_admin() then
+    raise exception 'Doctor administrator permission required';
+  end if;
+
+  select * into selected_version
+  from public.legal_document_versions
+  where id = p_version_id
+  for update;
+
+  if not found then
+    raise exception 'Legal version not found';
+  end if;
+  if selected_version.status <> 'approved' then
+    raise exception 'Only an approved legal version can be published';
+  end if;
+  if selected_version.storage_path is null or selected_version.content_sha256 is null then
+    raise exception 'Legal version is missing its verified content package';
+  end if;
+
+  select current_version_id into previous_version_id
+  from public.legal_documents
+  where document_id = selected_version.document_id and is_active = true
+  for update;
+
+  if not found then
+    raise exception 'Active legal document not found';
+  end if;
+
+  if previous_version_id is not null and previous_version_id <> selected_version.id then
+    update public.legal_document_versions
+    set status = 'superseded'
+    where id = previous_version_id and status = 'published';
+  end if;
+
+  update public.legal_document_versions
+  set status = 'published',
+      published_at = now(),
+      reviewed_by = coalesce(reviewed_by, auth.uid()::text),
+      reviewed_at = coalesce(reviewed_at, now()),
+      change_summary = change_summary || jsonb_build_object(
+        'publication_review_note', left(coalesce(p_review_note, ''), 2000),
+        'published_by', auth.uid()::text
+      )
+  where id = selected_version.id;
+
+  update public.legal_documents
+  set current_version_id = selected_version.id,
+      updated_at = now()
+  where document_id = selected_version.document_id;
+
+  insert into public.legal_change_events
+    (document_id, version_id, event_type, severity, details)
+  values
+    (selected_version.document_id, selected_version.id, 'published', 'info',
+     jsonb_build_object('published_by', auth.uid()::text, 'review_note', left(coalesce(p_review_note, ''), 2000)));
+
+  return jsonb_build_object(
+    'document_id', selected_version.document_id,
+    'version_id', selected_version.id,
+    'status', 'published',
+    'previous_version_id', previous_version_id
+  );
+end;
+$;
+
+revoke all on function public.publish_legal_document_version(uuid, text) from public, anon;
+grant execute on function public.publish_legal_document_version(uuid, text) to authenticated;
+
 revoke insert, update, delete on public.legal_documents, public.legal_document_versions from anon, authenticated;
 grant select on public.legal_documents, public.legal_document_versions to authenticated;
 
