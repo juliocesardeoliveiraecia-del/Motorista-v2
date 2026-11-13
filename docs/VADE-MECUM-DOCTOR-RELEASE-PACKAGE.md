@@ -1,7 +1,7 @@
 # Vade-Mécum Doctor — pacote de integração (pré-produção)
 
 **Estado:** preparado para revisão visual e integração futura; NÃO aprovado para publicação em produção.
-**Aplicativo consumidor:** Motorista Legislativo.
+**Proprietário funcional:** Doctor Core (módulo compartilhado). **Primeiro consumidor/homologação:** Motorista Legislativo.
 **Regra de custo:** sem novas assinaturas, serviços pagos ou aumento de plano.
 
 ## Conteúdo do pacote
@@ -9,7 +9,7 @@
 - Interface e leitor inicial: `vade-mecum.js`.
 - Integração da tela no app: `index.html`.
 - Cache do módulo no shell offline: `service-worker.js`.
-- Catálogo e política de atualização: `data/legal-library/manifest.json`.
+- Catálogo e política de atualização: `data/legal-library/manifest.json` (piloto/primeiro consumidor; catálogo canônico compartilhado será mantido no Core).
 - Contrato de arquitetura: `docs/VADE-MECUM-DOCTOR-ARCHITECTURE.md`.
 - Validadores e QA: `tools/validate-legal-library.mjs`, `qa/legal-library-contract.mjs`, `qa/vade-mecum-contract.mjs`.
 
@@ -44,3 +44,12 @@
 ## Próximo lote de acervo
 
 O piloto de quatro obras não é limite da biblioteca. Próximos lotes devem incluir, conforme pertinência a editais e validação de fontes: Código Penal, Código Civil, CPP, CPC, CTN, CDC, CLT, ECA, LGPD, licitações e contratos, improbidade administrativa, processo administrativo, legislação de servidores, legislação eleitoral, ambiental, previdenciária, educacional, segurança pública, normas estaduais e municipais. Cada obra será cadastrada como planejada até a ingestão e validação oficial.
+
+
+## Regra de reutilização em todos os aplicativos
+
+Este pacote não autoriza criar uma versão exclusiva do Vade-Mécum para o Motorista. O Motorista é o primeiro consumidor de homologação do módulo compartilhado Doctor Core. Antes de produzir novos apps em escala, o runtime deve ser publicado como módulo Core versionado, com contrato estável e testes de compatibilidade. Cada produto fornece somente sua configuração/coleção documental e contexto de edital; não copia a lógica da ferramenta. Conteúdo e dados privados do estudante permanecem segregados.
+
+## Política de release sem custo
+
+O pacote deve ser integrado ao release agrupado do Motorista, e depois disponibilizado aos demais apps por atualização coordenada do Core, respeitando as cotas gratuitas. Não criar deploys individuais de teste nem publicar o módulo parcialmente. A promoção exige aprovação visual do usuário, textos oficiais ingeridos e todos os gates do contrato.
