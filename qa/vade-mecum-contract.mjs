@@ -8,27 +8,25 @@ const windowStub={};
 vm.runInNewContext(source,{window:windowStub});
 const library=windowStub.DoctorVadeMecum;
 assert.ok(library,'Vade-Mécum module must expose its public interface');
-assert.equal(typeof library.render,'function');
-assert.equal(typeof library.bind,'function');
-assert.equal(typeof library.search,'function');
+for (const method of ['render','bind','search','showDocument','getCatalog']) assert.equal(typeof library[method],'function');
 
 const catalog=library.getCatalog();
-assert.equal(catalog.length,4,'initial shelf catalog must contain four planned works');
-assert.ok(catalog.some(d=>d.id==='BR-CF-1988'));
-assert.ok(catalog.some(d=>d.id==='BR-ADCT-1988'));
-assert.ok(catalog.some(d=>d.id==='BR-CTB-1997'));
+assert.equal(catalog.length,4,'initial pilot catalog must contain four planned works');
+for (const id of ['BR-CF-1988','BR-ADCT-1988','BR-CTB-1997','INT-UDHR-1948-PT']) assert.ok(catalog.some(d=>d.id===id), 'missing '+id);
 assert.ok(catalog.some(d=>d.id==='INT-UDHR-1948-PT'&&d.category==='Direitos Humanos'));
-
-const ctb=library.search('trânsito');
-assert.ok(ctb.some(d=>d.id==='BR-CTB-1997'),'search should find CTB from the local catalog');
-const rights=library.search('direitos humanos');
-assert.ok(rights.some(d=>d.id==='INT-UDHR-1948-PT'),'search should find the DUDH shelf');
-assert.equal(library.search('xyz-nao-existe').length,0,'unknown terms should not return invented records');
-assert.ok(!/\bfetch\s*\(|XMLHttpRequest|window\.open|location\.href/i.test(source),'Vade-Mécum must not make remote searches or redirect the student');
+assert.ok(catalog.every(d=>!d.hasLocalText),'no work may be represented as a complete official text before ingestion');
+assert.ok(library.search('trânsito').some(d=>d.id==='BR-CTB-1997'));
+assert.ok(library.search('direitos humanos').some(d=>d.id==='INT-UDHR-1948-PT'));
+assert.equal(library.search('xyz-nao-existe').length,0);
+assert.ok(!/\bfetch\s*\(|XMLHttpRequest|window\.open|location\.href/i.test(source),'search module must not fetch remote content or redirect');
 const view=library.render();
-assert.ok(view.includes('Vade-Mécum Doctor'));
-assert.ok(view.includes('Pesquisar dentro da biblioteca'));
-assert.ok(view.includes('Não envia você para outros sites'));
+for (const phrase of ['Vade-Mécum Doctor','Pesquisar dentro da biblioteca','Não envia você para outros sites']) assert.ok(view.includes(phrase));
 assert.ok(!view.includes('Doctor Search'));
 
-console.log('[vade-mecum-contract] PASS — local-only search, initial catalog and in-app library shell.');
+const worker=fs.readFileSync('service-worker.js','utf8');
+assert.ok(worker.includes("'./vade-mecum.js?v=1.0.0'"),'service worker must cache Vade-Mécum module');
+assert.ok(worker.includes("const CACHE_NAME = 'motorista-ipameri-v1.13.23-vade-mecum'"),'cache version must be bumped for the new module');
+const index=fs.readFileSync('index.html','utf8');
+assert.ok(index.includes('./vade-mecum.js?v=1.0.0'),'app shell must load the Vade-Mécum module');
+
+console.log('[vade-mecum-contract] PASS — local catalog, honest text status, no remote search, app integration and offline shell cache.');
