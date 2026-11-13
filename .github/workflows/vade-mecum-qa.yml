@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "vade-mecum.js"
+      - "doctor-platform-bridge.js"
       - "index.html"
       - "service-worker.js"
       - "data/legal-library/**"
