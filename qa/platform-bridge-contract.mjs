@@ -79,6 +79,6 @@ must('Vade-Mécum Doctor replaces the former Doctor Search home entry', index.in
 must('Vade-Mécum has a dedicated in-app view and navigation binding', index.includes('Views.legalSearch') && index.includes('Views.bind.legalSearch') && index.includes('window.DoctorVadeMecum.render()') && index.includes('window.DoctorVadeMecum.bind(UI)'));
 const vadeMecum = read('vade-mecum.js');
 must('Vade-Mécum search stays local and does not invoke GROQ or remote endpoints', vadeMecum.includes('function search(query)') && !vadeMecum.includes('fetch(') && !vadeMecum.includes('XMLHttpRequest') && !vadeMecum.includes('window.open') && !vadeMecum.includes('location.href') && !vadeMecum.includes('GroqAI'));
-must('Vade-Mécum module is loaded and precached as an essential offline asset', index.includes('vade-mecum.js?v=1.0.0') && sw.includes("'./vade-mecum.js?v=1.0.0'") && sw.slice(sw.indexOf('const CORE_ASSETS'),sw.indexOf('const CACHE_PREFIX')).includes("'./vade-mecum.js?v=1.0.0'"));
+must('Vade-Mécum module is loaded and precached as an essential offline asset', index.includes('vade-mecum.js?v=1.1.0') && sw.includes("'./vade-mecum.js?v=1.0.0'") && sw.slice(sw.indexOf('const CORE_ASSETS'),sw.indexOf('const CACHE_PREFIX')).includes("'./vade-mecum.js?v=1.0.0'"));
 new vm.Script(vadeMecum, { filename: 'vade-mecum.js' });
 must('Vade-Mécum module parses successfully', true);
