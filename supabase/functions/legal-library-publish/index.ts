@@ -1,9 +1,10 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { DOMParser } from "npm:linkedom@0.18.12";
+import { getDocument } from "npm:pdfjs-dist@4.10.38/legacy/build/pdf.mjs";
 
 const ALLOWED_HOSTS = new Set([
   "www2.camara.leg.br", "www.planalto.gov.br", "planalto.gov.br",
-  "brasil.un.org", "www.unodc.org", "unodc.org",
+  "brasil.un.org", "www.ohchr.org", "www.unodc.org", "unodc.org",
 ]);
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,6 +33,30 @@ function extractHtml(html: string) {
   if (!parsed?.body) throw new Error("HTML original sem body.");
   for (const node of parsed.querySelectorAll("script,style,noscript,nav,footer,header,form,iframe,svg")) node.remove();
   return normalizeText(parsed.body.textContent || "");
+}
+
+async function extractPdfText(bytes: Uint8Array) {
+  const task = getDocument({
+    data: bytes,
+    disableFontFace: true,
+    useSystemFonts: true,
+    isEvalSupported: false,
+    useWorkerFetch: false,
+  });
+  const pdf = await task.promise;
+  const pages: string[] = [];
+  try {
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const content = await page.getTextContent();
+      const items = content.items as Array<{ str?: string }>;
+      pages.push(items.map(item => item.str || "").join(" "));
+      page.cleanup();
+    }
+  } finally {
+    await pdf.destroy();
+  }
+  return normalizeText(pages.join("\n"));
 }
 
 function allowedSource(value: string) {
@@ -126,18 +151,26 @@ Deno.serve(async (req: Request) => {
   try { pack = JSON.parse(await file.text()); }
   catch { return response({ error: "Pacote jurídico não é um JSON válido." }, 409); }
   const text = typeof pack.normalized_text === "string" ? pack.normalized_text : "";
-  const sourceMeta = pack.source as { url?: unknown; sha256_raw?: unknown } | undefined;
+  const sourceMeta = pack.source as { url?: unknown; sha256_raw?: unknown; content_type?: unknown } | undefined;
   const summary = version.change_summary as { sha256_raw?: string } | null;
   const sourceBytesBase64 = typeof pack.source_bytes_base64 === "string" ? pack.source_bytes_base64 : "";
+  const sourceFormat = pack.source_format === "application/pdf" ? "application/pdf" : "text/html";
   if (pack.document_id !== version.document_id || pack.sha256_text !== version.content_sha256 ||
-      sourceMeta?.url !== version.source_url || typeof pack.source_html !== "string" || !sourceBytesBase64 || text.length < 1200) {
+      sourceMeta?.url !== version.source_url || sourceMeta?.content_type !== sourceFormat ||
+      (sourceFormat === "text/html" && typeof pack.source_html !== "string") ||
+      (sourceFormat === "application/pdf" && pack.source_html !== null) ||
+      !sourceBytesBase64 || text.length < 1200) {
     return response({ error: "Pacote, documento, origem ou metadados de integridade não conferem." }, 409);
-  }
-  if (await digest(text) !== version.content_sha256 || extractHtml(pack.source_html as string) !== text) {
-    return response({ error: "Hash SHA-256 do texto não confere. Publicação bloqueada." }, 409);
   }
 
   const sourceBytes = Uint8Array.from(atob(sourceBytesBase64), character => character.charCodeAt(0));
+  const reproducedText = sourceFormat === "application/pdf"
+    ? await extractPdfText(sourceBytes)
+    : extractHtml(pack.source_html as string);
+  if (await digest(text) !== version.content_sha256 || reproducedText !== text) {
+    return response({ error: "Hash SHA-256 ou extração reproduzida não confere. Publicação bloqueada." }, 409);
+  }
+
   const sourceHash = await digest(sourceBytes);
   if (sourceHash !== summary?.sha256_raw || sourceMeta?.sha256_raw !== sourceHash) {
     return response({ error: "Hash SHA-256 da captura original não confere. Publicação bloqueada." }, 409);
