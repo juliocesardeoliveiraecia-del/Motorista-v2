@@ -1905,11 +1905,11 @@ const Doctor = {
     { level: 6, name: 'Disciplinado', minXP: 2500, maxXP: 3000, imageUri: './assets/doctor/evolution/doctor-level-06.svg' },
     { level: 7, name: 'Especialista', minXP: 3000, maxXP: 3500, imageUri: './assets/doctor/evolution/doctor-level-07.svg' },
     { level: 8, name: 'Avançado',     minXP: 3500, maxXP: 4000, imageUri: './assets/doctor/evolution/doctor-level-08.svg' },
-    { level: 9, name: 'Elite',        minXP: 4000, maxXP: 4500, imageUri: './assets/doctor/evolution/doctor-level-09.svg' },
-    { level: 10,name: 'Supremo',      minXP: 4500, maxXP: null, imageUri: './assets/doctor/evolution/doctor-level-10.svg' }
+    { level: 9, name: 'Elite',        minXP: 4000, maxXP: 5000, imageUri: './assets/doctor/evolution/doctor-level-09.svg' },
+    { level: 10,name: 'Supremo',      minXP: 5000, maxXP: null, imageUri: './assets/doctor/evolution/doctor-level-10.svg' }
   ],
 
-  MAX_XP: 4500,
+  MAX_XP: 5000,
 
   addXP(amount, eventId = null) {
     const n = Math.max(0, Math.round(Number(amount) || 0));
