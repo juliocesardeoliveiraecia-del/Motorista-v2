@@ -108,7 +108,7 @@ async function resolveDocumentSource(doc: LegalDocument, landingHtml: string, la
     return { url: landingUrl, html: landingHtml };
   }
   const page = new DOMParser().parseFromString(landingHtml, "text/html");
-  const anchors = Array.from(page.querySelectorAll("a[href]"));
+  const anchors = Array.from(page.querySelectorAll("a[href]")) as Array<{ getAttribute(name: string): string | null; textContent: string | null }>;
   const match = anchors.find((anchor) => {
     const href = anchor.getAttribute("href") || "";
     const label = (anchor.textContent || "").toLowerCase();
