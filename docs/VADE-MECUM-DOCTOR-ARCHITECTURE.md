@@ -1,7 +1,7 @@
 # Vade-Mécum Doctor — arquitetura inicial
 
 **Status:** estruturação inicial; ainda não é uma biblioteca publicada.
-**Primeiro consumidor:** Motorista Legislativo. O contrato será extraído para módulo compartilhado do Doctor Core.
+**Propriedade arquitetural:** módulo transversal do Doctor Core, reutilizável por todos os aplicativos Doctor compatíveis. **Primeiro consumidor/homologação:** Motorista Legislativo. O Motorista não é proprietário de uma implementação exclusiva.
 
 ## Princípio editorial
 
@@ -100,3 +100,14 @@ Biblioteca nacional central; cada app declara coleção própria. Normas estadua
 - [ ] Revisão editorial aprovada.
 
 **Estado atual:** contrato e catálogo inicial estruturados. Nenhum texto foi ainda baixado, validado ou publicado dentro do aplicativo por esta especificação.
+
+
+## Regra de produto multi-app
+
+Todos os apps Doctor compatíveis devem consumir o mesmo runtime do Vade-Mécum. A variação é declarativa:
+- coleção documental e jurisdição;
+- edital/versão e relevância dos documentos;
+- branding e prateleiras permitidas;
+- permissões e disponibilidade offline.
+
+Não se varia por app o motor de busca, leitor, parser, integridade, cache, sincronização ou pipeline de atualização. Esses recursos pertencem ao Core e recebem testes de contrato compartilhados. Os documentos nacionais são armazenados uma vez no catálogo central e referenciados pelos produtos; conteúdo estadual, municipal ou institucional recebe identidade e jurisdição próprias. Notas, favoritos e progresso são segregados por usuário e produto.
