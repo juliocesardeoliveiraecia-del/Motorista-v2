@@ -8,6 +8,8 @@ on:
       - "service-worker.js"
       - "data/legal-library/**"
       - "supabase/migrations/**"
+      - "supabase/functions/legal-library-sync/**"
+      - "qa/legal-library-ingestion-contract.mjs"
       - "docs/VADE-MECUM-DOCTOR-ARCHITECTURE.md"
       - "docs/VADE-MECUM-DOCTOR-RELEASE-PACKAGE.md"
       - "tools/validate-legal-library.mjs"
@@ -40,3 +42,5 @@ jobs:
         run: node tools/validate-legal-library.mjs
       - name: Validate legal library publication gates
         run: node qa/legal-library-contract.mjs
+      - name: Validate official-source ingestion security contract
+        run: node qa/legal-library-ingestion-contract.mjs
