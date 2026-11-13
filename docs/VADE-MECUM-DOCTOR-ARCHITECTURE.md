@@ -120,3 +120,8 @@ A auditoria semanal não garante que uma lei não tenha mudado entre verificaç�
 - Merge do PR e validação visual do app. O preview Vercel do commit atual está bloqueado por `build-rate-limit`; não foi feito upgrade nem criado custo adicional.
 
 **Regra de publicação:** manter as 13 versões como candidatas até a revisão administrativa. Nenhum texto jurídico será exibido como vigente/publicado antes da aprovação.
+
+
+## Validação e publicação administrativa em lote (13/11/2026)
+
+A console administrativa oferece a ação **Validar e publicar documentos aptos**. Ela seleciona a versão mais recente por documento e, para cada uma, percorre a pré-visualização integral em blocos, exige confirmação de integridade SHA-256 da captura original e do texto normalizado, reprodução da extração HTML/PDF no servidor, confere título oficial, artigo inicial e marcadores de completude (DUDH: artigos 1 e 30; Regras de Mandela: regras 1 e 122; Constituição: EC 141/2026; ADCT: EC 136/2025, última emenda aplicável ao ADCT — a EC 139/2026 alterou os arts. 31 e 75 da Constituição, não o ADCT). Só então aprova e publica, usando o RPC transacional já protegido por sessão de administrador. Cada documento é independente: falha bloqueia apenas aquele item e fica indicada no resumo; os demais que passarem podem ser publicados. A ação exige confirmação administrativa explícita e registra justificativa no histórico. A sincronização dos alunos continua limitada a versões publicadas.
