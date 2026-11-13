@@ -36,6 +36,7 @@ on:
       - "tools/validate-legal-library.mjs"
       - "qa/vade-mecum-contract.mjs"
       - "qa/legal-library-contract.mjs"
+      - ".github/workflows/vade-mecum-qa.yml"
 jobs:
   vade-mecum-quality:
     runs-on: ubuntu-latest
