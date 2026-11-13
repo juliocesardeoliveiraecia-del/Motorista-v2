@@ -75,12 +75,10 @@ must('Radar Doctor ticker is not removed at runtime', !index.includes('doctor-ra
 must('No service-role key or private payment token is present in bridge', !/(service_role|sb_secret_|sk_live_|access_token\s*[:=])/i.test(bridge));
 console.log('DOCTOR PLATFORM BRIDGE QA: OK');
 
-must('Doctor Search is a highlighted first-class unified search tool', index.includes('home-legal-search') && index.includes('Doctor Search'));
-must('Legal search has a dedicated view and navigation binding', index.includes('Views.legalSearch') && index.includes('Views.bind.legalSearch'));
-must('Doctor Search routes legal queries and searches local study data without GROQ', read('legal-search.js').includes('isLegalQuery') && read('legal-search.js').includes('searchLocal') && read('legal-search.js').includes('Store?.state') && read('legal-search.js').includes('q.text') && read('legal-search.js').includes('s.topics') && read('legal-search.js').includes('state.aiQuestions') && index.includes('window.Store = Store;') && !read('legal-search.js').includes('GroqAI'));
-must('Doctor Search preserves the official LexML and Planalto legal-search adapters', read('api/legal-search.js').includes('www.lexml.gov.br/busca/SRU') && read('legal-search.js').includes('/api/legal-search?') && read('api/legal-search.js').includes('www4.planalto.gov.br/legislacao/legis-federal/constituicao'));
-must('Legal search client is loaded and precached by the service worker', index.includes('legal-search.js?v=1.2.1') && sw.includes('./legal-search.js?v=1.2.1') && sw.slice(sw.indexOf('const CORE_ASSETS'),sw.indexOf('const CACHE_PREFIX')).includes('./legal-search.js?v=1.2.1'));
-new vm.Script(read('legal-search.js'), { filename: 'legal-search.js' });
-new vm.Script(read('api/legal-search.js'), { filename: 'api/legal-search.js' });
-must('Legal reader API and browser client parse successfully', true);
-must('Doctor Search provides a single search bar, voice input, and in-app results', index.includes('id="legal-search-query"') && index.includes('id="legal-search-mic"') && index.includes('SpeechRecognition') && index.includes('recognition.onresult') && index.includes('recognition.onerror') && index.includes('useKeyboardDictation') && index.includes('r.local||r.content') && read('legal-search.js').includes('mode=read&document=cf88&article=') && read('legal-search.js').includes('searchLocal'));
+must('Vade-Mécum Doctor replaces the former Doctor Search home entry', index.includes('home-legal-search') && index.includes('Vade-Mécum Doctor') && !index.includes('Doctor Search'));
+must('Vade-Mécum has a dedicated in-app view and navigation binding', index.includes('Views.legalSearch') && index.includes('Views.bind.legalSearch') && index.includes('window.DoctorVadeMecum.render()') && index.includes('window.DoctorVadeMecum.bind(UI)'));
+const vadeMecum = read('vade-mecum.js');
+must('Vade-Mécum search stays local and does not invoke GROQ or remote endpoints', vadeMecum.includes('function search(query)') && !/\\bfetch\\s*\\(|XMLHttpRequest|window\\.open|location\\.href|GroqAI/i.test(vadeMecum));
+must('Vade-Mécum module is loaded and precached as an essential offline asset', index.includes('vade-mecum.js?v=1.0.0') && sw.includes("'./vade-mecum.js?v=1.0.0'") && sw.slice(sw.indexOf('const CORE_ASSETS'),sw.indexOf('const CACHE_PREFIX')).includes("'./vade-mecum.js?v=1.0.0'"));
+new vm.Script(vadeMecum, { filename: 'vade-mecum.js' });
+must('Vade-Mécum module parses successfully', true);
