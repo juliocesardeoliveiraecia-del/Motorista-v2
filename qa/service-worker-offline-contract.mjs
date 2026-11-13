@@ -7,9 +7,10 @@ for (let level = 1; level <= 10; level += 1) {
   must('Doctor evolution level ' + level + ' is precached', sw.includes(asset));
 }
 const index=fs.readFileSync('index.html','utf8');
-const exactRequests=[...index.matchAll(/(?:src|href)="([^"]+\\?v=[^"]+)"/g)]
-  .map(match=>match[1].replace(/^\\.\\//,''))
-  .filter(path=>!/^https?:\\/\\//i.test(path));
+const exactRequests=[...index.matchAll(/(?:src|href)="([^"]+)"/g)]
+  .map(match=>match[1])
+  .filter(path=>path.includes('?v=')&&!path.startsWith('http'))
+  .map(path=>path.startsWith('./')?path.slice(2):path);
 for(const asset of exactRequests){
   const present=sw.includes(asset)||sw.includes('./'+asset);
   must('Exact versioned request from index is precached: '+asset,present);
