@@ -62,18 +62,32 @@ function isAllowedUrl(value: string) {
   }
 }
 
-async function fetchOfficial(url: string) {
+async function fetchOfficial(
+  url: string,
+  conditionals: { etag?: string | null; lastModified?: string | null } = {},
+) {
   if (!isAllowedUrl(url)) throw new Error("Domínio da fonte fora da lista oficial permitida.");
+  const headers = new Headers({
+    "User-Agent": "DoctorConcursos-LegalLibrary/1.0 (official-source-monitor)",
+    "Accept": "text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.1",
+  });
+  if (conditionals.etag) headers.set("If-None-Match", conditionals.etag);
+  if (conditionals.lastModified) headers.set("If-Modified-Since", conditionals.lastModified);
   const result = await fetch(url, {
-    headers: {
-      "User-Agent": "DoctorConcursos-LegalLibrary/1.0 (official-source-monitor)",
-      "Accept": "text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.1",
-    },
+    headers,
     redirect: "follow",
     signal: AbortSignal.timeout(20000),
   });
-  if (!result.ok) throw new Error("Fonte oficial respondeu HTTP " + result.status + ".");
   if (!isAllowedUrl(result.url)) throw new Error("Redirecionamento para domínio não autorizado.");
+  if (result.status === 304) {
+    return {
+      notModified: true as const,
+      finalUrl: result.url,
+      etag: result.headers.get("etag") || conditionals.etag || null,
+      lastModified: result.headers.get("last-modified") || conditionals.lastModified || null,
+    };
+  }
+  if (!result.ok) throw new Error("Fonte oficial respondeu HTTP " + result.status + ".");
   const contentType = (result.headers.get("content-type") || "").toLowerCase();
   if (!contentType.includes("text/html") && !contentType.includes("application/xhtml+xml")) {
     throw new Error("Formato não suportado para extração automática: " + (contentType || "desconhecido"));
@@ -93,6 +107,7 @@ async function fetchOfficial(url: string) {
     throw new Error("A resposta não parece conter o texto oficial integral ou apresentou erro de codificação.");
   }
   return {
+    notModified: false as const,
     html,
     rawBytes,
     finalUrl: result.url,
@@ -167,31 +182,43 @@ Deno.serve(async (req: Request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !anonKey || !serviceKey) return response({ error: "Configuração segura do Supabase incompleta." }, 500);
 
-  const bearer = req.headers.get("authorization") || "";
-  const token = bearer.match(/^Bearer\s+(.+)$/i)?.[1];
-  if (!token) return response({ error: "Autenticação obrigatória." }, 401);
-
-  const userClient = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: "Bearer " + token } },
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-  const { data: userData, error: userError } = await userClient.auth.getUser(token);
-  if (userError || !userData.user) return response({ error: "Sessão inválida." }, 401);
-  const { data: admin, error: adminError } = await userClient.rpc("is_admin");
-  if (adminError || admin !== true) return response({ error: "Apenas administradores podem iniciar a captura jurídica." }, 403);
-
   const service = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+  let payload: { mode?: string; document_ids?: unknown } = {};
+  try { payload = await req.json(); }
+  catch { return response({ error: "Corpo JSON inválido." }, 400); }
 
+  const cronToken = req.headers.get("x-doctor-cron-token");
+  const bearer = req.headers.get("authorization") || "";
+  const token = bearer.match(/^Bearer\s+(.+)$/i)?.[1];
+  let triggerType: "manual" | "scheduled_daily" | "scheduled_weekly" = "manual";
+  let initiatedBy = "doctor-admin";
   let requestedIds: string[] = [];
-  try {
-    const payload = await req.json().catch(() => ({}));
+
+  if (cronToken) {
+    const { data: cronAuthorized, error: cronError } = await service.rpc(
+      "verify_legal_library_cron_token",
+      { p_token: cronToken },
+    );
+    if (cronError || cronAuthorized !== true) return response({ error: "Token interno de agendamento inválido." }, 401);
+    if (payload.mode !== "daily" && payload.mode !== "weekly") return response({ error: "Modo de agendamento inválido." }, 400);
+    triggerType = payload.mode === "weekly" ? "scheduled_weekly" : "scheduled_daily";
+    initiatedBy = "system:cron";
+  } else {
+    if (!token) return response({ error: "Autenticação administrativa ou token interno obrigatório." }, 401);
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: "Bearer " + token } },
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { data: userData, error: userError } = await userClient.auth.getUser(token);
+    if (userError || !userData.user) return response({ error: "Sessão inválida." }, 401);
+    const { data: admin, error: adminError } = await userClient.rpc("is_admin");
+    if (adminError || admin !== true) return response({ error: "Apenas administradores podem iniciar a captura jurídica." }, 403);
+    initiatedBy = userData.user.id;
     requestedIds = Array.isArray(payload.document_ids)
       ? payload.document_ids.filter((id: unknown) => typeof id === "string").slice(0, 13)
       : [];
-  } catch {
-    return response({ error: "Corpo JSON inválido." }, 400);
   }
 
   const { data: documents, error: docsError } = await service
@@ -204,7 +231,7 @@ Deno.serve(async (req: Request) => {
   const selected = (documents as LegalDocument[]).filter((doc) => !requestedIds.length || requestedIds.includes(doc.document_id));
   const { data: run, error: runError } = await service
     .from("legal_update_runs")
-    .insert({ trigger_type: "manual", status: "running" })
+    .insert({ trigger_type: triggerType, status: "running" })
     .select("id")
     .single();
   if (runError || !run) return response({ error: "Não foi possível iniciar o registro da captura." }, 500);
@@ -220,11 +247,38 @@ Deno.serve(async (req: Request) => {
         throw new Error("Fonte oficial em PDF; extração textual automática ainda não homologada.");
       }
 
-      const landing = await fetchOfficial(doc.official_source_url);
+      const { data: lastVersion } = await service
+        .from("legal_document_versions")
+        .select("source_etag,source_last_modified,change_summary")
+        .eq("document_id", doc.document_id)
+        .order("source_retrieved_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const lastSummary = (lastVersion?.change_summary || {}) as {
+        source_landing_etag?: string;
+        source_landing_last_modified?: string;
+      };
+      const isConstitutionPage = doc.document_id === "BR-CF-1988" || doc.document_id === "BR-ADCT-1988";
+      const dailyCheck = triggerType === "scheduled_daily";
+      const landing = await fetchOfficial(doc.official_source_url, dailyCheck ? {
+        etag: isConstitutionPage ? lastSummary.source_landing_etag : lastVersion?.source_etag,
+        lastModified: isConstitutionPage ? lastSummary.source_landing_last_modified : lastVersion?.source_last_modified,
+      } : {});
+      if (landing.notModified) {
+        results.push({ document_id: doc.document_id, status: "unchanged", check: "conditional-http-304" });
+        continue;
+      }
       const resolved = await resolveDocumentSource(doc, landing.html, landing.finalUrl);
       const source = resolved.html
-        ? { html: resolved.html, rawBytes: landing.rawBytes, finalUrl: resolved.url, etag: landing.etag, lastModified: landing.lastModified, contentType: landing.contentType, charset: landing.charset }
-        : await fetchOfficial(resolved.url);
+        ? { ...landing, finalUrl: resolved.url }
+        : await fetchOfficial(resolved.url, dailyCheck ? {
+          etag: lastVersion?.source_etag,
+          lastModified: lastVersion?.source_last_modified,
+        } : {});
+      if (source.notModified) {
+        results.push({ document_id: doc.document_id, status: "unchanged", check: "conditional-http-304" });
+        continue;
+      }
       const extracted = extractHtml(source.html);
       validateExtractedText(doc, extracted);
       const rawHash = await sha256(source.rawBytes);
@@ -258,6 +312,8 @@ Deno.serve(async (req: Request) => {
           content_type: source.contentType,
           charset: source.charset || "utf-8",
           sha256_raw: rawHash,
+          source_landing_etag: landing.etag,
+          source_landing_last_modified: landing.lastModified,
         },
         source_html: source.html,
         source_bytes_base64: encodeBase64(source.rawBytes),
@@ -288,6 +344,8 @@ Deno.serve(async (req: Request) => {
           status: "candidate",
           change_summary: {
             sha256_raw: rawHash,
+            source_landing_etag: landing.etag,
+            source_landing_last_modified: landing.lastModified,
             sha256_text: textHash,
             extraction_method: "DOMParser.textContent",
             pipeline_version: "1.0.0",
