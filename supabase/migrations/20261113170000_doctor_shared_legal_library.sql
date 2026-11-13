@@ -67,6 +67,10 @@ begin
     return old;
   end if;
 
+  if old.status in ('published','superseded') and new.status not in ('published','superseded') then
+    raise exception 'Published legal versions can only remain published or become superseded';
+  end if;
+
   if old.status in ('published','superseded') and (
     new.document_id is distinct from old.document_id or
     new.version_label is distinct from old.version_label or
@@ -80,7 +84,8 @@ begin
     new.content_sha256 is distinct from old.content_sha256 or
     new.storage_path is distinct from old.storage_path or
     new.content_format is distinct from old.content_format or
-    new.change_summary is distinct from old.change_summary
+    new.change_summary is distinct from old.change_summary or
+    new.published_at is distinct from old.published_at
   ) then
     raise exception 'Published legal version content and provenance are immutable';
   end if;
