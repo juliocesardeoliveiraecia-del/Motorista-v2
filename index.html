@@ -3099,21 +3099,28 @@ Views.bind.home = function(){
 // a partir do XP ganho por estudo de verdade (Doctor.getProgress()).
 Views.doctorCard = function () {
   const p = Doctor.getProgress();
+  // Prévia visual opcional para homologação: não altera XP, nível nem dados do aluno.
+  const previewLevel10 = new URLSearchParams(window.location.search).get('doctorAvatarPreview') === '10';
+  const avatarLevel = previewLevel10 ? 10 : p.level.level;
+  const avatarName = previewLevel10 ? 'Supremo' : p.level.name;
+  const avatarImageUri = previewLevel10
+    ? './assets/doctor/evolution/doctor-level-10.svg?v=20261113-preview'
+    : p.level.imageUri;
 
   return `
     <div class="section-title">Evolução do seu Doctor</div>
     <div class="card doctor-card">
       <div class="doctor-avatar-box">
-        ${p.level.imageUri
-          ? `<img class="doctor-avatar-image doctor-avatar-level-${p.level.level}" src="${p.level.imageUri}" alt="Doctor nível ${p.level.level} — ${p.level.name}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.17&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
+        ${avatarImageUri
+          ? `<img class="doctor-avatar-image doctor-avatar-level-${avatarLevel}" src="${avatarImageUri}" alt="Doctor nível ${avatarLevel} — ${avatarName}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackApplied===&quot;1&quot;){this.style.display=&quot;none&quot;;if(this.nextElementSibling)this.nextElementSibling.style.display=&quot;inline-flex&quot;;return;}this.dataset.fallbackApplied=&quot;1&quot;;this.src=&quot;./assets/doctor/evolution/doctor-avatar-fallback.svg?v=1.12.17&quot;;this.classList.add(&quot;doctor-avatar-fallback-image&quot;);">`
           : `<span class="doctor-placeholder">${iconEl('bot')}</span>`}
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
         <span class="doctor-placeholder doctor-avatar-emergency-fallback" style="display:none" aria-label="Avatar Doctor indisponível">${iconEl('bot')}</span>
       </div>
-      <div class="doctor-level-name">Nível ${p.level.level} · ${p.level.name}</div>
+      <div class="doctor-level-name">${previewLevel10 ? "Prévia visual · Nível 10 Supremo" : `Nível ${p.level.level} · ${p.level.name}`}</div>
       <div class="progress-bar"><div class="fill" style="width:${p.pct}%"></div></div>
       <div class="doctor-xp-label">
-        ${p.isMax ? `Supremo · ${p.xp} XP acumulados` : `${p.xp} XP · faltam ${p.remaining} XP para o próximo nível`}
+        ${previewLevel10 ? `Prévia visual ativa — seu progresso real permanece em ${p.xp} XP.` : (p.isMax ? `Supremo · ${p.xp} XP acumulados` : `${p.xp} XP · faltam ${p.remaining} XP para o próximo nível`)}
       </div>
     </div>
   `;
