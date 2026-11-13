@@ -12,7 +12,6 @@ Transformar o Doctor Core em um motor reutilizável para quantidade aberta de ap
 - integridade de respostas e fingerprints;
 - esteira de revisão de conteúdo gerado por IA;
 - GROQ adapter;
-- Radar adapter central;
 - Caderno, Gravador e Redação;
 - telemetria/estado local;
 - regras de segurança para não expor segredos.
