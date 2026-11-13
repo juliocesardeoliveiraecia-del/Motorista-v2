@@ -1,5 +1,5 @@
 -- Doctor Concursos shared legal library: central metadata, immutable versions and offline-ready storage.
--- CI validates this complete migration in an isolated PostgreSQL WASM instance; production is not touched.
+-- CI executes both dollar-quoted PL/pgSQL functions and the publication transaction in isolated PostgreSQL WASM; production is not touched.
 -- This migration is additive. It does not alter auth, payments, GROQ, student progress or existing buckets.
 
 begin;
