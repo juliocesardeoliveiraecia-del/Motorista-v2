@@ -6,6 +6,7 @@ const sync = fs.readFileSync('supabase/functions/legal-library-sync/index.ts', '
 const publish = fs.readFileSync('supabase/functions/legal-library-publish/index.ts', 'utf8');
 const migration = fs.readFileSync('supabase/migrations/20261113170000_doctor_shared_legal_library.sql', 'utf8');
 const schedule = fs.readFileSync('supabase/migrations/20261113200000_schedule_legal_library_monitoring.sql', 'utf8');
+const manifest = JSON.parse(fs.readFileSync('data/legal-library/manifest.json', 'utf8'));
 const batchSchedule = fs.readFileSync('supabase/migrations/20261113211500_batch_legal_library_cron_jobs.sql', 'utf8');
 
 for (const [name, source] of [['sync', sync], ['publish', publish]]) {
@@ -19,7 +20,8 @@ assert.ok(sync.includes('If-None-Match'), 'daily checks must use conditional HTT
 assert.ok(sync.includes('triggerType === "scheduled_daily"'), 'daily checks must be distinguishable from weekly full audits');
 assert.ok(!/status:\s*"published"/.test(sync), 'source capture must never publish automatically');
 assert.ok(sync.includes('ALLOWED_HOSTS'), 'source capture must enforce official host allowlist');
-assert.ok(sync.includes('normaatualizada'), 'Câmara legal landing pages must resolve to the updated full-text HTML');
+const brazilianLawIds = ['BR-CF-1988','BR-ADCT-1988','BR-CTB-1997','BR-CP-1940','BR-CPP-1941','BR-LEP-1984','BR-ECA-1990','BR-CC-2002','BR-CDC-1990','BR-LMP-2006','BR-ESTATUTO-IDOSO-2003'];
+assert.ok(brazilianLawIds.every(id => manifest.documents.find(doc => doc.document_id === id)?.source?.url?.includes('normaatualizada')), 'all Brazilian law sources must point directly to updated official HTML');
 assert.ok(sync.includes('expectedTitles'), 'each Brazilian code must be checked against its expected official title');
 assert.ok(sync.includes('sha256(source.rawBytes)'), 'source capture must hash original bytes');
 assert.ok(sync.includes('source_bytes_base64: encodeBase64(source.rawBytes)'), 'source package must preserve exact original bytes');
