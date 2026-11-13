@@ -891,6 +891,10 @@
     get sessionId() { return currentSessionId; },
     get appId() { return currentAppId; },
     get productId() { return currentProductId; },
+    async getAuthenticatedClient() {
+      if (!currentSessionId || !client) throw new Error("A sessão Doctor precisa estar validada online para sincronizar a biblioteca.");
+      return client;
+    },
     get sessionActive() { return !!currentSessionId; },
     syncEnabled: true,
     async claimDeviceSession() { return claimCurrentSession(); },
