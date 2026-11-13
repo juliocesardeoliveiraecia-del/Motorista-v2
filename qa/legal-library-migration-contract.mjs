@@ -5,6 +5,7 @@ import { PGlite } from '@electric-sql/pglite';
 
 const migration = fs.readFileSync('supabase/migrations/20261113170000_doctor_shared_legal_library.sql', 'utf8');
 const hardening = fs.readFileSync('supabase/migrations/20261113195000_harden_legal_library_policies_and_indexes.sql', 'utf8');
+const ctbSourceUpdate = fs.readFileSync('supabase/migrations/20261113203000_update_ctb_official_source.sql', 'utf8');
 const db = new PGlite();
 
 try {
@@ -23,6 +24,7 @@ try {
   await db.exec(bootstrap);
   await db.exec(migration);
   await db.exec(hardening);
+  await db.exec(ctbSourceUpdate);
 
   const tables = await db.query("select table_name from information_schema.tables where table_schema='public' and table_name in ('legal_documents','legal_document_versions','legal_update_runs','legal_change_events')");
   assert.equal(tables.rows.length, 4, 'all four legal library tables must be created');
