@@ -29,8 +29,8 @@ for (const phrase of ['Vade-Mécum Doctor','Pesquisar dentro da biblioteca','Nã
 assert.ok(!view.includes('Doctor Search'));
 
 const worker=fs.readFileSync('service-worker.js','utf8');
-assert.ok(worker.includes("'./vade-mecum.js?v=1.0.0'"),'service worker must cache Vade-Mécum module');
-assert.ok(worker.includes("const CACHE_NAME = 'motorista-ipameri-v1.13.23-vade-mecum'"),'cache version must be bumped for the new module');
+assert.ok(worker.includes("'./vade-mecum.js?v=1.1.0'"),'service worker must cache Vade-Mécum module');
+assert.ok(worker.includes("const CACHE_NAME = 'motorista-ipameri-v1.13.24-vade-mecum-offline-sync'"),'cache version must be bumped for the new module');
 const index=fs.readFileSync('index.html','utf8');
 assert.ok(index.includes('./vade-mecum.js?v=1.0.0'),'app shell must load the Vade-Mécum module');
 
