@@ -21,7 +21,7 @@ function must(label, condition) {
 }
 
 must('Platform bridge is loaded before the Core runtime', index.indexOf('doctor-platform-bridge.js') > 0 && index.indexOf('doctor-platform-bridge.js') < index.indexOf('window.DOCTOR_CORE_RUNTIME'));
-must('Platform bridge is cached by the PWA service worker', sw.includes("'./doctor-platform-bridge.js?v="+JSON.parse(read('version.json')).version+"-platform-5'"));
+must('Platform bridge is cached by the PWA service worker', sw.includes("'./doctor-platform-bridge.js?v="+JSON.parse(read('version.json')).version+"-platform-6'"));
 const environment = config.match(/environment:\s*'([^']+)'/)?.[1] || '';
 const supabaseMatch = config.match(/supabase:\s*\{\s*enabled:\s*(true|false),\s*url:\s*(['"])(.*?)\2,\s*publishableKey:\s*(['"])(.*?)\4\s*\}/);
 const runtimeUrl = supabaseMatch?.[3] || '';
@@ -73,12 +73,13 @@ must('App support submits centrally with validated UUID identity', bridge.includ
 must('App support no longer depends on the user mail client', !index.includes('mailto:doctorconcursoschat@gmail.com'));
 must('Radar Doctor ticker is not removed at runtime', !index.includes('doctor-radar-removal-runtime') && !index.includes("getElementById('radar-ticker-mount')?.remove()") && index.includes('get_radar_feed'));
 must('No service-role key or private payment token is present in bridge', !/(service_role|sb_secret_|sk_live_|access_token\s*[:=])/i.test(bridge));
+must('Shared legal modules receive only the authenticated session client', bridge.includes('getAuthenticatedClient()') && bridge.includes('if (!currentSessionId || !client) throw new Error'));
 console.log('DOCTOR PLATFORM BRIDGE QA: OK');
 
 must('Vade-Mécum Doctor replaces the former Doctor Search home entry', index.includes('home-legal-search') && index.includes('Vade-Mécum Doctor') && index.includes('Biblioteca jurídica Doctor'));
 must('Vade-Mécum has a dedicated in-app view and navigation binding', index.includes('Views.legalSearch') && index.includes('Views.bind.legalSearch') && index.includes('window.DoctorVadeMecum.render()') && index.includes('window.DoctorVadeMecum.bind(UI)'));
 const vadeMecum = read('vade-mecum.js');
 must('Vade-Mécum search stays local and does not invoke GROQ or remote endpoints', vadeMecum.includes('function search(query)') && !vadeMecum.includes('fetch(') && !vadeMecum.includes('XMLHttpRequest') && !vadeMecum.includes('window.open') && !vadeMecum.includes('location.href') && !vadeMecum.includes('GroqAI'));
-must('Vade-Mécum module is loaded and precached as an essential offline asset', index.includes('vade-mecum.js?v=1.0.0') && sw.includes("'./vade-mecum.js?v=1.0.0'") && sw.slice(sw.indexOf('const CORE_ASSETS'),sw.indexOf('const CACHE_PREFIX')).includes("'./vade-mecum.js?v=1.0.0'"));
+must('Vade-Mécum module is loaded and precached as an essential offline asset', index.includes('vade-mecum.js?v=1.2.0') && sw.includes("'./vade-mecum.js?v=1.2.0'") && sw.slice(sw.indexOf('const CORE_ASSETS'),sw.indexOf('const CACHE_PREFIX')).includes("'./vade-mecum.js?v=1.2.0'"));
 new vm.Script(vadeMecum, { filename: 'vade-mecum.js' });
 must('Vade-Mécum module parses successfully', true);

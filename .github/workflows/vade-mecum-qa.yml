@@ -4,9 +4,15 @@ on:
     branches: [main]
     paths:
       - "vade-mecum.js"
+      - "doctor-platform-bridge.js"
       - "index.html"
       - "service-worker.js"
       - "data/legal-library/**"
+      - "supabase/migrations/**"
+      - "qa/legal-library-migration-contract.mjs"
+      - "supabase/functions/legal-library-sync/**"
+      - "supabase/functions/legal-library-publish/**"
+      - "qa/legal-library-ingestion-contract.mjs"
       - "docs/VADE-MECUM-DOCTOR-ARCHITECTURE.md"
       - "docs/VADE-MECUM-DOCTOR-RELEASE-PACKAGE.md"
       - "tools/validate-legal-library.mjs"
@@ -16,14 +22,21 @@ on:
   pull_request:
     paths:
       - "vade-mecum.js"
+      - "doctor-platform-bridge.js"
       - "index.html"
       - "service-worker.js"
       - "data/legal-library/**"
+      - "supabase/migrations/**"
+      - "qa/legal-library-migration-contract.mjs"
+      - "supabase/functions/legal-library-sync/**"
+      - "supabase/functions/legal-library-publish/**"
+      - "qa/legal-library-ingestion-contract.mjs"
       - "docs/VADE-MECUM-DOCTOR-ARCHITECTURE.md"
       - "docs/VADE-MECUM-DOCTOR-RELEASE-PACKAGE.md"
       - "tools/validate-legal-library.mjs"
       - "qa/vade-mecum-contract.mjs"
       - "qa/legal-library-contract.mjs"
+      - ".github/workflows/vade-mecum-qa.yml"
 jobs:
   vade-mecum-quality:
     runs-on: ubuntu-latest
@@ -38,3 +51,14 @@ jobs:
         run: node tools/validate-legal-library.mjs
       - name: Validate legal library publication gates
         run: node qa/legal-library-contract.mjs
+      - name: Install isolated PostgreSQL WASM validator
+        run: npm install --no-save --no-package-lock @electric-sql/pglite
+      - name: Execute legal library migration and publication contract in isolated PostgreSQL
+        run: node qa/legal-library-migration-contract.mjs
+      - name: Validate official-source ingestion security contract
+        run: node qa/legal-library-ingestion-contract.mjs
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check Supabase legal library Edge Function
+        run: deno check supabase/functions/legal-library-sync/index.ts supabase/functions/legal-library-publish/index.ts
