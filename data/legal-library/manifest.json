@@ -92,7 +92,9 @@
       "source": {
         "authority": "Nações Unidas no Brasil",
         "kind": "official_international_organization",
-        "url": "https://brasil.un.org/pt-br/66717-declaracao-universal-dos-direitos-humanos"
+        "url": "https://www.ohchr.org/en/UDHR/Documents/UDHR_Translations/por.pdf",
+        "latest_revision_note": "Fonte oficial em PDF; extração textual por PDF.js, com validação de título, artigos/regras e reprodução integral antes da publicação.",
+        "latest_revision_checked_at": "2026-11-13"
       },
       "cover": {
         "asset": null,
@@ -382,7 +384,9 @@
       "source": {
         "authority": "Nações Unidas / UNODC",
         "kind": "official_international_organization",
-        "url": "https://www.unodc.org/documents/justice-and-prison-reform/Nelson_Mandela_Rules-P-ebook.pdf"
+        "url": "https://www.unodc.org/documents/justice-and-prison-reform/Nelson_Mandela_Rules-P-ebook.pdf",
+        "latest_revision_note": "Fonte oficial em PDF; extração textual por PDF.js, com validação de título, artigos/regras e reprodução integral antes da publicação.",
+        "latest_revision_checked_at": "2026-11-13"
       },
       "cover": {
         "asset": null,
