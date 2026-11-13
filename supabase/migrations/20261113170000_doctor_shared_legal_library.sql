@@ -180,8 +180,8 @@ create policy "Service role manages legal library files"
 insert into public.legal_documents
 (document_id, slug, official_title, display_title, category, jurisdiction, authority, official_source_url, priority)
 values
-('BR-CF-1988','constituicao-federal','Constituição da República Federativa do Brasil de 1988','Constituição Federal','constitutional_law','BR','Câmara dos Deputados','https://www2.camara.leg.br/atividade-legislativa/legislacao/constituicao1988','P0'),
-('BR-ADCT-1988','adct','Ato das Disposições Constitucionais Transitórias','ADCT','constitutional_law','BR','Câmara dos Deputados','https://www2.camara.leg.br/atividade-legislativa/legislacao/constituicao1988','P0'),
+('BR-CF-1988','constituicao-federal','Constituição da República Federativa do Brasil de 1988','Constituição Federal','constitutional_law','BR','Câmara dos Deputados','https://www2.camara.leg.br/a-camara/atividade-legislativa/legislacao/constituicao1988','P0'),
+('BR-ADCT-1988','adct','Ato das Disposições Constitucionais Transitórias','ADCT','constitutional_law','BR','Câmara dos Deputados','https://www2.camara.leg.br/a-camara/atividade-legislativa/legislacao/constituicao1988','P0'),
 ('INT-UDHR-1948-PT','declaracao-universal-direitos-humanos','Declaração Universal dos Direitos Humanos','Declaração Universal dos Direitos Humanos','human_rights','INTERNATIONAL','Nações Unidas no Brasil','https://brasil.un.org/pt-br/66717-declaracao-universal-dos-direitos-humanos','P1'),
 ('BR-CTB-1997','codigo-transito-brasileiro','Lei nº 9.503, de 23 de setembro de 1997','Código de Trânsito Brasileiro','traffic_law','BR','Presidência da República — Planalto','https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm','P0'),
 ('BR-CP-1940','codigo-penal','Decreto-Lei nº 2.848, de 7 de dezembro de 1940','Código Penal','criminal_law','BR','Presidência da República — Planalto','https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm','P1'),
