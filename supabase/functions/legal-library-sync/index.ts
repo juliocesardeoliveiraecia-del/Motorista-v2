@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { DOMParser } from "npm:linkedom@0.18.12";
+import { getDocument } from "npm:pdfjs-dist@4.10.38/legacy/build/pdf.mjs";
 
 type LegalDocument = {
   document_id: string;
@@ -18,6 +19,7 @@ const ALLOWED_HOSTS = new Set([
   "www.planalto.gov.br",
   "planalto.gov.br",
   "brasil.un.org",
+  "www.ohchr.org",
   "www.unodc.org",
   "unodc.org",
 ]);
@@ -51,6 +53,30 @@ function extractHtml(html: string) {
     node.remove();
   }
   return normalizeText(parsed.body.textContent || "");
+}
+
+async function extractPdfText(bytes: Uint8Array) {
+  const task = getDocument({
+    data: bytes,
+    disableFontFace: true,
+    useSystemFonts: true,
+    isEvalSupported: false,
+    useWorkerFetch: false,
+  });
+  const pdf = await task.promise;
+  const pages: string[] = [];
+  try {
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const content = await page.getTextContent();
+      const items = content.items as Array<{ str?: string }>;
+      pages.push(items.map(item => item.str || "").join(" "));
+      page.cleanup();
+    }
+  } finally {
+    await pdf.destroy();
+  }
+  return normalizeText(pages.join("\n"));
 }
 
 function isAllowedUrl(value: string) {
