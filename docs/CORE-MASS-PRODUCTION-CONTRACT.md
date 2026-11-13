@@ -25,7 +25,7 @@ Transformar o Doctor Core em um motor reutilizável para quantidade aberta de ap
 - gabaritos e explicações;
 - fontes e evidências;
 - perfil editorial da banca;
-- fontes oficiais do Radar.
+- módulos opcionais habilitados explicitamente por produto.
 
 ## 3. Portão obrigatório de questões
 Nenhuma questão deve chegar ao aluno se:
@@ -40,8 +40,11 @@ O Core compara a alternativa escolhida com o gabarito da própria versão da que
 ## 4. Simulado
 O simulado oficial só pode iniciar quando a distribuição do edital estiver completa. Não existe mais modo parcial disfarçado de simulado oficial.
 
-## 5. Radar
-O aplicativo não deve pesquisar/scrapear o Radar por conta própria. Ele consome a infraestrutura central e a classificação 70/30 fornecida pelo contrato central.
+## 5. Módulos opcionais e descontinuação
+
+Um módulo opcional só integra um aplicativo quando estiver explicitamente habilitado no Product Context e homologado. A ausência do módulo deve significar ausência de interface, navegação, tarefas em segundo plano e dependências operacionais. Módulos descontinuados podem permanecer no inventário histórico do Core, mas não podem ser tratados como recursos ativos nem obrigatórios.
+
+**Radar Doctor:** descontinuado no Motorista Legislativo em 13/11/2026. Não deve ser exibido, iniciado ou exigido nos testes deste produto. Uma eventual reintrodução dependerá de decisão específica e nova homologação.
 
 ## 6. Regra para produção em massa
 Um novo aplicativo deve alterar somente configuração + conteúdo + assets do produto. Lógica do Core não deve ser duplicada para cada concurso.
@@ -52,7 +55,7 @@ Todo aplicativo derivado deve herdar o padrão de transparência, idade mínima,
 
 ## 8. Fábrica de configuração
 
-A configuração de cada produto deve ser gerada a partir de `templates/product-manifest.example.json` com `tools/scaffold-product.mjs`. O gerador valida a distribuição do edital, duração, modo de resposta, hosts oficiais do Radar e identidade PWA. Ele não gera conteúdo acadêmico nem assets e não publica o produto. QA: `node qa/scaffold-product-contract.mjs`.
+A configuração de cada produto deve ser gerada a partir de `templates/product-manifest.example.json` com `tools/scaffold-product.mjs`. O gerador valida a distribuição do edital, duração, modo de resposta, hosts oficiais declarados pelos módulos opcionais habilitados e identidade PWA. Ele não gera conteúdo acadêmico nem assets e não publica o produto. QA: `node qa/scaffold-product-contract.mjs`.
 
 ## 8. Homologação antes de replicar
 Antes de replicar a linha-base, cada release-base deve passar por:
@@ -64,7 +67,6 @@ Antes de replicar a linha-base, cada release-base deve passar por:
 - teste offline/online;
 - teste de sync autenticado com bridge, conflito de revisão e fila preservada até confirmação;
 - teste de revogação de sessão ao reconectar após uso offline (lease máximo de 72 horas);
-- teste de Radar central;
 - teste mobile/desktop;
 - teste de atualização do PWA;
 - verificação de ausência de segredos no repositório.
