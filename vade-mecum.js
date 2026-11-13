@@ -226,11 +226,91 @@
       if(error)throw error;
       const titleById=new Map(documents.map(doc=>[doc.id,doc.title]));
       adminPanel.innerHTML='<section class="card" style="padding:16px;margin:12px 0;border:1px solid var(--border-color,#d9dee7)">'+
-        '<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><strong>Revisão editorial do Vade-Mécum</strong><p style="margin:5px 0;color:var(--text-secondary,#667085);font-size:13px">As candidatas ainda não aparecem para os alunos. Pré-visualize o texto completo, confira fonte e hash, registre sua decisão e só então publique.</p></div><button type="button" class="btn btn-ghost btn-sm" id="vade-admin-refresh">Atualizar fila</button></div>'+
+        '<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><strong>Revisão editorial do Vade-Mécum</strong><p style="margin:5px 0;color:var(--text-secondary,#667085);font-size:13px">A validação em lote confere pacote original, hash, extração integral, fonte oficial, título e marcadores de completude. Só publica documentos aprovados por todos os testes.</p></div><button type="button" class="btn btn-ghost btn-sm" id="vade-admin-refresh">Atualizar fila</button></div>'+
+        '<div style="margin-top:10px;padding:12px;border:1px solid var(--border-color,#d9dee7);border-radius:10px"><button type="button" class="btn btn-primary btn-sm" id="vade-admin-validate-publish">Validar e publicar documentos aptos</button><p style="font-size:11px;color:var(--text-secondary,#667085);margin:7px 0 0">Processa as versões mais recentes de cada documento. Uma falha não bloqueia os demais; nada é publicado sem confirmação administrativa.</p><div id="vade-admin-batch-status" aria-live="polite" style="font-size:12px;margin-top:8px"></div></div>'+
         ((rows||[]).length?'<div style="display:grid;gap:8px;margin-top:12px">'+rows.map(row=>'<article data-status="'+esc(row.status)+'" style="padding:10px;border:1px solid var(--border-color,#d9dee7);border-radius:10px"><strong>'+esc(titleById.get(row.document_id)||row.document_id)+'</strong><div style="font-size:12px;color:var(--text-secondary,#667085);margin:4px 0">'+esc(row.status)+' · '+esc(row.version_label||'versão candidata')+' · '+esc(row.source_retrieved_at?new Date(row.source_retrieved_at).toLocaleString('pt-BR'):'data não informada')+'</div><div style="font-size:11px;word-break:break-all;color:var(--text-secondary,#667085)">SHA-256: '+esc(row.content_sha256)+'</div><a href="'+esc(row.source_url)+'" target="_blank" rel="noopener noreferrer" style="font-size:12px">Abrir fonte oficial</a><div style="margin-top:8px"><button type="button" class="btn btn-outline btn-sm" data-vade-preview="'+esc(row.id)+'">Pré-visualizar e revisar</button></div></article>').join('')+'</div>':'<p style="margin-top:12px">Não há versões candidatas ou aprovadas aguardando decisão.</p>')+
         '<div id="vade-admin-preview" style="margin-top:14px"></div></section>';
       document.getElementById('vade-admin-refresh')?.addEventListener('click',()=>loadEditorialQueue().catch(showEditorialError));
       adminPanel.querySelectorAll('[data-vade-preview]').forEach(button=>button.addEventListener('click',()=>openEditorialPreview(button.getAttribute('data-vade-preview')).catch(showEditorialError)));
+    }
+    function validateLegalText(documentId,text){
+      const checks={
+        'BR-CF-1988':[/CONSTITUIÇÃO DA REPÚBLICA FEDERATIVA DO BRASIL/i, /Art\\.?\\s*1º/i, /EMENDA CONSTITUCIONAL Nº 141|EC Nº 141/i],
+        'BR-ADCT-1988':[/ATO DAS DISPOSIÇÕES CONSTITUCIONAIS TRANSITÓRIAS/i, /Art\\.?\\s*1º/i, /EMENDA CONSTITUCIONAL Nº 136|EC Nº 136/i],
+        'BR-CTB-1997':[/CÓDIGO DE TRÂNSITO BRASILEIRO|LEI Nº 9\\.503/i, /Art\\.?\\s*1º/i],
+        'BR-CP-1940':[/CÓDIGO PENAL|DECRETO-LEI Nº 2\\.848/i, /Art\\.?\\s*1º/i],
+        'BR-CPP-1941':[/CÓDIGO DE PROCESSO PENAL|DECRETO-LEI Nº 3\\.689|3\\.689/i, /Art\\.?\\s*1º/i],
+        'BR-LEP-1984':[/LEI DE EXECUÇÃO PENAL|LEI Nº 7\\.210/i, /Art\\.?\\s*1º/i],
+        'BR-ECA-1990':[/ESTATUTO DA CRIANÇA E DO ADOLESCENTE|LEI Nº 8\\.069|8\\.069/i, /Art\\.?\\s*1º/i],
+        'BR-CC-2002':[/CÓDIGO CIVIL|LEI Nº 10\\.406/i, /Art\\.?\\s*1º/i],
+        'BR-CDC-1990':[/CÓDIGO DE DEFESA DO CONSUMIDOR|LEI Nº 8\\.078|8\\.078/i, /Art\\.?\\s*1º/i],
+        'BR-LMP-2006':[/LEI MARIA DA PENHA|LEI Nº 11\\.340|11\\.340/i, /Art\\.?\\s*1º/i],
+        'BR-ESTATUTO-IDOSO-2003':[/ESTATUTO DA PESSOA IDOSA|LEI Nº 10\\.741/i, /Art\\.?\\s*1º/i],
+        'INT-UDHR-1948-PT':[/DECLARAÇÃO UNIVERSAL DOS DIREITOS HUMANOS/i, /ARTIGO\\s+1\\b/i, /ARTIGO\\s+30\\b/i],
+        'INT-MANDELA-2015-PT':[/REGRAS MÍNIMAS DAS NAÇÕES UNIDAS|REGRAS DE MANDELA/i, /REGRA\\s+1\\b/i, /REGRA\\s+122\\b/i]
+      };
+      if(!text||text.length<1200)throw new Error('Texto integral abaixo do mínimo de segurança.');
+      const required=checks[documentId];
+      if(!required)throw new Error('Documento sem regra de validação estrutural cadastrada.');
+      for(const pattern of required)if(!pattern.test(text))throw new Error('Falhou a validação de título, artigo inicial ou marcador de completude para '+documentId+'.');
+      return true;
+    }
+    async function readVerifiedFullText(versionId){
+      let offset=0,fullText='',metadata=null;
+      do{
+        const result=await invokeEditorial({action:'preview',version_id:versionId,offset,limit:80000});
+        if(result.integrity_verified!==true)throw new Error('Integridade SHA-256 não confirmada.');
+        if(result.offset!==offset||typeof result.preview_text!=='string')throw new Error('Resposta de pré-visualização incompleta ou fora de sequência.');
+        metadata=result;
+        fullText+=result.preview_text;
+        offset=result.next_offset;
+      }while(offset!==null);
+      if(!metadata||fullText.length!==metadata.total_chars)throw new Error('A leitura integral não atingiu o total de caracteres informado.');
+      return {text:fullText,metadata};
+    }
+    async function validateAndPublishEligible(){
+      const status=document.getElementById('vade-admin-batch-status');
+      const button=document.getElementById('vade-admin-validate-publish');
+      if(!adminClient)throw new Error('Sessão administrativa não validada.');
+      const {data:rows,error}=await adminClient.from('legal_document_versions')
+        .select('id,document_id,status,source_retrieved_at')
+        .in('status',['candidate','approved'])
+        .order('source_retrieved_at',{ascending:false}).limit(40);
+      if(error)throw error;
+      const latestByDocument=new Map();
+      for(const row of rows||[])if(!latestByDocument.has(row.document_id))latestByDocument.set(row.document_id,row);
+      const eligible=[...latestByDocument.values()];
+      if(!eligible.length){if(status)status.textContent='Não há versões candidatas ou aprovadas para validar.';return;}
+      if(!global.confirm('Validar a integridade e os marcadores legais das '+eligible.length+' versões mais recentes e publicar automaticamente apenas as que passarem? A ação será registrada no histórico editorial.'))return;
+      button.disabled=true;
+      const results=[];
+      try{
+        for(let i=0;i<eligible.length;i++){
+          const row=eligible[i];
+          if(status)status.textContent='Validando '+(i+1)+' de '+eligible.length+': '+row.document_id+'...';
+          try{
+            const verified=await readVerifiedFullText(row.id);
+            validateLegalText(row.document_id,verified.text);
+            const note='Validação automatizada concluída: fonte oficial permitida; pacote original e extração integral reproduzida; SHA-256 conferido; título e marcadores estruturais obrigatórios encontrados. Publicação autorizada pelo administrador.';
+            if(row.status==='candidate'){
+              await invokeEditorial({action:'approve',version_id:row.id,review_note:note});
+            }
+            const published=await invokeEditorial({action:'publish',version_id:row.id,review_note:note});
+            results.push({document_id:row.document_id,ok:true,message:published.note||'Publicado'});
+          }catch(error){
+            results.push({document_id:row.document_id,ok:false,message:error?.message||String(error)});
+          }
+        }
+      }finally{
+        button.disabled=false;
+      }
+      await loadEditorialQueue();
+      const done=results.filter(item=>item.ok).length;
+      const failed=results.length-done;
+      const summary='Validação concluída: '+done+' publicado(s), '+failed+' bloqueado(s). '+results.filter(item=>!item.ok).map(item=>item.document_id+': '+item.message).join(' | ');
+      const target=document.getElementById('vade-admin-batch-status');
+      if(target)target.textContent=summary;
+      else adminPanel.insertAdjacentHTML('beforeend','<p id="vade-admin-batch-status">'+esc(summary)+'</p>');
     }
     function showEditorialError(error){
       const target=document.getElementById('vade-admin-preview')||adminPanel;
@@ -302,6 +382,9 @@
         if(adminButton)adminButton.hidden=false;
       }catch(_){}
     }
+    adminPanel?.addEventListener('click',event=>{
+      if(event.target?.id==='vade-admin-validate-publish')validateAndPublishEligible().catch(showEditorialError);
+    });
     adminButton?.addEventListener('click',()=>{
       if(!adminPanel)return;
       if(!adminPanel.hidden){adminPanel.hidden=true;return;}
