@@ -1,0 +1,25 @@
+name: Vade-Mécum Doctor QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - "vade-mecum.js"
+      - "index.html"
+      - "qa/vade-mecum-contract.mjs"
+      - ".github/workflows/vade-mecum-qa.yml"
+  pull_request:
+    paths:
+      - "vade-mecum.js"
+      - "index.html"
+      - "qa/vade-mecum-contract.mjs"
+      - ".github/workflows/vade-mecum-qa.yml"
+jobs:
+  local-library-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate Vade-Mécum local-only contract
+        run: node qa/vade-mecum-contract.mjs
