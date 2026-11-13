@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 const content = fs.readFileSync(new URL('../product-content.js', import.meta.url), 'utf8');
-const migration = fs.readFileSync(new URL('../supabase/migrations/20261111013355_motorista_question_content_hashes_2026_3.sql', import.meta.url), 'utf8');
+const migration = fs.readFileSync(new URL('../supabase/migrations/20261113004310_motorista_question_content_hashes_2026_3.sql', import.meta.url), 'utf8');
 const questionPart = content.slice(content.indexOf('const QUESTIONS = ['));
 const blocks = [...questionPart.matchAll(/  \{\n    id:\s*'([^']+)',\s*subjectId:\s*'([^']+)',[\s\S]*?\n  \}/g)].map(m => ({ id:m[1], raw:m[0] }));
 const failures = [];
