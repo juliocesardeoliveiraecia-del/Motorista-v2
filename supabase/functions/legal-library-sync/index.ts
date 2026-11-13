@@ -121,6 +121,7 @@ async function fetchOfficial(
     if (normalizedText.length < 1200) throw new Error("PDF oficial sem texto extraível suficiente.");
     return {
       notModified: false as const,
+      html: undefined,
       normalizedText,
       rawBytes,
       finalUrl: result.url,
