@@ -115,10 +115,24 @@ async function fetchOfficial(
   }
   if (!result.ok) throw new Error("Fonte oficial respondeu HTTP " + result.status + ".");
   const contentType = (result.headers.get("content-type") || "").toLowerCase();
+  const rawBytes = new Uint8Array(await result.arrayBuffer());
+  if (contentType.includes("application/pdf") || result.url.toLowerCase().endsWith(".pdf")) {
+    const normalizedText = await extractPdfText(rawBytes);
+    if (normalizedText.length < 1200) throw new Error("PDF oficial sem texto extraível suficiente.");
+    return {
+      notModified: false as const,
+      normalizedText,
+      rawBytes,
+      finalUrl: result.url,
+      etag: result.headers.get("etag"),
+      lastModified: result.headers.get("last-modified"),
+      contentType: "application/pdf",
+      charset: null,
+    };
+  }
   if (!contentType.includes("text/html") && !contentType.includes("application/xhtml+xml")) {
     throw new Error("Formato não suportado para extração automática: " + (contentType || "desconhecido"));
   }
-  const rawBytes = new Uint8Array(await result.arrayBuffer());
   const prefix = new TextDecoder("windows-1252").decode(rawBytes.slice(0, 4096));
   const metaCharset = prefix.match(/<meta[^>]+charset=["']?([^"'\s/>;]+)/i)?.[1];
   const headerCharset = contentType.match(/charset=([^;\s]+)/i)?.[1];
@@ -135,6 +149,7 @@ async function fetchOfficial(
   return {
     notModified: false as const,
     html,
+    normalizedText: undefined,
     rawBytes,
     finalUrl: result.url,
     etag: result.headers.get("etag"),
