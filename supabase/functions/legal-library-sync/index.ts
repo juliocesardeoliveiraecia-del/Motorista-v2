@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { DOMParser } from "npm:linkedom@0.18.12";
 
 type LegalDocument = {
   document_id: string;
