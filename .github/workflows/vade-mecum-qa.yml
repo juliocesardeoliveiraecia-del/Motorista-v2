@@ -7,6 +7,7 @@ on:
       - "index.html"
       - "service-worker.js"
       - "data/legal-library/**"
+      - "supabase/migrations/**"
       - "docs/VADE-MECUM-DOCTOR-ARCHITECTURE.md"
       - "docs/VADE-MECUM-DOCTOR-RELEASE-PACKAGE.md"
       - "tools/validate-legal-library.mjs"
