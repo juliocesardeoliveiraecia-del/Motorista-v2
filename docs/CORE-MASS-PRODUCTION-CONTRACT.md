@@ -1,7 +1,7 @@
 # Doctor Core — contrato de produção em massa
 
 ## Objetivo
-Transformar o Doctor Core em um motor reutilizável para dezenas de aplicativos de concursos sem copiar lógica do aplicativo anterior.
+Transformar o Doctor Core em um motor reutilizável para quantidade aberta de aplicativos de concursos sem copiar lógica do aplicativo anterior.
 
 ## 1. O que pertence ao Core
 - navegação e UI-base;
@@ -56,7 +56,7 @@ Todo aplicativo derivado deve herdar o padrão de transparência, idade mínima,
 A configuração de cada produto deve ser gerada a partir de `templates/product-manifest.example.json` com `tools/scaffold-product.mjs`. O gerador valida a distribuição do edital, duração, modo de resposta, hosts oficiais do Radar e identidade PWA. Ele não gera conteúdo acadêmico nem assets e não publica o produto. QA: `node qa/scaffold-product-contract.mjs`.
 
 ## 8. Homologação antes de replicar
-Antes dos 50 aplicativos, cada release-base deve passar por:
+Antes de replicar a linha-base, cada release-base deve passar por:
 - QA estático automático;
 - auditoria do banco de questões;
 - teste de resposta correta/incorreta;
