@@ -22,6 +22,7 @@
     {id:"INT-MANDELA-2015-PT",title:"Regras de Mandela",officialTitle:"Regras Mínimas das Nações Unidas para o Tratamento de Presos",category:"Direitos Humanos",cover:"human",symbol:"⚖",subtitle:"DIREITOS HUMANOS",description:"Padrões internacionais para o tratamento de pessoas presas.",source:"Nações Unidas / UNODC",sourceUrl:"https://www.unodc.org/documents/justice-and-prison-reform/Nelson_Mandela_Rules-P-ebook.pdf",status:'Fonte oficial catalogada · texto integral em preparação',content:'',version:null}
   ];
   // Student sync accepts only published, hash-verified packages; failed updates never replace local last-known-good text.
+  // Legal packages are stored per document in IndexedDB; no shell-wide pre-cache of the entire legal corpus.
   const LOCAL_DB_NAME='doctor-vade-mecum-offline-v1';
   const LOCAL_STORE='documents';
   function openLocalDb(){
