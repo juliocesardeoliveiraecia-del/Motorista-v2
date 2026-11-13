@@ -1,9 +1,9 @@
 // service-worker.js — network-first com preservação do último shell offline válido.
-const CACHE_NAME = 'motorista-ipameri-v1.13.23-vade-mecum';
+const CACHE_NAME = 'motorista-ipameri-v1.13.24-vade-mecum-offline-sync';
 const ASSETS = [
   './', './index.html', './manifest.json?v=1.13.3-platform-bridge', './version.json',
   './production-config.js?v=1.12.19', './doctor-platform-bridge.js?v=1.12.19-platform-5', './legal-search.js?v=1.2.1',
-  './vade-mecum.js?v=1.0.0',
+  './vade-mecum.js?v=1.1.0',
   './product-context.js?v=2026.3-appid3', './product-content.js?v=2026.3',
   './doctor-core-quality.js?v=1.12.19', './calculator-scientific.js?v=1.12.19',
   './doctor-core-icon.svg', './assets/icons/products/motorista-legislativo.svg?v=1.3.0',
