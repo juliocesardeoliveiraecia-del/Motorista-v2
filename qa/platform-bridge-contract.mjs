@@ -73,6 +73,7 @@ must('App support submits centrally with validated UUID identity', bridge.includ
 must('App support no longer depends on the user mail client', !index.includes('mailto:doctorconcursoschat@gmail.com'));
 must('Radar Doctor ticker is not removed at runtime', !index.includes('doctor-radar-removal-runtime') && !index.includes("getElementById('radar-ticker-mount')?.remove()") && index.includes('get_radar_feed'));
 must('No service-role key or private payment token is present in bridge', !/(service_role|sb_secret_|sk_live_|access_token\s*[:=])/i.test(bridge));
+must('Shared legal modules receive only the authenticated session client', bridge.includes('getAuthenticatedClient()') && bridge.includes('if (!currentSessionId || !client) throw new Error'));
 console.log('DOCTOR PLATFORM BRIDGE QA: OK');
 
 must('Vade-Mécum Doctor replaces the former Doctor Search home entry', index.includes('home-legal-search') && index.includes('Vade-Mécum Doctor') && index.includes('Biblioteca jurídica Doctor'));
