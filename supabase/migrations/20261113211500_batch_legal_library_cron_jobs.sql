@@ -1,4 +1,4 @@
--- Replace single long sync requests with bounded batches; Mandela PDF remains manual/review-only.
+-- Replace single long sync requests with bounded HTML/PDF batches; publication still requires manual review.
 do $$
 declare
   existing_job_id bigint;
@@ -100,7 +100,7 @@ select net.http_post(
       where name = 'legal-library-cron-token' limit 1
     )
   ),
-  body := jsonb_build_object('mode', 'daily', 'document_ids', array['BR-LMP-2006', 'BR-ESTATUTO-IDOSO-2003']),
+  body := jsonb_build_object('mode', 'daily', 'document_ids', array['BR-LMP-2006', 'BR-ESTATUTO-IDOSO-2003', 'INT-MANDELA-2015-PT']),
   timeout_milliseconds := 120000
 );
     $daily$
