@@ -2599,6 +2599,11 @@ try{DoctorQuestionIntegrity.auditBank();}catch(e){console.warn('[Doctor] auditor
   },
 
   render(view, opts = {}) {
+    // Radar Doctor está descontinuado neste produto. Bloqueia rotas antigas/deep links.
+    if (view === 'radar' || view === 'radarArticle') {
+      view = 'home';
+      opts = { ...opts, replaceHistory: true };
+    }
     if (this._calculatorKeyCleanup) { this._calculatorKeyCleanup(); this._calculatorKeyCleanup = null; }
     const previousView = this.currentView;
     // Home é a raiz da navegação: ir para Home limpa a pilha interna.
