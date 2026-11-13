@@ -37,7 +37,7 @@ assert.ok(schedule.includes('vault.create_secret'), 'cron token must be generate
 assert.ok(schedule.includes('doctor-legal-library-daily') && schedule.includes('doctor-legal-library-weekly'), 'both daily and weekly jobs must be registered');
 assert.ok(schedule.includes('x-doctor-cron-token'), 'cron must send only the restricted internal token');
 assert.ok(!schedule.includes('SUPABASE_SERVICE_ROLE_KEY'), 'service-role credentials must never be stored in the cron request');
-assert.equal((batchSchedule.match(/net\\.http_post\\(/g) || []).length, 14, 'daily and weekly schedules must enqueue seven bounded batches each');
+assert.equal((batchSchedule.match(/net\.http_post\(/g) || []).length, 14, 'daily and weekly schedules must enqueue seven bounded batches each');
 assert.ok(batchSchedule.includes('timeout_milliseconds := 120000'), 'bounded source batches must have sufficient HTTP timeout');
 assert.ok(!batchSchedule.includes('INT-MANDELA-2015-PT'), 'known PDF-only source must stay out of automatic HTML extraction');
 console.log('[legal-library-ingestion-contract] PASS — admin-only capture/review, source integrity, approval gate and atomic publication.');
