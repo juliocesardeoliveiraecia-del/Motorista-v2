@@ -67,7 +67,8 @@ RLS permite leitura autenticada apenas de documentos ativos, versões publicadas
 
 O pipeline usa:
 - `legal-library-sync`: captura de fontes oficiais, validação de host, hash e estrutura, cria candidatas e nunca publica automaticamente. A função aceita sessão administrativa validada ou token interno restrito.
-- `legal-library-publish`: exige JWT e administrador Doctor; confere novamente os bytes originais, reproduz a extração HTML/PDF e valida SHA-256 antes da publicação.
+- `legal-library-publish`: exige JWT e administrador Doctor; oferece pré-visualização verificada em trechos, aprovação, rejeição e publicação. Confere novamente os bytes originais, reproduz a extração HTML/PDF e valida SHA-256 antes de cada decisão relevante.
+- Console editorial no Vade-Mécum: botão oculto para estudantes, liberado somente após `is_admin()`. O administrador percorre o texto integral, registra nota, aprova ou rejeita; a publicação é uma segunda ação explícita.
 - RPC transacional: a versão anterior passa a `superseded`, a nova torna-se vigente e o evento é gravado na mesma transação.
 - Token de agendamento aleatório armazenado no Vault; o segredo de serviço não é colocado em jobs ou código cliente.
 
@@ -105,15 +106,15 @@ A auditoria semanal não garante que uma lei não tenha mudado entre verificaç�
 - Quatro tabelas e o bucket privado foram criados no Supabase.
 - As duas Edge Functions estão ativas.
 - Jobs diário e semanal estão ativos e divididos em lotes.
-- 13 documentos têm versões candidatas capturadas; há uma versão antiga do ADCT rejeitada por um critério de revisão que foi corrigido. Nenhuma versão está publicada.
+- Os 13 documentos têm uma versão candidata capturada; há uma versão antiga do ADCT rejeitada após a conferência de revisão, e uma nova candidata baseada no texto atualizado foi capturada. Nenhuma versão está publicada.
 - 14 pacotes privados ocupam aproximadamente 26,6 MB (13 candidatas e 1 pacote rejeitado).
 - O teste de migração/publicação em PostgreSQL isolado passou; QA do Core, auditoria, contrato de versão, Vade-Mécum e type-check Deno passaram no commit de homologação.
 - A auditoria de segurança não apontou novos alertas específicos do Vade-Mécum. Permanecem alertas preexistentes em funções e tabelas de outros módulos, que não foram alterados para evitar impacto em autenticação, pagamentos ou sessões.
 
 ## Pendências antes de liberar aos alunos
 
-- Revisão jurídica/editorial de cada candidata, conferindo texto, vigência e alterações recentes.
-- Tela administrativa de revisão/preview/aprovação/rejeição integrada ao painel Doctor.
+- Revisão jurídica/editorial de cada candidata, conferindo texto, vigência e alterações recentes, usando o console administrativo implementado na branch.
+- Teste visual do console com a conta master e validação de permissões em sessão real.
 - Teste final de leitura e pesquisa offline em aparelho real.
 - Regressão do Motorista Legislativo e do fluxo de acesso do aluno.
 - Merge do PR e validação visual do app. O preview Vercel do commit atual está bloqueado por `build-rate-limit`; não foi feito upgrade nem criado custo adicional.
