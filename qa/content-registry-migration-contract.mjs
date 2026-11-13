@@ -2,9 +2,9 @@ import fs from 'node:fs';
 
 const content = fs.readFileSync(new URL('../product-content.js', import.meta.url), 'utf8');
 const context = fs.readFileSync(new URL('../product-context.js', import.meta.url), 'utf8');
-const migration = fs.readFileSync(new URL('../supabase/migrations/20261111010740_motorista_content_registry_traceability.sql', import.meta.url), 'utf8');
-const versionMigration = fs.readFileSync(new URL('../supabase/migrations/20261111011333_motorista_content_version_2026_2.sql', import.meta.url), 'utf8');
-const versionMigration3 = fs.readFileSync(new URL('../supabase/migrations/20261111012251_motorista_content_version_2026_3.sql', import.meta.url), 'utf8');
+const migration = fs.readFileSync(new URL('../supabase/migrations/20261113004249_motorista_content_registry_traceability.sql', import.meta.url), 'utf8');
+const versionMigration = fs.readFileSync(new URL('../supabase/migrations/20261113004303_motorista_content_version_2026_2.sql', import.meta.url), 'utf8');
+const versionMigration3 = fs.readFileSync(new URL('../supabase/migrations/20261113004307_motorista_content_version_2026_3.sql', import.meta.url), 'utf8');
 const pairs = [...content.matchAll(/id:\s*'([^']+)',\s*subjectId:\s*'([^']+)'/g)].map(m => ({ id:m[1], subject:m[2] }));
 const failures = [];
 if (pairs.length !== 47) failures.push('O pacote estático mudou: revise a migração e atualize o registro de questões.');
