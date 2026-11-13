@@ -205,6 +205,9 @@ Deno.serve(async (req: Request) => {
     if (payload.mode !== "daily" && payload.mode !== "weekly") return response({ error: "Modo de agendamento inválido." }, 400);
     triggerType = payload.mode === "weekly" ? "scheduled_weekly" : "scheduled_daily";
     initiatedBy = "system:cron";
+    requestedIds = Array.isArray(payload.document_ids)
+      ? payload.document_ids.filter((id: unknown) => typeof id === "string").slice(0, 13)
+      : [];
   } else {
     if (!token) return response({ error: "Autenticação administrativa ou token interno obrigatório." }, 401);
     const userClient = createClient(supabaseUrl, anonKey, {
