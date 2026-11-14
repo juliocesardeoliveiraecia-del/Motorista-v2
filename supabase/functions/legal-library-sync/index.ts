@@ -168,8 +168,12 @@ async function resolveDocumentSource(_doc: LegalDocument, sourceHtml: string, so
 function validateExtractedText(doc: LegalDocument, text: string) {
   if (text.length < 1200) throw new Error("Texto extraído abaixo do tamanho mínimo de segurança.");
   const isMandela = doc.document_id === "INT-MANDELA-2015-PT";
-  if (!isMandela && !/\bArt\.?\s*\d+|\bArtigo\s+\d+/i.test(text)) {
+  const isUdhr = doc.document_id === "INT-UDHR-1948-PT";
+  if (!isMandela && !isUdhr && !/\bArt\.?\s*\d+|\bArtigo\s+\d+/i.test(text)) {
     throw new Error("Não foi encontrada estrutura mínima de artigos; captura bloqueada.");
+  }
+  if (isUdhr && (!/ARTIGO\s+I\b/i.test(text) || !/ARTIGO\s+XXX\b/i.test(text))) {
+    throw new Error("A DUDH não apresenta a sequência completa dos artigos I a XXX.");
   }
   if (isMandela && (!/REGRA\s+1\b/i.test(text) || !/REGRA\s+122\b/i.test(text))) {
     throw new Error("O PDF não contém a sequência completa das Regras de Mandela (1 a 122).");
@@ -199,8 +203,8 @@ function validateExtractedText(doc: LegalDocument, text: string) {
   if (expectedTitle && !expectedTitle.test(text)) {
     throw new Error("A captura não corresponde ao título oficial esperado: " + id);
   }
-  if (id === "INT-UDHR-1948-PT" && (!/DECLARAÇÃO UNIVERSAL DOS DIREITOS HUMANOS/i.test(text) || !/ARTIGO\s+30\b/i.test(text))) {
-    throw new Error("A captura não corresponde à DUDH completa (artigos 1 a 30).");
+  if (id === "INT-UDHR-1948-PT" && !/DECLARAÇÃO UNIVERSAL DOS DIREITOS HUMANOS/i.test(text)) {
+    throw new Error("A captura não corresponde à Declaração Universal dos Direitos Humanos.");
   }
   if (id === "INT-MANDELA-2015-PT" && !/REGRAS MÍNIMAS DAS NAÇÕES UNIDAS|REGRAS DE MANDELA/i.test(text)) {
     throw new Error("A captura não corresponde às Regras de Mandela.");
