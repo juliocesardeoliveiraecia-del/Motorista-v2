@@ -150,7 +150,7 @@
       '<button class="btn btn-ghost btn-sm" id="vade-back" type="button">← Voltar</button>'+
       '<header class="vade-hero"><div class="vade-hero-top"><div class="vade-emblem" aria-hidden="true">§</div><div><div class="vade-eyebrow">BIBLIOTECA JURÍDICA DIGITAL</div><h2>Vade-Mécum Doctor</h2><div style="font-size:10px;color:#dce7f4">Lei seca. Conhecimento na fonte.</div></div></div><p>Leia, consulte e estude normas, leis, códigos e constituições sem sair do aplicativo. O texto oficial é a base; explicações e resumos nunca o substituem.</p><span class="vade-promise">ACERVO GRATUITO · FONTES OFICIAIS</span></header>'+
       '<form class="card vade-search" id="vade-search-form"><label for="vade-query">Pesquisar dentro da biblioteca</label><div class="vade-search-row"><input id="vade-query" type="search" minlength="2" maxlength="180" placeholder="Ex.: art. 5º, CTB, direitos fundamentais..." autocomplete="off"><button type="submit" aria-label="Pesquisar na biblioteca">⌕</button></div><p class="vade-search-note">A pesquisa consulta somente os textos e documentos armazenados no aplicativo. Não envia você para outros sites.</p></form>'+
-      '<div id="vade-status" class="legal-search-status" role="status" aria-live="polite">Acervo inicial organizado. Os textos integrais estão sendo preparados para leitura local e uso offline.</div><div id="vade-admin-panel" hidden></div><div id="vade-results" class="vade-results" aria-live="polite"></div><div id="vade-reader"></div>'+
+      '<div id="vade-admin-panel" hidden></div><div id="vade-results" class="vade-results" aria-live="polite"></div><div id="vade-reader"></div>'+
       '<div class="vade-shelf-title">Constituição e organização do Estado</div><div class="vade-grid">'+documents.filter(d=>d.category==='Constituição').map(bookMarkup).join('')+'</div>'+
       '<div class="vade-shelf-title">Trânsito e mobilidade</div><div class="vade-grid">'+documents.filter(d=>d.category==='Trânsito e Mobilidade').map(bookMarkup).join('')+'</div>'+
       '<div class="vade-shelf-title">Códigos e legislação penal</div><div class="vade-grid">'+documents.filter(d=>['Direito Penal','Processo Penal'].includes(d.category)).map(bookMarkup).join('')+'</div>'+
@@ -161,15 +161,31 @@
   function showDocument(id){
     const doc=documents.find(item=>item.id===id);
     if(!doc)return;
+    // A leitura é uma subetapa da biblioteca: o voltar do app deve retornar ao catálogo,
+    // sem encerrar o Vade-Mécum. Reutiliza o histórico do Doctor Core, sem criar outra rota.
+    if(!global.history?.state?.vadeReader){
+      const previousState=global.history?.state||{};
+      global.history?.pushState?.({
+        ...previousState,
+        doctorCore:true,
+        view:'legalSearch',
+        navIndex:Number(previousState.navIndex)||0,
+        vadeReader:true
+      },'',global.location?.href);
+    }
     activeDocument=id;
     const reader=document.getElementById('vade-reader');
     if(!reader)return;
     if(!doc.content){
-      reader.innerHTML='<section class="card vade-reader"><div class="legal-search-result-index">OBRA CATALOGADA · TEXTO INTEGRAL EM PREPARAÇÃO</div><h3>'+esc(doc.title)+'</h3><p>'+esc(doc.officialTitle)+'</p><p>Fonte oficial prevista: '+esc(doc.source)+'.</p><div class="vade-empty">Estamos preparando a cópia integral oficial, a navegação por artigos e a versão offline desta obra. Ela só será liberada para leitura quando o texto for capturado, conferido e validado. Nenhum resumo ou link externo será apresentado como substituto da lei seca.</div><button type="button" class="btn btn-ghost btn-sm" id="vade-close-reader" style="margin-top:12px">Fechar</button></section>';
+      reader.innerHTML='<section class="card vade-reader"><div class="legal-search-result-index">OBRA CATALOGADA · TEXTO INTEGRAL EM PREPARAÇÃO</div><h3>'+esc(doc.title)+'</h3><p>'+esc(doc.officialTitle)+'</p><p>Fonte oficial prevista: '+esc(doc.source)+'.</p><div class="vade-empty">Estamos preparando a cópia integral oficial, a navegação por artigos e a versão offline desta obra. Ela só será liberada para leitura quando o texto for capturado, conferido e validado. Nenhum resumo ou link externo será apresentado como substituto da lei seca.</div><button type="button" class="btn btn-ghost btn-sm" id="vade-close-reader" style="margin-top:12px">← Voltar à biblioteca</button></section>';
     }else{
-      reader.innerHTML='<section class="card vade-reader"><div class="legal-search-result-index">LEI SECA · TEXTO ARMAZENADO NO APLICATIVO</div><h3>'+esc(doc.title)+'</h3><p>'+esc(doc.officialTitle)+' · '+esc(doc.source)+(doc.version?' · '+esc(doc.version):'')+(doc.lastVerifiedAt?' · publicada em '+esc(new Date(doc.lastVerifiedAt).toLocaleString('pt-BR')):'')+'</p><div class="vade-reader-text">'+esc(doc.content)+'</div><button type="button" class="btn btn-ghost btn-sm" id="vade-close-reader" style="margin-top:12px">Fechar leitura</button></section>';
+      reader.innerHTML='<section class="card vade-reader"><div class="legal-search-result-index">LEI SECA · TEXTO ARMAZENADO NO APLICATIVO</div><h3>'+esc(doc.title)+'</h3><p>'+esc(doc.officialTitle)+' · '+esc(doc.source)+(doc.version?' · '+esc(doc.version):'')+(doc.lastVerifiedAt?' · publicada em '+esc(new Date(doc.lastVerifiedAt).toLocaleString('pt-BR')):'')+'</p><div class="vade-reader-text">'+esc(doc.content)+'</div><button type="button" class="btn btn-ghost btn-sm" id="vade-close-reader" style="margin-top:12px">← Voltar à biblioteca</button></section>';
     }
-    document.getElementById('vade-close-reader')?.addEventListener('click',()=>{activeDocument=null;reader.innerHTML='';});
+    document.getElementById('vade-close-reader')?.addEventListener('click',()=>{
+      if(global.history?.state?.vadeReader){global.history.back();return;}
+      activeDocument=null;
+      reader.innerHTML='';
+    });
     reader.scrollIntoView({behavior:'smooth',block:'start'});
   }
   function search(query){
