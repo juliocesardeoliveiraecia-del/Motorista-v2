@@ -248,6 +248,19 @@ async function verifyStoredPackageAndAutoPublish(
     ? await extractPdfText(bytes)
     : typeof pack.source_html === "string" ? extractHtml(pack.source_html) : "";
   if (reproduced !== expectedText) return false;
+  const { error: flagError } = await service.from("legal_document_versions")
+    .update({
+      change_summary: {
+        ...version.change_summary,
+        official_source_verified: true,
+        integrity_verified: true,
+        automatic_publication_eligible: true,
+        verified_against_live_official_source_at: new Date().toISOString(),
+      },
+    })
+    .eq("id", version.id)
+    .in("status", ["candidate", "approved"]);
+  if (flagError) return false;
   const { error: publishError } = await service.rpc("auto_publish_legal_document_version", {
     p_version_id: version.id, p_expected_sha256: expectedHash,
   });
