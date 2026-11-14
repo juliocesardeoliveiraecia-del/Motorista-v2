@@ -186,13 +186,14 @@ function validateExtractedText(doc: LegalDocument, text: string) {
   }
   const expectedTitles: Record<string, RegExp> = {
     "BR-CP-1940": /CÓDIGO PENAL|DECRETO-LEI Nº 2\.848/i,
-    "BR-CPP-1941": /3\\.689/i,
+    "BR-CPP-1941": /3\.689/i,
     "BR-LEP-1984": /LEI DE EXECUÇÃO PENAL|LEI Nº 7\.210/i,
-    "BR-ECA-1990": /8\\.069/i,
+    "BR-ECA-1990": /8\.069/i,
     "BR-CC-2002": /CÓDIGO CIVIL|LEI Nº 10\.406/i,
     "BR-CDC-1990": /CÓDIGO DE DEFESA DO CONSUMIDOR|LEI Nº 8\.078/i,
-    "BR-LMP-2006": /11\\.340/i,
-    "BR-ESTATUTO-IDOSO-2003": /10\\.741/i,
+    "BR-LMP-2006": /11\.340/i,
+    "BR-ESTATUTO-IDOSO-2003": /10\.741/i,
+    "BR-CPC-2015": /13\.105/i,
   };
   const expectedTitle = expectedTitles[id];
   if (expectedTitle && !expectedTitle.test(text)) {
