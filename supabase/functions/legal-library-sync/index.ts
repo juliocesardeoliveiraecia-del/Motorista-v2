@@ -183,7 +183,7 @@ function validateExtractedText(doc: LegalDocument, text: string) {
   if (isMandela && (!/REGRA\s+1\b/i.test(text) || !/REGRA\s+122\b/i.test(text))) {
     throw new Error("O PDF não contém a sequência completa das Regras de Mandela (1 a 122).");
   }
-  if (isOfficialWritingManual && (!/MANUAL DE REDAÇÃO DA PRESIDÊNCIA DA REPÚBLICA/i.test(text) || !/3\\s*(?:ª|a)\\s*EDIÇÃO/i.test(text) || !/COMUNICAÇÕES OFICIAIS/i.test(text) || !/ATOS NORMATIVOS/i.test(text) || !/ÍNDICE ANALÍTICO/i.test(text))) {
+  if (isOfficialWritingManual && (!/MANUAL DE REDAÇÃO DA PRESIDÊNCIA DA REPÚBLICA/i.test(text) || !/3\s*(?:ª|a)\s*EDIÇÃO/i.test(text) || !/COMUNICAÇÕES OFICIAIS/i.test(text) || !/ATOS NORMATIVOS/i.test(text) || !/ÍNDICE ANALÍTICO/i.test(text))) {
     throw new Error("O PDF não apresenta os marcadores essenciais da 3ª edição do Manual de Redação da Presidência da República.");
   }
   const id = doc.document_id;
