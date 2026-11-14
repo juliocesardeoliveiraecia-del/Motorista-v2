@@ -243,7 +243,9 @@ async function verifyStoredPackageAndAutoPublish(
   const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
   if (await sha256(bytes) !== source.sha256_raw) return false;
   const format = pack.source_format === "application/pdf" ? "application/pdf" : "text/html";
-  if (source.content_type !== format) return false;
+  if (format === "application/pdf"
+      ? !String(source.content_type || "").toLowerCase().includes("pdf")
+      : !String(source.content_type || "").toLowerCase().includes("html")) return false;
   const reproduced = format === "application/pdf"
     ? await extractPdfText(bytes)
     : typeof pack.source_html === "string" ? extractHtml(pack.source_html) : "";
