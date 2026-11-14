@@ -171,7 +171,7 @@ function validateExtractedText(doc: LegalDocument, text: string) {
   const isMandela = doc.document_id === "INT-MANDELA-2015-PT";
   const isUdhr = doc.document_id === "INT-UDHR-1948-PT";
   const isOfficialWritingManual = doc.document_id === "BR-MANUAL-REDACAO-PR-2018";
-  if (!isMandela && !isUdhr && !/\bArt\.?\s*\d+|\bArtigo\s+\d+/i.test(text)) {
+  if (!isMandela && !isUdhr && !isOfficialWritingManual && !/\bArt\.?\s*\d+|\bArtigo\s+\d+/i.test(text)) {
     throw new Error("Não foi encontrada estrutura mínima de artigos; captura bloqueada.");
   }
   if (isUdhr && (!/ARTIGO\s+I\b/i.test(text) || !/ARTIGO\s+XXX\b/i.test(text))) {
