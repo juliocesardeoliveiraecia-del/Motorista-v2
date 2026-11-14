@@ -506,7 +506,7 @@
       adminPanel.querySelectorAll('[data-vade-preview]').forEach(button=>button.addEventListener('click',()=>openEditorialPreview(button.getAttribute('data-vade-preview')).catch(showEditorialError)));
     }
     function validateLegalText(documentId,text){
-      const checks={        'BR-MANUAL-REDACAO-PR-2018':[/MANUAL DE REDAÇÃO DA PRESIDÊNCIA DA REPÚBLICA/i,/3\\s*(?:ª|a)\\s*EDIÇÃO/i,/COMUNICAÇÕES OFICIAIS/i,/ATOS NORMATIVOS/i],
+      const checks={        'BR-MANUAL-REDACAO-PR-2018':[/MANUAL DE REDAÇÃO DA PRESIDÊNCIA DA REPÚBLICA/i,/3\\s*(?:ª|a)\\s*EDIÇÃO/i,/COMUNICAÇÕES OFICIAIS/i,/ATOS NORMATIVOS/i,/ÍNDICE ANALÍTICO/i],
 
         'BR-CF-1988':[/CONSTITUIÇÃO DA REPÚBLICA FEDERATIVA DO BRASIL/i, /Art\.?\s*1º/i, /EMENDA CONSTITUCIONAL Nº 141|EC Nº 141/i],
         'BR-ADCT-1988':[/ATO DAS DISPOSIÇÕES CONSTITUCIONAIS TRANSITÓRIAS/i, /Art\.?\s*1º/i, /EMENDA CONSTITUCIONAL Nº 136|EC Nº 136/i],
