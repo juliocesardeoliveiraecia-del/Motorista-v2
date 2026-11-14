@@ -1,0 +1,2 @@
+update public.legal_documents set official_source_url='https://www2.camara.leg.br/legin/fed/lei/2015/lei-13105-16-marco-2015-780273-normaatualizada-pl.html',authority='Câmara dos Deputados',updated_at=now() where document_id='BR-CPC-2015';
+update public.legal_documents set official_source_url='https://brasil.un.org/sites/default/files/2025-03/ONU_DireitosHumanos_DUDH_UNICRio_20250310.pdf',authority='Nações Unidas no Brasil',updated_at=now() where document_id='INT-UDHR-1948-PT';
