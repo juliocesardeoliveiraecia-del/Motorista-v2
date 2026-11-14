@@ -35,10 +35,14 @@ assert.ok(source.includes('versões offline já armazenadas foram preservadas'),
 const view=library.render();
 for (const phrase of ['Vade-Mécum Doctor','Pesquisar dentro da biblioteca','Não envia você para outros sites']) assert.ok(view.includes(phrase));
 assert.ok(!view.includes('Doctor Search'));
+assert.ok(!view.includes('id="vade-status"'),'student catalog must not show the redundant status banner below search');
+assert.ok(source.includes("vadeReader:true")&&source.includes("view:'legalSearch'"),'opening a legal work must add an internal reader history state');
+assert.ok(source.includes("global.history.back()"),'reader back action must return to the Vade-Mécum catalog');
+
 
 const worker=fs.readFileSync('service-worker.js','utf8');
-assert.ok(worker.includes("'./vade-mecum.js?v=1.2.0'"),'service worker must cache Vade-Mécum module');
-assert.ok(worker.includes("const CACHE_NAME = 'motorista-ipameri-v1.13.25-vade-mecum-offline-sync'"),'cache version must be bumped for the new module');
+assert.ok(worker.includes("'./vade-mecum.js?v=1.2.1'"),'service worker must cache Vade-Mécum module');
+assert.ok(worker.includes("const CACHE_NAME = 'motorista-ipameri-v1.13.26-vade-mecum-reader-nav'"),'cache version must be bumped for the new module');
 const index=fs.readFileSync('index.html','utf8');
 assert.ok(index.includes('./vade-mecum.js?v=1.2.0'),'app shell must load the Vade-Mécum module');
 
