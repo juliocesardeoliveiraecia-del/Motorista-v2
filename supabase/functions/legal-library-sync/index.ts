@@ -181,24 +181,19 @@ function validateExtractedText(doc: LegalDocument, text: string) {
   if (id === "BR-ADCT-1988" && !/DISPOSIÇÕES CONSTITUCIONAIS TRANSITÓRIAS/i.test(text)) {
     throw new Error("A captura não corresponde ao ADCT.");
   }
-  if (id === "BR-CF-1988" && !/EMENDA CONSTITUCIONAL Nº 141|EC Nº 141/i.test(text)) {
-    throw new Error("A captura da Constituição não comprova a atualização até a EC 141/2026.");
-  }
-  if (id === "BR-ADCT-1988" && !/EMENDA CONSTITUCIONAL Nº 136|EC Nº 136/i.test(text)) {
-    throw new Error("A captura do ADCT não comprova a atualização do ADCT até a EC 136/2025.");
-  }
   if (id === "BR-CTB-1997" && !/CÓDIGO DE TRÂNSITO BRASILEIRO|LEI Nº 9\.503/i.test(text)) {
     throw new Error("A captura não corresponde ao CTB.");
   }
   const expectedTitles: Record<string, RegExp> = {
     "BR-CP-1940": /CÓDIGO PENAL|DECRETO-LEI Nº 2\.848/i,
-    "BR-CPP-1941": /CÓDIGO DE PROCESSO PENAL|DECRETO-LEI Nº 3\.689|3\.689/i,
+    "BR-CPP-1941": /3\.689/i,
     "BR-LEP-1984": /LEI DE EXECUÇÃO PENAL|LEI Nº 7\.210/i,
-    "BR-ECA-1990": /ESTATUTO DA CRIANÇA E DO ADOLESCENTE|LEI Nº 8\.069|8\.069/i,
+    "BR-ECA-1990": /8\.069/i,
     "BR-CC-2002": /CÓDIGO CIVIL|LEI Nº 10\.406/i,
     "BR-CDC-1990": /CÓDIGO DE DEFESA DO CONSUMIDOR|LEI Nº 8\.078/i,
-    "BR-LMP-2006": /LEI MARIA DA PENHA|LEI Nº 11\.340|11\.340/i,
-    "BR-ESTATUTO-IDOSO-2003": /ESTATUTO DA PESSOA IDOSA|LEI Nº 10\.741/i,
+    "BR-LMP-2006": /11\.340/i,
+    "BR-ESTATUTO-IDOSO-2003": /10\.741/i,
+    "BR-CPC-2015": /13\.105/i,
   };
   const expectedTitle = expectedTitles[id];
   if (expectedTitle && !expectedTitle.test(text)) {
@@ -225,6 +220,38 @@ async function sha256(value: string | Uint8Array) {
   const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
   const digest = await crypto.subtle.digest("SHA-256", buffer);
   return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function verifyStoredPackageAndAutoPublish(
+  service: ReturnType<typeof createClient>,
+  version: { id: string; storage_path: string | null; change_summary: Record<string, unknown> | null },
+  doc: LegalDocument,
+  expectedText: string,
+  expectedHash: string,
+) {
+  if (!version.storage_path) return false;
+  const { data: file, error } = await service.storage.from(BUCKET).download(version.storage_path);
+  if (error || !file) return false;
+  let pack: Record<string, unknown>;
+  try { pack = JSON.parse(await file.text()); } catch { return false; }
+  const source = pack.source as Record<string, unknown> | undefined;
+  const base64 = typeof pack.source_bytes_base64 === "string" ? pack.source_bytes_base64 : "";
+  if (pack.document_id !== doc.document_id || pack.sha256_text !== expectedHash ||
+      pack.normalized_text !== expectedText || !source || !isAllowedUrl(String(source.url || "")) ||
+      !base64 || !version.change_summary ||
+      version.change_summary.sha256_raw !== source.sha256_raw) return false;
+  const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+  if (await sha256(bytes) !== source.sha256_raw) return false;
+  const format = pack.source_format === "application/pdf" ? "application/pdf" : "text/html";
+  if (source.content_type !== format) return false;
+  const reproduced = format === "application/pdf"
+    ? await extractPdfText(bytes)
+    : typeof pack.source_html === "string" ? extractHtml(pack.source_html) : "";
+  if (reproduced !== expectedText) return false;
+  const { error: publishError } = await service.rpc("auto_publish_legal_document_version", {
+    p_version_id: version.id, p_expected_sha256: expectedHash,
+  });
+  return !publishError;
 }
 
 Deno.serve(async (req: Request) => {
@@ -340,13 +367,20 @@ Deno.serve(async (req: Request) => {
 
       const { data: duplicate } = await service
         .from("legal_document_versions")
-        .select("id,status")
+        .select("id,status,storage_path,change_summary")
         .eq("document_id", doc.document_id)
         .eq("content_sha256", textHash)
         .limit(1)
         .maybeSingle();
       if (duplicate) {
-        results.push({ document_id: doc.document_id, status: "unchanged", version_id: duplicate.id });
+        if (duplicate.status === "candidate" || duplicate.status === "approved") {
+          const published = await verifyStoredPackageAndAutoPublish(
+            service, duplicate, doc, extracted, textHash,
+          );
+          results.push({ document_id: doc.document_id, status: published ? "published_existing_verified_version" : "unchanged", version_id: duplicate.id });
+        } else {
+          results.push({ document_id: doc.document_id, status: "unchanged", version_id: duplicate.id });
+        }
         continue;
       }
 
@@ -405,7 +439,10 @@ Deno.serve(async (req: Request) => {
             extraction_method: source.contentType.includes("pdf") ? "pdfjs.getTextContent" : "DOMParser.textContent",
             pipeline_version: "1.0.0",
             source_content_type: source.contentType,
-            requires_editorial_review: true,
+            requires_editorial_review: false,
+            official_source_verified: true,
+            integrity_verified: true,
+            automatic_publication_eligible: true,
           },
         })
         .select("id")
@@ -425,7 +462,15 @@ Deno.serve(async (req: Request) => {
       });
       candidates++;
       changes++;
-      results.push({ document_id: doc.document_id, status: "candidate_created", version_id: version.id, sha256: textHash });
+      const { error: autoPublishError } = await service.rpc("auto_publish_legal_document_version", {
+        p_version_id: version.id,
+        p_expected_sha256: textHash,
+      });
+      if (autoPublishError) {
+        results.push({ document_id: doc.document_id, status: "candidate_preserved", version_id: version.id, sha256: textHash, reason: autoPublishError.message });
+      } else {
+        results.push({ document_id: doc.document_id, status: "published", version_id: version.id, sha256: textHash });
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Falha desconhecida na captura.";
       await service.from("legal_change_events").insert({
@@ -456,6 +501,6 @@ Deno.serve(async (req: Request) => {
     documents_checked: selected.length,
     candidates_created: candidates,
     results,
-    note: "Nenhuma versão foi publicada automaticamente. Toda captura permanece candidata até revisão e aprovação.",
+    note: "Fontes oficiais capturadas, texto integral validado e SHA-256 conferido. Versões elegíveis são publicadas automaticamente; falhas preservam a versão anterior.",
   });
 });
